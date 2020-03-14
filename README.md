@@ -1,1 +1,2 @@
-Ovaj repozitorijum namenjen je za praćenje izrade projekta Errand.
+Zbog više korišćenih tehnologija za izradu projekta, radi lakšeg organizovanja, za svaku je kreiran po jedan nezavisni orphan branch.
+.gitignore fajl za svaku tehnologiju nalazi se u odgovarajućem branch-u.
