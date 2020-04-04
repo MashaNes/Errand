@@ -1,0 +1,1 @@
+Ovaj repozitorijum namenjen je za praćenje izrade projekta Errand.
