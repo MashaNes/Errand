@@ -1,0 +1,332 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	android:orientation="vertical"
+	tools:context=".ui.profile.InfoFragment">
+
+	<TextView
+		android:id="@+id/page_title"
+		android:text="@string/profile_tab_info"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:padding="8dp"
+		android:textColor="@color/colorBlack"
+		android:textSize="20sp"/>
+
+	<ScrollView
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:overScrollMode="never"
+		android:background="@color/colorWhite">
+
+		<LinearLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:padding="16dp"
+			android:orientation="vertical">
+
+			<de.hdodenhof.circleimageview.CircleImageView
+				android:id="@+id/profile_image"
+				android:layout_gravity="center_horizontal"
+				android:src="@drawable/ic_face"
+				android:layout_width="96dp"
+				android:layout_height="96dp"
+				app:civ_border_width="0dp"/>
+
+			<androidx.constraintlayout.widget.ConstraintLayout
+				android:id="@+id/profile_name_layout"
+				android:layout_marginTop="24dp"
+				android:clickable="true"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:focusable="true">
+
+				<TextView
+					android:id="@+id/profile_name_label"
+					app:layout_constraintTop_toTopOf="parent"
+					app:layout_constraintBottom_toBottomOf="parent"
+					app:layout_constraintStart_toStartOf="parent"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:background="@drawable/service_background"
+					android:paddingStart="8dp"
+					android:paddingLeft="8dp"
+					android:paddingEnd="8dp"
+					android:paddingRight="8dp"
+					android:textSize="12sp"
+					android:text="@string/profile_info_name"
+					android:textColor="@color/colorBlack" />
+
+				<ImageView
+					android:id="@+id/profile_name_edit"
+					app:layout_constraintTop_toTopOf="parent"
+					app:layout_constraintBottom_toBottomOf="parent"
+					app:layout_constraintEnd_toEndOf="parent"
+					android:src="@drawable/ic_edit"
+					android:contentDescription="@string/image_cd_edit_name"
+					android:layout_width="24dp"
+					android:layout_height="24dp"/>
+
+				<TextView
+					android:id="@+id/profile_name_value"
+					app:layout_constraintTop_toTopOf="parent"
+					app:layout_constraintBottom_toBottomOf="parent"
+					app:layout_constraintStart_toEndOf="@id/profile_name_label"
+					app:layout_constraintEnd_toStartOf="@id/profile_name_edit"
+					android:layout_width="0dp"
+					android:layout_height="wrap_content"
+					android:paddingStart="8dp"
+					android:paddingLeft="8dp"
+					android:paddingEnd="8dp"
+					android:paddingRight="8dp"
+					android:lines="1"
+					android:maxLines="1"
+					android:ellipsize="end"
+					android:textColor="@color/colorBlack" />
+
+			</androidx.constraintlayout.widget.ConstraintLayout>
+
+			<androidx.constraintlayout.widget.ConstraintLayout
+				android:id="@+id/profile_email_layout"
+				android:layout_marginTop="12dp"
+				android:clickable="true"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:focusable="true">
+
+				<TextView
+					android:id="@+id/profile_email_label"
+					app:layout_constraintTop_toTopOf="parent"
+					app:layout_constraintBottom_toBottomOf="parent"
+					app:layout_constraintStart_toStartOf="parent"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:background="@drawable/service_background"
+					android:paddingStart="8dp"
+					android:paddingLeft="8dp"
+					android:paddingEnd="8dp"
+					android:paddingRight="8dp"
+					android:textSize="12sp"
+					android:text="@string/profile_info_email"
+					android:textColor="@color/colorBlack" />
+
+				<ImageView
+					android:id="@+id/profile_email_edit"
+					app:layout_constraintTop_toTopOf="parent"
+					app:layout_constraintBottom_toBottomOf="parent"
+					app:layout_constraintEnd_toEndOf="parent"
+					android:src="@drawable/ic_edit"
+					android:contentDescription="@string/image_cd_edit_email"
+					android:layout_width="24dp"
+					android:layout_height="24dp"/>
+
+				<TextView
+					android:id="@+id/profile_email_value"
+					app:layout_constraintTop_toTopOf="parent"
+					app:layout_constraintBottom_toBottomOf="parent"
+					app:layout_constraintStart_toEndOf="@id/profile_email_label"
+					app:layout_constraintEnd_toStartOf="@id/profile_email_edit"
+					android:layout_width="0dp"
+					android:layout_height="wrap_content"
+					android:paddingStart="8dp"
+					android:paddingLeft="8dp"
+					android:paddingEnd="8dp"
+					android:paddingRight="8dp"
+					android:lines="1"
+					android:maxLines="1"
+					android:ellipsize="end"
+					android:textColor="@color/colorBlack" />
+
+			</androidx.constraintlayout.widget.ConstraintLayout>
+
+			<androidx.constraintlayout.widget.ConstraintLayout
+				android:id="@+id/profile_phone_layout"
+				android:layout_marginTop="12dp"
+				android:clickable="true"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:focusable="true">
+
+				<TextView
+					android:id="@+id/profile_phone_label"
+					app:layout_constraintTop_toTopOf="parent"
+					app:layout_constraintBottom_toBottomOf="parent"
+					app:layout_constraintStart_toStartOf="parent"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:background="@drawable/service_background"
+					android:paddingStart="8dp"
+					android:paddingLeft="8dp"
+					android:paddingEnd="8dp"
+					android:paddingRight="8dp"
+					android:textSize="12sp"
+					android:text="@string/profile_info_phone"
+					android:textColor="@color/colorBlack" />
+
+				<ImageView
+					android:id="@+id/profile_phone_edit"
+					app:layout_constraintTop_toTopOf="parent"
+					app:layout_constraintBottom_toBottomOf="parent"
+					app:layout_constraintEnd_toEndOf="parent"
+					android:src="@drawable/ic_edit"
+					android:contentDescription="@string/image_cd_edit_phone"
+					android:layout_width="24dp"
+					android:layout_height="24dp"/>
+
+				<TextView
+					android:id="@+id/profile_phone_value"
+					app:layout_constraintTop_toTopOf="parent"
+					app:layout_constraintBottom_toBottomOf="parent"
+					app:layout_constraintStart_toEndOf="@id/profile_phone_label"
+					app:layout_constraintEnd_toStartOf="@id/profile_phone_edit"
+					android:layout_width="0dp"
+					android:layout_height="wrap_content"
+					android:paddingStart="8dp"
+					android:paddingLeft="8dp"
+					android:paddingEnd="8dp"
+					android:paddingRight="8dp"
+					android:lines="1"
+					android:maxLines="1"
+					android:ellipsize="end"
+					android:textColor="@color/colorBlack" />
+
+			</androidx.constraintlayout.widget.ConstraintLayout>
+
+			<androidx.constraintlayout.widget.ConstraintLayout
+				android:id="@+id/profile_rating_layout"
+				android:layout_marginTop="12dp"
+				android:clickable="true"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:focusable="true">
+
+				<TextView
+					android:id="@+id/profile_rating_label"
+					app:layout_constraintTop_toTopOf="parent"
+					app:layout_constraintBottom_toBottomOf="parent"
+					app:layout_constraintStart_toStartOf="parent"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:background="@drawable/service_background"
+					android:paddingStart="8dp"
+					android:paddingLeft="8dp"
+					android:paddingEnd="8dp"
+					android:paddingRight="8dp"
+					android:textSize="12sp"
+					android:text="@string/profile_info_rating"
+					android:textColor="@color/colorBlack" />
+
+				<ImageView
+					android:id="@+id/profile_rating_btn"
+					app:layout_constraintTop_toTopOf="parent"
+					app:layout_constraintBottom_toBottomOf="parent"
+					app:layout_constraintEnd_toEndOf="parent"
+					android:src="@drawable/ic_goto"
+					android:contentDescription="@string/image_cd_goto_ratings"
+					android:layout_width="24dp"
+					android:layout_height="24dp"/>
+
+				<ImageView
+					android:id="@+id/profile_rating_icon"
+					app:layout_constraintTop_toTopOf="parent"
+					app:layout_constraintBottom_toBottomOf="parent"
+					app:layout_constraintStart_toEndOf="@id/profile_rating_label"
+					android:src="@drawable/ic_star_full"
+					android:paddingStart="8dp"
+					android:paddingLeft="8dp"
+					android:contentDescription="@string/image_cd_goto_ratings"
+					android:layout_width="20dp"
+					android:layout_height="20dp"
+					tools:ignore="RtlSymmetry" />
+
+				<TextView
+					android:id="@+id/profile_rating_value"
+					app:layout_constraintTop_toTopOf="parent"
+					app:layout_constraintBottom_toBottomOf="parent"
+					app:layout_constraintStart_toEndOf="@id/profile_rating_icon"
+					app:layout_constraintEnd_toStartOf="@id/profile_rating_btn"
+					android:layout_width="0dp"
+					android:layout_height="wrap_content"
+					android:paddingStart="2dp"
+					android:paddingLeft="2dp"
+					android:paddingEnd="8dp"
+					android:paddingRight="8dp"
+					android:lines="1"
+					android:maxLines="1"
+					android:ellipsize="end"
+					android:textColor="@color/colorBlack" />
+
+			</androidx.constraintlayout.widget.ConstraintLayout>
+
+			<androidx.constraintlayout.widget.ConstraintLayout
+				android:id="@+id/profile_achievement_layout"
+				android:layout_marginTop="12dp"
+				android:clickable="true"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:focusable="true">
+
+				<TextView
+					android:id="@+id/profile_achievement_label"
+					app:layout_constraintTop_toTopOf="parent"
+					app:layout_constraintBottom_toBottomOf="parent"
+					app:layout_constraintStart_toStartOf="parent"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:background="@drawable/service_background"
+					android:paddingStart="8dp"
+					android:paddingLeft="8dp"
+					android:paddingEnd="8dp"
+					android:paddingRight="8dp"
+					android:textSize="12sp"
+					android:text="@string/profile_info_achievement"
+					android:textColor="@color/colorBlack" />
+
+				<ImageView
+					android:id="@+id/profile_achievement_btn"
+					app:layout_constraintTop_toTopOf="parent"
+					app:layout_constraintBottom_toBottomOf="parent"
+					app:layout_constraintEnd_toEndOf="parent"
+					android:src="@drawable/ic_goto"
+					android:contentDescription="@string/image_cd_goto_achievements"
+					android:layout_width="24dp"
+					android:layout_height="24dp"/>
+
+				<ImageView
+					android:id="@+id/profile_achievement_icon"
+					app:layout_constraintTop_toTopOf="parent"
+					app:layout_constraintBottom_toBottomOf="parent"
+					app:layout_constraintStart_toEndOf="@id/profile_achievement_label"
+					android:src="@drawable/ic_achievements_full"
+					android:paddingStart="8dp"
+					android:paddingLeft="8dp"
+					android:contentDescription="@string/image_cd_goto_ratings"
+					android:layout_width="20dp"
+					android:layout_height="20dp"
+					tools:ignore="RtlSymmetry" />
+
+				<TextView
+					android:id="@+id/profile_achievement_value"
+					app:layout_constraintTop_toTopOf="parent"
+					app:layout_constraintBottom_toBottomOf="parent"
+					app:layout_constraintStart_toEndOf="@id/profile_achievement_icon"
+					app:layout_constraintEnd_toStartOf="@id/profile_achievement_btn"
+					android:layout_width="0dp"
+					android:layout_height="wrap_content"
+					android:paddingStart="2dp"
+					android:paddingLeft="2dp"
+					android:paddingEnd="8dp"
+					android:paddingRight="8dp"
+					android:lines="1"
+					android:maxLines="1"
+					android:ellipsize="end"
+					android:textColor="@color/colorBlack" />
+
+			</androidx.constraintlayout.widget.ConstraintLayout>
+		</LinearLayout>
+	</ScrollView>
+</LinearLayout>

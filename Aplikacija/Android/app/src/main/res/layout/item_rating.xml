@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:padding="8dp"
+	xmlns:app="http://schemas.android.com/apk/res-auto">
+
+	<de.hdodenhof.circleimageview.CircleImageView
+		android:id="@+id/rating_image"
+		app:layout_constraintTop_toTopOf="parent"
+		app:layout_constraintStart_toStartOf="parent"
+		android:src="@drawable/ic_face"
+		android:layout_width="36dp"
+		android:layout_height="36dp"
+		app:civ_border_width="0dp" />
+
+	<TextView
+		android:id="@+id/rating_name"
+		app:layout_constraintTop_toTopOf="parent"
+		app:layout_constraintStart_toEndOf="@id/rating_image"
+		app:layout_constraintEnd_toEndOf="parent"
+		android:paddingStart="8dp"
+		android:paddingLeft="8dp"
+		android:layout_width="0dp"
+		android:layout_height="wrap_content"
+		android:lines="1"
+		android:maxLines="1"
+		android:ellipsize="end"
+		android:textColor="@color/colorBlack"
+		tools:ignore="RtlSymmetry" />
+
+	<LinearLayout
+		android:id="@+id/rating_stars"
+		app:layout_constraintBottom_toBottomOf="@id/rating_image"
+		app:layout_constraintStart_toEndOf="@id/rating_image"
+		app:layout_constraintEnd_toEndOf="parent"
+		android:paddingStart="8dp"
+		android:paddingLeft="8dp"
+		android:paddingBottom="2dp"
+		android:layout_width="0dp"
+		android:layout_height="16dp"
+		android:orientation="horizontal"
+		tools:ignore="RtlSymmetry">
+
+		<ImageView
+			android:id="@+id/rating_1"
+			android:src="@drawable/ic_star_empty"
+			android:layout_width="16dp"
+			android:layout_height="16dp"
+			tools:ignore="ContentDescription" />
+
+		<ImageView
+			android:id="@+id/rating_2"
+			android:src="@drawable/ic_star_empty"
+			android:layout_width="16dp"
+			android:layout_height="16dp"
+			tools:ignore="ContentDescription" />
+
+		<ImageView
+			android:id="@+id/rating_3"
+			android:src="@drawable/ic_star_empty"
+			android:layout_width="16dp"
+			android:layout_height="16dp"
+			tools:ignore="ContentDescription" />
+
+		<ImageView
+			android:id="@+id/rating_4"
+			android:src="@drawable/ic_star_empty"
+			android:layout_width="16dp"
+			android:layout_height="16dp"
+			tools:ignore="ContentDescription" />
+
+		<ImageView
+			android:id="@+id/rating_5"
+			android:src="@drawable/ic_star_empty"
+			android:layout_width="16dp"
+			android:layout_height="16dp"
+			tools:ignore="ContentDescription" />
+	</LinearLayout>
+
+	<TextView
+		android:id="@+id/rating_comment"
+		app:layout_constraintTop_toBottomOf="@id/rating_image"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintEnd_toEndOf="parent"
+		android:paddingTop="2dp"
+		android:layout_width="0dp"
+		android:layout_height="wrap_content" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

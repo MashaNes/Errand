@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:orientation="vertical"
+	tools:context=".ui.profile.AchievementsFragment">
+
+	<TextView
+		android:id="@+id/page_title"
+		android:text="@string/profile_tab_achievements"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:padding="8dp"
+		android:textColor="@color/colorBlack"
+		android:textSize="20sp"/>
+
+
+	<ListView
+		android:id="@+id/list_view"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:overScrollMode="never"
+		android:background="@color/colorWhite"/>
+
+</LinearLayout>

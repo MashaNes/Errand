@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:id="@+id/mobile_navigation"
+	app:startDestination="@+id/nav_page_requests">
+
+	<fragment
+		android:id="@+id/nav_page_requests"
+		android:name="runners.errand.ui.requests.RequestsFragment"
+		android:label="@string/menu_requests"
+		tools:layout="@layout/fragment_requests" />
+
+	<fragment
+		android:id="@+id/nav_page_newrequest"
+		android:name="runners.errand.ui.newrequest.NewRequestFragment"
+		android:label="@string/menu_new"
+		tools:layout="@layout/fragment_newrequest" />
+
+	<fragment
+		android:id="@+id/nav_page_findrequests"
+		android:name="runners.errand.ui.findrequests.FindRequestsFragment"
+		android:label="@string/menu_find"
+		tools:layout="@layout/fragment_findrequests" />
+
+	<fragment
+		android:id="@+id/nav_page_notifications"
+		android:name="runners.errand.ui.notifications.NotificationsFragment"
+		android:label="@string/menu_notifications"
+		tools:layout="@layout/fragment_notifications" />
+
+	<fragment
+		android:id="@+id/nav_page_profile"
+		android:name="runners.errand.ui.profile.ProfileFragment"
+		android:label="@string/menu_profile"
+		tools:layout="@layout/fragment_profile" />
+
+	<fragment
+		android:id="@+id/nav_page_settings"
+		android:name="runners.errand.ui.settings.SettingsFragment"
+		android:label="@string/menu_settings"
+		tools:layout="@layout/fragment_settings" />
+</navigation>
