@@ -1,0 +1,105 @@
+# Django #
+*.log
+*.pot
+*.pyc
+__pycache__
+db.sqlite3
+media
+
+# Backup files # 
+*.bak 
+
+# Python # 
+*.py[cod] 
+*$py.class 
+
+# Distribution / packaging 
+.Python build/ 
+develop-eggs/ 
+dist/ 
+downloads/ 
+eggs/ 
+.eggs/ 
+lib/ 
+lib64/ 
+parts/ 
+sdist/ 
+var/ 
+wheels/ 
+*.egg-info/ 
+.installed.cfg 
+*.egg 
+*.manifest 
+*.spec 
+
+# Installer logs 
+pip-log.txt 
+pip-delete-this-directory.txt 
+
+# pyenv 
+.python-version
+
+# Environments 
+.env 
+.venv 
+env/ 
+venv/ 
+ENV/ 
+env.bak/ 
+venv.bak/ 
+
+# mkdocs documentation 
+/Aplikacija/WebAPI/site 
+
+# mypy 
+.mypy_cache/ 
+
+# Package control specific files Package 
+Control.last-run 
+Control.ca-list 
+Control.ca-bundle 
+Control.system-ca-bundle 
+GitHub.sublime-settings 
+
+# Visual Studio Code # 
+.vscode
+
+#android#
+
+*.iml
+.gradle
+/Aplikacija/Android/local.properties
+/Aplikacija/Android/.idea/caches
+/Aplikacija/Android/.idea/libraries
+/Aplikacija/Android/.idea/modules.xml
+/Aplikacija/Android/.idea/workspace.xml
+/Aplikacija/Android/.idea/navEditor.xml
+/Aplikacija/Android/.idea/assetWizardSettings.xml
+.DS_Store
+/Aplikacija/Android/build
+/Aplikacija/Androidcaptures
+.externalNativeBuild
+.cxx
+
+#web#
+.DS_Store
+node_modules
+/Aplikacija/Web/dist
+
+# local env files
+.env.local
+.env.*.local
+
+# Log files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Editor directories and files
+.idea
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
