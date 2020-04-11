@@ -26,11 +26,11 @@
                 <div v-if="isSerbian" class = "ikonica"> Zahtevi </div>
                 <div v-else class = "ikonica"> Requests </div>
             </router-link>
-            <a class="navbar-item">
+            <router-link :to = "'/profile'" class="navbar-item">
                 <img src = "../assets/profile.svg">
                 <div v-if="isSerbian" class = "ikonica"> Profil </div>
                 <div v-else class = "ikonica"> Profile </div>
-            </a>
+            </router-link>
             <a class="navbar-item">
                 <img src = "../assets/settings.svg">
                 <div v-if="isSerbian" class = "ikonica"> Podešavanja </div>
