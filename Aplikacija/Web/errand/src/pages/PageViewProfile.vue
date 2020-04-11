@@ -1,5 +1,7 @@
 <template>
   <div>
+    <div class = "top-div" v-if="isSerbian"> Profil </div>
+    <div class = "top-div" v-else> Profile </div>
     <nav class="tabovi">
       <div class="container">
         <div class="navbar-menu">
@@ -63,7 +65,7 @@ export default {
       return this.$store.state.userAchievements
     },
     isSerbian() {
-      return this.$store.isSerbian
+      return this.$store.state.isSerbian
     }
   },
   methods: {
