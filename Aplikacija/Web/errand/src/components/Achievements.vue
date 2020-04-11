@@ -5,7 +5,7 @@
       :key="achievement.id"
       v-for="achievement in achievements"
       no-body
-      style="max-width: 20rem;"
+      style = "max-height: 200px"
     >
       <!-- <template v-slot:header>
         <h4 class="mb-0">{{achievement.achievementDetails.name.english}}</h4>
@@ -68,7 +68,7 @@ export default {
   }
 
   .card-header {
-    font-size: 30px;
+    font-size: 15px;
     font-weight: bold;
     border-top-left-radius: 15px;
     border-top-right-radius: 15px;
@@ -85,7 +85,7 @@ export default {
 
   .card {
     margin: 10px;
-    font-size: 20px;
+    font-size: 12px;
     border-radius: 15px;
   }
 

@@ -6,14 +6,6 @@
       <div class="container">
         <div class="navbar-menu">
           <a
-            :class="['navbar-item', (tab=='Personal info')?'aktivan':'']" 
-            @click="tabPersonalInfo"
-            href="#"
-          >
-              <span v-if="isSerbian">Lični podaci</span>
-              <span v-else>Personal info</span>
-          </a>
-          <a
             :class="['navbar-item', (tab=='Achievements')?'aktivan':'']" 
             @click="tabAchievements"
             href="#"
@@ -32,14 +24,13 @@
         </div>
       </div>
     </nav>
-    <PersonalInfo 
-      v-if="tab == 'Personal info'" 
-      :user="user"
-    />
-    <Achievements 
-      v-if="tab == 'Achievements'"
-      :achievements="achievements"
-    />
+    <div class="basic-profile-structure">
+      <PersonalInfo :user="user" />
+      <Achievements 
+        v-if="tab == 'Achievements'"
+        :achievements="achievements"
+      />
+    </div>
   </div>
 </template>
 
@@ -54,7 +45,7 @@ export default {
   },
   data() {
     return {
-      tab: "Personal info"
+      tab: "Achievements"
     }
   },
   computed: {
@@ -130,5 +121,9 @@ export default {
   {
       background-color: rgb(233, 233, 233);
       text-decoration: underline;
+  }
+
+  .basic-profile-structure {
+    display: flex;
   }
 </style>

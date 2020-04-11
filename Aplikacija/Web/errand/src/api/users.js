@@ -8,7 +8,8 @@ export const fetchUsers = () => {
             email: "harry.p@gmail.com",
             phone: "123456",
             status: "active",
-            achievements: ["1", "3"]
+            achievements: ["1", "3"],
+            homeAddress: "4 Privet Drive, Little Whinging, Surrey England, Great Britain"
         }
     }
 }

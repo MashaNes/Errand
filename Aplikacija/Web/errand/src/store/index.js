@@ -24,8 +24,6 @@ export default new Vuex.Store({
             commit('setUser', fetchUsers()["1"])
         },
         getUserAchievements({commit}) {
-            // eslint-disable-next-line no-debugger
-            debugger
             const allAch = fetchAchievements();
             const allAchDetails = fetchAchievementDetails();
             const userAch = {}
