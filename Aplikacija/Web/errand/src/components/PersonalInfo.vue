@@ -1,13 +1,5 @@
 <template>
   <div class="personal-info">
-    <span 
-      class="info-title" 
-      v-if="isSerbian"
-    > Lični podaci </span>
-    <span
-      class="info-title" 
-      v-else
-    > Personal info </span>
     <div>
       <div class="media-center">
         <p class="image is-128x128">
@@ -15,10 +7,23 @@
         </p>
       </div>
       <div class="content">
-        {{ fullUserName }}
+        {{ user.userName }}
       </div>
     </div>
     <b-list-group>
+      <b-list-group-item>
+        <span 
+          class="info-title" 
+          v-if="isSerbian"
+        > Lični podaci </span>
+        <span
+          class="info-title" 
+          v-else
+        > Personal info </span>
+      </b-list-group-item>
+      <b-list-group-item style = "font-size: 25px">
+        {{fullUserName}}
+      </b-list-group-item>
       <b-list-group-item>
         <img 
           src="@/assets/email.svg" 
@@ -74,15 +79,9 @@ export default {
   .list-group-item {
     display: flex;
     justify-content: space-between;
-    border-bottom: solid lightgray 1px;
-    border-top: solid lightgray 1px;
-    border-left:hidden;
-    border-right: 1px solid lightgrey;
-
+    border: hidden;
     border-radius: 0px;
-
-    max-width: 300px;
-    align-items: flex-start;
+    align-items: center;
   }
 
   .list-key {
@@ -96,6 +95,7 @@ export default {
     flex-grow: 2;
     text-align: left;
     font-size: 20px;
+    margin-left: 30px;
   }
 
   .personal-info {
@@ -103,10 +103,12 @@ export default {
     margin-left: 10px;
     display: flex;
     align-items: flex-start;
-    flex-direction: column;
+    flex-direction: row;
     align-items:flex-start;
     border-radius: 10px;
     border-right: 1px solid lightgray;
+
+    background-color: white;
   }
 
   .rounded-image {
@@ -116,22 +118,23 @@ export default {
 
   .content {
     background-color: black;
+    font-size: 20px;
     color:white;
     text-align: center;
     margin-top: 2px;
     margin-bottom: 2px;
+    border-radius: 5px;
   }
 
   .info-title {
     font-size: 25px;
     font-weight: bold;
-    width: 100%;
-    background-color: black;
-    border-top-left-radius: 6px;
-    border-top-right-radius: 6px;
-    text-align: center;
-    color: white;
+    color: black;
     margin-bottom: 5px;
   }
 
+  .is-128x128 {
+    width: 250px;
+    height: 250px;
+  }
 </style>

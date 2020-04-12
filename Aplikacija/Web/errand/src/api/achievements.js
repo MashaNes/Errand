@@ -17,6 +17,24 @@ export const fetchAchievements = () => {
             userId:"1",
             level: 3, 
             AchievementDetails: "3"
+        },
+        "4" : {
+            id: 4,
+            userId: "1",
+            level: 4,
+            AchievementDetails: "4"
+        },
+        "5" : {
+            id: 5,
+            userId: "1",
+            level: 1,
+            AchievementDetails: "5"
+        },
+        "6" : {
+            id: 6,
+            userId: "1",
+            level: 3,
+            AchievementDetails: "6"
         }
     }
 }
@@ -47,6 +65,7 @@ export const fetchAchievementDetails = () => {
             }
         },
         "3": {
+            id: 3,
             name: {
                 english: "Speedy Gonzales",
                 serbian: "Brzi Gonzales"
@@ -56,6 +75,42 @@ export const fetchAchievementDetails = () => {
                 serbian: "Više od 3 ispunjena zahteva u jednom danu"
             },
             picture: require("../assets/speed.svg")
+        },
+        "4": {
+            id: 4,
+            name: {
+                english: "Shoplifter",
+                serbian: "Kradljivac"
+            },
+            description: {
+                english: "Completed more than 30 shopping requests",
+                serbian: "Više od 30 obavljenih kupovina"
+            },
+            picture: require("../assets/robber.svg")
+        },
+        "5": {
+            id: 5,
+            name: {
+                english: "Housefly",
+                serbian: "Kućna muva"
+            },
+            description: {
+                english: "Completed more than 15 indoors requests",
+                serbian: "Više od 15 obavljenih kućnih poslova"
+            },
+            picture: require("../assets/fly.svg")
+        },
+        "6": {
+            id: 6,
+            name: {
+                english: "Newbie",
+                serbian: "Novajlija"
+            },
+            description: {
+                english: "Completed the first ever request",
+                serbian: "Ispunjen prvi zahtev"
+            },
+            picture: require("../assets/baby.svg")
         }
     }
 }

@@ -2,6 +2,7 @@
   <div>
     <div class = "top-div" v-if="isSerbian"> Profil </div>
     <div class = "top-div" v-else> Profile </div>
+          <PersonalInfo :user="user" />
     <nav class="tabovi">
       <div class="container">
         <div class="navbar-menu">
@@ -25,7 +26,6 @@
       </div>
     </nav>
     <div class="basic-profile-structure">
-      <PersonalInfo :user="user" />
       <Achievements 
         v-if="tab == 'Achievements'"
         :achievements="achievements"

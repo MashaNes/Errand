@@ -5,13 +5,23 @@
       :key="achievement.id"
       v-for="achievement in achievements"
       no-body
-      style = "max-height: 200px"
+      style="width: 300px"
     >
       <!-- <template v-slot:header>
         <h4 class="mb-0">{{achievement.achievementDetails.name.english}}</h4>
       </template> -->
 
       <b-card-header 
+        v-if="isSerbian"
+        header-bg-variant = "dark"
+        header-text-variant = "white"
+        align="center"
+      >
+        {{achievement.achievementDetails.name.serbian}}
+      </b-card-header>
+
+      <b-card-header 
+        v-else
         header-bg-variant = "dark"
         header-text-variant = "white"
         align="center"
@@ -19,10 +29,15 @@
         {{achievement.achievementDetails.name.english}}
       </b-card-header>
 
-      <b-card-body
-        
-      >
-        <b-card-text>
+      <b-card-body>
+        <b-card-text
+          v-if="isSerbian"
+        >
+          {{achievement.achievementDetails.description.serbian}}
+        </b-card-text>
+        <b-card-text
+          v-else
+        >
           {{achievement.achievementDetails.description.english}}
         </b-card-text>
       </b-card-body>
@@ -55,6 +70,11 @@ export default {
         required: true, 
         type: Object
       }
+    },
+    computed: {
+      isSerbian() {
+        return this.$store.state.isSerbian
+      }
     }
 }
 </script>
@@ -85,8 +105,9 @@ export default {
 
   .card {
     margin: 10px;
-    font-size: 12px;
+    font-size: 14px;
     border-radius: 15px;
+    width: 300px;
   }
 
 </style>
