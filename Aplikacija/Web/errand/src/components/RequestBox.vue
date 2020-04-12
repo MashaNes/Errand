@@ -38,8 +38,8 @@ export default {
     {
         margin:30px;
         background-color: white;
-        margin-left:100px;
-        margin-right:100px;
+        margin-left:150px;
+        margin-right:150px;
         border: 2px solid rgb(43, 41, 41);
         border-radius: 15px;
         min-height: 50px;

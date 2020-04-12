@@ -61,7 +61,7 @@ export default {
   .page-wrapper
   {
     min-height: 73vh;
-    background-image: url("http://chicagosgirlonthego.com/Wpress/wp-content/uploads/chicago-errand-running-service-02.jpg");
+    /*background-image: url("http://chicagosgirlonthego.com/Wpress/wp-content/uploads/chicago-errand-running-service-02.jpg");*/
   }
 
   .top-div
