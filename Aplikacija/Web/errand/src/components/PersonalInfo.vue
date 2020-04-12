@@ -74,9 +74,13 @@ export default {
   .list-group-item {
     display: flex;
     justify-content: space-between;
-    margin: 5px;
-    border-radius: 5px;
-    border: solid black 1px;
+    border-bottom: solid lightgray 1px;
+    border-top: solid lightgray 1px;
+    border-left:hidden;
+    border-right: 1px solid lightgrey;
+
+    border-radius: 0px;
+
     max-width: 300px;
     align-items: flex-start;
   }
@@ -100,20 +104,22 @@ export default {
     display: flex;
     align-items: flex-start;
     flex-direction: column;
-    align-items: center;
+    align-items:flex-start;
     border-radius: 10px;
-    border: 3px solid black;
-    background-color: white;
+    border-right: 1px solid lightgray;
   }
 
   .rounded-image {
     border-radius: 60px;
+    border: 2px solid grey;
   }
 
   .content {
     background-color: black;
     color:white;
     text-align: center;
+    margin-top: 2px;
+    margin-bottom: 2px;
   }
 
   .info-title {
