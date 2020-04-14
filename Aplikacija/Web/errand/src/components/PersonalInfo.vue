@@ -7,22 +7,25 @@
         </p>
       </div>
       <div class="content">
-        {{ user.userName }}
+        {{ fullUserName }}
       </div>
     </div>
-    <b-list-group>
-      <b-list-group-item>
+    <b-list-group >
+      <b-list-group-item v-if="isSerbian">
         <span 
           class="info-title" 
-          v-if="isSerbian"
         > Lični podaci </span>
+        <b-button class="button is-primary">
+          <strong>Izmeni</strong>
+        </b-button>
+      </b-list-group-item>
+      <b-list-group-item v-else>
         <span
           class="info-title" 
-          v-else
         > Personal info </span>
-      </b-list-group-item>
-      <b-list-group-item style = "font-size: 25px">
-        {{fullUserName}}
+        <b-button class="button is-primary">
+          <strong>Edit</strong>
+        </b-button>
       </b-list-group-item>
       <b-list-group-item>
         <img 
@@ -78,36 +81,40 @@ export default {
   
   .list-group-item {
     display: flex;
+    flex-wrap: wrap;
     justify-content: space-between;
     border: hidden;
     border-radius: 0px;
     align-items: center;
+    min-width: 30px;
   }
 
   .list-key {
     font-weight: bold;
     font-size: 14px;
     flex-grow: 1;
+    flex-shrink: 1;
     text-align: left;
   }
 
   .list-value {
     flex-grow: 2;
+    flex-shrink: 1;
     text-align: left;
     font-size: 20px;
     margin-left: 30px;
   }
 
   .personal-info {
-    margin-top: 10px;
-    margin-left: 10px;
+    margin: 30px;
+    margin-left: 150px;
+    margin-right: 150px;
     display: flex;
     align-items: flex-start;
     flex-direction: row;
     align-items:flex-start;
     border-radius: 10px;
-    border-right: 1px solid lightgray;
-
+    flex-wrap: wrap;
     background-color: white;
   }
 
@@ -121,7 +128,7 @@ export default {
     font-size: 20px;
     color:white;
     text-align: center;
-    margin-top: 2px;
+    margin-top: 15px;
     margin-bottom: 2px;
     border-radius: 5px;
   }

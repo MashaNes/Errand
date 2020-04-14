@@ -6,12 +6,14 @@ Vue.use(Vuex)
 import {fetchRequests} from "@/api/requests.js"
 import {fetchUsers} from "@/api/users.js"
 import {fetchAchievements, fetchAchievementDetails} from "@/api/achievements.js"
+import {fetchRatings} from "@/api/ratings.js"
 
 export default new Vuex.Store({
     state:{
         requests: {},
         user: {},
         userAchievements: {},
+        userRatings: {},
         isSerbian: true
     },
     getters:{
@@ -36,6 +38,14 @@ export default new Vuex.Store({
                 Vue.set(objectToCommit, `${ind}`, {id: ach.id, achievementLevel: ach.level, achievementDetails: details})
             })
             commit('setUserAchievements', objectToCommit)
+        },
+        getUserRatings({commit}) {
+            const allRatings = fetchRatings();
+            const rtgs = {}
+            this.state.user.ratings.forEach(rating => {
+                Vue.set(rtgs, rating, allRatings[rating])
+            })
+            commit('setUserRatings', rtgs)
         }
     },
     mutations:{
@@ -44,6 +54,9 @@ export default new Vuex.Store({
         },
         setUserAchievements(state, achievements) {
             state.userAchievements = achievements
+        },
+        setUserRatings(state, ratings) {
+            state.userRatings = ratings
         }
     }
 })

@@ -1,44 +1,31 @@
 <template>
-  <div class="achievement-container">
     <b-card 
       :bg-variant="(achievement.achievementLevel > 2) ? 'warning' : 'light'"
-      :key="achievement.id"
-      v-for="achievement in achievements"
       no-body
       style="width: 300px"
     >
-      <!-- <template v-slot:header>
-        <h4 class="mb-0">{{achievement.achievementDetails.name.english}}</h4>
-      </template> -->
 
       <b-card-header 
-        v-if="isSerbian"
         header-bg-variant = "dark"
         header-text-variant = "white"
         align="center"
       >
-        {{achievement.achievementDetails.name.serbian}}
-      </b-card-header>
-
-      <b-card-header 
-        v-else
-        header-bg-variant = "dark"
-        header-text-variant = "white"
-        align="center"
-      >
-        {{achievement.achievementDetails.name.english}}
+        <span v-if="isSerbian">
+          {{achievement.achievementDetails.name.serbian}}
+        </span>
+        <span v-else>
+          {{achievement.achievementDetails.name.english}}
+        </span>
       </b-card-header>
 
       <b-card-body>
-        <b-card-text
-          v-if="isSerbian"
-        >
-          {{achievement.achievementDetails.description.serbian}}
-        </b-card-text>
-        <b-card-text
-          v-else
-        >
-          {{achievement.achievementDetails.description.english}}
+        <b-card-text>
+          <span v-if="isSerbian">
+            {{achievement.achievementDetails.description.serbian}}
+          </span>
+          <span v-else> 
+            {{achievement.achievementDetails.description.english}}
+          </span>
         </b-card-text>
       </b-card-body>
 
@@ -57,16 +44,13 @@
           />
         </span>
       </b-card-footer>
-
-      <!-- <b-card-img src="https://placekitten.com/480/210" alt="Image" bottom></b-card-img> -->
     </b-card>
-  </div>
 </template>
 
 <script>
 export default {
     props: {
-      achievements: {
+      achievement: {
         required: true, 
         type: Object
       }
@@ -80,12 +64,6 @@ export default {
 </script>
 
 <style scoped>
-
-  .achievement-container {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-  }
 
   .card-header {
     font-size: 15px;
@@ -108,6 +86,7 @@ export default {
     font-size: 14px;
     border-radius: 15px;
     width: 300px;
+    align-self: stretch;
   }
 
 </style>

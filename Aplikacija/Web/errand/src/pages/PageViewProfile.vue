@@ -25,10 +25,24 @@
         </div>
       </div>
     </nav>
-    <div class="basic-profile-structure">
-      <Achievements 
-        v-if="tab == 'Achievements'"
-        :achievements="achievements"
+    <div 
+      class="basic-profile-structure"
+      v-if="tab == 'Achievements'"
+    >
+      <Achievement 
+        v-for="achievement in achievements"
+        :achievement="achievement"
+        :key="achievement.id"
+      />
+    </div>
+    <div 
+      class="basic-profile-structure"
+      v-if="tab == 'Ratings'"
+    >
+      <Ratings
+        v-for="rating in ratings"
+        :rating="rating"
+        :key="rating.id"
       />
     </div>
   </div>
@@ -36,12 +50,14 @@
 
 <script>
 import PersonalInfo from '@/components/PersonalInfo'
-import Achievements from '@/components/Achievements'
+import Achievement from '@/components/Achievement'
+import Ratings from '@/components/Rating'
 
 export default {
   components: {
     PersonalInfo,
-    Achievements
+    Achievement,
+    Ratings
   },
   data() {
     return {
@@ -54,6 +70,9 @@ export default {
     },
     achievements() {
       return this.$store.state.userAchievements
+    },
+    ratings() {
+      return this.$store.state.userRatings
     },
     isSerbian() {
       return this.$store.state.isSerbian
@@ -72,7 +91,7 @@ export default {
   },
   created() {
     this.$store.dispatch('getUserAchievements')
-    console.log(this.achievements)
+    this.$store.dispatch('getUserRatings')
   }
 }
 </script>
@@ -124,6 +143,11 @@ export default {
   }
 
   .basic-profile-structure {
+    margin: 30px;
+    margin-left: 100px;
+    margin-right:100px;
     display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
   }
 </style>
