@@ -14,6 +14,7 @@
             <form>
               <div class="field">
                 <div class="control">
+                  <label class = "login-label"> *Email: </label>
                   <input class="input is-large"
                          type="email"
                          placeholder="Email"
@@ -37,6 +38,8 @@
               </div>
               <div class="field">
                 <div class="control">
+                  <label class = "login-label" v-if="isSerbian"> *Lozinka: </label>
+                  <label class = "login-label" v-else> *Password: </label>
                   <input class="input is-large"
                          type="password"
                          placeholder="Lozinka"
@@ -67,6 +70,12 @@
                       <span v-else>Login</span>
                       </button>
             </form>
+            <p class = "text-danger upozorenje" v-if="isSerbian">
+              Stavke označene sa * su obavezne
+            </p>
+            <p class = "text-danger upozorenje" v-else>
+              Elements marked with * are required
+            </p>
           </div>
           <p class="has-text-grey">
             <router-link v-if="isSerbian" :to = "'/register'">Registruj se</router-link>
@@ -153,5 +162,17 @@
   }
   p.subtitle {
     padding-top: 1rem;
+  }
+
+  .login-label
+  {
+    margin-left: 5px;
+    font-size: 18px;
+  }
+
+  .upozorenje
+  {
+    margin-top: 10px;
+    font-weight: lighter;
   }
 </style>

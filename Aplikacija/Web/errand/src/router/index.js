@@ -5,6 +5,7 @@ import PageRequests from "@/pages/PageRequests"
 import PageLogin from "@/pages/PageLogin"
 import PageRegister from "@/pages/PageRegister"
 import PageViewProfile from "@/pages/PageViewProfile"
+import PageHelp from "@/pages/PageHelp"
 
 Vue.use(Router)
 
@@ -30,6 +31,11 @@ const router = new Router(
                 path: "/profile",
                 name: "PageViewProfile",
                 component: PageViewProfile
+            },
+            {
+                path: "/help",
+                name: "PageHelp",
+                component: PageHelp
             }
         ],
         mode: "history"

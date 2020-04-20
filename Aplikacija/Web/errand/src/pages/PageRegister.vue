@@ -12,8 +12,10 @@
                 <img src="https://placehold.it/128x128">
             </figure>
             <form>
-              <div class="field">
+              <div class="field">                
                 <div class="control">
+                  <label class = "register-label" v-if="isSerbian"> *Ime: </label>
+                  <label class = "register-label" v-else> *Name: </label>
                   <input class="input is-large"
                          type="text"
                          placeholder="Ime"
@@ -37,6 +39,8 @@
               </div>
               <div class="field">
                 <div class="control">
+                  <label class = "register-label" v-if="isSerbian"> *Prezime: </label>
+                  <label class = "register-label" v-else> *Last name: </label>
                   <input class="input is-large"
                          type="text"
                          placeholder="Prezime"
@@ -60,6 +64,7 @@
               </div>
               <div class="field">
                 <div class="control">
+                  <label class = "register-label"> *Email: </label>
                   <input class="input is-large"
                          type="email"
                          placeholder="Email"
@@ -81,8 +86,35 @@
                     </span>
                 </div>
               </div>
+              <div class = "field">
+                <div class = "control">
+                  <label class = "register-label" v-if="isSerbian"> Broj telefona: </label>
+                  <label class = "register-label" v-else> Phone number: </label>
+                  <VuePhoneNumberInput v-model="form.phone" />
+                </div>
+              </div>
+               <div class = "field">
+                <div class = "control">
+                  <label class = "register-label" v-if="isSerbian"> Adresa: </label>
+                  <label class = "register-label" v-else> Address: </label>
+                  <input class="input is-large"
+                         type="text"
+                         placeholder="Adresa"
+                         v-model = "form.address"
+                         @blur="$v.form.password.$touch()"
+                         v-if="isSerbian">
+                    <input class="input is-large"
+                         type="text"
+                         placeholder="Address"
+                         v-model = "form.address"
+                         @blur="$v.form.password.$touch()"
+                         v-else>
+                </div>
+              </div>
               <div class="field">
                 <div class="control">
+                  <label class = "register-label" v-if="isSerbian"> *Lozinka: </label>
+                  <label class = "register-label" v-else> *Password: </label>
                   <input class="input is-large"
                          type="password"
                          placeholder="Lozinka"
@@ -113,6 +145,8 @@
               </div>
               <div class="field">
                 <div class="control">
+                  <label class = "register-label" v-if="isSerbian"> *Potvrda lozinke: </label>
+                  <label class = "register-label" v-else> *Password conformation: </label>
                   <input class="input is-large"
                          type="password"
                          placeholder="Potvrda lozinke"
@@ -149,13 +183,21 @@
                         <span v-else>Register</span>
                       </button>
             </form>
+            <p class = "text-danger upozorenje" v-if="isSerbian">
+              Stavke označene sa * su obavezne
+            </p>
+            <p class = "text-danger upozorenje" v-else>
+              Elements marked with * are required
+            </p>
           </div>
+
           <p class="has-text-grey">
             <router-link :to = "'/login'">
                 <span v-if="isSerbian">Prijavi se</span>
                 <span v-else>Login</span>
             </router-link>
           </p>
+          <div id="mapid"></div>
         </div>
       </div>
     </div>
@@ -164,7 +206,14 @@
 
 <script>
     import {required, email, minLength, sameAs} from "vuelidate/lib/validators"
+    import VuePhoneNumberInput from 'vue-phone-number-input';
+    import 'vue-phone-number-input/dist/vue-phone-number-input.css';
+
     export default {
+        components:
+        {
+          VuePhoneNumberInput
+        },
         data(){
             return{
                 form:
@@ -173,7 +222,9 @@
                     lastName: null,
                     email: null,
                     password: null,
-                    passwordConformation: null
+                    passwordConformation: null,
+                    phone: null,
+                    address: null
                 }
             }
         },
@@ -203,7 +254,7 @@
             register()
             {
                 this.$v.form.$touch()
-                this.$store.dispatch("auth/registerUser", this.form)
+                console.log(this.form)
             }
         }
     } 
@@ -240,4 +291,18 @@
   p.subtitle {
     padding-top: 1rem;
   }
+
+  .register-label
+  {
+    margin-left: 5px;
+    font-size: 18px;
+  }
+
+  .upozorenje
+  {
+    margin-top: 10px;
+    font-weight: lighter;
+  }
+
+  #mapid { height: 180px; }
 </style>

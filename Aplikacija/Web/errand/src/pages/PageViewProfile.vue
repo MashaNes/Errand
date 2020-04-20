@@ -2,7 +2,7 @@
   <div>
     <div class = "top-div" v-if="isSerbian"> Profil </div>
     <div class = "top-div" v-else> Profile </div>
-          <PersonalInfo :user="user" />
+    <PersonalInfo :user="user" />
     <nav class="tabovi">
       <div class="container">
         <div class="navbar-menu">

@@ -36,6 +36,11 @@
                 <div v-if="isSerbian" class = "ikonica"> Podešavanja </div>
                 <div v-else class = "ikonica"> Settings </div>
             </a>
+            <router-link :to = "'/help'" class="navbar-item">
+                <img src = "../assets/help.svg">
+                <div v-if="isSerbian" class = "ikonica"> Pomoć </div>
+                <div v-else class = "ikonica"> Help </div>
+            </router-link>
           </div>
         </div>
       </div>
