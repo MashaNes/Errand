@@ -63,7 +63,8 @@
               style = "margin-right: 15px"
             />
             <div class="list-value">
-              <div v-for="p in user.phone" :key="p">{{ p }}</div>
+              <div class="phones" v-for="p in firstElements('phone')" :key="p">{{ p }}</div>
+              <div v-text="lastElement('phone')"></div>
             </div>
           </b-list-group-item>
           <b-list-group-item>
@@ -73,18 +74,23 @@
               width = "20"
               style = "margin-right: 15px"
             />
-            <span class="list-value">{{ user.homeAddress }}</span>
+            <div class="list-value">
+              <div class="addr-or-phone-item" v-for="a in firstElements('homeAddress')" :key="a">{{ a }}</div>
+              <div v-text="lastElement('homeAddress')"></div>
+            </div>
           </b-list-group-item>
         </b-list-group>
         <b-list-group style="width:50%">
           <b-list-group-item>
             <strong style="font-size:20px" v-if="isSerbian"> Prosečna ocena: </strong>
             <strong style="font-size:20px" v-else> Average rating: </strong>
-            <b-progress class="mt-2" max="5.0" show-value>
+            <b-progress class="mt-2" max="5.0" height="30px">
                 <b-progress-bar 
-                    :value="user.rating" 
-                    :precision="2"
-                    :variant="progressBarVariant"></b-progress-bar>
+                  :value="user.rating"
+                  :variant="progressBarVariant"
+                > 
+                  <span style="font-size:20px; font-weight: 900; color:black;"> {{formattedRating}}</span> 
+                </b-progress-bar>
             </b-progress>
           </b-list-group-item>
         </b-list-group>
@@ -109,13 +115,25 @@ export default {
       return this.user.firstName + " " +this.user.lastName
     },
     progressBarVariant() {
-      return this.user.rating < 2 ? 'danger' : 
-             this.user.rating < 5 ? 'warning' : 'success'
+      return this.user.rating < 2.5 ? 'danger' : 
+             this.user.rating < 4.5 ? 'warning' : 'success'
+    },
+    formattedRating() {
+      return this.user.rating.toFixed(2);
     }
   },
   methods: {
     goToProfileEdit() {
       this.$emit("editProfile");
+    },
+    firstElements(resource) {
+      const lastIndex = this.user[resource].length;
+      const arrayCopy = [...this.user[resource]];
+      arrayCopy.splice(lastIndex-1, 1);
+      return arrayCopy;
+    },
+    lastElement(resource) {
+      return this.user[resource][this.user[resource].length-1];
     }
   }
 }
@@ -209,5 +227,16 @@ export default {
     font-size: 20px;
     font-weight: bold;
   }
+
+  .addr-or-phone-item {
+    border-bottom:dotted 2px lightgray;
+    margin-bottom: 7px;
+    padding-bottom: 7px;
+  }
+
+  .phones {
+    margin-bottom: 10px;
+  }
+
 
 </style>
