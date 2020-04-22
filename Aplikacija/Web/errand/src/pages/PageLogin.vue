@@ -126,7 +126,7 @@
             login()
             {
                 this.$v.form.$touch()
-                this.$store.dispatch("auth/loginwithEmailAndPassword", this.form)
+                console.log(this.form)
             }
         }
     }

@@ -12,8 +12,8 @@
         <div class="col-md-10 col-lg-8 col-xl-7 mx-auto">
           <form>
             <div class="form-row">
-            <div class="col-12 col-md-4 mb-2 mb-md-0">
-            </div>
+              <div class="col-12 col-md-4 mb-2 mb-md-0">
+              </div>
               <div class="col-12 col-md-3">
 
                 <router-link :to = "'/register'" type="submit" class="btn btn-block btn-lg btn-primary" v-if="isSerbian">Registruj se!</router-link>
@@ -25,7 +25,6 @@
       </div>
     </div>
   </header>
-
 
   <!-- Testimonials -->
   <section class="testimonials text-center bg-light">
@@ -60,145 +59,188 @@
       </div>
     </div>
   </section>
+   <div class="admin-wrapper">
+    <div class="admin" v-if="isSerbian">
+        Da li si ti admin? <button type="button" @click="showLogin = true" class="btn btn-link stop">Prijavi se</button> <button type="button" @click="showRegister = true" class="btn btn-link stop">Registruj se</button>
+    </div>
+    <div class="admin" v-else>
+        Are you an admin? <button type="button" @click="showLogin = true" class="btn btn-link stop">Log in</button> <button type="button" @click="showRegister = true" class="btn btn-link stop">Sign up</button>
+    </div>
+    <ModalAdminSignUp v-if="showRegister" @close="showRegister = false" />
+    <ModalAdminLogin v-if="showLogin" @close="showLogin = false" />
+  </div>
 </div>
 
 
 </template>
 
 <script>
-export default {
-    computed:
-    {
-        isSerbian()
-            {
-                return this.$store.state.isSerbian
+    import ModalAdminSignUp from "@/components/ModalAdminSignUp"
+    import ModalAdminLogin from "@/components/ModalAdminLogin";
+    export default {
+        components:
+        {
+            ModalAdminSignUp,
+            ModalAdminLogin
+        },
+        computed:
+        {
+            isSerbian()
+                {
+                    return this.$store.state.isSerbian
+                }
+        },
+        data()
+        {
+            return{
+                showRegister : false,
+                showLogin: false
             }
-    }
-    
+        }
 }
 </script>
 
 <style scoped>
-body {
-  font-family: 'Lato', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-}
+    body {
+    font-family: 'Lato', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  font-family: 'Lato', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  font-weight: 700;
-}
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+    font-family: 'Lato', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-weight: 700;
+    }
 
-header.masthead {
-  position: relative;
-  background-color: #343a40;
-  background: url("../assets/bg-masthead.jpg") no-repeat center center;
-  background-size: cover;
-  padding-top: 8rem;
-  padding-bottom: 8rem;
-}
+    header.masthead {
+    position: relative;
+    background-color: #343a40;
+    background: url("../assets/bg-masthead.jpg") no-repeat center center;
+    background-size: cover;
+    padding-top: 8rem;
+    padding-bottom: 8rem;
+    }
 
-header.masthead .overlay {
-  position: absolute;
-  background-color: #212529;
-  height: 100%;
-  width: 100%;
-  top: 0;
-  left: 0;
-  opacity: 0.3;
-}
+    header.masthead .overlay {
+    position: absolute;
+    background-color: #212529;
+    height: 100%;
+    width: 100%;
+    top: 0;
+    left: 0;
+    opacity: 0.3;
+    }
 
-header.masthead h1 {
-  font-size: 2rem;
-}
+    header.masthead h1 {
+    font-size: 2rem;
+    }
 
-@media (min-width: 768px) {
-  header.masthead {
-    padding-top: 12rem;
-    padding-bottom: 12rem;
-  }
-  header.masthead h1 {
-    font-size: 3rem;
-  }
-}
+    @media (min-width: 768px) {
+    header.masthead {
+        padding-top: 12rem;
+        padding-bottom: 12rem;
+    }
+    header.masthead h1 {
+        font-size: 3rem;
+    }
+    }
 
-.showcase .showcase-text {
-  padding: 3rem;
-}
+    .showcase .showcase-text {
+    padding: 3rem;
+    }
 
-.showcase .showcase-img {
-  min-height: 30rem;
-  background-size: cover;
-}
+    .showcase .showcase-img {
+    min-height: 30rem;
+    background-size: cover;
+    }
 
-@media (min-width: 768px) {
-  .showcase .showcase-text {
-    padding: 7rem;
-  }
-}
+    @media (min-width: 768px) {
+    .showcase .showcase-text {
+        padding: 7rem;
+    }
+    }
 
-.features-icons {
-  padding-top: 7rem;
-  padding-bottom: 7rem;
-}
+    .features-icons {
+    padding-top: 7rem;
+    padding-bottom: 7rem;
+    }
 
-.features-icons .features-icons-item {
-  max-width: 20rem;
-}
+    .features-icons .features-icons-item {
+    max-width: 20rem;
+    }
 
-.features-icons .features-icons-item .features-icons-icon {
-  height: 7rem;
-}
+    .features-icons .features-icons-item .features-icons-icon {
+    height: 7rem;
+    }
 
-.features-icons .features-icons-item .features-icons-icon i {
-  font-size: 4.5rem;
-}
+    .features-icons .features-icons-item .features-icons-icon i {
+    font-size: 4.5rem;
+    }
 
-.features-icons .features-icons-item:hover .features-icons-icon i {
-  font-size: 5rem;
-}
+    .features-icons .features-icons-item:hover .features-icons-icon i {
+    font-size: 5rem;
+    }
 
-.testimonials {
-  padding-top: 7rem;
-  padding-bottom: 7rem;
-}
+    .testimonials {
+    padding-top: 7rem;
+    padding-bottom: 7rem;
+    }
 
-.testimonials .testimonial-item {
-  max-width: 18rem;
-}
+    .testimonials .testimonial-item {
+    max-width: 18rem;
+    }
 
-.testimonials .testimonial-item img {
-  max-width: 12rem;
-  box-shadow: 0px 5px 5px 0px #adb5bd;
-}
+    .testimonials .testimonial-item img {
+    max-width: 12rem;
+    box-shadow: 0px 5px 5px 0px #adb5bd;
+    }
 
-.call-to-action {
-  position: relative;
-  background-color: #343a40;
-  background: url("../assets/bg-masthead.jpg") no-repeat center center;
-  background-size: cover;
-  padding-top: 7rem;
-  padding-bottom: 7rem;
-}
+    .call-to-action {
+    position: relative;
+    background-color: #343a40;
+    background: url("../assets/bg-masthead.jpg") no-repeat center center;
+    background-size: cover;
+    padding-top: 7rem;
+    padding-bottom: 7rem;
+    }
 
-.call-to-action .overlay {
-  position: absolute;
-  background-color: #212529;
-  height: 100%;
-  width: 100%;
-  top: 0;
-  left: 0;
-  opacity: 0.3;
-}
+    .call-to-action .overlay {
+    position: absolute;
+    background-color: #212529;
+    height: 100%;
+    width: 100%;
+    top: 0;
+    left: 0;
+    opacity: 0.3;
+    }
 
-footer.footer {
-  padding-top: 4rem;
-  padding-bottom: 4rem;
-}
+    footer.footer {
+    padding-top: 4rem;
+    padding-bottom: 4rem;
+    }
 
-body{font-family:Lato,'Helvetica Neue',Helvetica,Arial,sans-serif}h1,h2,h3,h4,h5,h6{font-family:Lato,'Helvetica Neue',Helvetica,Arial,sans-serif;font-weight:700}header.masthead{position:relative;background-color:#343a40;background:url(../assets/bg-masthead.jpg) no-repeat center center;background-size:cover;padding-top:8rem;padding-bottom:8rem}header.masthead .overlay{position:absolute;background-color:#212529;height:100%;width:100%;top:0;left:0;opacity:.3}header.masthead h1{font-size:2rem}@media (min-width:768px){header.masthead{padding-top:12rem;padding-bottom:12rem}header.masthead h1{font-size:3rem}}.showcase .showcase-text{padding:3rem}.showcase .showcase-img{min-height:30rem;background-size:cover}@media (min-width:768px){.showcase .showcase-text{padding:7rem}}.features-icons{padding-top:7rem;padding-bottom:7rem}.features-icons .features-icons-item{max-width:20rem}.features-icons .features-icons-item .features-icons-icon{height:7rem}.features-icons .features-icons-item .features-icons-icon i{font-size:4.5rem}.features-icons .features-icons-item:hover .features-icons-icon i{font-size:5rem}.testimonials{padding-top:7rem;padding-bottom:7rem}.testimonials .testimonial-item{max-width:18rem}.testimonials .testimonial-item img{max-width:12rem;box-shadow:0 5px 5px 0 #adb5bd}.call-to-action{position:relative;background-color:#343a40;background:url(../assets/bg-masthead.jpg) no-repeat center center;background-size:cover;padding-top:7rem;padding-bottom:7rem}.call-to-action .overlay{position:absolute;background-color:#212529;height:100%;width:100%;top:0;left:0;opacity:.3}footer.footer{padding-top:4rem;padding-bottom:4rem}
+    body{font-family:Lato,'Helvetica Neue',Helvetica,Arial,sans-serif}h1,h2,h3,h4,h5,h6{font-family:Lato,'Helvetica Neue',Helvetica,Arial,sans-serif;font-weight:700}header.masthead{position:relative;background-color:#343a40;background:url(../assets/bg-masthead.jpg) no-repeat center center;background-size:cover;padding-top:8rem;padding-bottom:8rem}header.masthead .overlay{position:absolute;background-color:#212529;height:100%;width:100%;top:0;left:0;opacity:.3}header.masthead h1{font-size:2rem}@media (min-width:768px){header.masthead{padding-top:12rem;padding-bottom:12rem}header.masthead h1{font-size:3rem}}.showcase .showcase-text{padding:3rem}.showcase .showcase-img{min-height:30rem;background-size:cover}@media (min-width:768px){.showcase .showcase-text{padding:7rem}}.features-icons{padding-top:7rem;padding-bottom:7rem}.features-icons .features-icons-item{max-width:20rem}.features-icons .features-icons-item .features-icons-icon{height:7rem}.features-icons .features-icons-item .features-icons-icon i{font-size:4.5rem}.features-icons .features-icons-item:hover .features-icons-icon i{font-size:5rem}.testimonials{padding-top:7rem;padding-bottom:7rem}.testimonials .testimonial-item{max-width:18rem}.testimonials .testimonial-item img{max-width:12rem;box-shadow:0 5px 5px 0 #adb5bd}.call-to-action{position:relative;background-color:#343a40;background:url(../assets/bg-masthead.jpg) no-repeat center center;background-size:cover;padding-top:7rem;padding-bottom:7rem}.call-to-action .overlay{position:absolute;background-color:#212529;height:100%;width:100%;top:0;left:0;opacity:.3}footer.footer{padding-top:4rem;padding-bottom:4rem}
+
+    .admin
+    {
+        margin-right: 50px;
+        margin-top: 5px;
+    }
+
+    .admin-wrapper
+    {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+    }
+
+    .stop
+    {
+        padding-top: 2px;
+        padding-right: 0px;
+        padding-left: 5px;
+    }
 </style>
