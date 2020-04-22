@@ -20,19 +20,24 @@
             </div>  
         </div>
         <div class = "element">
-            <p class = "other" v-if="isSerbian">Treba Vam neka druga pomoć?   <a href="#" class="card-link">Kontaktirajte nas</a> </p>
-            <p class = "other" v-else>Need help with something else?   <a href="#" class="card-link">Contact us</a> </p>
+            <p class = "other" v-if="isSerbian">Treba Vam neka druga pomoć?   <button type="button" @click="showModal = true" class="btn btn-link btn-contact">Kontaktirajte nas</button> </p>
+            <p class = "other" v-else>Need help with something else?   <button type="button" @click="showModal = true" class="btn btn-link btn-contact">Contact us</button> </p>
+            <ModalContact v-if="showModal" @close="showModal = false" />
         </div>
     </div>
 </template>
 
 <script>
+import ModalContact from "@/components/ModalContact"
 export default {
+    components:
+    {
+        ModalContact
+    },
     data()
     {
         return{
-            textSerbian:"Ako tražite mogućnosti izvršavanja usluga kao što su pretraga zahteva dostupnih za izršavanje, pretraga Vama lično prosleđenih zahteva, slanje ponuda, pregled informacija vezanih za ponude... Za takve funkcionalnosti moraćete da preuzmete našu Android aplikaciju namenjenu za korišćenje na telefonu kako će Vam telefon biti neophodan pri obavljanju poslova izvršenja usluga. U mobilnu aplikaciju možete se prijaviti sa već postojećim nalogom, ne morate kreirati novi.",
-            textEnglish:""
+            showModal : false
         }
     },  
     computed:
@@ -40,6 +45,14 @@ export default {
         isSerbian()
         {
             return this.$store.state.isSerbian
+        }
+    },
+    methods:
+    {
+        wtf()
+        {
+            this.showModal = true
+            console.log(this.showModal)
         }
     }
 }
@@ -107,5 +120,12 @@ export default {
     {
         font-size: 18px;
         padding:40px;
+    }
+
+    .btn-contact
+    {
+        font-size: 18px;
+        padding-top: 2px;
+        font-weight: bold;
     }
 </style>
