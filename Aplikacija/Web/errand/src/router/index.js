@@ -6,6 +6,7 @@ import PageLogin from "@/pages/PageLogin"
 import PageRegister from "@/pages/PageRegister"
 import PageViewProfile from "@/pages/PageViewProfile"
 import PageHelp from "@/pages/PageHelp"
+import PageAchAndRatings from "@/pages/PageAchAndRatings"
 
 Vue.use(Router)
 
@@ -36,6 +37,11 @@ const router = new Router(
                 path: "/help",
                 name: "PageHelp",
                 component: PageHelp
+            },
+            {
+                path: "/achAndRatings",
+                name: "PageAchAndRatings",
+                component: PageAchAndRatings
             }
         ],
         mode: "history"
