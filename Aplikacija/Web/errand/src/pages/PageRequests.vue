@@ -2,7 +2,7 @@
     <div>
         <div class = "top-div" v-if="isSerbian"> Zahtevi </div>
         <div class = "top-div" v-else> Requests </div>
-        <div class = "top-div"> Proba Masa</div>
+        <div class = "top-div"> Proba izmene</div>
         <nav class="tabovi">
             <div class="container">
                 <div class="navbar-menu">
