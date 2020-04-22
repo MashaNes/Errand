@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div class = "top-div" v-if="isSerbian"> Zahtevi </div>
+        <div class = "top-div" v-if="isSerbian"> Zahtevi-test </div>
         <div class = "top-div" v-else> Requests </div>
         <div class = "top-div"> Proba Masa</div>
         <nav class="tabovi">
@@ -33,6 +33,7 @@
                 </div>
             </div>
         </nav>
+        
         <RequestBox v-for="request in requests" :key="request.id" :identifikator="request.id"/>
     </div>
 </template>
