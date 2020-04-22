@@ -41,7 +41,12 @@
           </div>
         </div>
         <div>
-          <b-button @click="changeTab()" style="margin:10px 0 10px 0" variant="secondary">
+          <b-button 
+            @click="changeTab()" 
+            style="margin:10px 0 10px 0" 
+            variant="success"
+            size="lg" 
+          >
             <span v-if="isSerbian && tab=='Ratings'"> Dostignuća </span>
             <span v-else-if="tab=='Ratings'"> Achievements </span>
             <span v-else-if="isSerbian"> Ocene </span>

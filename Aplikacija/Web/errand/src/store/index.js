@@ -46,7 +46,14 @@ export default new Vuex.Store({
                 Vue.set(rtgs, rating, allRatings[rating])
             })
             commit('setUserRatings', rtgs)
-        }
+        },
+        // removeUserPhoneNumber({commit}, number) {
+        //     const phoneNumbers = [...this.state.user.phone];
+        //     const phoneIndex = phoneNumbers.findIndex(p => p === number);
+
+        //     const newNumbers = phoneNumbers.splice(phoneIndex, 1);
+        //     commit('setUserPhoneNumbers')
+        // }
     },
     mutations:{
         setUser(state, user) {
@@ -57,6 +64,7 @@ export default new Vuex.Store({
         },
         setUserRatings(state, ratings) {
             state.userRatings = ratings
-        }
+        },
+
     }
 })
