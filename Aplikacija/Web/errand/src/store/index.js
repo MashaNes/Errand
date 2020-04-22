@@ -47,13 +47,10 @@ export default new Vuex.Store({
             })
             commit('setUserRatings', rtgs)
         },
-        // removeUserPhoneNumber({commit}, number) {
-        //     const phoneNumbers = [...this.state.user.phone];
-        //     const phoneIndex = phoneNumbers.findIndex(p => p === number);
+        editUser({commit}, newUser) {
 
-        //     const newNumbers = phoneNumbers.splice(phoneIndex, 1);
-        //     commit('setUserPhoneNumbers')
-        // }
+            commit('setChangedUser', newUser)
+        }
     },
     mutations:{
         setUser(state, user) {
@@ -65,6 +62,8 @@ export default new Vuex.Store({
         setUserRatings(state, ratings) {
             state.userRatings = ratings
         },
-
+        setChangedUser(state, newUser) {
+            Vue.set(state, 'user', newUser)
+        }
     }
 })

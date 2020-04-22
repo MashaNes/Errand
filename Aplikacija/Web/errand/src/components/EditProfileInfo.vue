@@ -63,13 +63,9 @@
               class="info-title" 
             > Personal info </span>
             <div>
-              <b-button class="button is-primary" style="margin-right:5px;">
-                <strong v-if="isSerbian">Izmeni</strong>
-                <strong v-else>Edit</strong>
-              </b-button>
-              <b-button class="button is-primary">
-                <strong v-if="isSerbian">Podešavanja</strong>
-                <strong v-else>Settings</strong>
+              <b-button class="button is-primary" style="margin-right:5px;" @click="saveChanges()">
+                <strong v-if="isSerbian">Sačuvaj izmene</strong>
+                <strong v-else>Save changes</strong>
               </b-button>
             </div>
           </b-list-group-item>
@@ -81,14 +77,21 @@
               style = "margin-right: 15px"
             />
             <div class="list-value">
-              <div v-for="p in user.phone" :key="p">
-                {{ p }} 
-                <img src="@/assets/remove.svg" height="15" width="15" class="remove-number" @click="removePhoneNumber(p)"> 
+              <div class="phones" v-for="p in firstElements('phone')" :key="p">
+                <img src="@/assets/remove.svg" height="15" width="15" class="acc-or-remove-icon" @click="removeElement('phone', p)"> 
+                {{ p }}
+              </div>
+              <div>
+                <img src="@/assets/remove.svg" height="15" width="15" class="acc-or-remove-icon" @click="removeElement('phone', lastElement('phone'))"> 
+                <span v-text="lastElement('phone')"></span>
               </div>
               <div class = "control" style="margin-top: 10px">
-                <label class = "register-label" v-if="isSerbian"> Novi broj telefona: </label>
+                <label class = "register-label" v-if="isSerbian"> Dodajte broj telefona: </label>
                 <label class = "register-label" v-else> Add a phone number: </label>
-                <VuePhoneNumberInput v-model="newPhoneNumber"/>
+                <div class="flex-row-elements">
+                  <VuePhoneNumberInput v-model="newPhoneNumber"/>
+                  <img v-if="newPhoneNumber != ''" src="@/assets/confirm.svg" height="23" width="23" class="acc-or-remove-icon" @click="addElement('phone', newPhoneNumber)">  
+                </div>
               </div>
             </div>
             
@@ -100,7 +103,39 @@
               width = "20"
               style = "margin-right: 15px"
             />
-            <span class="list-value">{{ user.homeAddress }}</span>
+            <div class="list-value">
+              <div class="address" v-for="a in firstElements('homeAddress')" :key="a">
+                <img src="@/assets/remove.svg" height="15" width="15" class="acc-or-remove-icon" @click="removeElement('homeAddress', a)">
+                {{ a }}
+              </div>
+              <div>
+                <img src="@/assets/remove.svg" height="15" width="15" class="acc-or-remove-icon" @click="removeElement('homeAddress', lastElement('homeAddress'))"> 
+                <span v-text="lastElement('homeAddress')"> </span>
+              </div>
+              <label 
+                style="margin-top: 15px;" 
+                class = "register-label" v-if="isSerbian"> Dodajte adresu: </label>
+              <label 
+                style="margin-top: 15px;" 
+                class = "register-label" v-else> Add a new address: </label>
+              <div class="field flex-row-elements">
+                <input 
+                  v-if="isSerbian"
+                  class="input is-medium"
+                  type="text"
+                  placeholder="Adresa"
+                  v-model="newAddress"
+                >
+                <input 
+                  v-else
+                  class="input is-medium"
+                  type="text"
+                  placeholder="Address"
+                  v-model="newAddress"
+                >
+                <img v-if="newAddress != ''" src="@/assets/confirm.svg" height="23" width="23" class="acc-or-remove-icon" @click="addElement('homeAddress', newAddress)">
+              </div>
+            </div>
           </b-list-group-item>
         </b-list-group>
       </div>
@@ -125,7 +160,8 @@ export default {
   data() {
     return {
       changedUser: {...this.user},
-      newPhoneNumber: null
+      newPhoneNumber: "",
+      newAddress: ""
     }
   },
   computed: {
@@ -141,8 +177,30 @@ export default {
     }
   },
   methods: {
-    removePhoneNumber(number) {
-      return number;
+    removeElement(resource, element) {
+      const index = this.changedUser[resource].findIndex(e => e === element);
+      this.changedUser[resource].splice(index, 1);
+    },
+    addElement(resource, element) {
+      if(element != "")
+        this.user[resource].push(element)
+      if(resource == 'homeAddress')
+        this.newAddress = ""
+      else this.newPhone = ""
+    },
+    firstElements(resource) {
+      const lastIndex = this.user[resource].length;
+      const arrayCopy = [...this.user[resource]];
+      arrayCopy.splice(lastIndex-1, 1);
+      return arrayCopy;
+    },
+    lastElement(resource) {
+      return this.user[resource][this.user[resource].length-1];
+    },
+    saveChanges() {
+      console.log(this.changedUser)
+      this.$store.dispatch('editUser', this.changedUser)
+      this.$emit('saveEditChanges')
     }
   }
 }
@@ -224,13 +282,23 @@ export default {
     margin-left: 15px;
   }
 
-  .nav-buttons {
+  .flex-row-elements {
     display: flex;
   }
 
-  .remove-number {
-    margin-left: 10px; 
+  .acc-or-remove-icon {
+    margin: 0 10px 0 10px; 
     cursor:pointer;
+  }
+
+  .address {
+    border-bottom:dotted 2px lightgray;
+    margin-bottom: 7px;
+    padding-bottom: 7px;
+  }
+
+  .phones {
+    margin-bottom: 10px;
   }
 
 </style>

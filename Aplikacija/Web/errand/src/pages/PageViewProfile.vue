@@ -10,6 +10,7 @@
       <EditProfileInfo
         v-if="showProfileEdit"
         :user="user"
+        @saveEditChanges="showProfileEdit=false"
       />
     </div>
 </template>
