@@ -46,14 +46,6 @@ export default {
         {
             return this.$store.state.isSerbian
         }
-    },
-    methods:
-    {
-        wtf()
-        {
-            this.showModal = true
-            console.log(this.showModal)
-        }
     }
 }
 </script>
