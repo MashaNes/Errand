@@ -16,8 +16,8 @@
             </div>
               <div class="col-12 col-md-3">
 
-                <button type="submit" class="btn btn-block btn-lg btn-primary" v-if="isSerbian">Registruj se!</button>
-                <button type="submit" class="btn btn-block btn-lg btn-primary" v-else>Sign up!</button>
+                <router-link :to = "'/register'" type="submit" class="btn btn-block btn-lg btn-primary" v-if="isSerbian">Registruj se!</router-link>
+                <router-link :to = "'/register'" type="submit" class="btn btn-block btn-lg btn-primary" v-else>Sign up!</router-link>
               </div>
             </div>
           </form>
@@ -44,7 +44,7 @@
         <div class="col-lg-4">
           <div class="testimonial-item mx-auto mb-5 mb-lg-0">
             <img class="img-fluid rounded-circle mb-3" src="../assets/slika2.jpg" alt="">
-            <h5>Dimitrije N.</h5>
+            <h5>Jovan K.</h5>
             <p class="font-weight-light mb-0" v-if="isSerbian">"Platforma daje mogućnost da lako nađete ljude kojima je potrebna pomoć i pomognete im."</p>
             <p class="font-weight-light mb-0" v-else>"Errand gives you a chance to find people who need help and help them."</p>
           </div>
@@ -53,7 +53,7 @@
           <div class="testimonial-item mx-auto mb-5 mb-lg-0">
             <img class="img-fluid rounded-circle mb-3" src="../assets/slika3.png" alt="">
             <h5>Milorad V.</h5>
-            <p class="font-weight-light mb-0" v-if="isSerbian">"Obavljanje svakodnevnih poslova je mnogo lakše u Errand platformu, lako mogu da pronađem ljude koji će to učiniti za mene!"</p>
+            <p class="font-weight-light mb-0" v-if="isSerbian">"Obavljanje svakodnevnih poslova je mnogo lakše uz Errand platformu, lako mogu da pronađem ljude koji će to učiniti za mene!"</p>
             <p class="font-weight-light mb-0" v-else>"Running errands has never been easier. It is so simple to find someone to help you out!"</p>
           </div>
         </div>

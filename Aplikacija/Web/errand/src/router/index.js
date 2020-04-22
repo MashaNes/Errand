@@ -16,6 +16,11 @@ const router = new Router(
         routes:[
             {
                 path: "/",
+                name: "PageWelcome",
+                component: PageWelcome
+            },
+            {
+                path: "/requests",
                 name: "PageRequests",
                 component: PageRequests
             },
@@ -43,11 +48,6 @@ const router = new Router(
                 path: "/achAndRatings",
                 name: "PageAchAndRatings",
                 component: PageAchAndRatings
-            },
-            {
-                path: "/welcome",
-                name: "PageWelcome",
-                component: PageWelcome
             }
         ],
         mode: "history"

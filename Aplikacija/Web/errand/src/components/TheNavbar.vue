@@ -21,7 +21,7 @@
                 <div v-if="isSerbian" class = "ikonica"> Obaveštenja </div>
                 <div v-else class = "ikonica"> Notifications </div>
             </a>
-            <router-link :to = "'/'" class="navbar-item">
+            <router-link :to = "'/requests'" class="navbar-item">
                 <img src = "../assets/requests.svg">
                 <div v-if="isSerbian" class = "ikonica"> Zahtevi </div>
                 <div v-else class = "ikonica"> Requests </div>
