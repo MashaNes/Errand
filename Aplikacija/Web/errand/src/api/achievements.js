@@ -35,7 +35,19 @@ export const fetchAchievements = () => {
             userId: "1",
             level: 3,
             AchievementDetails: "6"
-        }
+        },
+        "7" : {
+            id: 7,
+            userId: "2",
+            level: 7,
+            AchievementDetails: "3"
+        },
+        "8" : {
+            id: 8,
+            userId: "2",
+            level: 2,
+            AchievementDetails: "5"
+        },
     }
 }
 

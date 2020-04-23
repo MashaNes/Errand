@@ -44,10 +44,6 @@ export default {
       return this.user.rating < 2 ? 'danger' : 
              this.user.rating < 5 ? 'warning' : 'success'
     }
-  },
-  created() {
-    this.$store.dispatch('getUserAchievements')
-    this.$store.dispatch('getUserRatings')
   }
 }
 </script>

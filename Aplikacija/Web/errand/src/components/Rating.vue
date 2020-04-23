@@ -2,7 +2,6 @@
     <b-card 
       :border-variant="progressBarVariant"
       no-body
-      style="width: 300px"
     >
       <b-card-body>
         <b-card-text>
@@ -13,21 +12,40 @@
       <b-card-footer
         footer-bg-variant = "dark"
         footer-text-variant = "white"
-      >
-        <div>
-          <span v-if="isSerbian">
-            Ocena:
-          </span>
-          <span v-else>
-            Grade:
-          </span>
-        </div>
+        style="display:flex; flex-direction:row;"
 
-        <b-progress class="mt-2" max="5" show-value>
-            <b-progress-bar 
-                :value="rating.grade" 
-                :variant="progressBarVariant"></b-progress-bar>
-        </b-progress>
+      >
+        <span style="flex-grow:10; margin-right:10px; ">
+          <div style="margin-left:5%">
+            <span v-if="isSerbian">
+              Ocena:
+            </span>
+            <span v-else>
+              Grade:
+            </span>
+          </div>
+
+          <b-progress class="mt-2" max="5.0" height="20px">
+              <b-progress-bar 
+                :value="rating.grade"
+                :variant="progressBarVariant"
+              > 
+                <span class="rating-grade"> {{rating.grade}} </span> 
+              </b-progress-bar>
+          </b-progress>
+        </span>
+        <span style="flex-grow:1"> 
+          <div style="margin-bottom:10px;"> 
+            <span v-if="isSerbian">Ocenio/la:</span>
+            <span v-else>Rated by:</span>
+            <span style="font-size:18px;"> {{givenBy}} </span>
+          </div>
+          <div> 
+            <span v-if="isSerbian">Za zahtev:</span>
+            <span v-else>For request:</span>
+            <span style="font-size:18px;"> {{forRequest}} </span>
+          </div>
+        </span>
       </b-card-footer>
     </b-card>
 </template>
@@ -47,6 +65,16 @@ export default {
       progressBarVariant() {
         return this.rating.grade < 2 ? 'danger' : 
                this.rating.grade < 5 ? 'warning' : 'success'
+      },
+      givenBy() {
+        // eslint-disable-next-line no-debugger
+        debugger
+        const users = this.$store.state.allUsers
+        return users[this.rating.createdBy].firstName + " " + users[this.rating.createdBy].lastName
+      },
+      forRequest() {
+        const requests = this.$store.state.requests
+        return requests[this.rating.request].name
       }
     }
 }
@@ -80,10 +108,24 @@ export default {
   }
 
   .card {
-    margin: 10px;
-    font-size: 14px;
+    margin: 40px 150px 40px 150px;
     border-radius: 15px;
-    width: 300px;
+  }
+
+  .card-text {
+    font-size:20px;
+    font-weight: 600;
+  }
+
+  .rating-grade {
+    font-size:15px; 
+    font-weight: 700; 
+    color:black;
+  }
+
+  .mt-2 {
+    width:80%; 
+    margin-left:5%;
   }
 
 </style>
