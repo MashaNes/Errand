@@ -14,7 +14,8 @@ export default new Vuex.Store({
         user: {},
         userAchievements: {},
         userRatings: {},
-        isSerbian: true
+        isSerbian: true,
+        allUsers: {}
     },
     getters:{
     },
@@ -24,6 +25,9 @@ export default new Vuex.Store({
         },
         getUser({commit}) {
             commit('setUser', fetchUsers()["1"])
+        },
+        getAllUsers({commit}) {
+            commit('setAllUsers', fetchUsers())
         },
         getUserAchievements({commit}) {
             const allAch = fetchAchievements();
@@ -64,6 +68,9 @@ export default new Vuex.Store({
         },
         setChangedUser(state, newUser) {
             Vue.set(state, 'user', newUser)
+        },
+        setAllUsers(state, users) {
+            state.allUsers = users
         }
     }
 })

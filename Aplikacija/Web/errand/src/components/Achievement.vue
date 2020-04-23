@@ -2,7 +2,6 @@
     <b-card 
       :bg-variant="(achievement.achievementLevel > 2) ? 'warning' : 'light'"
       no-body
-      style="width: 300px"
     >
 
       <b-card-header 
@@ -20,7 +19,7 @@
 
       <b-card-body>
         <b-card-text>
-          <span v-if="isSerbian">
+          <span v-if="isSerbian" >
             {{achievement.achievementDetails.description.serbian}}
           </span>
           <span v-else> 
@@ -82,11 +81,12 @@ export default {
   }
 
   .card {
-    margin: 10px;
-    font-size: 14px;
+    margin: 40px 150px 40px 150px;
     border-radius: 15px;
-    width: 300px;
-    align-self: stretch;
+  }
+
+  .card-text {
+    font-size: 20px;
   }
 
 </style>
