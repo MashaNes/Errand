@@ -23,7 +23,7 @@
         </div>
       </div>
       <div class="personal-info">
-        <b-list-group >
+        <b-list-group style="width:100%;">
           <b-list-group-item>
             <span v-if="isSerbian"
               class="info-title" 
@@ -31,16 +31,19 @@
             <span v-else
               class="info-title" 
             > Personal info </span>
-            <div>
+            <div style="display:flex; flex-direction:row;">
               <b-button 
                 class="button is-primary" 
-                style="margin-right:5px;"
+                style="margin: 5px;"
                 @click="goToProfileEdit()"
               >
                 <strong v-if="isSerbian">Izmeni</strong>
                 <strong v-else>Edit</strong>
               </b-button>
-              <b-button class="button is-primary">
+              <b-button 
+                class="button is-primary"
+                style="margin: 5px; width:100%;"
+              >
                 <strong v-if="isSerbian">Podešavanja</strong>
                 <strong v-else>Settings</strong>
               </b-button>
@@ -80,7 +83,7 @@
             </div>
           </b-list-group-item>
         </b-list-group>
-        <b-list-group style="width:50%">
+        <b-list-group style="width:85%">
           <b-list-group-item>
             <strong style="font-size:20px" v-if="isSerbian"> Prosečna ocena: </strong>
             <strong style="font-size:20px" v-else> Average rating: </strong>
@@ -170,8 +173,8 @@ export default {
 
   .main-container {
     margin: 30px;
-    margin-left: 150px;
-    margin-right: 150px;
+    margin-left: 15%;
+    margin-right: 15%;
     display: flex;
     align-items: flex-start;
     flex-direction: row;

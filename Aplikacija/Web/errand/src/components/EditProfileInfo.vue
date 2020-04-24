@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="main-container">
-      <div>
+      <div style="margin-right:3%">
         <div class="media-center">
           <p class="image is-128x128">
             <img class="rounded-image" :src="user.picture">
@@ -55,7 +55,7 @@
       </div>
       <div class="personal-info">
         <b-list-group >
-          <b-list-group-item>
+          <b-list-group-item style="display:flex; flex-wrap:wrap;">
             <span v-if="isSerbian"
               class="info-title" 
             > Lični podaci </span>
@@ -63,7 +63,7 @@
               class="info-title" 
             > Personal info </span>
             <div>
-              <b-button class="button is-primary" style="margin-right:5px;" @click="saveChanges()">
+              <b-button class="button is-primary" @click="saveChanges()">
                 <strong v-if="isSerbian">Sačuvaj izmene</strong>
                 <strong v-else>Save changes</strong>
               </b-button>
@@ -74,7 +74,7 @@
               src="@/assets/call.svg" 
               height = "20" 
               width = "20"
-              style = "margin-right: 15px"
+              style = "margin-right: 15px; margin-bottom: 15px"
             />
             <div class="list-value">
               <div class="phones" v-for="p in firstElements('phone')" :key="p">
@@ -101,16 +101,16 @@
               src="@/assets/address.svg" 
               height = "20" 
               width = "20"
-              style = "margin-right: 15px"
+              style = "margin-right: 15px; margin-bottom: 15px"
             />
             <div class="list-value">
               <div class="address" v-for="a in firstElements('homeAddress')" :key="a">
                 <img src="@/assets/remove.svg" height="15" width="15" class="acc-or-remove-icon" @click="removeElement('homeAddress', a)">
-                {{ a }}
+                <span >{{ a }}</span>
               </div>
-              <div>
+              <div >
                 <img src="@/assets/remove.svg" height="15" width="15" class="acc-or-remove-icon" @click="removeElement('homeAddress', lastElement('homeAddress'))"> 
-                <span v-text="lastElement('homeAddress')"> </span>
+                <span>{{lastElement('homeAddress')}} </span>
               </div>
               <label 
                 style="margin-top: 15px;" 
@@ -125,6 +125,7 @@
                   type="text"
                   placeholder="Adresa"
                   v-model="newAddress"
+
                 >
                 <input 
                   v-else
@@ -132,6 +133,7 @@
                   type="text"
                   placeholder="Address"
                   v-model="newAddress"
+
                 >
                 <img v-if="newAddress != ''" src="@/assets/confirm.svg" height="23" width="23" class="acc-or-remove-icon" @click="addElement('homeAddress', newAddress)">
               </div>
@@ -216,7 +218,8 @@ export default {
     border-bottom: 1px solid lightgray;
     border-radius: 0px;
     align-items: center;
-    min-width: 30px;
+    padding-left:1%;
+    padding-right:1%;
   }
 
   .list-key {
@@ -232,13 +235,14 @@ export default {
     flex-shrink: 1;
     text-align: left;
     font-size: 20px;
-    margin-left: 30px;
+    margin-right:1%;
   }
 
   .main-container {
-    margin: 30px;
-    margin-left: 150px;
-    margin-right: 150px;
+    margin-top: 30px;
+    margin-bottom: 30px;
+    margin-left: 10%;
+    margin-right: 10%;
     display: flex;
     align-items: flex-start;
     flex-direction: row;
@@ -268,6 +272,7 @@ export default {
     font-weight: bold;
     color: black;
     margin-bottom: 5px;
+    margin-right: 2%;
   }
 
   .is-128x128 {
@@ -279,7 +284,7 @@ export default {
     display:flex;
     flex-direction: column;
     min-width: 50%;
-    margin-left: 15px;
+    margin-left: 1%;
   }
 
   .flex-row-elements {
@@ -300,5 +305,7 @@ export default {
   .phones {
     margin-bottom: 10px;
   }
+
+
 
 </style>
