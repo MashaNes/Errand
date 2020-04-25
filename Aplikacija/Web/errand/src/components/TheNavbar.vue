@@ -1,103 +1,76 @@
 <template>
-  <nav class="navbar is-spaced" role="navigation" aria-label="main navigation">
-    <div class="navbar-brand">
-      <router-link :to = "'/'" class="navbar-item">
-        <h1 class="title is-4">Errand</h1>
-      </router-link>
-      <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
-        <span aria-hidden="true"></span>
-        <span aria-hidden="true"></span>
-        <span aria-hidden="true"></span>
-      </a>
-    </div>
-
-    <div id="navbarBasicExample" class="navbar-menu">
-      <div class="navbar-start">
-        <div class="navbar-item has-dropdown is-hoverable">
-            <img src = "../assets/menu.svg">
-          <div class="navbar-dropdown">
-            <a class="navbar-item">
-                <img src = "../assets/notifications.svg">
-                <div v-if="isSerbian" class = "ikonica"> Obaveštenja </div>
-                <div v-else class = "ikonica"> Notifications </div>
-            </a>
-            <router-link :to = "'/requests'" class="navbar-item">
-                <img src = "../assets/requests.svg">
-                <div v-if="isSerbian" class = "ikonica"> Zahtevi </div>
-                <div v-else class = "ikonica"> Requests </div>
-            </router-link>
-            <router-link :to = "'/profile'" class="navbar-item">
-                <img src = "../assets/profile.svg">
-                <div v-if="isSerbian" class = "ikonica"> Profil </div>
-                <div v-else class = "ikonica"> Profile </div>
-            </router-link>
-            <a class="navbar-item">
-                <img src = "../assets/settings.svg">
-                <div v-if="isSerbian" class = "ikonica"> Podešavanja </div>
-                <div v-else class = "ikonica"> Settings </div>
-            </a>
-            <router-link :to = "'/help'" class="navbar-item">
-                <img src = "../assets/help.svg">
-                <div v-if="isSerbian" class = "ikonica"> Pomoć </div>
-                <div v-else class = "ikonica"> Help </div>
-            </router-link>
-          </div>
-        </div>
-      </div>
-
-      <div class="navbar-end">
-        <div class="navbar-item">
-          <a class = "language" @click="prebaciNaEngleski"> EN </a>
-          |
-          <a class = "language" @click="prebaciNaSrpski"> SR </a>
-        </div>
-        <div class="navbar-item">
-          <div class="buttons">
-            <router-link :to = "'/register'" class="button is-primary">
-              <strong v-if="isSerbian">Registruj se</strong>
-              <strong v-else>Sign up</strong>
-            </router-link>
-            <router-link :to = "'/login'" class="button is-light">
-              <span v-if="isSerbian"> Prijavi se </span>
-              <span v-else> Log in </span>
-            </router-link>
-          </div>
-        </div>
-      </div>
-    </div>
-  </nav>
+  <div class = "navigate">
+    <TheNavbarSmall class = "mali"/>
+    <TheNavbarLarge class = "veliki"/>
+  </div>
 </template>
 
 <script>
+  import TheNavbarSmall from "@/components/TheNavbarSmall"
+  import TheNavbarLarge from "@/components/TheNavbarLarge"
   export default {
-    computed:
+    components:
     {
-      isSerbian(){
-        return this.$store.state.isSerbian
-      }
-    },
-    methods:
-    {
-      prebaciNaEngleski()
-      {
-        this.$store.state.isSerbian = false
-      },
-      prebaciNaSrpski()
-      {
-        this.$store.state.isSerbian = true
-      },
+      TheNavbarSmall,
+      TheNavbarLarge
     }
+
   }
 </script>
 
 <style scoped>
-  .ikonica
+  @media only screen and (min-width: 500px)
   {
-      margin-left: 10px
+    .mali
+    {
+      width:0px;
+      visibility: hidden;
+      min-height: 0px;
+      margin: 0px;
+    }
+    
+    .navigate
+    {
+      width: 100%;
+      height: 70px;
+      display: flex;
+      flex-direction: column-reverse;
+    }
+
+    .veliki
+    {
+      padding-top:15px;
+    }
+  }
+  @media only screen and (max-width: 499px)
+  {
+    .veliki
+    {
+      width:0px;
+      visibility: hidden;
+      min-height: 0px;
+      margin: 0px;
+    }
+
+    .navigate
+    {
+      height: 85px;
+      display: flex;
+      flex-direction: column;
+      padding-bottom:0px;
+      margin-bottom:0px;
+      margin-top: 0px;
+      padding-top: 0px;
+    }
+
+    .mali
+    {
+      padding-bottom:0px;
+      margin-bottom:0px;
+    }
   }
 
-  .language
+  .navigate
   {
-    margin:5px;
   }
 </style>
