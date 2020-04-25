@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import Vue from "vue"
 import Router from "vue-router"
 
@@ -8,6 +9,8 @@ import PageViewProfile from "@/pages/PageViewProfile"
 import PageHelp from "@/pages/PageHelp"
 import PageAchAndRatings from "@/pages/PageAchAndRatings"
 import PageWelcome from "@/pages/PageWelcome"
+import PageLoginAdmin from "@/pages/PageLoginAdmin"
+import PageRegisterAdmin from "@/pages/PageRegisterAdmin"
 
 Vue.use(Router)
 
@@ -48,9 +51,22 @@ const router = new Router(
                 path: "/achAndRatings",
                 name: "PageAchAndRatings",
                 component: PageAchAndRatings
+            },
+            {
+                path: "/loginAdmin",
+                name: "PageLoginAdmin",
+                component: PageLoginAdmin
+            },
+            {
+                path: "/registerAdmin",
+                name: "PageRegisterAdmin",
+                component: PageRegisterAdmin
             }
         ],
-        mode: "history"
+        mode: "history",
+        scrollBehavior (to, from, savedPosition) {
+            return { x: 0, y: 0 };
+          }
     }
 )
 
