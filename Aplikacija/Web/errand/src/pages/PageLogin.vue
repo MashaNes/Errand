@@ -78,6 +78,11 @@
             </p>
           </div>
           <p class="has-text-grey">
+            <router-link :to = "'/'">
+              <span v-if="isSerbian">Početna stranica</span>
+              <span v-else>Home</span>
+            </router-link>
+            &nbsp;·&nbsp;
             <router-link v-if="isSerbian" :to = "'/register'">Registruj se</router-link>
             <router-link v-else :to = "'/register'">Sign Up</router-link>
           </p>
@@ -126,6 +131,8 @@
             login()
             {
                 this.$v.form.$touch()
+                this.$store.state.logedIn = true
+                this.$router.push('/requests')
                 console.log(this.form)
             }
         }

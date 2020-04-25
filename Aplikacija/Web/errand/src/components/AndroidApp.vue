@@ -16,24 +16,18 @@
                 </div>
                 <div class = "dugme-div">
                     <button type="button" class="btn btn-primary dugme">Download mobile app</button>
-                </div>
-            </div>  
+                </div> 
+            </div>
         </div>
-        <div class = "element">
-            <p class = "other" v-if="isSerbian">Treba Vam neka druga pomoć?   <button type="button" @click="showModal = true" class="btn btn-link btn-contact">Kontaktirajte nas</button> </p>
-            <p class = "other" v-else>Need help with something else?   <button type="button" @click="showModal = true" class="btn btn-link btn-contact">Contact us</button> </p>
-            <ModalContact v-if="showModal" @close="showModal = false" />
+        <div class = "element donji-div">
+            <p class = "other" v-if="isSerbian">Treba Vam neka druga pomoć? </p> <button type="button" class="btn btn-link btn-contact" v-if="isSerbian">Pogledajte česta pitanja</button>
+            <p class = "other" v-if="!isSerbian">Need help with something else?   </p> <button type="button" class="btn btn-link btn-contact" v-if="!isSerbian">Check out FAQ</button>
         </div>
     </div>
 </template>
 
 <script>
-import ModalContact from "@/components/ModalContact"
 export default {
-    components:
-    {
-        ModalContact
-    },
     data()
     {
         return{
@@ -64,6 +58,7 @@ export default {
         width:25%;
         height:70%;
     }
+
     .inner-div
     {
         width:40%;
@@ -91,6 +86,51 @@ export default {
         display: flex;
         flex-direction: row;
     }
+    
+    @media only screen and (max-width: 1100px)
+    {
+        .picture-div
+        {
+            width:40%;
+            height:70%;
+        }
+
+        .inner-div
+        {
+            width:50%;
+            height:70%;
+            margin-left:40px;
+            
+            display: flex;
+            justify-content: center;
+            flex-direction: column;
+        }
+    }
+
+    @media only screen and (max-width: 700px)
+    {
+        .element
+        {
+            margin-top:50px;
+            width: 100%;
+            height: 100%;
+            justify-content: center;
+            align-items: center;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .inner-div
+        {
+            width: 90%;
+            margin-left:0px;
+        }
+
+        .picture-div
+        {
+            width: 90%;
+        }
+    }
 
     .dugme
     {
@@ -111,6 +151,11 @@ export default {
     .other
     {
         font-size: 18px;
+        padding-top: 4px;
+    }
+
+    .donji-div
+    {
         padding:40px;
     }
 

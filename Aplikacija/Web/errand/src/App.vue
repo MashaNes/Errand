@@ -1,7 +1,7 @@
 <template>
   <div id="app">
-    <TheNavbar />
-    <div class = "page-wrapper">
+    <TheNavbar class="please"/>
+    <div class = "page-wrapper bg-light">
       <router-view />
     </div>
     <TheFooter/>
@@ -62,6 +62,7 @@ export default {
   {
     min-height: 73vh;
     /*background-image: url("http://chicagosgirlonthego.com/Wpress/wp-content/uploads/chicago-errand-running-service-02.jpg");*/
+    /*background-color: rgba(248, 249, 250);*/
   }
 
   .top-div
@@ -73,5 +74,14 @@ export default {
     padding-left:100px;
     font-size: 35px;
     font-weight: bold;
+  }
+
+  .please
+  {
+    position: sticky; /* Set the navbar to fixed position */
+    top: 0; /* Position the navbar at the top of the page */
+    width: 100%; /* Full width */
+    background-color: white;
+    z-index: 1000000000;
   }
 </style>

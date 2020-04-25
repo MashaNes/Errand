@@ -90,7 +90,7 @@
                 <div class = "control">
                   <label class = "register-label" v-if="isSerbian"> Broj telefona: </label>
                   <label class = "register-label" v-else> Phone number: </label>
-                  <VuePhoneNumberInput v-model="form.phone" />
+                  <VuePhoneNumberInput v-model="form.phone" no-example="true"/>
                 </div>
               </div>
                <div class = "field">
@@ -192,6 +192,11 @@
           </div>
 
           <p class="has-text-grey">
+            <router-link :to = "'/'">
+                <span v-if="isSerbian">Početna stranica</span>
+                <span v-else>Home</span>
+            </router-link>
+            &nbsp;·&nbsp;
             <router-link :to = "'/login'">
                 <span v-if="isSerbian">Prijavi se</span>
                 <span v-else>Login</span>
@@ -253,8 +258,10 @@
         {
             register()
             {
-                this.$v.form.$touch()
-                console.log(this.form)
+              this.$v.form.$touch()
+              this.$store.state.logedIn = true;
+              this.$router.push('/profile')
+              console.log(this.form)
             }
         }
     } 

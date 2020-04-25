@@ -15,7 +15,8 @@ export default new Vuex.Store({
         userAchievements: {},
         userRatings: {},
         isSerbian: true,
-        allUsers: {}
+        allUsers: {},
+        logedIn: true
     },
     getters:{
     },

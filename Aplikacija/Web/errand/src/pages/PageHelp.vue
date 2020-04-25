@@ -1,7 +1,5 @@
 <template>
     <div>
-        <div class = "top-div" v-if="isSerbian"> Pomoć </div>
-        <div class = "top-div" v-else> Help </div>
         <AndroidApp />
     </div>
 </template>

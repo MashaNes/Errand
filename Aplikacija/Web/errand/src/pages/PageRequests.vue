@@ -1,7 +1,5 @@
 <template>
     <div>
-        <div class = "top-div" v-if="isSerbian"> Zahtevi </div>
-        <div class = "top-div" v-else> Requests </div>
         <nav class="tabovi">
             <div class="container">
                 <div class="navbar-menu">
