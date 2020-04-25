@@ -1,6 +1,6 @@
 <template>
     <nav class="navigacija">
-        <div class = "top-navigacija" :class="{'margine':isLogedIn}"> 
+        <div class = "top-navigacija"> 
             <div class="top-navigacija-beginning">
                 <router-link :to = "'/'" class="navbar-item">
                     <h1 class="title is-4">Errand</h1>
@@ -48,10 +48,11 @@
                                 <span v-if="isSerbian" class = "ikonica"> Pomoć </span>
                                 <span v-else class = "ikonica"> Help </span>
                             </router-link>
+                            <div class="dropdown-divider"></div>
                             <a @click="odjaviSe" class="dropdown-item">
                                 <img src = "../assets/logout.svg">
                                 <span v-if="isSerbian" class = "ikonica"> Odjavi se </span>
-                                <span v-else class = "ikonica"> Logout </span>
+                                <span v-else class = "ikonica"> Log out </span>
                             </a>
                         </div>
                     </li>
@@ -134,7 +135,7 @@ export default {
         margin-right: 20px;
         margin-left: 20px;
         margin-bottom: 5px;
-        margin-top: 10px;
+        margin-top: 0px;
     }
 
     .top-navigacija
@@ -193,10 +194,5 @@ export default {
     .crtka
     {
         margin-top:5px
-    }
-
-    .margine
-    {
-        margin-top: 15px;
     }
 </style>

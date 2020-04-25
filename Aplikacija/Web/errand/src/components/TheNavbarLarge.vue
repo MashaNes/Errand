@@ -74,10 +74,11 @@
                                 <span v-if="isSerbian" class = "ikonica"> Ocene </span>
                                 <span v-else class = "ikonica"> Ratings </span>
                             </a>
+                            <div class="dropdown-divider"></div>
                             <a @click="odjaviSe" class="dropdown-item">
                                 <img src = "../assets/logout.svg">
                                 <span v-if="isSerbian" class = "ikonica"> Odjavi se </span>
-                                <span v-else class = "ikonica"> Logout </span>
+                                <span v-else class = "ikonica"> Log out </span>
                             </a>
                         </div>
                     </span>
