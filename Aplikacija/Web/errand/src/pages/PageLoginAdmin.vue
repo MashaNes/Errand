@@ -3,63 +3,64 @@
     <div class="hero-body">
       <div class="container has-text-centered">
         <div class="column is-4 is-offset-4">
-          <h3 v-if="isSerbian" class="title has-text-grey">Prijavi se</h3>
-          <h3 v-else class="title has-text-grey">Login</h3>
+          <h3 v-if="isSerbian" class="title has-text-grey">Prijavi se kao administrator</h3>
+          <h3 v-else class="title has-text-grey">Login as administrator</h3>
           <p v-if="isSerbian" class="subtitle has-text-grey">Prijavite se kako bi nastavili.</p>
           <p v-else class="subtitle has-text-grey">Please login to proceed.</p>
           <div class="box">
             <form>
-              <div class="field">
+              <div class="field">                
                 <div class="control">
-                  <label class = "login-label"> *Email: </label>
-                  <input class="input is-large"
-                         type="email"
-                         placeholder="Email"
-                         autofocus=""
-                         autocomplete="email"
-                         v-model="form.email"
-                         @blur="$v.form.email.$touch()">
-                </div>
-                <div v-if = "$v.form.email.$error" class = "form-error">
-                    <span v-if="!$v.form.email.required"
-                          class = "help is-danger">
-                        <span v-if="isSerbian"> Morate uneti e-mail </span>
-                        <span v-else> E-mail is required </span> 
-                    </span>
-                    <span v-if = "!$v.form.email.email"
-                          class = "help is-danger">
-                        <span v-if="isSerbian"> E-mail adresa nije validna </span>
-                        <span v-else> E-mail address is not valid </span>
-                    </span>
-                </div>
-              </div>
-              <div class="field">
-                <div class="control">
-                  <label class = "login-label" v-if="isSerbian"> *Lozinka: </label>
-                  <label class = "login-label" v-else> *Password: </label>
-                  <input class="input is-large"
-                         type="password"
-                         placeholder="Lozinka"
-                         autocomplete="current-password"
-                         v-model="form.password"
-                         @blur="$v.form.password.$touch()"
-                         v-if = "isSerbian">
+                    <label class = "register-label" v-if="isSerbian"> *Korisničko ime: </label>
+                    <label class = "register-label" v-else> *Username: </label>
                     <input class="input is-large"
-                         type="password"
-                         placeholder="Password"
-                         autocomplete="current-password"
-                         v-model="form.password"
-                         @blur="$v.form.password.$touch()"
-                         v-else>
+                            type="text"
+                            placeholder="Korisničko ime"
+                            v-model = "form.username"
+                            @blur="$v.form.username.$touch()"
+                            v-if = "isSerbian">
+                        <input class="input is-large"
+                            type="text"
+                            placeholder="Username"
+                            v-model = "form.username"
+                            @blur="$v.form.username.$touch()"
+                            v-else>
+                </div>
+                <div v-if = "$v.form.username.$error" class = "form-error">
+                    <span v-if = "!$v.form.username.required"
+                        class = "help is-danger"> 
+                            <span v-if="isSerbian">Morate uneti korisničko ime</span>
+                            <span v-else>  Username is required </span> 
+                    </span>
+                </div>
+            </div>
+            <div class="field">
+                <div class="control">
+                    <label class = "register-label" v-if="isSerbian"> *Vaša Lozinka: </label>
+                    <label class = "register-label" v-else> *Your Password: </label>
+                    <input class="input is-large"
+                            type="password"
+                            placeholder="Vaša Lozinka"
+                            autocomplete="new-password"
+                            v-model = "form.password"
+                            @blur="$v.form.password.$touch()"
+                            v-if="isSerbian">
+                        <input class="input is-large"
+                            type="password"
+                            placeholder="Your Password"
+                            autocomplete="new-password"
+                            v-model = "form.password"
+                            @blur="$v.form.password.$touch()"
+                            v-else>
                 </div>
                 <div v-if = "$v.form.password.$error" class = "form-error">
                     <span v-if = "!$v.form.password.required"
-                          class = "help is-danger"> 
-                        <span v-if="isSerbian"> Morate uneti lozinku </span>
-                        <span v-else> Password is required </span>
-                    </span>    
+                        class = "help is-danger"> 
+                            <span v-if="isSerbian">Morate uneti Vašu lozinku</span>
+                            <span v-else>Your password is required </span>  
+                    </span>
                 </div>
-              </div>
+            </div>
               <button @click.prevent="login" 
                       class="button is-block is-info is-large is-fullwidth"
                       :disabled="isFormInvalid">
@@ -80,8 +81,8 @@
               <span v-else>Home</span>
             </router-link>
             &nbsp;·&nbsp;
-            <router-link v-if="isSerbian" :to = "'/register'">Registruj se</router-link>
-            <router-link v-else :to = "'/register'">Sign Up</router-link>
+            <router-link v-if="isSerbian" :to = "'/registerAdmin'">Registruj se</router-link>
+            <router-link v-else :to = "'/registerAdmin'">Sign Up</router-link>
           </p>
         </div>
       </div>
@@ -90,14 +91,14 @@
 </template>
 
 <script>
-    import {required, email} from "vuelidate/lib/validators"
+    import {required} from "vuelidate/lib/validators"
     export default {
         data(){
             return {
                 form:
                 {
-                    email : null,
-                    password : null
+                    username: null,
+                    password: null
                 }
             }
         },
@@ -105,12 +106,8 @@
         {
             form:
             {
-                email:{
-                    required,email
-                },
-                password:{
-                    required
-                }
+                username: { required },
+                password:{ required}
             }
         },
         computed:
@@ -128,8 +125,6 @@
             login()
             {
                 this.$v.form.$touch()
-                this.$store.state.logedIn = true
-                this.$router.push('/requests')
                 console.log(this.form)
             }
         }

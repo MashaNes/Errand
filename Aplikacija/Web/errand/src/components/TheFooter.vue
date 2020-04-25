@@ -4,22 +4,36 @@
       <div class = "footer-main">
         <div class="divLista deo" v-if="isLogedIn">
           <ul class="lista">
-            <li class="stavka-navigacije" v-if="isSerbian"> Obaveštenja </li>
-            <li class="stavka-navigacije" v-else> Notifications </li>
-            <li class="stavka-navigacije" v-if="isSerbian"> Profil </li>
-            <li class="stavka-navigacije" v-else> Profile </li>
-            <li class="stavka-navigacije" v-if="isSerbian">Dostignuća </li>
-            <li class="stavka-navigacije" v-else> Achievements </li>
-            <li class="stavka-navigacije" v-if="isSerbian"> Ocene </li>
-            <li class="stavka-navigacije" v-else> Ratings </li>
-            <li class="stavka-navigacije" v-if="isSerbian"> Zahtevi </li>
-            <li class="stavka-navigacije" v-else> Requests </li>
-            <li class="stavka-navigacije" v-if="isSerbian"> Podešavanja </li>
-            <li class="stavka-navigacije" v-else> Settings </li>
-            <li class="stavka-navigacije" v-if="isSerbian"> Pomoć </li>
-            <li class="stavka-navigacije" v-else> Help </li>
-            <li class="stavka-navigacije" v-if="isSerbian"> Odjavi se </li>
-            <li class="stavka-navigacije" v-else> Log out </li>
+            <!--<router-link>-->
+              <li class="stavka-navigacije" v-if="isSerbian"> Obaveštenja </li>
+              <li class="stavka-navigacije" v-else> Notifications </li>
+            <!--</router-link>-->
+            <router-link :to="'/profile'" >
+              <li class="stavka-navigacije" v-if="isSerbian"> Profil </li>
+              <li class="stavka-navigacije" v-else> Profile </li>
+            </router-link>
+            <!--<router-link>-->
+              <li class="stavka-navigacije" v-if="isSerbian">Dostignuća </li>
+              <li class="stavka-navigacije" v-else> Achievements </li>
+            <!--</router-link>-->
+            <!--<router-link>-->
+              <li class="stavka-navigacije" v-if="isSerbian"> Ocene </li>
+              <li class="stavka-navigacije" v-else> Ratings </li>
+            <!--</router-link>-->
+            <router-link :to="'/requests'" >
+              <li class="stavka-navigacije" v-if="isSerbian"> Zahtevi </li>
+              <li class="stavka-navigacije" v-else> Requests </li>
+            </router-link>
+            <!--<router-link>-->
+              <li class="stavka-navigacije" v-if="isSerbian"> Podešavanja </li>
+              <li class="stavka-navigacije" v-else> Settings </li>
+            <!--</router-link>-->
+            <router-link :to="'/help'" >
+              <li class="stavka-navigacije" v-if="isSerbian"> Pomoć </li>
+              <li class="stavka-navigacije" v-else> Help </li>
+            </router-link>
+            <li class="stavka-navigacije" v-if="isSerbian" @click="odjaviSe"> Odjavi se </li>
+            <li class="stavka-navigacije" v-else @click="odjaviSe"> Log out </li>
           </ul>
         </div>
         <div class="divErrand deo">
@@ -27,12 +41,16 @@
           <div class="tekst" v-if="isSerbian"> Obavljanje svakodnevnih poslova nikada nije bilo lakše</div>
           <div class="tekst" v-else> Running errnads has never been easier</div>
         </div>
-        <div class="divLogin deo" v-if="!isLogedIn">
-          <ul>
-            <li class="stavka-navigacije" v-if="isSerbian">Prijavi se </li>
-            <li class="stavka-navigacije" v-else>Log in </li>
-            <li class="stavka-navigacije" v-if="isSerbian"> Registruj se </li>
-            <li class="stavka-navigacije" v-else> Sign up </li>
+        <div class="divLista deo" v-if="!isLogedIn">
+          <ul class="login">
+            <router-link :to="'/login'" >
+              <li class="stavka-navigacije" v-if="isSerbian">Prijavi se </li>
+              <li class="stavka-navigacije" v-else>Log in </li>
+            </router-link>
+            <router-link :to="'/register'" >
+              <li class="stavka-navigacije" v-if="isSerbian"> Registruj se </li>
+              <li class="stavka-navigacije" v-else> Sign up </li>
+            </router-link>
           </ul>
         </div>
       </div>
@@ -78,7 +96,17 @@
         this.$store.state.isSerbian = true
       },
       scrollToTop() {
-          window.scrollTo(0,0);
+          //window.scrollTo(0,0);
+          window.scroll({
+            top: 0,
+            left: 0,
+            behavior: 'smooth'
+          })
+      },
+      odjaviSe()
+      {
+        this.$store.state.logedIn = false
+        this.$router.push('/');
       }
     }
   }
@@ -205,6 +233,12 @@
     text-decoration: underline;
   }
 
+  .stavka-navigacije
+  {
+    color: white;
+    font-size: 16px;
+  }
+
   .divLista
   {
     display: flex;
@@ -216,5 +250,10 @@
   {
     text-align: left;
     list-style-type: square;
+  }
+
+  .login
+  {
+    text-align: center;
   }
 </style>

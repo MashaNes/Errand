@@ -61,13 +61,11 @@
   </section>
    <div class="admin-wrapper">
     <div class="admin" v-if="isSerbian">
-        Da li si ti admin? <button type="button" @click="showLogin = true" class="btn btn-link stop">Prijavi se</button> <button type="button" @click="showRegister = true" class="btn btn-link stop">Registruj se</button>
+        Da li si ti admin? <router-link type="button" :to="'/loginAdmin'" class="btn btn-link stop">Prijavi se</router-link> <router-link :to="'/registerAdmin'" type="button" class="btn btn-link stop">Registruj se</router-link>
     </div>
     <div class="admin" v-else>
-        Are you an admin? <button type="button" @click="showLogin = true" class="btn btn-link stop">Log in</button> <button type="button" @click="showRegister = true" class="btn btn-link stop">Sign up</button>
+        Are you an admin? <router-link type="button" :to="'/loginAdmin'" class="btn btn-link stop">Log in</router-link> <router-link :to="'/registerAdmin'" type="button" class="btn btn-link stop">Sign up</router-link>
     </div>
-    <ModalAdminSignUp v-if="showRegister" @close="showRegister = false" />
-    <ModalAdminLogin v-if="showLogin" @close="showLogin = false" />
   </div>
 </div>
 
@@ -75,27 +73,13 @@
 </template>
 
 <script>
-    import ModalAdminSignUp from "@/components/ModalAdminSignUp"
-    import ModalAdminLogin from "@/components/ModalAdminLogin";
     export default {
-        components:
-        {
-            ModalAdminSignUp,
-            ModalAdminLogin
-        },
         computed:
         {
             isSerbian()
                 {
                     return this.$store.state.isSerbian
                 }
-        },
-        data()
-        {
-            return{
-                showRegister : false,
-                showLogin: false
-            }
         }
 }
 </script>
@@ -226,8 +210,8 @@
 
     .admin
     {
-        margin-right: 50px;
         margin-top: 5px;
+        margin-bottom: 15px;
     }
 
     .admin-wrapper

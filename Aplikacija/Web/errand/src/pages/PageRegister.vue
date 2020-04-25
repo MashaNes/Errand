@@ -8,9 +8,6 @@
           <p class="subtitle has-text-grey" v-if = "isSerbian">Registrujte se da biste nastavili.</p>
           <p class="subtitle has-text-grey" v-else>Please register to proceed.</p>
           <div class="box">
-            <figure class="avatar">
-                <img src="https://placehold.it/128x128">
-            </figure>
             <form>
               <div class="field">                
                 <div class="control">
@@ -90,7 +87,7 @@
                 <div class = "control">
                   <label class = "register-label" v-if="isSerbian"> Broj telefona: </label>
                   <label class = "register-label" v-else> Phone number: </label>
-                  <VuePhoneNumberInput v-model="form.phone" no-example="true"/>
+                  <VuePhoneNumberInput v-model="form.phone" :no-example="true"/>
                 </div>
               </div>
                <div class = "field">
@@ -276,7 +273,7 @@
     box-shadow: none;
   }
   .box {
-    margin-top: 5rem;
+    margin-top: 1rem;
   }
   .avatar {
     margin-top: -70px;
