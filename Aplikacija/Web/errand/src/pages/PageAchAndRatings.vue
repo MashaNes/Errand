@@ -4,72 +4,80 @@
     <div class = "top-div" v-else-if="tab=='Ratings'"> Ratings </div>
     <div class = "top-div" v-else-if="isSerbian"> Dostignuća </div>
     <div class = "top-div" v-else> Achievements </div>
-    <div class="main-window">
+    <!-- <div class="main-window">
       <div class="bordered-container">
-        <div class="aside">
+        <div class="aside"> -->
+      <div class="main-wrapper">
+        <div class="side-info">
           <div class="media-center">
-              <p class="image is-96x96">
-                <img class="rounded-image" :src="user.picture">
-              </p>
-            </div>        
-          <div>
-            <div class="info-element">
-              <img 
-                src="@/assets/signature.svg" 
-                height = "20" 
-                width = "20"
-                style = "margin-right: 15px"
-              />
-              {{fullUserName}}
-            </div>
-            <div class="info-element">
-              <img 
-                src="@/assets/email.svg" 
-                height = "20" 
-                width = "20"
-                style = "margin-right: 15px"
-              />
-              {{user.email}}
-            </div>
-            <div class="info-element">
-              <img 
-                src="@/assets/call.svg" 
-                height = "20" 
-                width = "20"
-                style = "margin-right: 15px"
-              />
-              <div class="phone-number">
-                <div v-for="p in user.phone" :key="p">{{ p }}</div>
+            <p class="image is-96x96">
+              <img class="rounded-image" :src="user.picture">
+            </p>
+          </div>        
+          <div class="info-plus-btn">
+            <div class="info-only">
+              <div class="info-element">
+                <img 
+                  src="@/assets/signature.svg" 
+                  height = "20" 
+                  width = "20"
+                  style = "margin-right: 15px"
+                />
+                <span>{{fullUserName}}</span>
+              </div>
+              <div class="info-element">
+                <img 
+                  src="@/assets/email.svg" 
+                  height = "20" 
+                  width = "20"
+                  style = "margin-right: 15px"
+                />
+                <span>{{user.email}}</span>
+              </div>
+              <div class="info-element">
+                <img 
+                  src="@/assets/call.svg" 
+                  height = "20" 
+                  width = "20"
+                  style = "margin-right: 10%"
+                />
+                <div class="phone-number">
+                  <div v-for="p in user.phone" :key="p">{{ p }}</div>
+                </div>
               </div>
             </div>
-            <div>
-              <b-button 
-                @click="changeTab()" 
-                style="margin:10px 0 10px 0; width:100%;" 
-                variant="success"
-                size="lg" 
-              >
-                <span v-if="isSerbian && tab=='Ratings'"> Dostignuća </span>
-                <span v-else-if="tab=='Ratings'"> Achievements </span>
-                <span v-else-if="isSerbian"> Ocene </span>
-                <span v-else> Ratings </span>
-              </b-button>
+            <div class="buttons;">
+              <div>
+                <b-button 
+                  @click="changeTab()" 
+                  style="" 
+                  variant="success"
+                  size="lg" 
+                >
+                  <span v-if="isSerbian && tab=='Ratings'"> Dostignuća </span>
+                  <span v-else-if="tab=='Ratings'"> Achievements </span>
+                  <span v-else-if="isSerbian"> Ocene </span>
+                  <span v-else> Ratings </span>
+                </b-button>
+              </div>
+              <router-link :to = "'/profile'" class="button is-primary" style="width:100%;">
+                <strong v-if="isSerbian">Detalji profila</strong>
+                <strong v-else>Profile details</strong>
+              </router-link>
             </div>
-            <router-link :to = "'/profile'" class="button is-primary" style="width:100%;">
-              <strong v-if="isSerbian">Detalji profila</strong>
-              <strong v-else>Profile details</strong>
-            </router-link>
           </div>
         </div>
-      </div>
-      <div v-if="tab=='Achievements'" class="ach-and-rating-wrap"> 
+          <!-- </div>
+        </div>
+      </div> -->
+      <div v-if="tab=='Achievements'" class="ach-wrap"> 
         <Achievement 
           v-for="achievement in achievements"
           :key="achievement.id"
           :achievement="achievement"
         />
       </div>
-      <div v-if="tab=='Ratings'" class="ach-and-rating-wrap"> 
+      <div v-if="tab=='Ratings'" class="rating-wrap"> 
         <Rating 
           v-for="rating in ratings"
           :key="rating.id"
@@ -137,10 +145,9 @@ export default {
 
   .info-element {
     display:flex;
-    flex-direction:row;
+    flex-direction:column;
     margin-top: 8px;
     border-bottom: 1px solid lightgray;
-    flex-wrap: wrap;
   }
 
   .phone-number {
@@ -148,14 +155,23 @@ export default {
     flex-direction: column;
   }
 
-  .aside {
-    display: flex;
+  .side-info {
+    display:flex;
+    flex-direction: column;
+    align-items: center;
+    position: sticky;
+    top:20%;
+    align-self:flex-start;
+    margin: 15px 1% 15px 2%;
+    z-index: 1;
+    background-color: white;
+    word-break: break-all;
+    /* display: flex;
     flex-direction: column;
     align-items: center;
     position:sticky;
-    margin: 30px 20px 20px 30px;
-    left:40px;
-    top:100px;
+    margin: 30px 15% 20px 40%;
+    top:100px; */
   }
 
   .flex-profile-info {
@@ -165,8 +181,9 @@ export default {
     align-items: center;
   }
 
-  .main-window {
-    display: flex;
+  .main-wrapper {
+    display:flex; 
+    flex-direction:row;
   }
 
   .bordered-container {
@@ -175,8 +192,84 @@ export default {
     
   }
 
-  .ach-and-rating-wrap {
-    width: 100%; 
-    margin-top:20px;
+  .ach-wrap {
+    width:100%;
+    display:flex;
+    flex-direction:row;
+    flex-wrap:wrap;
+    margin: 40px 5% 0 5%;
+  }
+
+  .rating-wrap {
+    width:100%;
+  }
+
+  .btn {
+    margin:10px 0 10px 0; 
+    width:100%;
+  }
+
+  @media only screen and (max-width:600px)
+  {
+    .main-wrapper {
+      flex-direction: column;
+    }
+    .side-info {
+      margin:0 10px 0 10px;
+      align-self:center;
+      border-right: 1px solid lightgray;
+      border-left: 1px solid lightgray;
+      border-bottom: 1px solid lightgray;
+      top:0px;
+      font-size: 10px;
+      background-color: rgb(166, 168, 172);
+      border-radius: 0 0 10px 10px;
+      justify-items: baseline;
+      word-break: break-all;
+    }
+    .rounded-image {
+      height: 40px;
+      width:40px;
+      align-self: flex-start;
+    }
+
+    .media-center {
+      margin: 5px 0 0 0;
+      height:40px;
+      width:40px;
+    }
+
+    .info-element {
+      flex-direction: row;
+    }
+
+    .button {
+      font-size: 15px;
+      height: 30px;
+    }
+
+    .info-plus-btn {
+      margin: 5px 5px 5px 0;
+      display: flex;
+      flex-direction: row;
+    }
+
+    .info-only {
+      display:flex;
+      flex-direction: column;
+      margin: 0 5px 0 5px;
+    }
+
+    .btn {
+      margin:5px 0 5px 0;
+      font-size:15px;
+    }
+  }
+  
+  @media only screen and (max-width:330px)
+  {
+    .ach-wrap {
+      margin: 40px 2% 0 2%;
+    }
   }
 </style>

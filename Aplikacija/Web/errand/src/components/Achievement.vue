@@ -1,6 +1,5 @@
 <template>
     <b-card 
-      :bg-variant="(achievement.achievementLevel > 2) ? 'warning' : 'light'"
       no-body
     >
 
@@ -17,7 +16,9 @@
         </span>
       </b-card-header>
 
-      <b-card-body>
+      <b-card-body 
+        :class="(achievement.achievementLevel >= 4) ? 'body-golden' : 
+        (achievement.achievementLevel > 2) ? 'body-silver' : 'body-goldenrod'">
         <b-card-text>
           <span v-if="isSerbian" >
             {{achievement.achievementDetails.description.serbian}}
@@ -81,12 +82,25 @@ export default {
   }
 
   .card {
-    margin: 40px 150px 40px 150px;
+    margin: 10px 10px 10px 10px;
     border-radius: 15px;
+    width:300px;
   }
 
   .card-text {
     font-size: 20px;
+  }
+
+  .body-silver {
+    background-color: silver;
+  }
+
+  .body-golden {
+    background-color: rgb(240, 206, 13);
+  }
+
+  .body-goldenrod {
+    background-color: goldenrod;
   }
 
 </style>

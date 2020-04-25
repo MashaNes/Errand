@@ -6,7 +6,7 @@ export const fetchUsers = () => {
             lastName: "Potter",
             //userName: "H.Potter",
             picture: "https://avatarfiles.alphacoders.com/121/121391.jpg",
-            email: "harry.p@gmail.com",
+            email: "harry.potter19961112345542@gmail.com",
             rating: 3.45,
             phone: ["123456", "220098123", "13455562"],
             status: "active",
