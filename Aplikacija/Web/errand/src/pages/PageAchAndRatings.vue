@@ -1,9 +1,5 @@
 <template>
   <div>
-    <div class = "top-div" v-if="isSerbian && tab=='Ratings'"> Ocene </div>
-    <div class = "top-div" v-else-if="tab=='Ratings'"> Ratings </div>
-    <div class = "top-div" v-else-if="isSerbian"> Dostignuća </div>
-    <div class = "top-div" v-else> Achievements </div>
     <!-- <div class="main-window">
       <div class="bordered-container">
         <div class="aside"> -->
@@ -220,7 +216,7 @@ export default {
       border-right: 1px solid lightgray;
       border-left: 1px solid lightgray;
       border-bottom: 1px solid lightgray;
-      top:0px;
+      top:80px;
       font-size: 10px;
       background-color: rgb(166, 168, 172);
       border-radius: 0 0 10px 10px;

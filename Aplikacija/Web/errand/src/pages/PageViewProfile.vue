@@ -1,7 +1,5 @@
 <template>
-    <div>
-      <div class = "top-div" v-if="isSerbian"> Profil </div>
-      <div class = "top-div" v-else> Profile </div>
+    <div class = "wrapper">
       <ProfileInfo 
         v-if="!showProfileEdit"
         :user="user" 
@@ -50,6 +48,9 @@ export default {
 
 <style scoped>
   
-  
+  .wrapper
+  {
+    padding-top: 10px;
+  }
 
 </style>

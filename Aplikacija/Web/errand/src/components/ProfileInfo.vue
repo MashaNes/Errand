@@ -249,6 +249,13 @@ export default {
     margin:5px 5px 0 5px;
   }
 
+  .media-center
+  {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+  }
+
   @media only screen and (max-width: 750px)
   {
     .main-container {
