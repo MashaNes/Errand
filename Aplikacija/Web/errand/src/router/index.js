@@ -11,6 +11,7 @@ import PageAchAndRatings from "@/pages/PageAchAndRatings"
 import PageWelcome from "@/pages/PageWelcome"
 import PageLoginAdmin from "@/pages/PageLoginAdmin"
 import PageRegisterAdmin from "@/pages/PageRegisterAdmin"
+import PageFAQ from "@/pages/PageFAQ"
 
 Vue.use(Router)
 
@@ -61,6 +62,11 @@ const router = new Router(
                 path: "/registerAdmin",
                 name: "PageRegisterAdmin",
                 component: PageRegisterAdmin
+            },
+            {
+                path: "/faq",
+                name: "PageFAQ",
+                component: PageFAQ
             }
         ],
         mode: "history",
