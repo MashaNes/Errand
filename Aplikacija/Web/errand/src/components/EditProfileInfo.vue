@@ -1,56 +1,58 @@
 <template>
   <div>
     <div class="main-container">
-      <div style="margin-right:3%">
+      <div class="picture-side">
         <div class="media-center">
           <p class="image is-128x128">
             <img class="rounded-image" :src="user.picture">
           </p>
         </div>
-        <label 
-          style="margin-top: 15px;" 
-          class = "register-label" v-if="isSerbian"> *Ime: </label>
-        <label 
-          style="margin-top: 15px;" 
-          class = "register-label" v-else> *Name: </label>
-        <div class="field">
-          <input
-            v-if="isSerbian" 
-            class="input is-medium"
-            type="text"
-            placeholder="Ime"
-            v-model="changedUser.firstName"
-          >
-          <input
-            v-else 
-            class="input is-medium"
-            type="text"
-            placeholder="Name"
-            v-model="changedUser.firstName"
-          >
-        </div>
+        <div>
+          <label 
+            style="margin-top: 15px;" 
+            class = "register-label" v-if="isSerbian"> *Ime: </label>
+          <label 
+            style="margin-top: 15px;" 
+            class = "register-label" v-else> *Name: </label>
+          <div class="field">
+            <input
+              v-if="isSerbian" 
+              class="input is-medium"
+              type="text"
+              placeholder="Ime"
+              v-model="changedUser.firstName"
+            >
+            <input
+              v-else 
+              class="input is-medium"
+              type="text"
+              placeholder="Name"
+              v-model="changedUser.firstName"
+            >
+          </div>
 
-        <label 
-          style="margin-top: 15px;" 
-          class = "register-label" v-if="isSerbian"> *Prezime: </label>
-        <label 
-          style="margin-top: 15px;" 
-          class = "register-label" v-else> *Last name: </label>
-        <div class="field">
-          <input 
-            v-if="isSerbian"
-            class="input is-medium"
-            type="text"
-            placeholder="Prezime"
-            v-model="changedUser.lastName"
-          >
-          <input 
-            v-else
-            class="input is-medium"
-            type="text"
-            placeholder="Last name"
-            v-model="changedUser.lastName"
-          >
+          <label 
+            style="margin-top: 15px;" 
+            class = "register-label" v-if="isSerbian"> *Prezime: </label>
+          <label 
+            style="margin-top: 15px;" 
+            class = "register-label" v-else> *Last name: </label>
+          <div class="field">
+            <input 
+              v-if="isSerbian"
+              class="input is-medium"
+              type="text"
+              placeholder="Prezime"
+              v-model="changedUser.lastName"
+            >
+            <input 
+              v-else
+              class="input is-medium"
+              type="text"
+              placeholder="Last name"
+              v-model="changedUser.lastName"
+            >
+          </div>
         </div>
       </div>
       <div class="personal-info">
@@ -74,12 +76,12 @@
               src="@/assets/call.svg" 
               height = "20" 
               width = "20"
-              style = "margin-right: 15px; margin-bottom: 15px"
+              
             />
             <div class="list-value">
               <div class="phones" v-for="p in firstElements('phone')" :key="p">
                 <img src="@/assets/remove.svg" height="15" width="15" class="acc-or-remove-icon" @click="removeElement('phone', p)"> 
-                {{ p }}
+                <span>{{ p }}</span>
               </div>
               <div>
                 <img src="@/assets/remove.svg" height="15" width="15" class="acc-or-remove-icon" @click="removeElement('phone', lastElement('phone'))"> 
@@ -89,7 +91,7 @@
                 <label class = "register-label" v-if="isSerbian"> Dodajte broj telefona: </label>
                 <label class = "register-label" v-else> Add a phone number: </label>
                 <div class="flex-row-elements">
-                  <VuePhoneNumberInput v-model="newPhoneNumber"/>
+                  <VuePhoneNumberInput style="min-width: 250px" no-example v-model="newPhoneNumber"/>
                   <img v-if="newPhoneNumber != ''" src="@/assets/confirm.svg" height="23" width="23" class="acc-or-remove-icon" @click="addElement('phone', newPhoneNumber)">  
                 </div>
               </div>
@@ -101,7 +103,7 @@
               src="@/assets/address.svg" 
               height = "20" 
               width = "20"
-              style = "margin-right: 15px; margin-bottom: 15px"
+              
             />
             <div class="list-value">
               <div class="address" v-for="a in firstElements('homeAddress')" :key="a">
@@ -110,7 +112,7 @@
               </div>
               <div >
                 <img src="@/assets/remove.svg" height="15" width="15" class="acc-or-remove-icon" @click="removeElement('homeAddress', lastElement('homeAddress'))"> 
-                <span>{{lastElement('homeAddress')}} </span>
+                <span >{{lastElement('homeAddress')}} </span>
               </div>
               <label 
                 style="margin-top: 15px;" 
@@ -188,7 +190,7 @@ export default {
         this.user[resource].push(element)
       if(resource == 'homeAddress')
         this.newAddress = ""
-      else this.newPhone = ""
+      else this.newPhoneNumber = ""
     },
     firstElements(resource) {
       const lastIndex = this.user[resource].length;
@@ -212,14 +214,11 @@ export default {
   
   .list-group-item {
     display: flex;
-    flex-wrap: wrap;
     justify-content: space-between;
     border: hidden;
     border-bottom: 1px solid lightgray;
     border-radius: 0px;
     align-items: center;
-    padding-left:1%;
-    padding-right:1%;
   }
 
   .list-key {
@@ -236,17 +235,15 @@ export default {
     text-align: left;
     font-size: 20px;
     margin-right:1%;
+    margin-left:20px;
   }
 
   .main-container {
     margin-top: 30px;
-    margin-bottom: 30px;
     margin-left: 10%;
     margin-right: 10%;
     display: flex;
-    align-items: flex-start;
     flex-direction: row;
-    align-items:flex-start;
     border-radius: 10px;
     flex-wrap: wrap;
     background-color: white;
@@ -271,8 +268,7 @@ export default {
     font-size: 25px;
     font-weight: bold;
     color: black;
-    margin-bottom: 5px;
-    margin-right: 2%;
+    flex-grow:1;
   }
 
   .is-128x128 {
@@ -283,8 +279,16 @@ export default {
   .personal-info {
     display:flex;
     flex-direction: column;
-    min-width: 50%;
-    margin-left: 1%;
+    margin-left: 15px;
+    flex-grow:2;
+  }
+
+  .picture-side {
+    flex-grow:1;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    margin-right:15px;
   }
 
   .flex-row-elements {
@@ -292,7 +296,7 @@ export default {
   }
 
   .acc-or-remove-icon {
-    margin: 0 10px 0 10px; 
+    margin: 0 10px 0 0; 
     cursor:pointer;
   }
 
@@ -304,6 +308,57 @@ export default {
 
   .phones {
     margin-bottom: 10px;
+  }
+
+@media only screen and (max-width: 750px)
+  {
+    .main-container {
+      flex-direction: column;
+      margin-top: 30px;
+      margin-left: 1%;
+      margin-right: 1%;
+      align-items:center;
+      border-radius: 10px;
+      background-color: white;
+      font-size: 10px;
+    }
+
+    .list-value {
+      flex-grow: 2;
+      flex-shrink: 1;
+      text-align: left;
+      font-size: 17px;
+      margin-left: 3%;
+    }
+
+    .l-group-title {
+      border-top:1px solid lightgray;
+    }
+
+    .l-group-btns {
+      display:flex;
+      flex-direction: column;
+      flex-grow:1;
+    }
+
+    .list-group-item {
+      padding-left:1%;
+      padding-right:1%;
+    }
+
+    .picture-side {
+      margin-right:0;
+    }
+
+  }
+
+
+  @media only screen and (max-width:600px)
+  {
+    .list-value {
+      word-break:break-all;
+    }
+
   }
 
 

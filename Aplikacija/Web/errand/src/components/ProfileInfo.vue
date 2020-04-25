@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="main-container">
-      <div>
+      <div class="picture-side">
         <div class="media-center">
           <p class="image is-128x128">
             <img class="rounded-image" :src="user.picture">
@@ -23,18 +23,17 @@
         </div>
       </div>
       <div class="personal-info">
-        <b-list-group style="width:100%;">
-          <b-list-group-item>
+        <b-list-group>
+          <b-list-group-item class="l-group-title">
             <span v-if="isSerbian"
               class="info-title" 
             > Lični podaci </span>
             <span v-else
               class="info-title" 
             > Personal info </span>
-            <div style="display:flex; flex-direction:row;">
+            <div class="l-group-btns">
               <b-button 
-                class="button is-primary" 
-                style="margin: 5px;"
+                class="button is-primary"
                 @click="goToProfileEdit()"
               >
                 <strong v-if="isSerbian">Izmeni</strong>
@@ -42,7 +41,6 @@
               </b-button>
               <b-button 
                 class="button is-primary"
-                style="margin: 5px; width:100%;"
               >
                 <strong v-if="isSerbian">Podešavanja</strong>
                 <strong v-else>Settings</strong>
@@ -146,13 +144,11 @@ export default {
   
   .list-group-item {
     display: flex;
-    flex-wrap: wrap;
     justify-content: space-between;
     border: hidden;
     border-bottom: 1px solid lightgray;
     border-radius: 0px;
     align-items: center;
-    min-width: 30px;
   }
 
   .list-key {
@@ -172,15 +168,13 @@ export default {
   }
 
   .main-container {
-    margin: 30px;
-    margin-left: 15%;
-    margin-right: 15%;
+    margin-top: 30px;
+    margin-left: 10%;
+    margin-right: 10%;
     display: flex;
-    align-items: flex-start;
     flex-direction: row;
     align-items:flex-start;
     border-radius: 10px;
-    flex-wrap: wrap;
     background-color: white;
   }
 
@@ -203,7 +197,7 @@ export default {
     font-size: 25px;
     font-weight: bold;
     color: black;
-    margin-bottom: 5px;
+    flex-grow:1;
   }
 
   .is-128x128 {
@@ -214,8 +208,12 @@ export default {
   .personal-info {
     display:flex;
     flex-direction: column;
-    min-width: 50%;
     margin-left: 15px;
+    flex-grow:2;
+  }
+
+  .picture-side {
+    flex-grow:1;
   }
 
   .nav-buttons {
@@ -225,7 +223,7 @@ export default {
   }
 
   .ocene-dostignuca {
-    margin: 40px 5px 0 0; 
+    margin: 10% 0 20px 0; 
     width: 100%;
     font-size: 20px;
     font-weight: bold;
@@ -239,6 +237,60 @@ export default {
 
   .phones {
     margin-bottom: 10px;
+  }
+
+  .l-group-title {
+    display:flex;
+    flex-direction:row;
+    justify-content: space-between;
+  }
+
+  .button {
+    margin:5px 5px 0 5px;
+  }
+
+  @media only screen and (max-width: 750px)
+  {
+    .main-container {
+      flex-direction: column;
+      margin-top: 30px;
+      margin-left: 1%;
+      margin-right: 1%;
+      align-items:center;
+      border-radius: 10px;
+      background-color: white;
+      font-size: 10px;
+    }
+
+    .list-value {
+      flex-grow: 2;
+      flex-shrink: 1;
+      text-align: left;
+      font-size: 17px;
+      margin-left: 2%;
+    }
+
+    .l-group-title {
+      border-top:1px solid lightgray;
+    }
+
+    .l-group-btns {
+      display:flex;
+      flex-direction: column;
+      flex-grow:1;
+    }
+
+    .list-group-item {
+      padding-left:1%;
+      padding-right:1%;
+    }
+
+    @media only screen and (max-width:600px)
+    {
+      .list-value {
+        word-break:break-all;
+      }
+    }
   }
 
 
