@@ -7,10 +7,12 @@ import PageLogin from "@/pages/PageLogin"
 import PageRegister from "@/pages/PageRegister"
 import PageViewProfile from "@/pages/PageViewProfile"
 import PageHelp from "@/pages/PageHelp"
-import PageAchAndRatings from "@/pages/PageAchAndRatings"
+import PageAchievements from "@/pages/PageAchievements"
+import PageRatings from "@/pages/PageRatings"
 import PageWelcome from "@/pages/PageWelcome"
 import PageLoginAdmin from "@/pages/PageLoginAdmin"
 import PageRegisterAdmin from "@/pages/PageRegisterAdmin"
+
 
 Vue.use(Router)
 
@@ -48,9 +50,14 @@ const router = new Router(
                 component: PageHelp
             },
             {
-                path: "/achAndRatings",
-                name: "PageAchAndRatings",
-                component: PageAchAndRatings
+                path: "/achievements",
+                name: "PageAchievements",
+                component: PageAchievements
+            },
+            {
+                path: "/ratings",
+                name: "PageRatings",
+                component: PageRatings
             },
             {
                 path: "/loginAdmin",

@@ -94,9 +94,10 @@ export default {
     Achievement,
     Rating
   },
-  data() {
-    return {
-      tab: "Ratings"
+  props: {
+    tab: {
+      type: String,
+      required: true
     }
   },
   computed: {
@@ -160,7 +161,6 @@ export default {
     align-self:flex-start;
     margin: 15px 1% 15px 2%;
     z-index: 1;
-    background-color: white;
     word-break: break-all;
     /* display: flex;
     flex-direction: column;
@@ -205,7 +205,7 @@ export default {
     width:100%;
   }
 
-  @media only screen and (max-width:600px)
+  @media only screen and (max-width:500px)
   {
     .main-wrapper {
       flex-direction: column;
@@ -213,12 +213,12 @@ export default {
     .side-info {
       margin:0 10px 0 10px;
       align-self:center;
-      border-right: 1px solid lightgray;
-      border-left: 1px solid lightgray;
-      border-bottom: 1px solid lightgray;
-      top:80px;
+      border-right: 1px solid black;
+      border-left: 1px solid black;
+      border-bottom: 1px solid black;
+      top:85px;
       font-size: 10px;
-      background-color: rgb(166, 168, 172);
+      background-color:white;
       border-radius: 0 0 10px 10px;
       justify-items: baseline;
       word-break: break-all;
