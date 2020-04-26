@@ -321,6 +321,7 @@ export default {
     flex-direction: column;
     margin-left: 15px;
     flex-grow:2;
+    margin-bottom:30px;
   }
 
   .picture-side {
@@ -329,6 +330,7 @@ export default {
     flex-direction:column;
     align-items:center;
     margin-right:15px;
+    margin-bottom:30px;
   }
 
   .flex-row-elements {
