@@ -2,9 +2,13 @@
   <div>
     <div class="main-container">
       <div class="picture-side">
-        <div class="media-center">
-          <p class="image is-128x128">
-            <img class="rounded-image" :src="user.picture">
+        <div class="media-center" 
+            @drop.prevent="onDrop"
+            @dragenter.prevent="onDrag"
+            @dragover.prevent="onOver"
+            @dragleave.prevent="onLeave">
+          <p class="image is-128x128" >
+            <img class="rounded-image" :src="picture">
           </p>
         </div>
         <div>
@@ -165,7 +169,8 @@ export default {
     return {
       changedUser: {...this.user},
       newPhoneNumber: "",
-      newAddress: ""
+      newAddress: "",
+      newPicture: null
     }
   },
   computed: {
@@ -178,6 +183,9 @@ export default {
     progressBarVariant() {
       return this.user.rating < 2 ? 'danger' : 
              this.user.rating < 5 ? 'warning' : 'success'
+    },
+    picture() {
+      return this.newPicture ? this.newPicture : this.user.picture
     }
   },
   methods: {
@@ -187,24 +195,53 @@ export default {
     },
     addElement(resource, element) {
       if(element != "")
-        this.user[resource].push(element)
+        this.changedUser[resource].push(element)
       if(resource == 'homeAddress')
         this.newAddress = ""
       else this.newPhoneNumber = ""
     },
     firstElements(resource) {
-      const lastIndex = this.user[resource].length;
-      const arrayCopy = [...this.user[resource]];
+      const lastIndex = this.changedUser[resource].length;
+      const arrayCopy = [...this.changedUser[resource]];
       arrayCopy.splice(lastIndex-1, 1);
       return arrayCopy;
     },
     lastElement(resource) {
-      return this.user[resource][this.user[resource].length-1];
+      return this.changedUser[resource][this.changedUser[resource].length-1];
     },
     saveChanges() {
+      this.changedUser.picture = this.picture;
       console.log(this.changedUser)
       this.$store.dispatch('editUser', this.changedUser)
       this.$emit('saveEditChanges')
+    },
+    onDrop(e) {
+      e.stopPropagation();
+      console.log(e.dataTransfer.files[0].path);
+
+      const file = e.dataTransfer.files[0];
+
+      if(!file.type.match('image*')) {
+        console.log('not an image!');
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = (e) => this.newPicture = e.target.result;
+
+      reader.readAsDataURL(file);
+    },
+    onDrag(e) {
+      e.stopPropagation();
+      console.log("hi");
+    },
+    onOver(e) {
+      e.stopPropagation();
+      console.log("hi");
+    },
+    onLeave(e) {
+      e.stopPropagation();
+      console.log("hi");
     }
   }
 }
@@ -219,6 +256,7 @@ export default {
     border-bottom: 1px solid lightgray;
     border-radius: 0px;
     align-items: center;
+    background-color:inherit;
   }
 
   .list-key {
@@ -246,12 +284,14 @@ export default {
     flex-direction: row;
     border-radius: 10px;
     flex-wrap: wrap;
-    background-color: white;
   }
 
   .rounded-image {
     border-radius: 60px;
     border: 2px solid grey;
+    height: 250px;
+    width:250px;
+    object-fit:cover;
   }
 
   .content {
@@ -319,7 +359,6 @@ export default {
       margin-right: 1%;
       align-items:center;
       border-radius: 10px;
-      background-color: white;
       font-size: 10px;
     }
 

@@ -11,10 +11,14 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
 import { BootstrapVue} from 'bootstrap-vue'
 
+
+import UploadImage from 'vue-upload-image';
 import VuePhoneNumberInput from 'vue-phone-number-input';
 import 'vue-phone-number-input/dist/vue-phone-number-input.css';
  
+Vue.component('upload-image', UploadImage)
 Vue.component('vue-phone-number-input', VuePhoneNumberInput);
+
 
 Vue.use(BootstrapVue)
 

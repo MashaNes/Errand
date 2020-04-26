@@ -23,16 +23,16 @@
                                 <span v-if="isSerbian" class = "ikonica"> Profil </span>
                                 <span v-else class = "ikonica"> Profile </span>
                             </router-link>
-                            <a class="dropdown-item">
+                            <router-link :to="'/achievements'" class="dropdown-item">
                                 <img src = "../assets/achievements.svg" class="ikonica-uvucena">
                                 <span v-if="isSerbian" class = "ikonica"> Dostignuća </span>
                                 <span v-else class = "ikonica"> Achievements </span>
-                            </a>
-                            <a class="dropdown-item">
+                            </router-link>
+                            <router-link :to="'/ratings'" class="dropdown-item">
                                 <img src = "../assets/ratings.svg" class="ikonica-uvucena">
                                 <span v-if="isSerbian" class = "ikonica"> Ocene </span>
                                 <span v-else class = "ikonica"> Ratings </span>
-                            </a>
+                            </router-link>
                             <router-link :to = "'/requests'" class="dropdown-item">
                                 <img src = "../assets/requests.svg">
                                 <span v-if="isSerbian" class = "ikonica"> Zahtevi </span>

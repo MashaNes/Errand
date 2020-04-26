@@ -12,14 +12,14 @@
               <li class="stavka-navigacije" v-if="isSerbian"> Profil </li>
               <li class="stavka-navigacije" v-else> Profile </li>
             </router-link>
-            <!--<router-link>-->
+            <router-link :to="'achievements'">
               <li class="stavka-navigacije" v-if="isSerbian">Dostignuća </li>
               <li class="stavka-navigacije" v-else> Achievements </li>
-            <!--</router-link>-->
-            <!--<router-link>-->
+            </router-link>
+            <router-link :to="'ratings'">
               <li class="stavka-navigacije" v-if="isSerbian"> Ocene </li>
               <li class="stavka-navigacije" v-else> Ratings </li>
-            <!--</router-link>-->
+            </router-link>
             <router-link :to="'/requests'" >
               <li class="stavka-navigacije" v-if="isSerbian"> Zahtevi </li>
               <li class="stavka-navigacije" v-else> Requests </li>
