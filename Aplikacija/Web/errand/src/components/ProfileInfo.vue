@@ -11,10 +11,9 @@
           {{ fullUserName }}
         </div>
         <div class="nav-buttons">
-          <b-button 
-            variant="success" 
+          <b-button
             size="lg"
-            class="ocene-dostignuca"
+            class="ocene-dostignuca button is-primary"
             :to="'/achAndRatings'"
           >
             <span v-if="isSerbian"> Ocene i dostignuća </span>
@@ -33,14 +32,14 @@
             > Personal info </span>
             <div class="l-group-btns">
               <b-button 
-                class="button is-primary"
+                class="button is-primary title-btn"
                 @click="goToProfileEdit()"
               >
                 <strong v-if="isSerbian">Izmeni</strong>
                 <strong v-else>Edit</strong>
               </b-button>
               <b-button 
-                class="button is-primary"
+                class="button is-primary title-btn"
               >
                 <strong v-if="isSerbian">Podešavanja</strong>
                 <strong v-else>Settings</strong>
@@ -142,6 +141,10 @@ export default {
 
 <style scoped>
   
+  .list-group {
+    background-color:inherit;
+  }
+
   .list-group-item {
     display: flex;
     justify-content: space-between;
@@ -149,6 +152,7 @@ export default {
     border-bottom: 1px solid lightgray;
     border-radius: 0px;
     align-items: center;
+    background-color:inherit;
   }
 
   .list-key {
@@ -175,12 +179,14 @@ export default {
     flex-direction: row;
     align-items:flex-start;
     border-radius: 10px;
-    background-color: white;
   }
 
   .rounded-image {
     border-radius: 60px;
     border: 2px solid grey;
+    height: 250px;
+    width:250px;
+    object-fit:cover;
   }
 
   .content {
@@ -210,10 +216,12 @@ export default {
     flex-direction: column;
     margin-left: 15px;
     flex-grow:2;
+    margin-bottom: 30px;
   }
 
   .picture-side {
     flex-grow:1;
+    margin-bottom: 30px;
   }
 
   .nav-buttons {
@@ -245,7 +253,7 @@ export default {
     justify-content: space-between;
   }
 
-  .button {
+  .title-btn {
     margin:5px 5px 0 5px;
   }
 
@@ -265,7 +273,6 @@ export default {
       margin-right: 1%;
       align-items:center;
       border-radius: 10px;
-      background-color: white;
       font-size: 10px;
     }
 

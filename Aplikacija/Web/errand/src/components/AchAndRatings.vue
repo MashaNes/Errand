@@ -5,12 +5,12 @@
         <div class="aside"> -->
       <div class="main-wrapper">
         <div class="side-info">
-          <div class="media-center">
-            <p class="image is-96x96">
-              <img class="rounded-image" :src="user.picture">
-            </p>
-          </div>        
-          <div class="info-plus-btn">
+          <div class="pic-plus-info">
+            <div class="media-center">
+              <p class="image is-96x96">
+                <img class="rounded-image" :src="user.picture">
+              </p>
+            </div>        
             <div class="info-only">
               <div class="info-element">
                 <img 
@@ -21,7 +21,7 @@
                 />
                 <span>{{fullUserName}}</span>
               </div>
-              <div class="info-element">
+              <div class="info-element to-hide">
                 <img 
                   src="@/assets/email.svg" 
                   height = "20" 
@@ -30,7 +30,7 @@
                 />
                 <span>{{user.email}}</span>
               </div>
-              <div class="info-element">
+              <div class="info-element to-hide">
                 <img 
                   src="@/assets/call.svg" 
                   height = "20" 
@@ -42,25 +42,22 @@
                 </div>
               </div>
             </div>
-            <div class="buttons;">
-              <div>
-                <b-button 
-                  @click="changeTab()" 
-                  style="" 
-                  variant="success"
-                  size="lg" 
-                >
-                  <span v-if="isSerbian && tab=='Ratings'"> Dostignuća </span>
-                  <span v-else-if="tab=='Ratings'"> Achievements </span>
-                  <span v-else-if="isSerbian"> Ocene </span>
-                  <span v-else> Ratings </span>
-                </b-button>
-              </div>
-              <router-link :to = "'/profile'" class="button is-primary" style="width:100%;">
-                <strong v-if="isSerbian">Detalji profila</strong>
-                <strong v-else>Profile details</strong>
+          </div>
+          <div class="btns">
+              <router-link
+                class="button is-primary " 
+                style="width:100%;"
+                :to="'/ratings'"
+              >
+                <strong v-if="isSerbian && tab=='Ratings'"> Dostignuća </strong>
+                <strong v-else-if="tab=='Ratings'"> Achievements </strong>
+                <strong v-else-if="isSerbian"> Ocene </strong>
+                <strong v-else> Ratings </strong>
               </router-link>
-            </div>
+            <router-link :to = "'/profile'" class="button is-primary" style="width:100%;">
+              <strong v-if="isSerbian">Detalji profila</strong>
+              <strong v-else>Profile details</strong>
+            </router-link>
           </div>
         </div>
           <!-- </div>
@@ -138,6 +135,9 @@ export default {
  .rounded-image {
     border-radius: 60px;
     border: 2px solid grey;
+    height:96px;
+    width:96px;
+    object-fit:cover;
   }
 
   .info-element {
@@ -170,6 +170,12 @@ export default {
     top:100px; */
   }
 
+  .pic-plus-info {
+    display:flex;
+    flex-direction:column;
+    align-items: center;
+  }
+
   .flex-profile-info {
     margin-left:30px;
     display: flex;
@@ -200,39 +206,66 @@ export default {
     width:100%;
   }
 
-  .btn {
-    margin:10px 0 10px 0; 
+  .btns {
+    display:flex;
+    flex-direction:column;
     width:100%;
   }
 
+  .is-secondary {
+    width:100%;
+  }
+
+  .button {
+      width:100%;
+      margin-bottom:10px;
+      margin-top:10px;
+    }
+
   @media only screen and (max-width:500px)
   {
+    .to-hide {
+      visibility: hidden;
+      height: 0px;
+      width: 0px;
+      margin:0px;
+    }
+
     .main-wrapper {
       flex-direction: column;
     }
     .side-info {
+      flex-direction: column;
       margin:0 10px 0 10px;
-      align-self:center;
+      align-self:left;
       border-right: 1px solid black;
       border-left: 1px solid black;
       border-bottom: 1px solid black;
       top:85px;
-      font-size: 10px;
+      font-size: 15px;
       background-color:white;
       border-radius: 0 0 10px 10px;
       justify-items: baseline;
       word-break: break-all;
     }
+
+    .btns {
+      flex-direction:row;
+
+    }
+
+
     .rounded-image {
-      height: 40px;
-      width:40px;
+      height: 60px;
+      width:60px;
       align-self: flex-start;
     }
 
     .media-center {
-      margin: 5px 0 0 0;
-      height:40px;
-      width:40px;
+      margin: 10px 10px 0 10px;
+      height:60px;
+      width:60px;
+      align-self:baseline;
     }
 
     .info-element {
@@ -242,9 +275,11 @@ export default {
     .button {
       font-size: 15px;
       height: 30px;
+      width:100%;
+      margin: 5px 5px 5px 5px;
     }
 
-    .info-plus-btn {
+    .pic-plus-info {
       margin: 5px 5px 5px 0;
       display: flex;
       flex-direction: row;
