@@ -36,14 +36,21 @@ export default {
 <style scoped>
     .wrapper
     {
-        margin:30px;
+        margin:10px;
         background-color: white;
-        margin-left:150px;
-        margin-right:150px;
         border: 2px solid rgb(43, 41, 41);
         border-radius: 15px;
         min-height: 50px;
-        padding:10px
+        padding:10px;
+        width: 80%;
+    }
+
+    @media only screen and (max-width: 600px)
+    {
+        .wrapper
+        {
+            width: 96%;
+        }
     }
 
     .request-name

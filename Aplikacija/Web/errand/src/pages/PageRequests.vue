@@ -1,37 +1,34 @@
 <template>
     <div>
         <nav class="tabovi">
-            <div class="container">
-                <div class="navbar-menu">
-                    <a v-if="tab == 'Requested'" class="navbar-item aktivan" href="#">
-                        <span v-if="isSerbian">Zahtevali ste</span>
-                        <span v-else>Requested</span>
-                    </a>
-                    <a v-else class="navbar-item" href="#" @click="tabRequested">
-                        <span v-if="isSerbian">Zahtevali ste</span>
-                        <span v-else>Requested</span>
-                    </a>
-                    <a v-if="tab == 'Running'" class="navbar-item aktivan" href="#">
-                        <span v-if="isSerbian">Izvršavate</span>
-                        <span v-else>Running</span>
-                    </a>
-                    <a v-else class="navbar-item" href="#" @click="tabRunning">
-                        <span v-if="isSerbian">Izvršavate</span>
-                        <span v-else>Running</span>
-                    </a>
-                    <a v-if="tab == 'Finished'" class="navbar-item aktivan" href="#">
-                        <span v-if="isSerbian">Završeni</span>
-                        <span v-else>Finished</span>
-                    </a>
-                    <a v-else class="navbar-item" href="#" @click="tabFinished">
-                        <span v-if="isSerbian">Završeni</span>
-                        <span v-else>Finished</span>
-                    </a>
-                </div>
-            </div>
+            <a v-if="tab == 'Requested'" class="navbar-item aktivan" href="#">
+                <span v-if="isSerbian">Zahtevali ste</span>
+                <span v-else>Requested</span>
+            </a>
+            <a v-else class="navbar-item" href="#" @click="tabRequested">
+                <span v-if="isSerbian">Zahtevali ste</span>
+                <span v-else>Requested</span>
+            </a>
+            <a v-if="tab == 'Running'" class="navbar-item aktivan" href="#">
+                <span v-if="isSerbian">Izvršavate</span>
+                <span v-else>Running</span>
+            </a>
+            <a v-else class="navbar-item" href="#" @click="tabRunning">
+                <span v-if="isSerbian">Izvršavate</span>
+                <span v-else>Running</span>
+            </a>
+            <a v-if="tab == 'Finished'" class="navbar-item aktivan" href="#">
+                <span v-if="isSerbian">Završeni</span>
+                <span v-else>Finished</span>
+            </a>
+            <a v-else class="navbar-item" href="#" @click="tabFinished">
+                <span v-if="isSerbian">Završeni</span>
+                <span v-else>Finished</span>
+            </a>
         </nav>
-        
-        <RequestBox v-for="request in requests" :key="request.id" :identifikator="request.id"/>
+        <div class="request-div">
+            <RequestBox v-for="request in requests" :key="request.id" :identifikator="request.id"/>
+        </div>
     </div>
 </template>
 
@@ -98,11 +95,30 @@
 </script>
 
 <style scoped>
+    .request-div
+    {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        justify-items: center;
+        align-content: center;
+    }
+
     .tabovi
     {
         background-color: white;
         padding: 7px;
+        min-height: 50px;
+        width: 100%;
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: 30px;
     }
+    
+    
     .navbar-menu
     {
         display:flex;
@@ -115,6 +131,8 @@
         justify-content: center;
         font-weight: 400;
         font-size: 20px;
+        height: 100%;
+        text-align: center;
     }
 
     .aktivan

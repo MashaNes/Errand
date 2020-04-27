@@ -21,7 +21,7 @@
         </div>
         <div class = "element donji-div">
             <p class = "other" v-if="isSerbian">Treba Vam neka druga pomoć? </p> <router-link type="button" :to="'/faq'" class="btn btn-link btn-contact" v-if="isSerbian">Pogledajte često postavljana pitanja</router-link>
-            <p class = "other" v-if="!isSerbian">Need help with something else?   </p> <button type="button" class="btn btn-link btn-contact" v-if="!isSerbian">Check out FAQ</button>
+            <p class = "other" v-if="!isSerbian">Need help with something else?   </p> <router-link type="button" :to="'/faq'" class="btn btn-link btn-contact" v-if="!isSerbian">Check out FAQ</router-link>
         </div>
     </div>
 </template>
