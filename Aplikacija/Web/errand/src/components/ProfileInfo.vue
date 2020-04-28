@@ -14,7 +14,7 @@
           <b-button
             size="lg"
             class="ocene-dostignuca button is-primary"
-            :to="'/achAndRatings'"
+            :to="'/achievements'"
           >
             <span v-if="isSerbian"> Ocene i dostignuća </span>
             <span v-else> Ratings and achievements </span>
@@ -169,6 +169,7 @@ export default {
     text-align: left;
     font-size: 20px;
     margin-left: 30px;
+    word-break: break-all;
   }
 
   .main-container {
@@ -197,6 +198,7 @@ export default {
     margin-top: 15px;
     margin-bottom: 2px;
     border-radius: 5px;
+    word-break: break-all;
   }
 
   .info-title {
@@ -299,12 +301,6 @@ export default {
       padding-right:1%;
     }
 
-    @media only screen and (max-width:600px)
-    {
-      .list-value {
-        word-break:break-all;
-      }
-    }
   }
 
 

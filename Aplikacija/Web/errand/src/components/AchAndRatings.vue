@@ -47,7 +47,7 @@
               <router-link
                 class="button is-primary " 
                 style="width:100%;"
-                :to="'/ratings'"
+                :to="tab=='Ratings' ? '/achievements' : '/ratings' "
               >
                 <strong v-if="isSerbian && tab=='Ratings'"> Dostignuća </strong>
                 <strong v-else-if="tab=='Ratings'"> Achievements </strong>
@@ -162,6 +162,8 @@ export default {
     margin: 15px 1% 15px 2%;
     z-index: 1;
     word-break: break-all;
+    font-size:15px;
+    max-width: 250px;
     /* display: flex;
     flex-direction: column;
     align-items: center;
@@ -222,7 +224,7 @@ export default {
       margin-top:10px;
     }
 
-  @media only screen and (max-width:500px)
+  @media only screen and (max-width:499px)
   {
     .to-hide {
       visibility: hidden;
@@ -242,11 +244,12 @@ export default {
       border-left: 1px solid black;
       border-bottom: 1px solid black;
       top:85px;
-      font-size: 15px;
+      font-size: 13px;
       background-color:white;
       border-radius: 0 0 10px 10px;
       justify-items: baseline;
       word-break: break-all;
+      max-width:initial;
     }
 
     .btns {
