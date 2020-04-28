@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from rest_framework.authtoken.models import Token
 from . import models
+from . import parsers
 
 class PictureSerializer(serializers.ModelSerializer):
     class Meta:
@@ -58,11 +59,7 @@ class UserSerializer(serializers.ModelSerializer):
         extra_kwargs = {'password': {'write_only': True}}
 
     def create(self, validated_data):
-        user = models.User(email=validated_data['email'],
-                           username=validated_data['email'],
-                           first_name=validated_data['first_name'],
-                           last_name=validated_data['last_name'],
-                           phone=validated_data['phone'])
+        user = parsers.parse_user(validated_data)
         user.set_password(validated_data['password'])
         user.save()
         Token.objects.create(user=user)
@@ -113,6 +110,13 @@ class RequestSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Request
         fields = '__all__'
+
+    def create(self, validated_data):
+        request = parsers.parse_request(validated_data)
+        request.save()
+        fullrequest = models.FullRequest(request=request)
+        fullrequest.save()
+        return request
 
 class RequestEditSerializer(serializers.ModelSerializer):
     class Meta:

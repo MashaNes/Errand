@@ -91,7 +91,7 @@ class Request(models.Model):
     LOCATION_STATUS_TYPES = () #TODO: Add types
 
     name = models.CharField(max_length=50)
-    status = models.IntegerField(choices=STATUS_TYPES)
+    status = models.IntegerField(default=0, choices=STATUS_TYPES)
     location_status = models.IntegerField(default=0, choices=LOCATION_STATUS_TYPES)
     time = models.DateTimeField(auto_now=True)
     picture_required = models.BooleanField(default=False)
@@ -134,7 +134,7 @@ class Rating(models.Model):
     rated_user = models.ForeignKey(User, related_name='rating_rated_user_id', null=True,
                                    on_delete=models.SET_NULL)
     request = models.ForeignKey(Request, null=True, on_delete=models.CASCADE)
-  
+
 class FullUser(models.Model):
     user = models.ForeignKey(User, related_name='user_id', on_delete=models.CASCADE)
     benefit_discount = models.FloatField(null=True, blank=True)
