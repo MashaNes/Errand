@@ -87,7 +87,7 @@
                 <img src="@/assets/remove.svg" height="15" width="15" class="acc-or-remove-icon" @click="removeElement('phone', p)"> 
                 <span>{{ p }}</span>
               </div>
-              <div>
+              <div v-if="phoneArrayLength">
                 <img src="@/assets/remove.svg" height="15" width="15" class="acc-or-remove-icon" @click="removeElement('phone', lastElement('phone'))"> 
                 <span v-text="lastElement('phone')"></span>
               </div>
@@ -114,7 +114,7 @@
                 <img src="@/assets/remove.svg" height="15" width="15" class="acc-or-remove-icon" @click="removeElement('homeAddress', a)">
                 <span >{{ a }}</span>
               </div>
-              <div >
+              <div v-if="addressArrayLength">
                 <img src="@/assets/remove.svg" height="15" width="15" class="acc-or-remove-icon" @click="removeElement('homeAddress', lastElement('homeAddress'))"> 
                 <span >{{lastElement('homeAddress')}} </span>
               </div>
@@ -186,6 +186,12 @@ export default {
     },
     picture() {
       return this.newPicture ? this.newPicture : this.user.picture
+    },
+    phoneArrayLength() {
+      return this.changedUser['phone'].length
+    },
+    addressArrayLength() {
+      return this.changedUser['homeAddress'].length
     }
   },
   methods: {
@@ -202,12 +208,17 @@ export default {
     },
     firstElements(resource) {
       const lastIndex = this.changedUser[resource].length;
+      if(lastIndex < 2)
+        return null;
       const arrayCopy = [...this.changedUser[resource]];
       arrayCopy.splice(lastIndex-1, 1);
       return arrayCopy;
     },
     lastElement(resource) {
-      return this.changedUser[resource][this.changedUser[resource].length-1];
+      const length = this.changedUser[resource].length;
+      if(length == 0)
+        return null;
+      return this.changedUser[resource][length-1];
     },
     saveChanges() {
       this.changedUser.picture = this.picture;
@@ -274,6 +285,7 @@ export default {
     font-size: 20px;
     margin-right:1%;
     margin-left:20px;
+    word-break: break-all;
   }
 
   .main-container {
@@ -283,7 +295,6 @@ export default {
     display: flex;
     flex-direction: row;
     border-radius: 10px;
-    flex-wrap: wrap;
   }
 
   .rounded-image {
@@ -302,6 +313,7 @@ export default {
     margin-top: 15px;
     margin-bottom: 2px;
     border-radius: 5px;
+    word-break: break-all;
   }
 
   .info-title {
@@ -392,16 +404,5 @@ export default {
     }
 
   }
-
-
-  @media only screen and (max-width:600px)
-  {
-    .list-value {
-      word-break:break-all;
-    }
-
-  }
-
-
 
 </style>
