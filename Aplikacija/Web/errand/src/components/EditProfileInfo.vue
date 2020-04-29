@@ -77,17 +77,28 @@
       </div>
       <div class="personal-info">
         <b-list-group >
-          <b-list-group-item style="display:flex; flex-wrap:wrap;">
+          <b-list-group-item class="l-group-title">
             <span v-if="isSerbian"
               class="info-title" 
             > Lični podaci </span>
             <span v-else
               class="info-title" 
             > Personal info </span>
-            <div>
-              <b-button class="button is-primary" @click="saveChanges()">
+
+            <div class="l-group-btns">
+              <b-button 
+                class="button is-primary title-btn"
+                @click="saveChanges()"
+              >
                 <strong v-if="isSerbian">Sačuvaj izmene</strong>
                 <strong v-else>Save changes</strong>
+              </b-button>
+              <b-button 
+                class="button is-primary title-btn"
+                @click="$emit('saveEditChanges')"
+              >
+                <strong v-if="isSerbian">Odustani</strong>
+                <strong v-else>Cancel</strong>
               </b-button>
             </div>
           </b-list-group-item>
@@ -184,7 +195,7 @@ export default {
   },
   data() {
     return {
-      changedUser: {...this.user},
+      changedUser: JSON.parse(JSON.stringify(this.user)),
       newPhoneNumber: "",
       newAddress: "",
       newPicture: null,
@@ -219,6 +230,7 @@ export default {
       this.changedUser[resource].splice(index, 1);
     },
     addElement(resource, element) {
+      // eslint-disable-next-line no-debugger
       if(element != "")
         this.changedUser[resource].push(element)
       if(resource == 'homeAddress')
@@ -273,13 +285,10 @@ export default {
     },
     onDragEnter() {
       this.dragCounter ++;
-      
-      console.log(this.dragCounter);
       this.isDragged = true;
     },
     onDragLeave() {
       this.dragCounter --;
-      console.log(this.dragCounter);
       if(!this.dragCounter)
         this.isDragged = false;
     },
@@ -411,7 +420,7 @@ export default {
   }
 
   .acc-or-remove-icon {
-    margin: 0 10px 0 0; 
+    margin: 0 10px 0 5px; 
     cursor:pointer;
   }
 
@@ -425,8 +434,14 @@ export default {
     margin-bottom: 10px;
   }
 
-  .toast-class {
-    background-color: green;
+  .title-btn {
+    margin:5px 5px 0 5px;
+  }
+
+  .l-group-title {
+    display:flex;
+    flex-direction:row;
+    justify-content: space-between;
   }
 
 @media only screen and (max-width: 750px)

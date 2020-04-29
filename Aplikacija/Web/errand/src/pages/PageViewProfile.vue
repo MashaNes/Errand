@@ -30,6 +30,8 @@ export default {
   },
   computed: {
     user() {
+      // eslint-disable-next-line no-debugger
+    
       return this.$store.state.user
     },
     isSerbian() {
