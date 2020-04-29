@@ -116,6 +116,7 @@ export default {
         align-items: center;
         justify-items: center;
         margin-right: 10px;
+        margin-top:10px;
         font-size: 18px;
     }
 
@@ -233,22 +234,22 @@ export default {
 
     .crveno
     {
-        background-color: rgb(231, 164, 164);
+        background-color: rgb(255, 212, 212);
     }
 
     .zeleno
     {
-        background-color: rgb(191, 221, 191);
+        background-color: rgb(217, 250, 217);
     }
 
     .zuto
     {
-        background-color: rgb(231, 231, 148);
+        background-color: rgb(245, 245, 182);
     }
 
     .sivo
     {
-        background-color: rgb(209, 208, 208);
+        background-color: rgb(230, 230, 230);
     }
 
     .is-128x128 
