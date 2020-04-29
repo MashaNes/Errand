@@ -4,6 +4,8 @@ import router from "@/router"
 import store from "@/store"
 import moment from "moment"
 import vuelidate from "vuelidate"
+import Toasted from "vue-toasted"
+import Options from "vue-toasted"
 
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { faUserSecret } from '@fortawesome/free-solid-svg-icons'
@@ -19,8 +21,8 @@ import 'vue-phone-number-input/dist/vue-phone-number-input.css';
 Vue.component('upload-image', UploadImage)
 Vue.component('vue-phone-number-input', VuePhoneNumberInput);
 
-
 Vue.use(BootstrapVue)
+Vue.use(Toasted, Options)
 
 library.add(faUserSecret)
 
