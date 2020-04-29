@@ -2,60 +2,76 @@
   <div>
     <div class="main-container">
       <div class="picture-side">
-        <div class="media-center" 
+        <div class="media-center">
+          <p class="image is-128x128"
             @drop.prevent="onDrop"
-            @dragenter.prevent="onDrag"
-            @dragover.prevent="onOver"
-            @dragleave.prevent="onLeave">
-          <p class="image is-128x128" >
+            @dragenter.prevent="onDragEnter"
+            @dragleave.prevent="onDragLeave" 
+            @dragover.prevent
+            @mouseenter.prevent="onDragEnter"
+            @mouseleave.prevent="onDragLeave"
+            @click="$refs.file.click()"
+          >
             <img class="rounded-image" :src="picture">
+            <img 
+              v-if="isDragged" 
+              :class="['rounded-image', isDragged ? 'semi-transparent': 'transparent']" 
+              src="@/assets/camera.png"
+            >
           </p>
         </div>
-        <div>
-          <label 
-            style="margin-top: 15px;" 
-            class = "register-label" v-if="isSerbian"> *Ime: </label>
-          <label 
-            style="margin-top: 15px;" 
-            class = "register-label" v-else> *Name: </label>
-          <div class="field">
-            <input
-              v-if="isSerbian" 
-              class="input is-medium"
-              type="text"
-              placeholder="Ime"
-              v-model="changedUser.firstName"
-            >
-            <input
-              v-else 
-              class="input is-medium"
-              type="text"
-              placeholder="Name"
-              v-model="changedUser.firstName"
-            >
+        <div style="display:flex; flex-direction:column; align-items:center">
+            <input type="file" ref="file" style="display: none" @change="pictureSelected"/>
+          <div style="text-align:center">
+            <span v-if="isSerbian">Kliknite na sliku da biste je promenili, ili prevucite novu preko nje</span>
+            <span v-else>Click on the picture to change it, or drag a new one over the existing</span>
           </div>
+          <div>
+            <label 
+              style="margin-top: 15px;" 
+              class = "register-label" v-if="isSerbian"> *Ime: </label>
+            <label 
+              style="margin-top: 15px;" 
+              class = "register-label" v-else> *Name: </label>
+            <div class="field">
+              <input
+                v-if="isSerbian" 
+                class="input is-medium"
+                type="text"
+                placeholder="Ime"
+                v-model="changedUser.firstName"
+              >
+              <input
+                v-else 
+                class="input is-medium"
+                type="text"
+                placeholder="Name"
+                v-model="changedUser.firstName"
+              >
+            </div>
 
-          <label 
-            style="margin-top: 15px;" 
-            class = "register-label" v-if="isSerbian"> *Prezime: </label>
-          <label 
-            style="margin-top: 15px;" 
-            class = "register-label" v-else> *Last name: </label>
-          <div class="field">
-            <input 
-              v-if="isSerbian"
-              class="input is-medium"
-              type="text"
-              placeholder="Prezime"
-              v-model="changedUser.lastName"
-            >
-            <input 
-              v-else
-              class="input is-medium"
-              type="text"
-              placeholder="Last name"
-              v-model="changedUser.lastName"
-            >
+            <label 
+              style="margin-top: 15px;" 
+              class = "register-label" v-if="isSerbian"> *Prezime: </label>
+            <label 
+              style="margin-top: 15px;" 
+              class = "register-label" v-else> *Last name: </label>
+            <div class="field">
+              <input 
+                v-if="isSerbian"
+                class="input is-medium"
+                type="text"
+                placeholder="Prezime"
+                v-model="changedUser.lastName"
+              >
+              <input 
+                v-else
+                class="input is-medium"
+                type="text"
+                placeholder="Last name"
+                v-model="changedUser.lastName"
+              >
+            </div>
           </div>
         </div>
       </div>
@@ -170,7 +186,9 @@ export default {
       changedUser: {...this.user},
       newPhoneNumber: "",
       newAddress: "",
-      newPicture: null
+      newPicture: null,
+      isDragged: false,
+      dragCounter: 0
     }
   },
   computed: {
@@ -226,11 +244,18 @@ export default {
       this.$store.dispatch('editUser', this.changedUser)
       this.$emit('saveEditChanges')
     },
+    pictureSelected(e) {
+      const file = e.target.files[0];
+      this.addImage(file);
+    },
     onDrop(e) {
       e.stopPropagation();
-      console.log(e.dataTransfer.files[0].path);
+      //console.log(e.dataTransfer.files);
 
       const file = e.dataTransfer.files[0];
+      this.addImage(file);
+    },
+    addImage(file) {
 
       if(!file.type.match('image*')) {
         console.log('not an image!');
@@ -241,18 +266,20 @@ export default {
       reader.onload = (e) => this.newPicture = e.target.result;
 
       reader.readAsDataURL(file);
+      this.isDragged = false;
+      this.dragCounter = 0;
     },
-    onDrag(e) {
-      e.stopPropagation();
-      console.log("hi");
+    onDragEnter() {
+      this.dragCounter ++;
+      
+      console.log(this.dragCounter);
+      this.isDragged = true;
     },
-    onOver(e) {
-      e.stopPropagation();
-      console.log("hi");
-    },
-    onLeave(e) {
-      e.stopPropagation();
-      console.log("hi");
+    onDragLeave() {
+      this.dragCounter --;
+      console.log(this.dragCounter);
+      if(!this.dragCounter)
+        this.isDragged = false;
     }
   }
 }
@@ -303,7 +330,22 @@ export default {
     height: 250px;
     width:250px;
     object-fit:cover;
+    position: relative;
+    top:0;
+    left:0; 
+    cursor:pointer;
   }
+
+  .transparent {
+    position: absolute;
+    opacity: 0;
+  }
+
+  .semi-transparent {
+    position: absolute;
+    opacity: 0.5;
+  }
+
 
   .content {
     background-color: black;
@@ -364,6 +406,7 @@ export default {
     margin-bottom: 10px;
   }
 
+
 @media only screen and (max-width: 750px)
   {
     .main-container {
@@ -373,7 +416,7 @@ export default {
       margin-right: 1%;
       align-items:center;
       border-radius: 10px;
-      font-size: 10px;
+      font-size: 12px;
     }
 
     .list-value {
