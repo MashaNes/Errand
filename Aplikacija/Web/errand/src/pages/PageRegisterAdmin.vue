@@ -11,29 +11,78 @@
             <form>
               <div class="field">                
                 <div class="control">
-                    <label class = "register-label" v-if="isSerbian"> *Korisničko ime: </label>
-                    <label class = "register-label" v-else> *Username: </label>
+                    <label class = "register-label" v-if="isSerbian"> *Ime: </label>
+                    <label class = "register-label" v-else> *Name: </label>
                     <input class="input is-large"
                             type="text"
-                            placeholder="Korisničko ime"
-                            v-model = "form.username"
-                            @blur="$v.form.username.$touch()"
+                            placeholder="Ime"
+                            v-model = "form.name"
+                            @blur="$v.form.name.$touch()"
                             v-if = "isSerbian">
                         <input class="input is-large"
                             type="text"
-                            placeholder="Username"
-                            v-model = "form.username"
-                            @blur="$v.form.username.$touch()"
+                            placeholder="Name"
+                            v-model = "form.name"
+                            @blur="$v.form.name.$touch()"
                             v-else>
                 </div>
-                <div v-if = "$v.form.username.$error" class = "form-error">
-                    <span v-if = "!$v.form.username.required"
+                <div v-if = "$v.form.name.$error" class = "form-error">
+                    <span v-if = "!$v.form.name.required"
                         class = "help is-danger"> 
-                            <span v-if="isSerbian">Morate uneti korisničko ime</span>
-                            <span v-else>  Username is required </span> 
+                            <span v-if="isSerbian">Morate uneti ime</span>
+                            <span v-else>  Name is required </span> 
                     </span>
                 </div>
             </div>
+            <div class="field">                
+                <div class="control">
+                    <label class = "register-label" v-if="isSerbian"> *Prezime: </label>
+                    <label class = "register-label" v-else> *Last name: </label>
+                    <input class="input is-large"
+                            type="text"
+                            placeholder="Prezime"
+                            v-model = "form.lastName"
+                            @blur="$v.form.lastName.$touch()"
+                            v-if = "isSerbian">
+                        <input class="input is-large"
+                            type="text"
+                            placeholder="Last name"
+                            v-model = "form.lastName"
+                            @blur="$v.form.lastName.$touch()"
+                            v-else>
+                </div>
+                <div v-if = "$v.form.lastName.$error" class = "form-error">
+                    <span v-if = "!$v.form.lastName.required"
+                        class = "help is-danger"> 
+                            <span v-if="isSerbian">Morate uneti prezime</span>
+                            <span v-else>  Last name is required </span> 
+                    </span>
+                </div>
+            </div>
+            <div class="field">
+                <div class="control">
+                  <label class = "register-label"> *Email: </label>
+                  <input class="input is-large"
+                         type="email"
+                         placeholder="Email"
+                         v-model = "form.email"
+                         @blur="$v.form.email.$touch()">
+                </div>
+                <div v-if = "$v.form.email.$error" class = "form-error">
+                    <span v-if = "!$v.form.email.required"
+                          class = "help is-danger"> 
+                          <span v-if="isSerbian">Morate uneti e-mail adresu</span>
+                            <span v-else>E-mail address is required </span>  
+                        </span>
+                </div>
+                <div v-if = "$v.form.email.$error" class = "form-error">
+                    <span v-if = "!$v.form.email.email"
+                          class = "help is-danger">
+                            <span v-if="isSerbian">E-mail adresa nije validna</span>
+                            <span v-else>E-mail address is not valid </span>  
+                    </span>
+                </div>
+              </div>
             <div class="field">
                 <div class="control">
                     <label class = "register-label" v-if="isSerbian"> *Vaša Lozinka: </label>
@@ -159,14 +208,16 @@
 </template>
 
 <script>
-    import {required, minLength, sameAs} from "vuelidate/lib/validators"
+    import {required, minLength, sameAs, email} from "vuelidate/lib/validators"
 
     export default {
         data(){
             return{
                 form:
                 {
-                    username: null,
+                    name: null,
+                    lastName: null,
+                    email: null,
                     password: null,
                     passwordConformation: null,
                     superpassword: null
@@ -187,7 +238,9 @@
         {
             form:
             {
-                username: { required },
+                name : { required },
+                lastName: { required },
+                email : { required, email },
                 password:{ required, minLength: minLength(6)},
                 passwordConformation: { required, sameAs: sameAs("password") },
                 superpassword: {required}

@@ -35,7 +35,7 @@
                 </div>
                 <div class="odgovor" v-if="question == 2">
                     <span v-if="isSerbian">Imate dve opcije. Možete da odaberete da Vaš zahtev bude vidljiv svim korisnicima koji zadovoljavaju određene kriterijume ili da sami odaberete konkretnog korisnika kome će kreirani zahtev biti direktno prosleđen. Ukoliko odaberete prvu opciju onda će Vaš zahtev biti vidljiv svim osobama koje zadovoljavaju Vaše kriterijume i svi oni će moći da Vam šalju ponude za izvšenje od kojih ćete Vi odabrati onu po Vašem izboru. Ukoliko odaberete drugu opciju onda će odabrani korisnik dobiti Vaš zahtev direktno i samo on će moći da Vam pošalje ponudu za izvršenje istog.</span>
-                    <span v-else>You have two options. You can choose for your request to be visible to all users who satisfy your criteria or for it to be visible only to a specific user you select for thath exact request. If you choose the first option all users who satisfy the criteria you have selected will be able to find your request and send you an offer for completeing it, on the other hand, if you choose the second option, the user you have selected will get a direct notification about the request you have created and will be the only one who can send you an offer for completing it.</span>
+                    <span v-else>You have two options. You can choose for your request to be visible to all users who satisfy your criteria or for it to be visible only to a specific user you select for that exact request. If you choose the first option all users who satisfy the criteria you have selected will be able to find your request and send you an offer for completeing it, on the other hand, if you choose the second option, the user you have selected will get a direct notification about the request you have created and will be the only one who can send you an offer for completing it.</span>
                 </div>
             </div>
             <div class="question" @click="changeQuestion(3)">
@@ -60,7 +60,7 @@
                     </div>
                 </div>
                 <div class="odgovor" v-if="question == 4">
-                    <span v-if="isSerbian">Možete dati ocenu svakom korisniku sa kojim ste sarađivali na nekom zahtevu, bilo da ste Vi kreirali zahtev ili taj korisnik, i za svaki od zahteva možete dati po jednu ocenu tom korisniku. Takođe Vas može da oceni svaki korisnik koji je sa Vama sarađivao i to onoliko puta koliko je sarađivao sa Vama.</span>
+                    <span v-if="isSerbian">Možete dati ocenu svakom korisniku sa kojim ste sarađivali na nekom zahtevu, bilo da ste Vi kreirali zahtev ili taj korisnik, i za svaki od zahteva možete dati po jednu ocenu tom korisniku. Takođe, Vas može da oceni svaki korisnik koji je sa Vama sarađivao i to onoliko puta koliko je sarađivao sa Vama.</span>
                     <span v-else>You can rate any user you have cooperated with on a request, no matter if you were the one to create the request or not, and you can rate them as many times as you have copperated with each other. Similarly, you can be rated by any user you have cooperated with for every request you have cooperated on.</span>
                 </div>
             </div>
