@@ -103,6 +103,7 @@
         align-items: center;
         justify-items: center;
         align-content: center;
+        margin-bottom: 30px;
     }
 
     .tabovi
