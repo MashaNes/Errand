@@ -1,10 +1,41 @@
-API Calls:
-+ PUT user_create			// Creates user
-+ GET users_info/{id}		// Returns only basic user data
-+ GET users/{id} 			// Returns full user data
+==== ENDPOINTS ====
+===================
 
-- PUT requests_create		// Creates request
-- GET requests_info/{id}	// Returns only basic request data
-+ GET requests/{id}			// Returns full request data (including offers and rating)
+URL = api/v1/{endpoint_name}
+(ex. 127.0.0.1:8000/api/v1/users/)
 
-+ GET userservice/{id}		// Returns full userservice data
++ GET users_info/{id} 				// Returns only basic user data
++ GET users/{id} 					// Returns full user data
+- GET filtered_users/ 				// Returns users based on filters
++ GET requests_info/{id} 			// Returns only basic request data
+- GET requests/{id} 				// Returns full request data (including offers and rating)
++ GET achievements/{id}				// Returns list of all achievements
+- GET stats/ (A)		 			// Returns statistics based on filters
+
++ POST user_create/					// Creates new user
++ POST benefit_add/					// Adds new user to benefit list
++ POST address_add/					// Adds new address to addresses
++ POST working_hours_add/ 			// Adds new working hours for user
++ POST userservice_add/				// Adds new user service for user
+- POST offer_create/ 				// Creates offer for request
+- POST request_create/ 				// Creates request
+- POST rate_user/ 					// Adds new rating for completed request
+- POST report_user/					// Reports user
+- POST ban_user/ (A)	 			// Bans user
+~ POST achievement_create/ (A)	 	// Creates new achievement
+~ POST service_type_create/ (A)		// Creates new service type
+
+- UPDATE request_update/ 			// Edits request
+- UPDATE users_info_update/			// Updates basic user data
+- UPDATE user_update/ 				// Updates full user data
+
+- DELETE request_remove/ 			// Cancels request
+- DELETE benefit_remove/ 			// Removes user from benefit list
+- DELETE address_remove/ 			// Removes address from user
+- DELETE working_hours_remove/ 		// Removes working hours from user
+- DELETE userservice_remove/ 		// Removes user service from user
+
+(+ -> Done)
+(- -> Not)
+(~ -> Done without privilages)
+(A -> Admin privilages)

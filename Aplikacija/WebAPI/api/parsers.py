@@ -21,12 +21,12 @@ def parse_address(data):
 
 def parse_service(data):
     service = models.Service(service_type=data['service_type'],
-                             description=data['desscription'],
+                             description=data['description'],
                              picture_required=data['picture_required'])
     return service
 
 def parse_user_service(data):
-    service = models.Service.objects.filter(id=data['service'])
+    service = models.Service.objects.get(id=data['service'])
 
     user_service = models.UserService(max_dist=data['max_dist'],
                                       payment_type=data['payment_type'],
