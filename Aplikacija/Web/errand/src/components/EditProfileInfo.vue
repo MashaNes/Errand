@@ -8,22 +8,22 @@
             @dragenter.prevent="onDragEnter"
             @dragleave.prevent="onDragLeave" 
             @dragover.prevent
-            @mouseenter.prevent="onMouseEnter"
-            @mouseleave.prevent="onMouseLeave"
+            @mouseenter.prevent="onDragEnter"
+            @mouseleave.prevent="onDragLeave"
             @click="$refs.file.click()"
           >
             <img class="rounded-image" :src="picture">
             <img 
               v-show="isDragged" 
-              :class="['rounded-image', isDragged ? 'semi-transparent': 'transparent']" 
+              :class="['rounded-image', 'semi-transparent']" 
               src="@/assets/camera.png"
             >
           </p>
         </div>
-        <!-- <div style="width:250px;">
+          <div :class="[isDragged ? 'shown' : 'hidden', 'picture-msg']">
             <span v-if="isSerbian">Kliknite na sliku ili prevucite novu</span>
             <span v-else>Click the picture or drop a new one</span>
-          </div> -->
+          </div>
         <div style="display:flex; flex-direction:column; align-items:center">
             <input type="file" ref="file" style="display: none" accept="image/*" @change="pictureSelected"/>
           <div>
@@ -181,7 +181,6 @@
 <script>
   import VuePhoneNumberInput from 'vue-phone-number-input';
   import 'vue-phone-number-input/dist/vue-phone-number-input.css';
-  import Vue from 'vue'
 
 export default {
   components: {
@@ -200,7 +199,8 @@ export default {
       newAddress: "",
       newPicture: null,
       isDragged: false,
-      dragCounter: 0
+      dragCounter: 0,
+      toasterMessage: ""
     }
   },
   computed: {
@@ -258,6 +258,7 @@ export default {
       this.$emit('saveEditChanges')
     },
     pictureSelected(e) {
+
       const file = e.target.files[0];
       this.addImage(file);
     },
@@ -269,6 +270,13 @@ export default {
       this.addImage(file);
     },
     addImage(file) {
+
+      if(!file) {
+        this.isDragged = false;
+        this.dragCounter = 0;
+        console.log(this.isDragged)
+        return 
+      }
 
       if(!file.type.match('image*')) {
         console.log('not an image!');
@@ -286,28 +294,15 @@ export default {
     onDragEnter() {
       this.dragCounter ++;
       this.isDragged = true;
+      console.log(this.dragCounter)
     },
     onDragLeave() {
-      this.dragCounter --;
+      if(this.dragCounter>0)
+        this.dragCounter --;
       if(!this.dragCounter)
         this.isDragged = false;
-    },
-    onMouseEnter() {
-      this.$toasted.global.customToast()
-      this.onDragEnter()
-    },
-    onMouseLeave() {
-      this.$toasted.clear()
-      this.onDragLeave()
+      console.log(this.dragCounter)
     }
-  },
-  created() {
-    Vue.toasted.register('customToast', 
-        this.isSerbian ? 'Kliknite na sliku ili prevucite novu' : 'Click on the photo or drag a new one', {
-        containerClass: ['toast-class',],
-        className: ['toast-class',],
-        position: "bottom-left"
-      })
   }
 }
 </script>
@@ -442,6 +437,20 @@ export default {
     display:flex;
     flex-direction:row;
     justify-content: space-between;
+  }
+
+  .shown {
+    visibility:visible;
+  }
+
+  .hidden {
+    visibility:hidden;
+  }
+
+  .picture-msg {
+    width:250px;
+    font: size 12px;
+    text-align:center;
   }
 
 @media only screen and (max-width: 750px)
