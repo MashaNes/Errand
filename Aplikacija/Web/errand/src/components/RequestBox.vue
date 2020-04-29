@@ -159,7 +159,7 @@ export default {
     {
         .wrapper
         {
-            width: 96%;
+            width: 90%;
         }
 
         .request-top
