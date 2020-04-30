@@ -38,12 +38,12 @@
                 <strong v-if="isSerbian">Izmeni</strong>
                 <strong v-else>Edit</strong>
               </b-button>
-              <b-button 
+              <router-link :to="'/settings'"
                 class="button is-primary title-btn"
               >
                 <strong v-if="isSerbian">Podešavanja</strong>
                 <strong v-else>Settings</strong>
-              </b-button>
+              </router-link>
             </div>
           </b-list-group-item>
           <b-list-group-item>

@@ -38,11 +38,11 @@
                                 <span v-if="isSerbian" class = "ikonica"> Zahtevi </span>
                                 <span v-else class = "ikonica"> Requests </span>
                             </router-link>
-                            <a class="dropdown-item">
+                            <router-link :to = "'/settings'" class="dropdown-item">
                                 <img src = "../assets/settings.svg">
                                 <span v-if="isSerbian" class = "ikonica"> Podešavanja </span>
                                 <span v-else class = "ikonica"> Settings </span>
-                            </a>
+                            </router-link>
                             <router-link :to = "'/help'" class="dropdown-item">
                                 <img src = "../assets/help.svg">
                                 <span v-if="isSerbian" class = "ikonica"> Pomoć </span>
