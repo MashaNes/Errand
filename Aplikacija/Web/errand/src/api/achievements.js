@@ -2,51 +2,51 @@ export const fetchAchievements = () => {
     return {
         "1": {
             id: 1,
-            userId: "1",
+            user: "1",
             level: 2, 
-            AchievementDetails: "1"
+            achievement: "1"
         },
         "2" : {
             id: 2,
-            userId: "2",
+            user: "2",
             level: 2,
-            AchievementDetails: "2"
+            achievement: "2"
         },
         "3" : {
             id: 3,
-            userId:"1",
+            user:"1",
             level: 3, 
-            AchievementDetails: "3"
+            achievement: "3"
         },
         "4" : {
             id: 4,
-            userId: "1",
+            user: "1",
             level: 4,
-            AchievementDetails: "4"
+            achievement: "4"
         },
         "5" : {
             id: 5,
-            userId: "1",
+            user: "1",
             level: 1,
-            AchievementDetails: "5"
+            achievement: "5"
         },
         "6" : {
             id: 6,
-            userId: "1",
+            user: "1",
             level: 3,
-            AchievementDetails: "6"
+            achievement: "6"
         },
         "7" : {
             id: 7,
-            userId: "2",
+            user: "2",
             level: 7,
-            AchievementDetails: "3"
+            achievement: "3"
         },
         "8" : {
             id: 8,
-            userId: "2",
+            user: "2",
             level: 2,
-            AchievementDetails: "5"
+            achievement: "5"
         },
     }
 }
@@ -63,7 +63,7 @@ export const fetchAchievementDetails = () => {
                 english: "Completed more than 15 requests in a week",
                 serbian: "Preko 15 ispunjenih zahteva u jednoj nedelji"
             },
-            picture: require("../assets/bee.svg")
+            icon: require("../assets/bee.svg")
         },
         "2": {
             id: 2,
@@ -74,7 +74,8 @@ export const fetchAchievementDetails = () => {
             description: {
                 english: "Got the highest possible rating more than 10 times",
                 serbian: "Ocenjen najvišom ocenom više od 10 puta"
-            }
+            },
+            icon: require("../assets/speed.svg")
         },
         "3": {
             id: 3,
@@ -86,7 +87,7 @@ export const fetchAchievementDetails = () => {
                 english: "Completed more than 3 requests in a day",
                 serbian: "Više od 3 ispunjena zahteva u jednom danu"
             },
-            picture: require("../assets/speed.svg")
+            icon: require("../assets/speed.svg")
         },
         "4": {
             id: 4,
@@ -98,7 +99,7 @@ export const fetchAchievementDetails = () => {
                 english: "Completed more than 30 shopping requests",
                 serbian: "Više od 30 obavljenih kupovina"
             },
-            picture: require("../assets/robber.svg")
+            icon: require("../assets/robber.svg")
         },
         "5": {
             id: 5,
@@ -110,7 +111,7 @@ export const fetchAchievementDetails = () => {
                 english: "Completed more than 15 indoors requests",
                 serbian: "Više od 15 obavljenih kućnih poslova"
             },
-            picture: require("../assets/fly.svg")
+            icon: require("../assets/fly.svg")
         },
         "6": {
             id: 6,
@@ -122,7 +123,7 @@ export const fetchAchievementDetails = () => {
                 english: "Completed the first ever request",
                 serbian: "Ispunjen prvi zahtev"
             },
-            picture: require("../assets/baby.svg")
+            icon: require("../assets/baby.svg")
         }
     }
 }
