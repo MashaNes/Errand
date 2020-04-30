@@ -14,7 +14,6 @@ import PageLoginAdmin from "@/pages/PageLoginAdmin"
 import PageRegisterAdmin from "@/pages/PageRegisterAdmin"
 import PageFAQ from "@/pages/PageFAQ"
 import PageSettings from "@/pages/PageSettings"
-import Rating from "@/components/Rating"
 
 Vue.use(Router)
 
@@ -80,11 +79,6 @@ const router = new Router(
                 path: "/settings",
                 name: "PageSettings",
                 component: PageSettings
-            },
-            {
-                path: "/rating",
-                name: "Rating",
-                component: Rating
             }
         ],
         mode: "history",
