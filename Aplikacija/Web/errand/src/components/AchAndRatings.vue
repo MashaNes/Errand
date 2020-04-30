@@ -108,10 +108,10 @@ export default {
       return this.$store.state.isSerbian
     },
     achievements() {
-      return this.$store.state.userAchievements
+      return this.$store.state.user.achievements
     },
     ratings() {
-      return this.$store.state.userRatings
+      return this.$store.state.user.ratings
     }
   },
   methods: {
@@ -122,8 +122,6 @@ export default {
     }
   },
   created() {
-    this.$store.dispatch('getUserAchievements')
-    this.$store.dispatch('getUserRatings')
     this.$store.dispatch('getAllUsers')
   }
 

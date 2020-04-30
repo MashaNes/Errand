@@ -16,7 +16,8 @@ export default new Vuex.Store({
         userRatings: {},
         isSerbian: true,
         allUsers: {},
-        logedIn: true
+        logedIn: true,
+        usersPortion: {}
     },
     getters:{
     },
@@ -55,6 +56,19 @@ export default new Vuex.Store({
         editUser({commit}, newUser) {
 
             commit('setChangedUser', newUser)
+        },
+        fillUsersPortion({commit}, {startingIndex, numOfElements}) {
+            const users = fetchUsers();
+            const filteredUsers = Object.values(users).filter((user, ind) => ind >= startingIndex && ind < startingIndex + numOfElements)
+            const toCommit = {
+                totalCount: Object.values(users).length,
+                currentCount: filteredUsers.length,
+                users: filteredUsers
+            }
+            // console.log(toCommit + " " + startingIndex + " " + numOfElements)
+            // console.log(toCommit)
+            // console.log(users)
+            commit('setUsersPortion', toCommit)
         }
     },
     mutations:{
@@ -72,6 +86,10 @@ export default new Vuex.Store({
         },
         setAllUsers(state, users) {
             state.allUsers = users
+        },
+        setUsersPortion(state, users) {
+            state.usersPortion = users
+            //console.log(state.usersPortion)
         }
     }
 })

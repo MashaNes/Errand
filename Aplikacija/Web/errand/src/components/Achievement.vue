@@ -9,22 +9,22 @@
         align="center"
       >
         <span v-if="isSerbian">
-          {{achievement.achievementDetails.name.serbian}}
+          {{achievement.achievement.name.serbian}}
         </span>
         <span v-else>
-          {{achievement.achievementDetails.name.english}}
+          {{achievement.achievement.name.english}}
         </span>
       </b-card-header>
 
       <b-card-body 
-        :class="(achievement.achievementLevel >= 4) ? 'body-golden' : 
-        (achievement.achievementLevel > 2) ? 'body-silver' : 'body-goldenrod'">
+        :class="(achievement.level >= 4) ? 'body-golden' : 
+        (achievement.level > 2) ? 'body-silver' : 'body-goldenrod'">
         <b-card-text>
           <span v-if="isSerbian" >
-            {{achievement.achievementDetails.description.serbian}}
+            {{achievement.achievement.description.serbian}}
           </span>
           <span v-else> 
-            {{achievement.achievementDetails.description.english}}
+            {{achievement.achievement.description.english}}
           </span>
         </b-card-text>
       </b-card-body>
@@ -34,11 +34,11 @@
         footer-text-variant = "white"
       >
         <span>
-          Level: {{achievement.achievementLevel}}
+          Level: {{achievement.level}}
         </span>
         <span class="image-span">
           <img 
-            :src="achievement.achievementDetails.picture"
+            :src="achievement.achievement.icon"
             height="20"
             width="20"
           />
