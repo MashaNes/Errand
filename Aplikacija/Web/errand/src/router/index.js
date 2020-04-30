@@ -13,6 +13,7 @@ import PageWelcome from "@/pages/PageWelcome"
 import PageLoginAdmin from "@/pages/PageLoginAdmin"
 import PageRegisterAdmin from "@/pages/PageRegisterAdmin"
 import PageFAQ from "@/pages/PageFAQ"
+import PageSettings from "@/pages/PageSettings"
 
 
 Vue.use(Router)
@@ -74,6 +75,11 @@ const router = new Router(
                 path: "/faq",
                 name: "PageFAQ",
                 component: PageFAQ
+            },
+            {
+                path: "/settings",
+                name: "PageSettings",
+                component: PageSettings
             }
         ],
         mode: "history",

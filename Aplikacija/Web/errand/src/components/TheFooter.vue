@@ -24,10 +24,10 @@
               <li class="stavka-navigacije" v-if="isSerbian"> Zahtevi </li>
               <li class="stavka-navigacije" v-else> Requests </li>
             </router-link>
-            <!--<router-link>-->
+            <router-link :to="'/settings'">
               <li class="stavka-navigacije" v-if="isSerbian"> Podešavanja </li>
               <li class="stavka-navigacije" v-else> Settings </li>
-            <!--</router-link>-->
+            </router-link>
             <router-link :to="'/help'" >
               <li class="stavka-navigacije" v-if="isSerbian"> Pomoć </li>
               <li class="stavka-navigacije" v-else> Help </li>
