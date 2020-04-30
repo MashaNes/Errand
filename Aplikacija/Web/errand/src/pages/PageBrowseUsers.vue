@@ -5,22 +5,23 @@
       :total-rows="users.totalCount" 
       :per-page="perPage" 
       align="center"
+      class="pag-top"
       @input="getNextPortion"
     ></b-pagination>
-    
-    <div v-for="user in users.users" :key="user.id" style="display: flex; flex-direction:column; align-items:center;">
+    <div class="users">
       <!-- <strong> {{user.firstName}} </strong> -->
       <UserBox
         :user="user"
+        v-for="user in users.users" 
+        :key="user.id"
       />
     </div>
-
     <b-pagination 
-
       v-model="currentPage" 
       :per-page="perPage" 
       :total-rows="users.totalCount" 
       align="center"
+      class="pag-bottom"
     ></b-pagination>
 
   </div>
@@ -66,7 +67,21 @@ export default {
 
 
 <style scoped>
-  .pagination {
-    margin: 5px 0 5px 0;
+  
+
+
+  .users {
+    display: flex; 
+    flex-direction:column; 
+    align-items:stretch;
   }
+
+  .pag-top {
+    margin-bottom: 40px;
+  }
+
+  .pag-bottom {
+    margin: 40px 0 0px 0;
+  }
+
 </style>

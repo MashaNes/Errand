@@ -4,43 +4,50 @@
       no-body
     >
       <b-card-body>
-        <b-card-text>
-          {{user.firstName}} {{user.lastName}}
+        <div class="media-center">
+          <p class="image is-96x96">
+            <img class="rounded-image" :src="user.picture">
+          </p>
+        </div>
           
-        </b-card-text>
-      </b-card-body>
-
-      <b-card-footer
-        footer-bg-variant = "dark"
-        footer-text-variant = "white"
-      >
-        <div class="grade">
-          <div>
-            <span v-if="isSerbian">
-              Ocena
-            </span>
-            <span v-else>
-              Grade
-            </span>
+        <div class="info">
+          <div class="info-element">
+            <img 
+              src="@/assets/signature.svg" 
+              height = "20" 
+              width = "20"
+              style = "margin-right: 15px"
+            />
+            <span>{{fullUserName}}</span>
           </div>
-
-          <b-progress class="mt-2" max="5.0" height="20px">
+          <div class="info-element">
+            <img 
+              src="@/assets/email.svg" 
+              height = "20" 
+              width = "20"
+              style = "margin-right: 15px"
+            />
+            <span>{{user.email}}</span>
+          </div>
+          <div class="info-element grade">
+            <span v-if="isSerbian" class="grade-label">
+              Prosečna ocena:
+            </span>
+            <span v-else class="grade-label">
+              Average rating:
+            </span>
+          
+            <b-progress class="mt-2" max="5.0" height="20px">
               <b-progress-bar 
                 :value="user.rating"
                 :variant="progressBarVariant"
               > 
                 <span class="rating-grade"> {{user.rating}} </span> 
               </b-progress-bar>
-          </b-progress>
-        </div>
-        <div class="grade-info"> 
-          <div style="margin-bottom:10px;"> 
-            <span v-if="isSerbian">Ocenio/la:</span>
-            <span v-else>Rated by:</span>
-            <span style="font-size:18px;"> {{user.email}} </span>
+            </b-progress>
           </div>
         </div>
-      </b-card-footer>
+      </b-card-body>
     </b-card>
 </template>
 
@@ -59,6 +66,9 @@ export default {
       progressBarVariant() {
         return this.user.rating < 2.5 ? 'danger' : 
                this.user.rating < 4.5 ? 'warning' : 'success'
+      },
+      fullUserName() {
+        return this.user.firstName + " " +this.user.lastName
       }
     }
 }
@@ -74,6 +84,21 @@ export default {
     flex-direction: row;
     flex-wrap: wrap;
   } */
+
+
+
+  .rounded-image {
+    border-radius: 60px;
+    border: 2px solid grey;
+    height:96px;
+    width:96px;
+    object-fit:cover;
+  }
+
+  .card-body {
+    display:flex;
+    flex-direction: row;
+  }
 
   .card-header {
     font-size: 15px;
@@ -92,13 +117,8 @@ export default {
   }
 
   .card {
-    margin: 40px 10% 40px 10%;
+    margin: 10px 15% 10px 15%;
     border-radius: 15px;
-  }
-
-  .card-text {
-    font-size:20px;
-    font-weight: 600;
   }
 
   .rating-grade {
@@ -108,18 +128,31 @@ export default {
   }
 
   .mt-2 {
-    width:80%; 
+    width:60%; 
     min-width:70px;
   }
 
-  .grade {
-    flex-grow:10;
-    margin-right:20px; 
-    margin-left:2%;
+  .grade-label {
+    margin: 5px 10px 0 0;
   }
 
-  .grade-info {
-    margin-left:2%;
+  .info {
+    display:flex;
+    flex-direction: column;
+    margin-left: 10px;
+    width:100%;
+  }
+
+  .info-element {
+    display:flex;
+    flex-direction: row;
+    word-break:break-all;
+    margin: 5px 0 0 5px;
+    align-items: center;
+  }
+
+  .grade {
+    word-break:normal;
   }
 
   @media only screen and (max-width:650px)
@@ -127,18 +160,45 @@ export default {
     .card-footer {
       flex-direction: column;
     }
+
+    .card-body {
+      flex-direction:column;
+      align-items:center;
+      padding:10px;
+    }
+
+    .card {
+      margin:10px 10% 0 10%;
+      font-size: 15px;
+      
+    }
+
+    .grade-label {
+      margin: 5px 5px 0 0;
+    }
+    
+    .info {
+      margin-left: 0;
+    }
+
+    .info-element {
+      flex-direction: column;
+      align-items: flex-start;
+      margin-top:15px;
+    }
+
+    .mt-2 {
+      width:80%;
+    }
+
   }
 
-  @media only screen and (max-width:500px)
+  /* @media only screen and (max-width:500px)
   {
     .card {
       margin: 40px 10px 40px 10px;
     }
 
-    .grade-info {
-      margin-top:20px;
-    }
-
-  }
+  } */
 
 </style>
