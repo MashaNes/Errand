@@ -70,8 +70,4 @@
       margin-top: 10px;
     }
   }
-
-  .navigate
-  {
-  }
 </style>

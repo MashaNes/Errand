@@ -90,24 +90,6 @@
                   <VuePhoneNumberInput v-model="form.phone" :no-example="true"/>
                 </div>
               </div>
-               <div class = "field">
-                <div class = "control">
-                  <label class = "register-label" v-if="isSerbian"> Adresa: </label>
-                  <label class = "register-label" v-else> Address: </label>
-                  <input class="input is-large"
-                         type="text"
-                         placeholder="Adresa"
-                         v-model = "form.address"
-                         @blur="$v.form.password.$touch()"
-                         v-if="isSerbian">
-                    <input class="input is-large"
-                         type="text"
-                         placeholder="Address"
-                         v-model = "form.address"
-                         @blur="$v.form.password.$touch()"
-                         v-else>
-                </div>
-              </div>
               <div class="field">
                 <div class="control">
                   <label class = "register-label" v-if="isSerbian"> *Lozinka: </label>

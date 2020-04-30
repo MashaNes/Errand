@@ -1,12 +1,20 @@
 <template>
     <div class = "wrapper" :class="color">
-        <div class="request-top">
+        <div class="request-top" v-if="myRequest.status != 'pending'">
             <div class="user-div"> 
                 <span class="user-name"> {{userName}} </span>
-                <p v-if="myRequest.status != 'pending'" class="image is-128x128" >
+                <p class="image is-128x128" >
                     <img class="rounded-image" :src="userPicture">
                 </p>
             </div>
+            <div class = "request-name">
+                {{myRequest.name}}
+            </div>
+        </div>
+        <div class="request-top2" v-else>
+            <a class = "cancel-request" @click="showModal = true">
+                <img class = "ikonica" src="../assets/remove.svg">
+            </a>
             <div class = "request-name">
                 {{myRequest.name}}
             </div>
@@ -26,10 +34,12 @@
                 </div>
             </div>
         </div>
+        <ModalDeleteRequest @close="showModal = false" @yes="deleteRequest" v-if="showModal"/>
     </div>
 </template>
 
 <script>
+import ModalDeleteRequest from "@/components/ModalDeleteRequest"
 export default {
     props:
     {
@@ -38,10 +48,15 @@ export default {
             required:true
         }
     },
+    components:
+    {
+        ModalDeleteRequest
+    },
     data()
     {
         return{
-            myRequest: this.$store.state.requests[this.identifikator]
+            myRequest: this.$store.state.requests[this.identifikator],
+            showModal: false
         }
     },
     computed:
@@ -71,6 +86,14 @@ export default {
             else
                 return ""
         }
+    },
+    methods:
+    {
+        deleteRequest()
+        {
+            console.log(this.myRequest)
+            this.showModal = false
+        }
     }
 }
 </script>
@@ -90,7 +113,7 @@ export default {
         align-items: center;
     }
 
-    .request-top
+    .request-top, .request-top2
     {
         display: flex;
         flex-direction: row-reverse;
@@ -118,6 +141,22 @@ export default {
         margin-right: 10px;
         margin-top:10px;
         font-size: 18px;
+    }
+
+    .cancel-request
+    {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-items: center;
+        margin-right: 10px;
+        font-size: 18px;
+    }
+
+    .ikonica
+    {
+        width:22px;
+        height:22px;
     }
 
     .status-div
