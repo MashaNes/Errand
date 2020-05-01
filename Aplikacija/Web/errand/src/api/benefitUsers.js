@@ -194,7 +194,7 @@ export const fetchBenefitUsers = () => {
                 homeAddress: ["4 Privet Drive, Little Whinging, Surrey England, Great Britain", "Zmaj Jovina 3, Sokobanja"],
                 ratings: {}
             },
-            discount:5
+            benefit:5
         },
         "4": {
             user:
@@ -211,7 +211,7 @@ export const fetchBenefitUsers = () => {
                 homeAddress: ["4 Privet Drive, Little Whinging, Surrey England, Great Britain", "Zmaj Jovina 3, Sokobanja"],
                 ratings: {}
             },
-            discount: 15
+            benefit: 15
         },
         "5": {
             user:
@@ -228,7 +228,7 @@ export const fetchBenefitUsers = () => {
                 homeAddress: ["4 Privet Drive, Little Whinging, Surrey England, Great Britain", "Zmaj Jovina 3, Sokobanja"],
                 ratings: {}
             },
-            discount: 20
+            benefit: 20
         },
         "6": {
             user:
@@ -245,7 +245,7 @@ export const fetchBenefitUsers = () => {
                 homeAddress: ["4 Privet Drive, Little Whinging, Surrey England, Great Britain", "Zmaj Jovina 3, Sokobanja"],
                 ratings: {}
             },
-            discount:10
+            benefit:10
         },
         "7": {
             user:
@@ -279,7 +279,7 @@ export const fetchBenefitUsers = () => {
                 homeAddress: ["4 Privet Drive, Little Whinging, Surrey England, Great Britain", "Zmaj Jovina 3, Sokobanja"],
                 ratings: ["1", "2", "3"]
             },
-            discount: 30
+            benefit: 30
         }
     }
 }

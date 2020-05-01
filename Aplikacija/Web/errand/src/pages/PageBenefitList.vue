@@ -18,14 +18,14 @@
                 <span v-else> List of users with benefits</span>
             </div>
             <div class="users">
-                <UserBox :user="user.user" v-for="user in BenefitedUsers" :key="user.id"/>
+                <UserBenefitBox :userBenefit="user" v-for="user in BenefitedUsers" :key="user.id"/>
             </div>
         </div>
     </div>
 </template>
 
 <script>
-import UserBox from "@/components/UserBox"
+import UserBenefitBox from "@/components/UserBenefitBox"
 export default {
     data()
     {
@@ -36,7 +36,7 @@ export default {
     },
     components:
     {
-        UserBox
+        UserBenefitBox
     },
     computed:
     {
@@ -78,7 +78,7 @@ export default {
 
     .dodavanje-wrap
     {
-        width: 250px;
+        width: 350px;
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -127,6 +127,7 @@ export default {
     .dodavanje
     {
         margin-bottom: 15px;
+        width: 84%;
     }
 
     @media only screen and (max-width: 900px)
