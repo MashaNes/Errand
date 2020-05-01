@@ -14,7 +14,7 @@
           <b-button
             size="lg"
             class="ocene-dostignuca button is-primary"
-            :to="'/achievements'"
+            :to="'/achievements/' + this.user.id"
           >
             <span v-if="isSerbian"> Ocene i dostignuća </span>
             <span v-else> Ratings and achievements </span>
@@ -30,7 +30,7 @@
             <span v-else
               class="info-title" 
             > Personal info </span>
-            <div class="l-group-btns">
+            <div class="l-group-btns" v-if="isMyProfile">
               <b-button 
                 class="button is-primary title-btn"
                 @click="goToProfileEdit()"
@@ -44,6 +44,20 @@
                 <strong v-if="isSerbian">Podešavanja</strong>
                 <strong v-else>Settings</strong>
               </router-link>
+            </div>
+            <div class="l-group-btns" v-else>
+              <b-button 
+                class="button is-primary title-btn"
+              >
+                <strong v-if="isSerbian">Oceni korisnika</strong>
+                <strong v-else>Rate user</strong>
+              </b-button>
+              <b-button 
+                class="button is-primary title-btn"
+              >
+                <strong v-if="isSerbian">Prijavi korisnika</strong>
+                <strong v-else>Report user</strong>
+              </b-button>
             </div>
           </b-list-group-item>
           <b-list-group-item>
@@ -67,7 +81,7 @@
               <div v-text="lastElement('phone')"></div>
             </div>
           </b-list-group-item>
-          <b-list-group-item>
+          <b-list-group-item v-if="isMyProfile">
             <img 
               src="@/assets/address.svg" 
               height = "20" 
@@ -80,7 +94,7 @@
             </div>
           </b-list-group-item>
         </b-list-group>
-        <b-list-group style="width:85%">
+        <b-list-group class="l-item-progress">
           <b-list-group-item>
             <strong style="font-size:20px" v-if="isSerbian"> Prosečna ocena: </strong>
             <strong style="font-size:20px" v-else> Average rating: </strong>
@@ -105,6 +119,10 @@ export default {
     user: {
       required: true,
       type: Object
+    },
+    isMyProfile: {
+      type: Boolean,
+      required: true
     }
   },
   computed: {
@@ -252,17 +270,27 @@ export default {
   .l-group-title {
     display:flex;
     flex-direction:row;
-    justify-content: space-between;
   }
 
   .title-btn {
     margin:5px 5px 0 5px;
+
   }
 
   .media-center {
     display:flex;
     flex-direction:column;
     align-items:center;
+  }
+
+  .l-group-btns {
+    display:flex;
+    flex-direction: column;
+    margin-left:30px;
+  }
+
+  .l-item-progress {
+    width:85%;
   }
 
   @media only screen and (max-width: 750px)
@@ -285,10 +313,6 @@ export default {
       margin-left: 2%;
     }
 
-    .l-group-title {
-      border-top:1px solid lightgray;
-    }
-
     .l-group-btns {
       display:flex;
       flex-direction: column;
@@ -298,6 +322,10 @@ export default {
     .list-group-item {
       padding-left:1%;
       padding-right:1%;
+    }
+
+    .l-item-progress {
+      width:100%;
     }
 
   }

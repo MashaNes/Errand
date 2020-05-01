@@ -3,6 +3,7 @@
       <ProfileInfo 
         v-if="!showProfileEdit"
         :user="user" 
+        :isMyProfile="isMyProfile"
         @editProfile="showProfileEdit=true"
       />
       <EditProfileInfo
@@ -25,15 +26,17 @@ export default {
   },
   data() {
     return {
-      showProfileEdit: false
+      showProfileEdit: false,
+      user: {},
+      isMyProfile: true
     }
   },
   computed: {
-    user() {
-      // eslint-disable-next-line no-debugger
+    // user() {
+    //   // eslint-disable-next-line no-debugger
     
-      return this.$store.state.user
-    },
+    //   return this.$store.state.user
+    // },
     isSerbian() {
       return this.$store.state.isSerbian
     },
@@ -43,6 +46,16 @@ export default {
     progressBarVariant() {
       return this.user.rating < 2 ? 'danger' : 
              this.user.rating < 5 ? 'warning' : 'success'
+    }
+  },
+  created() {
+    const routeId = this.$route.params.id
+    if(routeId == this.$store.getters['getAuthUserId'])
+      this.user = this.$store.state.authUser
+    else {
+      this.$store.dispatch('getUser', routeId)
+      this.user = this.$store.state.user
+      this.isMyProfile = false
     }
   }
 }
