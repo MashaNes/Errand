@@ -66,14 +66,14 @@ export default {
 <style scoped>
 
   .card-header {
-    font-size: 15px;
+    font-size: 18px;
     font-weight: bold;
     border-top-left-radius: 15px;
     border-top-right-radius: 15px;
   }
 
   .card-footer {
-    font-size: 15px;
+    font-size: 18px;
     font-weight: bold;
     border-bottom-left-radius: 15px;
     border-bottom-right-radius: 15px;
@@ -82,25 +82,31 @@ export default {
   }
 
   .card {
-    margin: 10px 10px 10px 10px;
+    margin: 50px 15% 50px 15%;
     border-radius: 15px;
-    width:300px;
   }
 
   .card-text {
-    font-size: 20px;
+    font-size: 25px;
   }
 
   .body-silver {
-    background-color: silver;
+    background-color: rgb(207, 202, 202);
   }
 
   .body-golden {
-    background-color: rgb(240, 206, 13);
+    background-color: rgb(250, 212, 41);
   }
 
   .body-goldenrod {
-    background-color: goldenrod;
+    background-color: rgb(216, 166, 41);
+  }
+
+  @media only screen and (max-width:650px)
+  {
+    .card {
+      margin: 30px 5% 30px 5%;
+    }
   }
 
 </style>
