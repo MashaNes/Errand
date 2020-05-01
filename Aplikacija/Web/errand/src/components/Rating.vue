@@ -131,13 +131,15 @@ export default {
   }
 
   .grade {
-    flex-grow:10;
+    flex-grow:8;
     margin-right:20px; 
     margin-left:2%;
   }
 
   .grade-info {
+    flex-grow: 1;
     margin-left:2%;
+    word-break: break-all;
   }
 
   @media only screen and (max-width:650px)
