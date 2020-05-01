@@ -4,47 +4,47 @@
             <div class = "slika-div"> <img class = "slika" src="../assets/settings.png"> </div>
             <div class="settings-main"> 
                 <div class="settings-element"> 
-                    <div class="settings-row left m1">
+                    <div class="settings-row left m1" :class="{'e1':!isSerbian}">
                         <img class = "info" src="../assets/info.svg" v-b-popover.hover.left="popoverRatingText">
                         <span v-if="isSerbian"> Minimalni rejting: </span>
                         <span v-else> Minimal rating: </span>
                     </div>
                     <div class="settings-row">
-                        <input type="range" class="form-control-range skala l1" id="formControlRange" v-model="scale">
+                        <input type="range" class="form-control-range skala" id="formControlRange" v-model="scale">
                         <span class="brojka"> {{minRating}}</span>
                     </div>
                 </div>
                 <div class="settings-element"> 
-                    <div class="settings-row left m2">
+                    <div class="settings-row left m2" :class="{'e2':!isSerbian}">
                         <img class = "info" src="../assets/info.svg" v-b-popover.hover.left="popoverDistanceText">
                         <span v-if="isSerbian"> Maksimalno rastojanje: </span>
                         <span v-else> Maximum distance: </span>
                     </div>
                     <div class="settings-row">
-                        <input type="number" class="skala l2" v-model="maxDistance" min="0.1" max="1000" step="0.1" :disabled="!IsMaxDistance">
+                        <input type="number" class="skala" v-model="maxDistance" min="0.1" max="1000" step="0.1" :disabled="!IsMaxDistance">
                         <span class="brojka"> km </span>
                         <!--<input class = "checkBox" type="checkbox" v-model="IsMaxDistance">-->
                     </div>
                 </div>
                 <div class="settings-element"> 
-                    <div class="settings-row left m3">
+                    <div class="settings-row left m3" :class="{'e3':!isSerbian}">
                         <img class = "info" src="../assets/info.svg" v-b-popover.hover.left="popoverDiscountText">
                         <span v-if="isSerbian"> Popust: </span>
                         <span v-else> Discount: </span>
                     </div>
                     <div class="settings-row">
-                        <input type="number" class="skala l3" v-model="discount" min="0" max="100" step="10">
+                        <input type="number" class="skala" v-model="discount" min="0" max="100" step="10">
                         <span class="brojka"> % </span>
                     </div>
                 </div>
                 <div class="settings-element"> 
-                    <div class="settings-row left m4">
+                    <div class="settings-row left m4" :class="{'e4':!isSerbian}">
                         <img class = "info" src="../assets/info.svg" v-b-popover.hover.left="popoverCooperationText">
                         <span v-if="isSerbian"> Broj saradnji za ostvarenje popusta: </span>
                         <span v-else> Number of cooperations for discount: </span>
                     </div>
                     <div class="settings-row">
-                        <input type="number" class="skala l4" v-model="brSaradnji" min="0" max="20" step="1">
+                        <input type="number" class="skala" v-model="brSaradnji" min="0" max="20" step="1">
                         <span class="skriveno"> % </span>
                     </div>
                 </div>
@@ -236,7 +236,7 @@ export default {
 
     .m1
     {
-        margin-right: 97px;
+        margin-right: 98px;
     }
 
     .m2
@@ -246,7 +246,22 @@ export default {
 
     .m3
     {
-        margin-right: 184px;
+        margin-right: 182px;
+    }
+      
+    .e1
+    {
+        margin-right: 122px;
+    }
+
+    .e2
+    {
+        margin-right: 98px;
+    }
+
+    .e3
+    {
+        margin-right: 178px;
     }
 
     @media only screen and (max-width: 1160px)
@@ -270,15 +285,5 @@ export default {
             align-self: flex-start;
             margin-bottom: 10px;
         }
-        /*.header-div
-        {
-            font-size: 30px;
-            font-weight:750;
-        }
-
-        .slika
-        {
-            margin:20px;
-        }*/
     }
 </style>
