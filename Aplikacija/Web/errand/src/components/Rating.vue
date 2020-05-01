@@ -65,12 +65,10 @@ export default {
                this.rating.grade < 5 ? 'warning' : 'success'
       },
       givenBy() {
-        const users = this.$store.state.allUsers
-        return users[this.rating.createdBy].firstName + " " + users[this.rating.createdBy].lastName
+        return this.rating.createdBy.firstName + " " + this.rating.createdBy.lastName
       },
       forRequest() {
-        const requests = this.$store.state.requests
-        return requests[this.rating.request].name
+        return this.rating.request.name
       }
     }
 }

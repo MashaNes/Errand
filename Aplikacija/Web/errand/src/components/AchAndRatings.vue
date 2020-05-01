@@ -47,14 +47,14 @@
               <router-link
                 class="button is-primary " 
                 style="width:100%;"
-                :to="tab=='Ratings' ? '/achievements' : '/ratings' "
+                :to="tab=='Ratings' ? '/achievements/'+user.id : '/ratings/'+user.id "
               >
                 <strong v-if="isSerbian && tab=='Ratings'"> Dostignuća </strong>
                 <strong v-else-if="tab=='Ratings'"> Achievements </strong>
                 <strong v-else-if="isSerbian"> Ocene </strong>
                 <strong v-else> Ratings </strong>
               </router-link>
-            <router-link :to = "'/profile'" class="button is-primary" style="width:100%;">
+            <router-link :to = "'/profile/' + user.id" class="button is-primary" style="width:100%;">
               <strong v-if="isSerbian">Detalji profila</strong>
               <strong v-else>Profile details</strong>
             </router-link>
@@ -95,12 +95,17 @@ export default {
     tab: {
       type: String,
       required: true
+    },
+    user: {
+      type: Object, 
+      required: true
+    },
+    isMyProfile: {
+      type: Boolean,
+      required: true
     }
   },
   computed: {
-    user() {
-      return this.$store.state.user
-    },
     fullUserName() {
       return this.user.firstName + " " +this.user.lastName
     },
@@ -108,10 +113,10 @@ export default {
       return this.$store.state.isSerbian
     },
     achievements() {
-      return this.$store.state.user.achievements
+      return this.$store.state.userAchievements
     },
     ratings() {
-      return this.$store.state.user.ratings
+      return this.$store.state.userRatings
     }
   },
   methods: {
