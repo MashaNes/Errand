@@ -196,6 +196,8 @@ export default {
 
   .ach-wrap {
     width:100%;
+    display: flex;
+    flex-direction: column;
   }
 
   .rating-wrap {
