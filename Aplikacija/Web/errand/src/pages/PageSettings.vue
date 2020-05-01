@@ -50,7 +50,7 @@
                 </div>
             </div>
             <div class="dugmici"> 
-                <button type="button" class="btn btn-info dugme" v-if="isSerbian">Lista povlašćenih korisnika</button>
+                <router-link  :to="'/benefitList'" type="button" class="btn btn-info dugme" v-if="isSerbian">Lista povlašćenih korisnika</router-link>
                 <button type="button" class="btn btn-info dugme" v-else>List of users with benefits</button>
                 <button type="button" class="btn btn-info dugme" v-if="isSerbian">Lista ponuđenih usluga</button>
                 <button type="button" class="btn btn-info dugme" v-else>List of offered services</button>

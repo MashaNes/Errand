@@ -7,6 +7,7 @@ import {fetchRequests} from "@/api/requests.js"
 import {fetchUsers} from "@/api/users.js"
 import {fetchRatings} from "@/api/ratings.js"
 import {fetchAchievements} from "@/api/achievements.js"
+import {fetchBenefitUsers} from "@/api/benefitUsers.js"
 
 export default new Vuex.Store({
     state:{
@@ -18,7 +19,8 @@ export default new Vuex.Store({
         isSerbian: true,
         allUsers: {},
         logedIn: true,
-        usersPortion: {}
+        usersPortion: {},
+        usersWithBenefit: {}
     },
     getters:{
         getAuthUserId(state) {
@@ -28,6 +30,10 @@ export default new Vuex.Store({
     actions:{
         fillRequests(){
             this.state.requests = fetchRequests();
+        },
+        fillUsersWithBenefit()
+        {
+            this.state.usersWithBenefit = fetchBenefitUsers();
         },
         getUser({commit}, userId) {
             const users = fetchUsers()

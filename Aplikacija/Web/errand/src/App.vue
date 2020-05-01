@@ -19,6 +19,7 @@ export default {
   },
   created(){
     this.$store.dispatch("fillRequests")
+    this.$store.dispatch("fillUsersWithBenefit")
     this.$store.dispatch("fillAuthUser")
   }
 }

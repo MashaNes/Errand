@@ -15,7 +15,7 @@ import PageRegisterAdmin from "@/pages/PageRegisterAdmin"
 import PageFAQ from "@/pages/PageFAQ"
 import PageSettings from "@/pages/PageSettings"
 import PageBrowseUsers from "@/pages/PageBrowseUsers"
-
+import PageBenefitList from "@/pages/PageBenefitList"
 
 Vue.use(Router)
 
@@ -86,6 +86,11 @@ const router = new Router(
                 path: "/users",
                 name: "PageBrowseUsers",
                 component: PageBrowseUsers
+            },
+            {
+                path: "/benefitList",
+                name: "PageBenefitList",
+                component: PageBenefitList
             }
         ],
         mode: "history",
