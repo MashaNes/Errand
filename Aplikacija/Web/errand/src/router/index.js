@@ -43,7 +43,7 @@ const router = new Router(
                 component: PageRegister
             },
             {
-                path: "/profile",
+                path: "/profile/:id",
                 name: "PageViewProfile",
                 component: PageViewProfile
             },
@@ -53,12 +53,12 @@ const router = new Router(
                 component: PageHelp
             },
             {
-                path: "/achievements",
+                path: "/achievements/:id",
                 name: "PageAchievements",
                 component: PageAchievements
             },
             {
-                path: "/ratings",
+                path: "/ratings/:id",
                 name: "PageRatings",
                 component: PageRatings
             },

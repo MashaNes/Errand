@@ -5,13 +5,14 @@ Vue.use(Vuex)
 
 import {fetchRequests} from "@/api/requests.js"
 import {fetchUsers} from "@/api/users.js"
-import {fetchAchievements, fetchAchievementDetails} from "@/api/achievements.js"
 import {fetchRatings} from "@/api/ratings.js"
+import {fetchAchievements} from "@/api/achievements.js"
 
 export default new Vuex.Store({
     state:{
         requests: {},
         user: {},
+        authUser: {},
         userAchievements: {},
         userRatings: {},
         isSerbian: true,
@@ -20,38 +21,34 @@ export default new Vuex.Store({
         usersPortion: {}
     },
     getters:{
+        getAuthUserId(state) {
+            return state.authUser.id
+        }
     },
     actions:{
         fillRequests(){
             this.state.requests = fetchRequests();
         },
-        getUser({commit}) {
-            commit('setUser', fetchUsers()["1"])
+        getUser({commit}, userId) {
+            const users = fetchUsers()
+            const specificUser = Object.values(users).find(u => u.id == userId)
+            commit('setUser', specificUser)
+        },
+        fillAuthUser({commit}) {
+            commit('setAuthUser', fetchUsers()["1"])
         },
         getAllUsers({commit}) {
             commit('setAllUsers', fetchUsers())
         },
-        getUserAchievements({commit}) {
+        getUserAchievements({commit}, userId) {
             const allAch = fetchAchievements();
-            const allAchDetails = fetchAchievementDetails();
-            const userAch = {}
-            const objectToCommit = {}
-            this.state.user.achievements.forEach(achKey => {
-                Vue.set(userAch, achKey, allAch[achKey])
-            })
-            Object.values(userAch).forEach((ach, ind) => {
-                const details = allAchDetails[ach.AchievementDetails]
-                Vue.set(objectToCommit, `${ind}`, {id: ach.id, achievementLevel: ach.level, achievementDetails: details})
-            })
-            commit('setUserAchievements', objectToCommit)
+            const filteredAch = Object.values(allAch).filter(a => a.user == userId)
+            commit('setUserAchievements', filteredAch)
         },
-        getUserRatings({commit}) {
+        getUserRatings({commit}, userId) {
             const allRatings = fetchRatings();
-            const rtgs = {}
-            this.state.user.ratings.forEach(rating => {
-                Vue.set(rtgs, rating, allRatings[rating])
-            })
-            commit('setUserRatings', rtgs)
+            const filteredRatings = Object.values(allRatings).filter(r => r.ratedUser == userId)
+            commit('setUserRatings', filteredRatings)
         },
         editUser({commit}, newUser) {
 
@@ -90,6 +87,9 @@ export default new Vuex.Store({
         setUsersPortion(state, users) {
             state.usersPortion = users
             //console.log(state.usersPortion)
+        },
+        setAuthUser(state, user) {
+            state.authUser = user
         }
     }
 })

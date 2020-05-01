@@ -172,6 +172,7 @@ export const fetchUsers = () => {
             ratings: {}
         },
         "3": {
+            id: 3,
             firstName: "Dimitrije",
             lastName: "Pantic",
             picture: "https://www.in4s.net/wp-content/uploads/2017/01/Pantic.jpg",
@@ -184,6 +185,7 @@ export const fetchUsers = () => {
             ratings: {}
         },
         "4": {
+            id: 4,
             firstName: "Srecko",
             lastName: "Sojic",
             picture: "https://www.srbijadanas.com/sites/default/files/styles/full_article_image/public/a/t/2015/09/09/srecko-sojic-foto-priscreen-ktvtelevizija-zrenjanin.jpg",
@@ -196,6 +198,7 @@ export const fetchUsers = () => {
             ratings: {}
         },
         "5": {
+            id: 5,
             firstName: "Obi Wan",
             lastName: "Kenobi",
             picture: "https://www.denofgeek.com/wp-content/uploads/2019/08/star-wars-obi-wan-kenobi-1-scaled.jpg?fit=2560%2C1707",
@@ -208,6 +211,7 @@ export const fetchUsers = () => {
             ratings: {}
         },
         "6": {
+            id: 6,
             firstName: "Chewbacca",
             lastName: "Chewie",
             picture: "https://pbs.twimg.com/profile_images/942329591426842624/cGFGEd2z.jpg",
@@ -220,6 +224,7 @@ export const fetchUsers = () => {
             ratings: {}
         },
         "7": {
+            id: 7,
             firstName: "Chandler",
             lastName: "Bing",
             picture: "https://i.pinimg.com/originals/a4/a4/7d/a4a47d837726daa86ece52c8dc5b812a.jpg",
