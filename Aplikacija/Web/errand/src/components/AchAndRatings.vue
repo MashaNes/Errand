@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <!-- <div> -->
     <!-- <div class="main-window">
       <div class="bordered-container">
         <div class="aside"> -->
@@ -78,7 +78,7 @@
         />
       </div>
     </div>
-  </div>
+  <!-- </div> -->
 </template>
 
 <script>
@@ -196,10 +196,6 @@ export default {
 
   .ach-wrap {
     width:100%;
-    display:flex;
-    flex-direction:row;
-    flex-wrap:wrap;
-    margin: 40px 5% 0 5%;
   }
 
   .rating-wrap {
@@ -295,6 +291,10 @@ export default {
     .btn {
       margin:5px 0 5px 0;
       font-size:15px;
+    }
+
+    .ach-wrap {
+      align-items:center;
     }
   }
   
