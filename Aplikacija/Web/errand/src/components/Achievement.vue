@@ -33,7 +33,10 @@
         footer-bg-variant = "dark"
         footer-text-variant = "white"
       >
-        <span>
+        <span v-if="isSerbian">
+          Nivo: {{achievement.level}}
+        </span>
+        <span v-else>
           Level: {{achievement.level}}
         </span>
         <span class="image-span">
