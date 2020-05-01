@@ -24,6 +24,10 @@
               <li class="stavka-navigacije" v-if="isSerbian"> Zahtevi </li>
               <li class="stavka-navigacije" v-else> Requests </li>
             </router-link>
+            <router-link :to="'/users'" >
+              <li class="stavka-navigacije" v-if="isSerbian"> Pretraži korisnike </li>
+              <li class="stavka-navigacije" v-else> Search for users </li>
+            </router-link>
             <router-link :to="'/settings'">
               <li class="stavka-navigacije" v-if="isSerbian"> Podešavanja </li>
               <li class="stavka-navigacije" v-else> Settings </li>

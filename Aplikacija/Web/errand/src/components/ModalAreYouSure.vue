@@ -6,17 +6,17 @@
 
               <div class="modal-header">
                 <h3 name="header" v-if="isSerbian">
-                  Brisanje zahteva
+                  {{naslovS}}
                 </h3>
                 <h3 name="header" v-else>
-                  Deleting a request
+                  {{naslovE}}
                 </h3>
               </div>
 
               <div class="modal-body">
                 <slot name="body">
-                  <slot v-if="isSerbian"> Da li ste sigurni da želite da obrišete ovaj zahtev?</slot>
-                  <slot v-else> Are you sure you want to delete this request?</slot>
+                  <slot v-if="isSerbian"> {{tekstS}}</slot>
+                  <slot v-else> {{tekstE}}</slot>
                 </slot>
               </div>
 
@@ -44,6 +44,29 @@
 
 <script>
 export default {
+    props:
+    {
+      naslovS:
+      {
+        type: String,
+        required: true
+      },
+      naslovE:
+      {
+        type: String,
+        required: true
+      },
+      tekstS:
+      {
+        type: String,
+        required: true
+      },
+      tekstE:
+      {
+        type: String,
+        required: true
+      }
+    },
     computed:
     {
         isSerbian()

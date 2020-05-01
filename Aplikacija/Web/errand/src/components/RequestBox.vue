@@ -34,12 +34,16 @@
                 </div>
             </div>
         </div>
-        <ModalDeleteRequest @close="showModal = false" @yes="deleteRequest" v-if="showModal"/>
+        <ModalAreYouSure :naslovS="'Brisanje zahteva'" 
+                         :tekstS="'Da li ste sigurni da želite da obrišete ovaj zahtev?'" 
+                         :naslovE="'Deleting a request'"
+                         :tekstE="'Are you sure you want to delete this request?'"
+                         @close="showModal = false" @yes="deleteRequest" v-if="showModal"/>
     </div>
 </template>
 
 <script>
-import ModalDeleteRequest from "@/components/ModalDeleteRequest"
+import ModalAreYouSure from "@/components/ModalAreYouSure"
 export default {
     props:
     {
@@ -50,7 +54,7 @@ export default {
     },
     components:
     {
-        ModalDeleteRequest
+        ModalAreYouSure
     },
     data()
     {

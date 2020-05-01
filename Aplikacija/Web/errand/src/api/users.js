@@ -235,6 +235,19 @@ export const fetchUsers = () => {
             achievements: {},
             homeAddress: ["4 Privet Drive, Little Whinging, Surrey England, Great Britain", "Zmaj Jovina 3, Sokobanja"],
             ratings: {}
+        },
+        "8":{
+            id:8,
+            firstName: "Derek",
+            lastName: "Shepherd",
+            picture: "https://alchetron.com/cdn/derek-shepherd-8b30aed5-5e2e-4a12-b8e2-8c0c90a0736-resize-750.jpeg",
+            email: "McDreamy@seattlegrace.com",
+            rating: 4.28,
+            phone: ["123456", "220098123", "13455562"],
+            status: "active",
+            achievements: ["1", "3", "4", "5", "6"],
+            homeAddress: ["4 Privet Drive, Little Whinging, Surrey England, Great Britain", "Zmaj Jovina 3, Sokobanja"],
+            ratings: ["1", "2", "3"]
         }
     }
 }

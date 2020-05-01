@@ -1,5 +1,5 @@
 <template>
-  <div class="mt-3">
+  <div class="wrapper">
     <b-pagination 
       v-model="currentPage" 
       :total-rows="users.totalCount" 
@@ -68,7 +68,11 @@ export default {
 
 <style scoped>
   
-
+  .wrapper
+  {
+    padding-top:30px;
+    padding-bottom:30px;
+  }
 
   .users {
     display: flex; 
