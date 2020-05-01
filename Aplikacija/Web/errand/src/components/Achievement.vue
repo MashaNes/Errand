@@ -70,6 +70,9 @@ export default {
     font-weight: bold;
     border-top-left-radius: 15px;
     border-top-right-radius: 15px;
+    background-color: inherit !important;
+    color: inherit !important;
+    border: hidden;
   }
 
   .card-footer {
@@ -79,15 +82,25 @@ export default {
     border-bottom-right-radius: 15px;
     display:flex;
     justify-content: space-between;
+    background-color: inherit !important;
+    color: inherit !important;
+    border: hidden;
+    margin: 1px 0 1px 0;
   }
 
   .card {
-    margin: 50px 15% 50px 15%;
+    margin: 25px 20% 25px 20%;
     border-radius: 15px;
+    border: 1px solid black;
   }
 
   .card-text {
     font-size: 25px;
+  }
+
+  .card-body {
+    border-top:1px solid black;
+    border-bottom: 1px solid black;
   }
 
   .body-silver {
