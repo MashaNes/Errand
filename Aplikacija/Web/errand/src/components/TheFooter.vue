@@ -8,7 +8,7 @@
               <li class="stavka-navigacije" v-if="isSerbian"> Obaveštenja </li>
               <li class="stavka-navigacije" v-else> Notifications </li>
             <!--</router-link>-->
-            <router-link :to="'/profile'" >
+            <router-link :to="'/profile/' + authUserId" >
               <li class="stavka-navigacije" v-if="isSerbian"> Profil </li>
               <li class="stavka-navigacije" v-else> Profile </li>
             </router-link>
@@ -87,6 +87,9 @@
       isLogedIn()
       {
           return this.$store.state.logedIn
+      },
+      authUserId() {
+        return this.$store.getters['getAuthUserId']
       }
     },
     methods:

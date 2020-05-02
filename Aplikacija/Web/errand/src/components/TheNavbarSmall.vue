@@ -18,7 +18,7 @@
                                     <span v-else class = "ikonica"> Notifications </span>
                                 </div>
                             </a>
-                            <router-link :to = "'/profile'" class="dropdown-item">
+                            <router-link :to = "'/profile/' + authUserId" class="dropdown-item">
                                 <img src = "../assets/profile.svg">
                                 <span v-if="isSerbian" class = "ikonica"> Profil </span>
                                 <span v-else class = "ikonica"> Profile </span>
@@ -96,6 +96,9 @@ export default {
       isLogedIn()
       {
           return this.$store.state.logedIn
+      },
+      authUserId() {
+          return this.$store.getters['getAuthUserId']
       }
     },
     methods:
