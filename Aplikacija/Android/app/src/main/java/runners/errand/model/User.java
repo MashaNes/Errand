@@ -1,11 +1,15 @@
 package runners.errand.model;
 
-import android.media.Image;
+import android.widget.ArrayAdapter;
+
+import androidx.annotation.NonNull;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-// In the DB there is also a list of blocked users, there is no need to have a copy locally at any
-// point because DB queries will be already filtered.
 public class User {
 	public static final int
 		STATUS_NOT_RUNNING = 0,
@@ -13,16 +17,115 @@ public class User {
 
 	private int id, status, benefitRequirements;
 	private String firstName, lastName, email, phone;
-	private Image picture;
+	private String picture;
 	private float rating, minRating, maxDistance, benefitDiscount;
-	private ArrayList<Achievement> achievements;
-	private ArrayList<Address> addresses;
-	private ArrayList<Benefit> benefits;
-	private ArrayList<Rating> ratings;
-	private ArrayList<Request> requests;
-	private ArrayList<Notification> notifications;
+	private ArrayList<Achievement> achievements = new ArrayList<>();
+	private ArrayList<Address> addresses = new ArrayList<>();
+	private ArrayList<Benefit> benefits = new ArrayList<>();
+	private ArrayList<Rating> ratings = new ArrayList<>();
+	private ArrayList<Request> requests = new ArrayList<>();
+	private ArrayList<Notification> notifications = new ArrayList<>();
+	private ArrayList<ServicePrefs> servicePrefs = new ArrayList<>();
+	private ArrayList<WorkingHours> workingHours = new ArrayList<>();
+	private ArrayList<User> blockedUsers = new ArrayList<>();
 
-	public User(int id, int status, int benefitRequirements, String firstName, String lastName, String email, String phone, Image picture, float rating, float minRating, float maxDistance, float benefitDiscount) {
+	public User(@NonNull JSONObject o) {
+		JSONObject user = o.optJSONObject("user");
+		if (user != null) {
+			this.id = user.optInt("id");
+			this.email = user.optString("email");
+			this.firstName = user.optString("first_name");
+			this.lastName = user.optString("last_name");
+			this.phone = user.optString("phone");
+			this.picture = user.optString("picture");
+			this.rating = (float) user.optDouble("avg_rating");
+		}
+
+		JSONArray achievements = o.optJSONArray("achievements");
+		if (achievements != null) {
+			for (int i = 0; i < achievements.length(); i++) {
+				JSONObject achievement = achievements.optJSONObject(i);
+				if (achievement != null) this.achievements.add(new Achievement(achievement));
+			}
+		}
+
+		JSONArray addresses = o.optJSONArray("addresses");
+		if (addresses != null) {
+			for (int i = 0; i < addresses.length(); i++) {
+				JSONObject address = addresses.optJSONObject(i);
+				if (address != null) this.addresses.add(new Address(address));
+			}
+		}
+
+		JSONArray benefits = o.optJSONArray("benefitlist");
+		if (benefits != null) {
+			for (int i = 0; i < benefits.length(); i++) {
+				JSONObject benefit = benefits.optJSONObject(i);
+				if (benefit != null) this.benefits.add(new Benefit(benefit));
+			}
+		}
+
+		JSONArray ratings = o.optJSONArray("ratings");
+		if (ratings != null) {
+			for (int i = 0; i < ratings.length(); i++) {
+				JSONObject rating = ratings.optJSONObject(i);
+				if (rating != null) this.ratings.add(new Rating(rating));
+			}
+		}
+
+		JSONArray requests = o.optJSONArray("requests");
+		if (requests != null) {
+			for (int i = 0; i < requests.length(); i++) {
+				JSONObject request = requests.optJSONObject(i);
+				if (request != null) this.requests.add(new Request(request));
+			}
+		}
+
+		JSONArray notifications = o.optJSONArray("notifications");
+		if (notifications != null) {
+			for (int i = 0; i < notifications.length(); i++) {
+				JSONObject notification = notifications.optJSONObject(i);
+				if (notification != null) this.notifications.add(new Notification(notification));
+			}
+		}
+
+		JSONArray services = o.optJSONArray("services");
+		if (services != null) {
+			for (int i = 0; i < services.length(); i++) {
+				JSONObject service = services.optJSONObject(i);
+				if (service != null) this.servicePrefs.add(new ServicePrefs(service));
+			}
+		}
+
+		JSONArray workingHours = o.optJSONArray("working_hours");
+		if (workingHours != null) {
+			for (int i = 0; i < workingHours.length(); i++) {
+				JSONObject workingHour = workingHours.optJSONObject(i);
+				if (workingHour != null) this.workingHours.add(new WorkingHours(workingHour));
+			}
+		}
+
+		JSONArray blockedUsers = o.optJSONArray("blocked");
+		if (blockedUsers != null) {
+			for (int i = 0; i < blockedUsers.length(); i++) {
+				JSONObject blockedUser = blockedUsers.optJSONObject(i);
+				if (blockedUser != null) {
+					JSONObject tmp = new JSONObject();
+					try {
+						tmp.put("user", blockedUser);
+						this.blockedUsers.add(new User(tmp));
+					} catch (JSONException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		}
+
+		this.benefitDiscount = (float) o.optDouble("benefit_discount");
+		this.benefitRequirements = o.optInt("benefit_requirement");
+	}
+
+	public User(int id, int status, int benefitRequirements, String firstName, String lastName, String email, String phone, String picture, float rating, float minRating, float maxDistance, float benefitDiscount) {
 		this.id = id;
 		this.status = status;
 		this.benefitRequirements = benefitRequirements;
@@ -97,7 +200,7 @@ public class User {
 		return phone;
 	}
 
-	public Image getPicture() {
+	public String getPicture() {
 		return picture;
 	}
 

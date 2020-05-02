@@ -1,9 +1,16 @@
 package runners.errand.model;
 
-import android.media.Image;
+import androidx.annotation.NonNull;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Locale;
 
 public class Request {
     public static final int
@@ -13,14 +20,59 @@ public class Request {
             STATUS_COMPLETED = 3,
             STATUS_CANCELED = 4;
 
-    private int id, status, locationStatus;
+    private int id, status, locationStatus, requestType;
+    private double maxDistance, minRating;
     private Date time;
     private String name, note;
     private boolean pictureRequired;
     private Service service;
-    private ArrayList<Image> pictures;
-    private ArrayList<Task> tasks;
-    private ArrayList<Offer> offers;
+    private ArrayList<String> pictures = new ArrayList<>();
+    private ArrayList<Task> tasks = new ArrayList<>();
+    private ArrayList<Offer> offers = new ArrayList<>();
+    private User createdBy;
+
+    public Request(@NonNull JSONObject o) {
+        this.id = o.optInt("id");
+
+        JSONObject service = o.optJSONObject("service_type");
+        if (service != null) this.service = new Service(service);
+
+        JSONObject createdBy = o.optJSONObject("created_by");
+        if (createdBy != null) {
+            JSONObject tmp = new JSONObject();
+            try {
+                tmp.put("user", createdBy);
+                this.createdBy = new User(tmp);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+        JSONArray tasks = o.optJSONArray("tasklist");
+        if (tasks != null) {
+            for (int i = 0; i < tasks.length(); i++) {
+                JSONObject task = tasks.optJSONObject(i);
+                if (task != null) this.tasks.add(new Task(task));
+            }
+        }
+
+        // TODO: Offers
+
+        this.name = o.optString("name");
+        this.status = o.optInt("status");
+        this.locationStatus = o.optInt("location_status");
+        try {
+            this.time = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).parse(o.optString("time").replace("T", " ").substring(0, 19));
+        } catch (ParseException e) {
+            e.printStackTrace();
+            this.time = null;
+        }
+        this.pictureRequired = o.optBoolean("picture_required");
+        this.note = o.optString("note");
+        this.requestType = o.optInt("request_type");
+        this.maxDistance = o.optDouble("max_dist");
+        this.minRating = o.optDouble("min_rating");
+    }
 
     public Request(int id, int status, int locationStatus, Date time, String name, String note, boolean pictureRequired, Service service) {
         this.id = id;
@@ -33,7 +85,7 @@ public class Request {
         this.service = service;
     }
 
-    public void setPictures(ArrayList<Image> pictures) {
+    public void setPictures(ArrayList<String> pictures) {
         this.pictures = pictures;
     }
 
@@ -77,7 +129,7 @@ public class Request {
         return pictureRequired;
     }
 
-    public ArrayList<Image> getPictures() {
+    public ArrayList<String> getPictures() {
         return pictures;
     }
 
@@ -87,5 +139,21 @@ public class Request {
 
     public ArrayList<Offer> getOffers() {
         return offers;
+    }
+
+    public int getRequestType() {
+        return requestType;
+    }
+
+    public double getMaxDistance() {
+        return maxDistance;
+    }
+
+    public double getMinRating() {
+        return minRating;
+    }
+
+    public User getCreatedBy() {
+        return createdBy;
     }
 }

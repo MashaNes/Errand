@@ -1,5 +1,9 @@
 package runners.errand.model;
 
+import androidx.annotation.NonNull;
+
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 
 public class Service {
@@ -7,6 +11,13 @@ public class Service {
     private String type, description;
     private boolean pictureRequired;
     private ArrayList<Task> tasks;
+
+    public Service(@NonNull JSONObject o) {
+        this.id = o.optInt("id");
+        this.type = o.optString("service_type");
+        this.description = o.optString("description");
+        this.pictureRequired = o.optBoolean("picture_required");
+    }
 
     public Service(int id, String type, String description, boolean pictureRequired) {
         this.id = id;

@@ -2,6 +2,10 @@ package runners.errand.model;
 
 import android.media.Image;
 
+import androidx.annotation.NonNull;
+
+import org.json.JSONObject;
+
 // firstName, lastName and picture are part of the User model in the DB
 // where createdBy represents that users id,
 // however, they are in this class because the whole User object won't be needed most of the time
@@ -10,6 +14,10 @@ public class Rating {
 	private int id, grade, ratingUser, ratedUser, request;
 	private String comment, firstName, lastName;
 	private Image picture;
+
+	public Rating(@NonNull JSONObject o) {
+
+	}
 
 	public Rating(int id, int grade, int ratingUser, int ratedUser, int request, String comment, String firstName, String lastName, Image picture) {
 		this.id = id;

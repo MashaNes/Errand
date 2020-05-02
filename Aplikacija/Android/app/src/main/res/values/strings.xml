@@ -7,6 +7,11 @@
 	<string name="action_run_start">Start running</string>
 	<string name="action_run_stop">Stop running</string>
 
+	<string name="generic_loading">Loading…</string>
+	<string name="generic_ok">OK</string>
+	<string name="generic_yes">Yes</string>
+	<string name="generic_no">No</string>
+
 	<string name="autofill_email">emailAddress</string>
 	<string name="autofill_password">password</string>
 	<string name="autofill_name">name</string>
@@ -66,4 +71,8 @@
 	<string name="image_cd_edit_phone">Edit phone number</string>
 	<string name="image_cd_goto_ratings">Go to ratings tab</string>
 	<string name="image_cd_goto_achievements">Go to achievements tab</string>
+
+	<string name="error">Error</string>
+	<string name="error_login">Failed to sign in with given credentials.</string>
+	<string name="error_json">An error occurred while parsing the response.</string>
 </resources>

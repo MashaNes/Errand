@@ -1,5 +1,9 @@
 package runners.errand.model;
 
+import androidx.annotation.NonNull;
+
+import org.json.JSONObject;
+
 import java.sql.Date;
 
 public class Notification {
@@ -12,6 +16,10 @@ public class Notification {
 	private int id = 0, category;
 	private String title, body;
 	private Date time;
+
+	public Notification(@NonNull JSONObject o) {
+
+	}
 
 	public Notification(int category, String title, String body, Date time) {
 		this.category = category;

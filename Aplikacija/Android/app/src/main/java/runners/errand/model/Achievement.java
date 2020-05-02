@@ -2,10 +2,18 @@ package runners.errand.model;
 
 import android.media.Image;
 
+import androidx.annotation.NonNull;
+
+import org.json.JSONObject;
+
 public class Achievement {
     private int id, level;
     private String name, description;
     private Image icon;
+
+    public Achievement(@NonNull JSONObject o) {
+
+    }
 
     public Achievement(int id, int level, String name, String description) {
         this.id = id;

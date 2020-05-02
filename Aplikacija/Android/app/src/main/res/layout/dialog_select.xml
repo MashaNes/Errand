@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:orientation="vertical"
+	android:background="@color/colorWhite"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:padding="16dp">
+
+	<ImageView
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_gravity="start"
+		android:src="@drawable/ic_help" />
+
+	<TextView
+		android:id="@+id/dialog_title"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:gravity="center_horizontal"
+		android:paddingTop="8dp"
+		android:textColor="@color/colorBlack"
+		android:textStyle="bold"
+		android:textSize="16sp"/>
+
+	<TextView
+		android:id="@+id/dialog_message"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:gravity="center_horizontal"
+		android:paddingTop="8dp"
+		android:paddingBottom="16dp"
+		android:textColor="@color/colorBlack"
+		android:textSize="14sp"/>
+
+	<android.support.constraint.ConstraintLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content">
+
+		<Button
+			android:id="@+id/dialog_button_positive"
+			android:layout_width="0dp"
+			android:layout_height="50dp"
+			android:layout_marginEnd="8dp"
+			style="?android:attr/borderlessButtonStyle"
+			app:layout_constraintStart_toStartOf="parent"
+			app:layout_constraintEnd_toStartOf="@id/dialog_button_negative"
+			tools:ignore="MissingConstraints,RtlCompat" />
+
+		<Button
+			android:id="@+id/dialog_button_negative"
+			android:layout_width="0dp"
+			android:layout_height="50dp"
+			android:layout_marginStart="8dp"
+			style="?android:attr/borderlessButtonStyle"
+			app:layout_constraintEnd_toEndOf="parent"
+			app:layout_constraintStart_toEndOf="@id/dialog_button_positive"
+			android:layout_marginLeft="8dp"
+			tools:ignore="MissingConstraints" />
+	</android.support.constraint.ConstraintLayout>
+</LinearLayout>

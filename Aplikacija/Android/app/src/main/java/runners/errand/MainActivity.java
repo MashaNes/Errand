@@ -1,5 +1,6 @@
 package runners.errand;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
@@ -24,6 +25,9 @@ import androidx.viewpager.widget.ViewPager;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.tabs.TabLayout;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.sql.Date;
 import java.util.ArrayList;
 
@@ -34,6 +38,10 @@ import runners.errand.model.Request;
 import runners.errand.model.Service;
 import runners.errand.model.Task;
 import runners.errand.model.User;
+import runners.errand.utils.Dialog;
+import runners.errand.utils.net.NetManager;
+import runners.errand.utils.net.NetRequest;
+import runners.errand.utils.net.NetResult;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private static final int TAB_ICON_TRANSPARENCY = 125;
@@ -45,10 +53,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private TabLayout tabs;
     private User user;
 
+    public boolean active = false;
+    private Activity activity;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        activity = this;
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -97,26 +110,28 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // To change the nav menu icon in the toolbar at runtime
         // toolbar.setNavigationIcon(R.drawable.ic_achievements);
 
-        user = new User(
-                0,
-                User.STATUS_NOT_RUNNING,
-                5,
-                "Test",
-                "Name",
-                "testemail@testing.com",
-                "+38154321234",
-                null,
-                3.4f,
-                3.5f,
-                4f,
-                10f
-        );
-
-        mockRatingData();
-        mockAchievementData();
-        mockRequestData();
-        mockNotificationData();
+		String tmp = getIntent().getStringExtra("user");
+		if (tmp != null) {
+			try {
+				user = new User(new JSONObject(tmp));
+			} catch (JSONException e) {
+				e.printStackTrace();
+				Dialog.buildMessageDialog(activity, getString(R.string.error), getString(R.string.error_json), "MA-L", null);
+			}
+		}
     }
+
+	@Override
+	protected void onPause() {
+		active = false;
+		super.onPause();
+	}
+
+	@Override
+	protected void onResume() {
+		active = true;
+		super.onResume();
+	}
 
     @Override
     public boolean onNavigationItemSelected(@NonNull final MenuItem item) {
@@ -132,6 +147,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 			navController.navigate(item.getItemId());
 		} else {
 			// TODO: Logout
+			NetManager.clearToken();
 			Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
 			intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 			startActivity(intent);
@@ -199,197 +215,5 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 	public void navigateTo(int id, Bundle args) {
 		navController.navigate(id, args);
-	}
-
-    private void mockRatingData() {
-        ArrayList<Rating> ratings = new ArrayList<>();
-        ratings.add(new Rating(
-                0,
-                4,
-                1,
-                0,
-                0,
-                "Good job",
-                "First",
-                "Last",
-				null
-        ));
-        ratings.add(new Rating(
-                1,
-                3,
-                2,
-                0,
-                1,
-                "Very slow! otherwise good",
-                "Chase",
-                "Royce",
-				null
-        ));
-        ratings.add(new Rating(
-                2,
-                5,
-                3,
-                0,
-                2,
-                "",
-                "Melissa",
-                "Rhodes",
-				null
-        ));
-        ratings.add(new Rating(
-                3,
-                4,
-                4,
-                0,
-                3,
-                "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis vel ex mi. Nunc ornare nisl nibh, ac mattis ipsum suscipit ac. Donec dictum feugiat nunc in consectetur. Aliquam a ante molestie, viverra elit nec, dictum magna. Nullam pellentesque vestibulum dui, vel sollicitudin tortor dapibus quis.",
-                "Linsey",
-                "Ingram",
-				null
-        ));
-        user.setRatings(ratings);
-    }
-
-    private void mockAchievementData() {
-        ArrayList<Achievement> achievements = new ArrayList<>();
-
-        achievements.add(new Achievement(
-                0,
-                1,
-                "Achievement A",
-                "Description of Achievement A."
-        ));
-
-        achievements.add(new Achievement(
-                1,
-                3,
-                "Achievement B",
-                "Etiam vitae ante sit amet mi gravida pretium. Duis ut risus hendrerit lectus vulputate tincidunt vitae sit amet sem."
-        ));
-
-		achievements.add(new Achievement(
-				2,
-				0,
-				"Achievement C",
-				"ASd dih sadashd asdkajs dasdasdoias r r rsk sfahs fash sa."
-		));
-
-        user.setAchievements(achievements);
-    }
-
-	private void mockRequestData() {
-		ArrayList<Task> tasksGroceries = new ArrayList<>();
-		tasksGroceries.add(new Task(0, "Go to grocery store.", null));
-		Service serviceGroceries = new Service(0, "Groceries", "", false);
-		serviceGroceries.setTasks(tasksGroceries);
-
-		ArrayList<Task> tasksDelivery = new ArrayList<>();
-		tasksDelivery.add(new Task(0, "Pick up these items.", null));
-		tasksDelivery.add(new Task(1, "Deliver them to given address.", null));
-		Service serviceDelivery = new Service(1, "Delivery", "", false);
-		serviceDelivery.setTasks(tasksDelivery);
-
-		ArrayList<Request> requests = new ArrayList<>();
-
-		requests.add(new Request(
-				1,
-				Request.STATUS_ACTIVE,
-				0,
-				new Date(new java.util.Date().getTime()),
-				"Deliver a package",
-				"",
-				false,
-				serviceDelivery
-		));
-
-		requests.add(new Request(
-				1,
-				Request.STATUS_PENDING,
-				0,
-				new Date(new java.util.Date().getTime() + 5000000),
-				"Grocery shopping",
-				"",
-				false,
-				serviceGroceries
-		));
-
-		requests.add(new Request(
-				1,
-				Request.STATUS_COMPLETED,
-				0,
-				new Date(new java.util.Date().getTime() - 500000000),
-				"Delivery",
-				"",
-				false,
-				serviceDelivery
-		));
-
-		requests.add(new Request(
-				1,
-				Request.STATUS_CANCELED,
-				0,
-				new Date(new java.util.Date().getTime() - 750000000),
-				"Groceries",
-				"",
-				false,
-				serviceGroceries
-		));
-
-		user.setRequests(requests);
-	}
-
-	private void mockNotificationData() {
-		ArrayList<Notification> notifications = new ArrayList<>();
-
-		notifications.add(new Notification(
-				Notification.CATEGORY_REQUEST,
-				"New offer",
-				"Your request \"Grocery shopping\" got a new offer from Bob.",
-				new Date(new java.util.Date().getTime())
-		));
-
-		notifications.add(new Notification(
-				Notification.CATEGORY_REQUEST,
-				"Accepted",
-				"Your direct request \"Delivery\" got accepted by Firstname.",
-				new Date(new java.util.Date().getTime())
-		));
-
-		notifications.add(new Notification(
-				Notification.CATEGORY_REQUEST,
-				"Edit requested",
-				"Testname sent you an edit request regarding \"Cleaning\".",
-				new Date(new java.util.Date().getTime())
-		));
-
-		notifications.add(new Notification(
-				Notification.CATEGORY_RUNNING,
-				"Offer accepted",
-				"Your offer for \"Groceries\" has been accepted.",
-				new Date(new java.util.Date().getTime())
-		));
-
-		notifications.add(new Notification(
-				Notification.CATEGORY_RUNNING,
-				"Edit request denied",
-				"Your edit request for \"Laptop repairs\" has been denied.",
-				new Date(new java.util.Date().getTime())
-		));
-
-		notifications.add(new Notification(
-				Notification.CATEGORY_RATING,
-				"New rating",
-				"Bob rated you 5 stars and said: \"Great job!\".",
-				new Date(new java.util.Date().getTime())
-		));
-
-		notifications.add(new Notification(
-				Notification.CATEGORY_ACHIEVEMENT,
-				"Achievement unlocked",
-				"You have unlocked the \"Experienced runner\" achievement. Congratulations!",
-				new Date(new java.util.Date().getTime())
-		));
-
-		user.setNotifications(notifications);
 	}
 }

@@ -92,10 +92,10 @@ public class RequestsListFragment extends Fragment {
         if (requests == null) {
 			requests = new ArrayList<>();
 			for (Request r : activity.getUser().getRequests()) {
-				if (index == 0 && r.getStatus() <= Request.STATUS_ACTIVE)
+				if (index == 0 && r.getStatus() <= Request.STATUS_ACTIVE && r.getCreatedBy().getId() == activity.getUser().getId())
 					requests.add(r);
-				if (index == 1 && r.getStatus() <= Request.STATUS_ACTIVE)
-					requests.add(r); // TODO: This should come through offers when API is ready
+				if (index == 1 && r.getStatus() <= Request.STATUS_ACTIVE && r.getCreatedBy().getId() != activity.getUser().getId())
+					requests.add(r);
 				if (index == 2 && r.getStatus() > Request.STATUS_ACTIVE)
 					requests.add(r);
 			}
