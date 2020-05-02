@@ -118,7 +118,7 @@
               </b-button>
               <b-button 
                 class="button is-primary title-btn"
-                @click="$emit('saveEditChanges')"
+                @click="$emit('cancelChanges')"
               >
                 <strong v-if="isSerbian">Odustani</strong>
                 <strong v-else>Cancel</strong>

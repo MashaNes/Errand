@@ -9,7 +9,8 @@
       <EditProfileInfo
         v-if="showProfileEdit"
         :user="user"
-        @saveEditChanges="showProfileEdit=false"
+        @saveEditChanges="editSaved"
+        @cancelChanges="showProfileEdit=false"
       />
     </div>
 </template>
@@ -32,11 +33,6 @@ export default {
     }
   },
   computed: {
-    // user() {
-    //   // eslint-disable-next-line no-debugger
-    
-    //   return this.$store.state.user
-    // },
     isSerbian() {
       return this.$store.state.isSerbian
     },
@@ -46,6 +42,13 @@ export default {
     progressBarVariant() {
       return this.user.rating < 2 ? 'danger' : 
              this.user.rating < 5 ? 'warning' : 'success'
+    }
+  },
+  methods: {
+    editSaved() {
+      this.isMyProfile = true
+      this.showProfileEdit = false
+      this.user = this.$store.state.authUser
     }
   },
   created() {

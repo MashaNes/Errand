@@ -91,7 +91,7 @@ export default new Vuex.Store({
             state.userRatings = ratings
         },
         setChangedUser(state, newUser) {
-            Vue.set(state, 'user', newUser)
+            Vue.set(state, 'authUser', newUser)
         },
         setAllUsers(state, users) {
             state.allUsers = users
