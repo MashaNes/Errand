@@ -6,8 +6,8 @@
             <div class="dugmici">
                 <button type="button" @click = "dodajKorisnika" class="btn btn-primary dugme" :disabled="isAdding && !email" v-if="isSerbian">Dodaj korisnika</button>
                 <button type="button" @click = "dodajKorisnika" class="btn btn-primary dugme" :disabled="isAdding && !email" v-else>Add a user</button>
-                <button type="button" v-if="isAdding && isSerbian" @click="isAdding = false" class="btn btn-secondary dugme">Odustani</button>
-                <button type="button" v-if="isAdding && !isSerbian" @click="isAdding = false" class="btn btn-secondary dugme">Cancel</button>
+                <button type="button" v-if="isAdding && isSerbian" @click="odustani" class="btn btn-secondary dugme">Odustani</button>
+                <button type="button" v-if="isAdding && !isSerbian" @click="odustani" class="btn btn-secondary dugme">Cancel</button>
             </div>
         </div>
         <div class="prikaz-wrap">
@@ -67,6 +67,11 @@ export default {
                 this.email = null
                 this.isAdding = false;
             }
+        },
+        odustani()
+        {
+            this.email = null
+            this.isAdding = false
         }
     },
     created()

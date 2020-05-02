@@ -22,7 +22,7 @@
                     <input class = "benefitEdit" type="number" min="1" max="100" v-model="newBenefit"> % 
                   </div>
                   <div class="edit-element"> 
-                    <button type="button" class="btn btn-success dugme" @click="saveBenefit">
+                    <button type="button" class="btn btn-success dugme" @click="saveBenefit" :disabled="isFormInvalid">
                       <img src="../assets/finished.svg"> 
                     </button>
                     <button type="button" class="btn btn-danger dugme" @click="discardBenefit">
@@ -82,6 +82,7 @@
 </template>
 
 <script>
+import {between} from "vuelidate/lib/validators"
 import ModalAreYouSure from "@/components/ModalAreYouSure"
 export default {
     props: {
@@ -93,6 +94,10 @@ export default {
     components:
     {
       ModalAreYouSure
+    },
+    validations:
+    {
+      newBenefit : { between: between(1,100) }
     },
     data()
     {
@@ -127,7 +132,11 @@ export default {
           return "Uklonite ovog korisnika iz Vaše liste"
         else
           return "Remove this user from your list"
-      }
+      },
+      isFormInvalid() 
+      {
+          return this.$v.newBenefit.$invalid
+      },
     },
     methods:
     {
