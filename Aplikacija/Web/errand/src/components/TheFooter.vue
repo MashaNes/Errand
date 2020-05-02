@@ -12,11 +12,11 @@
               <li class="stavka-navigacije" v-if="isSerbian"> Profil </li>
               <li class="stavka-navigacije" v-else> Profile </li>
             </router-link>
-            <router-link :to="'achievements'">
+            <router-link :to="'/achievements/' + authUserId">
               <li class="stavka-navigacije" v-if="isSerbian">Dostignuća </li>
               <li class="stavka-navigacije" v-else> Achievements </li>
             </router-link>
-            <router-link :to="'ratings'">
+            <router-link :to="'/ratings/' + authUserId">
               <li class="stavka-navigacije" v-if="isSerbian"> Ocene </li>
               <li class="stavka-navigacije" v-else> Ratings </li>
             </router-link>

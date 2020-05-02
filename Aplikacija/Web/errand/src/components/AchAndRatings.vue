@@ -191,6 +191,7 @@ export default {
   .main-wrapper {
     display:flex; 
     flex-direction:row;
+    min-height:73vh;
   }
 
   .bordered-container {
@@ -202,7 +203,11 @@ export default {
   .ach-wrap {
     width:100%;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    flex-wrap:wrap;
+    margin-left: 2%;
+    margin-right: 5px;
+    height:fit-content;
   }
 
   .rating-wrap {
@@ -302,6 +307,8 @@ export default {
 
     .ach-wrap {
       align-items:center;
+      flex-direction: column;
+      margin:0px;
     }
   }
   

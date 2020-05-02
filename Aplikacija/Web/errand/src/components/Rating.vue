@@ -101,8 +101,6 @@ export default {
     border-top-right-radius: 5px;
     display:flex; 
     flex-direction:row;
-    background-color: inherit !important;
-    color: inherit !important;
     border: hidden;
     border-top: 1px solid grey;
   }
