@@ -12,11 +12,22 @@ export const login = (email, password) => {
             "username" : email,
             "password" : password
         })
-    }).then( p => p.json().then(data =>
+    }).then( p => 
         {
-            console.log(data)
-            code = data
-        }));  
+            if(p.ok)
+            {
+                p.json().then(data =>
+                {
+                    //console.log(data["auth_token"])
+                    code = data["auth_token"]
+                })
+            }
+            else
+            {
+                code = "Error"
+                //console.log("Error")
+            }
+        });
         
     return code;
 }
