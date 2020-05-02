@@ -2,7 +2,7 @@ export const fetchAchievements = () => {
     return {
         "1": {
             id: 1,
-            user: 1,
+            user: 2,
             level: 2, 
             achievement: {
                 id: 1,
@@ -19,7 +19,7 @@ export const fetchAchievements = () => {
         },
         "2" : {
             id: 2,
-            user: 2,
+            user: 1,
             level: 2,
             achievement: {
                 id: 2,

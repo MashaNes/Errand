@@ -12,7 +12,7 @@
           </div>
           <div class="ostatak">
             <div class="media-center">
-              <p class="image is-96x96">
+              <p class="image is-96x96" @click="goToProfile">
                 <img class="rounded-image" :src="user.picture">
               </p>
               <div class="discount">
@@ -41,7 +41,7 @@
                   width = "20"
                   style = "margin-right: 15px"
                 />
-                <span>{{fullUserName}}</span>
+                <span @click="goToProfile" class="full-name-span">{{fullUserName}}</span>
               </div>
               <div class="info-element">
                 <img 
@@ -145,6 +145,10 @@ export default {
       {
         this.newBenefit = this.userBenefit.benefit
         this.isEdit = false
+      },
+      goToProfile() 
+      {
+        this.$router.push(`/profile/${this.user.id}`)
       }
     }
 }
@@ -157,6 +161,7 @@ export default {
     height:96px;
     width:96px;
     object-fit:cover;
+    cursor:pointer;
   }
 
   .card-body {
@@ -217,6 +222,12 @@ export default {
 
   .grade {
     word-break:normal;
+  }
+
+  .full-name-span:hover {
+    cursor: pointer !important;
+    text-decoration: underline;
+    color:lightseagreen;
   }
 
   .discount

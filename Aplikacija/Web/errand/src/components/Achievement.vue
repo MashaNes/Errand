@@ -69,41 +69,39 @@ export default {
 <style scoped>
 
   .card-header {
-    font-size: 18px;
+    font-size: 15px;
     font-weight: bold;
     border-top-left-radius: 15px;
     border-top-right-radius: 15px;
-    background-color: inherit !important;
-    color: inherit !important;
-    border: hidden;
+    border:1px solid black;
   }
 
   .card-footer {
-    font-size: 18px;
+    font-size: 15px;
     font-weight: bold;
     border-bottom-left-radius: 15px;
     border-bottom-right-radius: 15px;
     display:flex;
     justify-content: space-between;
-    background-color: inherit !important;
-    color: inherit !important;
-    border: hidden;
-    margin: 1px 0 1px 0;
+    border:1px solid black;
   }
 
   .card {
-    margin: 25px 20% 25px 20%;
+    margin: 25px 30px 25px 30px;
     border-radius: 15px;
-    border: 1px solid black;
+    min-width:200px;
+    max-width:250px;
+    flex-grow:1;
+    /* height:max-content; */
   }
 
   .card-text {
-    font-size: 25px;
+    font-size: 20px;
   }
 
   .card-body {
-    border-top:1px solid black;
-    border-bottom: 1px solid black;
+    border-left:1px solid black;
+    border-right: 1px solid black;
   }
 
   .body-silver {
