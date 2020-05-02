@@ -20,21 +20,33 @@
                         <span v-if="isSerbian"> Maksimalno rastojanje: </span>
                         <span v-else> Maximum distance: </span>
                     </div>
-                    <div class="settings-row">
-                        <input type="number" class="skala" v-model="maxDistance" min="0.1" max="1000" step="0.1" :disabled="!IsMaxDistance">
-                        <span class="brojka"> km </span>
-                        <!--<input class = "checkBox" type="checkbox" v-model="IsMaxDistance">-->
+                    <div class = "vuelidate-div">
+                        <div class="settings-row">
+                            <input type="number" class="skala" v-model="maxDistance" min="0.1" max="1000" step="0.1" :disabled="!IsMaxDistance" 
+                                   :class="{'ne-valja' : isMaxDistInvalid}"
+                                   @blur="MaxDistReset">
+                            <span class="brojka"> km </span>
+                            <!--<input class = "checkBox" type="checkbox" v-model="IsMaxDistance">-->
+                        </div>
+                        <label v-if="isMaxDistInvalid && isSerbian" class="danger">Između 0.1 i 1000</label>
+                        <label v-if="isMaxDistInvalid && !isSerbian" class="danger">Between 0.1 and 1000</label>
                     </div>
                 </div>
                 <div class="settings-element"> 
                     <div class="settings-row left m3" :class="{'e3':!isSerbian}">
-                        <img class = "info" src="../assets/info.svg" v-b-popover.hover.left="popoverDiscountText">
+                        <img class = "info" src="../assets/info.svg" v-b-popover.hover.left="popoverDiscountText" >
                         <span v-if="isSerbian"> Popust: </span>
                         <span v-else> Discount: </span>
                     </div>
-                    <div class="settings-row">
-                        <input type="number" class="skala" v-model="discount" min="0" max="100" step="10">
-                        <span class="brojka"> % </span>
+                    <div class = "vuelidate-div">
+                        <div class="settings-row">
+                            <input type="number" class="skala" v-model="discount" min="0" max="100" step="5"
+                                   :class="{'ne-valja' : isDiscountInvalid}"
+                                   @blur="DiscountReset">
+                            <span class="brojka"> % </span>
+                        </div>
+                        <label v-if="isDiscountInvalid && isSerbian" class="danger">Između 0 i 100</label>
+                        <label v-if="isDiscountInvalid && !isSerbian" class="danger">Between 0 and 100</label>
                     </div>
                 </div>
                 <div class="settings-element"> 
@@ -43,9 +55,15 @@
                         <span v-if="isSerbian"> Broj saradnji za ostvarenje popusta: </span>
                         <span v-else> Number of cooperations for discount: </span>
                     </div>
-                    <div class="settings-row">
-                        <input type="number" class="skala" v-model="brSaradnji" min="0" max="20" step="1">
-                        <span class="skriveno"> % </span>
+                    <div class = "vuelidate-div">
+                        <div class="settings-row">
+                            <input type="number" class="skala" v-model="brSaradnji" min="0" max="20" step="1"
+                                   :class="{'ne-valja' : isBrSaradnjiInvalid}"
+                                   @blur="BrSaradnjiReset">
+                            <span class="skriveno"> % </span>
+                        </div>
+                        <label v-if="isBrSaradnjiInvalid && isSerbian" class="danger">Između 0 i 20</label>
+                        <label v-if="isBrSaradnjiInvalid && !isSerbian" class="danger">Between 0 and 20</label>
                     </div>
                 </div>
             </div>
@@ -60,7 +78,14 @@
 </template>
 
 <script>
+import {between} from "vuelidate/lib/validators"
 export default {
+    validations:
+    {
+        maxDistance: { between : between(0.1,1000) },
+        discount: {between: between(0,100) },
+        brSaradnji: {between: between(0,20)}
+    },
     data()
     {
         return{
@@ -108,6 +133,36 @@ export default {
                 return 'Koliko puta treba da sarađujete sa nekim korisnikom da bi on automatski ostvarivao popust na Vaše usluge definisan u opciji iznad'
             else
                 return 'How many times do you need to cooperate with a user for them to start automatically getting a discount on your regular prices defined in the option above'
+        },
+        isMaxDistInvalid() 
+        {
+            return this.$v.maxDistance.$invalid
+        },
+        isDiscountInvalid() 
+        {
+            return this.$v.discount.$invalid
+        },
+        isBrSaradnjiInvalid() 
+        {
+            return this.$v.brSaradnji.$invalid
+        },
+    },
+    methods:
+    {
+        MaxDistReset()
+        {
+            if(this.isMaxDistInvalid)
+                this.maxDistance = 1000
+        },
+        DiscountReset()
+        {
+            if(this.isDiscountInvalid)
+                this.discount = 0
+        },
+        BrSaradnjiReset()
+        {
+            if(this.isBrSaradnjiInvalid)
+                this.brSaradnji = 5
         }
     }
 }
@@ -204,6 +259,13 @@ export default {
         align-items: center;
     }
 
+    .vuelidate-div
+    {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
     .slika
     {
         width:100px;
@@ -227,6 +289,17 @@ export default {
     {
         width: 20px;
         height: 20px;
+    }
+
+    .danger
+    {
+        color: red;
+        font-size: 14px;
+    }
+
+    .ne-valja
+    {
+        background-color: rgb(255, 212, 212);
     }
 
     .skriveno
