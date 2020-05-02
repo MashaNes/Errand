@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from rest_framework_extensions.mixins import NestedViewSetMixin
 from django.shortcuts import get_object_or_404
 from rest_framework.authtoken.models import Token
+from rest_framework.authtoken.views import ObtainAuthToken
 from . import models
 from . import serializers
 from . import parsers
@@ -19,13 +20,14 @@ Endpoints:
 + GET achievements/{id}				// Returns list of all achievements
 - GET stats/ (A)		 			// Returns statistics based on filters
 
++ POST login/                       // Login as some user
 + POST user_create/					// Creates new user
 + POST benefit_add/					// Adds new user to benefit list
 + POST address_add/					// Adds new address to addresses
 + POST working_hours_add/ 			// Adds new working hours for user
 + POST userservice_add/				// Adds new user service for user
 - POST offer_create/ 				// Creates offer for request
-- POST request_create/ 				// Creates request
++ POST request_create/ 				// Creates request
 - POST rate_user/ 					// Adds new rating for completed request
 - POST report_user/					// Reports user
 - POST ban_user/ (A)	 			// Bans user
@@ -46,8 +48,24 @@ Endpoints:
 + GET userservice/{id}				// Returns full userservice data
 '''
 
-# USER
-class UserCreate(generics.CreateAPIView):
+# POST login/
+class TokenObtainView(ObtainAuthToken):
+    def post(self, request, *args, **kwargs):
+        serializer = self.serializer_class(data=request.data,
+                                           context={'request':request})
+        serializer.is_valid(raise_exception=True)
+        user = serializer.validated_data['user']
+        fulluser = models.FullUser.objects.get(id=user.id)
+        s = serializers.FullUserSerializer(fulluser)
+        token, created = Token.objects.get_or_create(user=user)
+        custom_response = {
+            'token': token.key,
+            'user': s.data
+        }
+        return Response(custom_response)
+
+# POST user_create/
+class UserCreate(generics.ListCreateAPIView):
     authentication_classes = ()
     permission_classes = ()
     serializer_class = serializers.UserSerializer
@@ -56,24 +74,39 @@ class UserCreate(generics.CreateAPIView):
         user = parsers.parse_user(request.data)
         user.set_password(request.data['password'])
         user.save()
-        # picture = parsers.parse_picture(data=request.data['picture'],
-        #                                 name='users/' + user.username)
-        # user.picture = picture
-        # user.save()
+        picture = parsers.parse_picture(request.data['picture'], 'users/' + str(user.id))
+        user.picture = picture
+        user.save()
         Token.objects.create(user=user)
         extrauser = models.FullUser(user=user)
         extrauser.save()
         serializer = serializers.UserSerializer(user)
         return Response(serializer.data)
 
+# GET users_info/{id}
 class UserViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
     queryset = models.User.objects.all()
     serializer_class = serializers.UserSerializer
 
+# GET users/{id}
 class FullUserViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
     queryset = models.FullUser.objects.all()
     serializer_class = serializers.FullUserSerializer
 
+# POST request_create/
+class RequestCreate(generics.ListCreateAPIView):
+    serializer_class = serializers.RequestSerializer
+
+    def create(self, request):
+        req = parsers.parse_request(request.data)
+        created_by = request.data['created_by']
+        user = models.FullUser.objects.get(id=created_by)
+        user.requests.add(req)
+        user.save()
+        serializer = serializers.RequestSerializer(req)
+        return Response(serializer.data)
+
+# POST benefit_add/
 class BenefitAdd(generics.ListCreateAPIView):
     serializer_class = serializers.BenefitSerializer
 
@@ -87,12 +120,12 @@ class BenefitAdd(generics.ListCreateAPIView):
         serializer = serializers.BenefitSerializer(benefit)
         return Response(serializer.data)
 
+# POST address_add/
 class AddressAdd(generics.ListCreateAPIView):
     serializer_class = serializers.AddressSerializer
 
     def create(self, request):
         address = parsers.parse_address(request.data)
-        address.save()
         created_by = request.data['created_by']
         user = models.FullUser.objects.get(id=created_by)
         user.addresses.add(address)
@@ -100,6 +133,7 @@ class AddressAdd(generics.ListCreateAPIView):
         serializer = serializers.AddressSerializer(address)
         return Response(serializer.data)
 
+# POST working_hours_add/
 class WorkingHoursAdd(generics.ListCreateAPIView):
     serializer_class = serializers.WorkingHourSerializer
 
@@ -113,6 +147,7 @@ class WorkingHoursAdd(generics.ListCreateAPIView):
         serializer = serializers.WorkingHourSerializer(working_hours)
         return Response(serializer.data)
 
+# POST userservice_add/
 class UserServiceAdd(generics.ListCreateAPIView):
     serializer_class = serializers.UserServiceSerializer
 
@@ -141,35 +176,31 @@ class UserServiceAdd(generics.ListCreateAPIView):
 #         serializer = serializers.BenefitSerializer(benefit)
 #         return Response(serializer.data)
 
-# REQUEST
+# GET requests_info/{id}
 class RequestViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
     queryset = models.Request.objects.all()
     serializer_class = serializers.RequestSerializer
 
+# GET requests/{id}
 class FullRequestViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
     queryset = models.FullRequest.objects.all()
     serializer_class = serializers.FullRequestSerializer
 
-### ADMIN ###
-
-# ACHIEVEMENTS
+# GET achievements/{id}
 class AchievementViewSet(viewsets.ModelViewSet):
-    # def list(self, request):
-    #     queryset = models.Achievement.objects.all()
-    #     # for _q in queryset:
-    #     #     _q.icon = utils.encode_img(q.icon)
-    #     serializer = serializers.AchievementSerializer(queryset, many=True)
-
-    #     return Response(serializer.data)
-
-    # def retrieve(self, request, pk=None):
-    #     queryset = models.Achievement.objects.all()
-    #     achievement = get_object_or_404(queryset, pk=pk)
-    #     serializer = serializers.AchievementSerializer(achievement)
-    #     return Response(serializer.data)
     queryset = models.Achievement.objects.all()
     serializer_class = serializers.AchievementSerializer
 
+# GET userservice/{id} (TODO: DELETE)
+class UserServiceViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
+    queryset = models.UserService.objects.all()
+    serializer_class = serializers.UserServiceSerializer
+
+''' 
+    ADMIN
+=============
+'''
+# POST achievement_create/
 class AchievementCreate(generics.ListCreateAPIView):
     serializer_class = serializers.AchievementSerializer
 
@@ -183,11 +214,7 @@ class AchievementCreate(generics.ListCreateAPIView):
         serializer = serializers.AchievementSerializer(achievement)
         return Response(serializer.data)
 
-# SERVICES
-class UserServiceViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
-    queryset = models.UserService.objects.all()
-    serializer_class = serializers.UserServiceSerializer
-
+# POST service_type_create/
 class ServiceCreate(generics.ListCreateAPIView):
     serializer_class = serializers.ServiceSerializer
 

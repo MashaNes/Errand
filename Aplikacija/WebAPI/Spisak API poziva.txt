@@ -2,7 +2,7 @@
 ===================
 
 URL = api/v1/{endpoint_name}
-(ex. 127.0.0.1:8000/api/v1/users/)
+(example: 127.0.0.1:8000/api/v1/users/)
 
 + GET users_info/{id} 				// Returns only basic user data
 + GET users/{id} 					// Returns full user data
@@ -12,13 +12,14 @@ URL = api/v1/{endpoint_name}
 + GET achievements/{id}				// Returns list of all achievements
 - GET stats/ (A)		 			// Returns statistics based on filters
 
++ POST login/                       // Login as some user
 + POST user_create/					// Creates new user
 + POST benefit_add/					// Adds new user to benefit list
 + POST address_add/					// Adds new address to addresses
 + POST working_hours_add/ 			// Adds new working hours for user
 + POST userservice_add/				// Adds new user service for user
 - POST offer_create/ 				// Creates offer for request
-- POST request_create/ 				// Creates request
++ POST request_create/ 				// Creates request
 - POST rate_user/ 					// Adds new rating for completed request
 - POST report_user/					// Reports user
 - POST ban_user/ (A)	 			// Bans user

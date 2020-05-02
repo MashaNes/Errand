@@ -13,10 +13,6 @@ def parse_picture(data, name):
         img = ContentFile(base64.b64decode(imgstr), name=PIC_PATH + name + ext)
     return img
 
-def parse_checklist(data):
-    checklist = models.CheckList(check_list=data['check_list'])
-    return checklist
-
 def parse_working_hour(data):
     working_hour = models.WorkingHour(day=data['day'],
                                       work_from=data['work_from'],
@@ -29,6 +25,7 @@ def parse_address(data):
                              latitude=data['latitude'],
                              home=data['home'],
                              arrived=data['arrived'])
+    address.save()
     return address
 
 def parse_service(data):
@@ -47,29 +44,8 @@ def parse_user_service(data):
                                       service=service)
     return user_service
 
-def parse_task(data):
-    # TODO: Parse checklist as array
-    checklist = parse_checklist(data['checklist'])
-    address = parse_address(data['address'])
-    service_type = parse_service(data['service'])
-
-    task = models.Task(name=data['name'],
-                       description=data['description'],
-                       checklist=checklist,
-                       address=address,
-                       picture_required=data['picture_required'],
-                       service_type=service_type)
-    return task
-
-def parse_task_edit(data):
-    task = models.Task.objects.filter(id=data['task'])
-    address = parse_address(data['address'])
-    task_edit = models.TaskEdit(task=task,
-                                address=address)
-    return task_edit
-
 def parse_user(data):
-    picture = parsers.parse_picture(data['picture'], 'users/' + data['email'])
+    picture = None
     user = models.User(email=data['email'],
                        username=data['email'],
                        first_name=data['first_name'],
@@ -79,7 +55,7 @@ def parse_user(data):
     return user
 
 def parse_achievement(data):
-    icon = parse_picture(data['icon'], name="")
+    icon = None
     achievement = models.Achievement(name=data['name'],
                                      description=data['description'],
                                      icon=icon,
@@ -116,28 +92,69 @@ def parse_banned(data):
                            banned_user=banned_user)
     return banned
 
+def parse_task(data):
+    address = None
+    if data['address']:
+        address = parse_address(data['address'])
+    service_type = models.Service.objects.get(id=data['service_type'])
+
+    task = models.Task(name=data['name'],
+                       description=data['description'],
+                       address=address,
+                       picture_required=data['picture_required'],
+                       service_type=service_type)
+
+    task.save()
+    _checklist = data['checklist']
+
+    if len(_checklist) > 0:
+        for _c in _checklist:
+            _nc = models.CheckList(check_list=_c['item'])
+            _nc.save()
+            task.checklist.add(_nc)
+
+    task.save()
+    return task
+
 def parse_request(data):
-    service_type = models.Service.objects.filter(id=data['service_type'])
-    created_by = models.User.objects.filter(id=data['created_by'])
-    # TODO: Parse tasklist as array
-    tasklist = parse_task(data['tasklist'])
+    service_type = models.Service.objects.get(id=data['service_type'])
+    created_by = models.User.objects.get(id=data['created_by'])
+
+    time = None
+    if data['time']:
+        time = data['time']
 
     request = models.Request(name=data['name'],
-                             time=data['time'],
+                             time=time,
                              picture_required=data['picture_required'],
                              note=data['note'],
                              request_type=data['request_type'],
-                             tasklist=tasklist,
                              max_dist=data['max_dist'],
                              min_rating=data['min_rating'],
                              service_type=service_type,
                              created_by=created_by)
+    request.save()
+    _task_list = data['tasklist']
+
+    if len(_task_list) > 0:
+        for _t in _task_list:
+            _nt = parse_task(_t)
+            request.tasklist.add(_nt)
+    request.save()
+
     return request
+
+def parse_task_edit(data):
+    task = models.Task.objects.get(id=data['task'])
+    address = parse_address(data['address'])
+    task_edit = models.TaskEdit(task=task,
+                                address=address)
+    return task_edit
 
 def parse_request_edit(data):
     # TODO: Parse tasks as array
     tasks = parse_task_edit(data['tasks'])
-    request = models.Request.objects.filter(id=data['request'])
+    request = models.Request.objects.get(id=data['request'])
     request_edit = models.RequestEdit(time=data['time'],
                                       tasks=tasks,
                                       request=request)

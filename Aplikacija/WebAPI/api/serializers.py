@@ -8,11 +8,6 @@ class PictureSerializer(serializers.ModelSerializer):
         model = models.Picture
         fields = '__all__'
 
-class CheckListSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = models.CheckList
-        fields = '__all__'
-
 class WorkingHourSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.WorkingHour
@@ -35,9 +30,15 @@ class UserServiceSerializer(serializers.ModelSerializer):
         model = models.UserService
         fields = '__all__'
 
+class CheckListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.CheckList
+        fields = '__all__'
+
 class TaskSerializer(serializers.ModelSerializer):
     address = AddressSerializer()
     service_type = ServiceSerializer()
+    checklist = CheckListSerializer(many=True)
 
     class Meta:
         model = models.Task
@@ -57,16 +58,6 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ('id', 'email', 'first_name', 'last_name', 'phone',
                   'picture', 'avg_rating', 'status', 'password')
         extra_kwargs = {'password': {'write_only': True}}
-
-    # def create(self, validated_data):
-    #     user = parsers.parse_user(validated_data)
-    #     user.set_password(validated_data['password'])
-    #     user.save()
-    #     picture = parsers.parse_picture(data=validated_data)
-    #     Token.objects.create(user=user)
-    #     extrauser = models.FullUser(user=user)
-    #     extrauser.save()
-    #     return user
 
 class AchievementSerializer(serializers.ModelSerializer):
     class Meta:
