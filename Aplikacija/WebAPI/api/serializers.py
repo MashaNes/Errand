@@ -58,14 +58,15 @@ class UserSerializer(serializers.ModelSerializer):
                   'picture', 'avg_rating', 'status', 'password')
         extra_kwargs = {'password': {'write_only': True}}
 
-    def create(self, validated_data):
-        user = parsers.parse_user(validated_data)
-        user.set_password(validated_data['password'])
-        user.save()
-        Token.objects.create(user=user)
-        extrauser = models.FullUser(user=user)
-        extrauser.save()
-        return user
+    # def create(self, validated_data):
+    #     user = parsers.parse_user(validated_data)
+    #     user.set_password(validated_data['password'])
+    #     user.save()
+    #     picture = parsers.parse_picture(data=validated_data)
+    #     Token.objects.create(user=user)
+    #     extrauser = models.FullUser(user=user)
+    #     extrauser.save()
+    #     return user
 
 class AchievementSerializer(serializers.ModelSerializer):
     class Meta:

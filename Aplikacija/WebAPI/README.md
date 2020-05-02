@@ -26,7 +26,7 @@ $ source env/bin/activate
 
 Instalirati potrebne pakete preko pip-a unutar napravljenog venv:
 ```
-$ pip install django djangorestframework mysqlclient pygments pillow pylint djoser django-filter drf-extensions django-rest-swagger
+$ pip install django djangorestframework mysqlclient pygments pillow pylint djoser django-filter drf-extensions django-rest-swagger django-cors-headers
 ```
 
 

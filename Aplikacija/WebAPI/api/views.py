@@ -1,11 +1,13 @@
 from rest_framework import viewsets, generics
 from rest_framework.views import APIView
 from rest_framework.response import Response
-
 from rest_framework_extensions.mixins import NestedViewSetMixin
+from django.shortcuts import get_object_or_404
+from rest_framework.authtoken.models import Token
 from . import models
 from . import serializers
 from . import parsers
+from . import utils
 
 '''
 Endpoints:
@@ -49,6 +51,20 @@ class UserCreate(generics.CreateAPIView):
     authentication_classes = ()
     permission_classes = ()
     serializer_class = serializers.UserSerializer
+
+    def create(self, request):
+        user = parsers.parse_user(request.data)
+        user.set_password(request.data['password'])
+        user.save()
+        # picture = parsers.parse_picture(data=request.data['picture'],
+        #                                 name='users/' + user.username)
+        # user.picture = picture
+        # user.save()
+        Token.objects.create(user=user)
+        extrauser = models.FullUser(user=user)
+        extrauser.save()
+        serializer = serializers.UserSerializer(user)
+        return Response(serializer.data)
 
 class UserViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
     queryset = models.User.objects.all()
@@ -137,7 +153,20 @@ class FullRequestViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
 ### ADMIN ###
 
 # ACHIEVEMENTS
-class AchievementViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
+class AchievementViewSet(viewsets.ModelViewSet):
+    # def list(self, request):
+    #     queryset = models.Achievement.objects.all()
+    #     # for _q in queryset:
+    #     #     _q.icon = utils.encode_img(q.icon)
+    #     serializer = serializers.AchievementSerializer(queryset, many=True)
+
+    #     return Response(serializer.data)
+
+    # def retrieve(self, request, pk=None):
+    #     queryset = models.Achievement.objects.all()
+    #     achievement = get_object_or_404(queryset, pk=pk)
+    #     serializer = serializers.AchievementSerializer(achievement)
+    #     return Response(serializer.data)
     queryset = models.Achievement.objects.all()
     serializer_class = serializers.AchievementSerializer
 
@@ -146,6 +175,10 @@ class AchievementCreate(generics.ListCreateAPIView):
 
     def create(self, request):
         achievement = parsers.parse_achievement(request.data)
+        achievement.save()
+        icon = parsers.parse_picture(data=request.data['icon'],
+                                     name='achievements/' + achievement.name)
+        achievement.icon = icon
         achievement.save()
         serializer = serializers.AchievementSerializer(achievement)
         return Response(serializer.data)

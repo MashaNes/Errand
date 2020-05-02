@@ -1,5 +1,17 @@
+from django.core.files.base import ContentFile
+import base64
 from . import models
-import logging
+from . import parsers
+
+PIC_PATH = 'db/images/'
+
+def parse_picture(data, name):
+    img = None
+    if data.startswith('data:image'):
+        imgformat, imgstr = data.split(';base64,')
+        ext = '.' + imgformat.split('/')[-1]
+        img = ContentFile(base64.b64decode(imgstr), name=PIC_PATH + name + ext)
+    return img
 
 def parse_checklist(data):
     checklist = models.CheckList(check_list=data['check_list'])
@@ -57,16 +69,17 @@ def parse_task_edit(data):
     return task_edit
 
 def parse_user(data):
+    picture = parsers.parse_picture(data['picture'], 'users/' + data['email'])
     user = models.User(email=data['email'],
                        username=data['email'],
                        first_name=data['first_name'],
                        last_name=data['last_name'],
-                       phone=data['phone'])
+                       phone=data['phone'],
+                       picture=picture)
     return user
 
 def parse_achievement(data):
-    # TODO: Add icon
-    icon = None
+    icon = parse_picture(data['icon'], name="")
     achievement = models.Achievement(name=data['name'],
                                      description=data['description'],
                                      icon=icon,
