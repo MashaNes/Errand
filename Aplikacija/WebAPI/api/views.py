@@ -74,9 +74,10 @@ class UserCreate(generics.ListCreateAPIView):
         user = parsers.parse_user(request.data)
         user.set_password(request.data['password'])
         user.save()
-        picture = parsers.parse_picture(request.data['picture'], 'users/' + str(user.id))
-        user.picture = picture
-        user.save()
+        if request.data['picture']:
+            picture = parsers.parse_picture(request.data['picture'], 'users/' + str(user.id))
+            user.picture = picture
+            user.save()
         Token.objects.create(user=user)
         extrauser = models.FullUser(user=user)
         extrauser.save()
