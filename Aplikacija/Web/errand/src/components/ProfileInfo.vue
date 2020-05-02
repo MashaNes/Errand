@@ -274,7 +274,7 @@ export default {
 
   .title-btn {
     margin:5px 5px 0 5px;
-
+    text-decoration: none;
   }
 
   .media-center {
@@ -311,6 +311,10 @@ export default {
       text-align: left;
       font-size: 17px;
       margin-left: 2%;
+    }
+
+    .l-group-title {
+      border-top:1px solid lightgray;
     }
 
     .l-group-btns {

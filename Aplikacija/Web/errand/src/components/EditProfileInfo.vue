@@ -29,16 +29,17 @@
           <div>
             <label 
               style="margin-top: 15px;" 
-              class = "register-label" v-if="isSerbian"> *Ime: </label>
+              class = "register-label" v-if="isSerbian"> Ime: </label>
             <label 
               style="margin-top: 15px;" 
-              class = "register-label" v-else> *Name: </label>
+              class = "register-label" v-else> Name: </label>
             <div class="field">
               <input
                 v-if="isSerbian" 
                 class="input is-medium"
                 type="text"
                 placeholder="Ime"
+                @blur="$v.changedUser.firstName.$touch()"
                 v-model="changedUser.firstName"
               >
               <input
@@ -46,22 +47,33 @@
                 class="input is-medium"
                 type="text"
                 placeholder="Name"
+                @blur="$v.changedUser.firstName.$touch()"
                 v-model="changedUser.firstName"
               >
+            </div>
+            <div v-if = "$v.changedUser.firstName.$error" class = "form-error">
+              <span 
+                v-if = "!$v.changedUser.firstName.required"
+                class = "help is-danger"
+              > 
+                <span v-if="isSerbian">Morate uneti ime</span>
+                <span v-else>Name is required </span>  
+              </span>
             </div>
 
             <label 
               style="margin-top: 15px;" 
-              class = "register-label" v-if="isSerbian"> *Prezime: </label>
+              class = "register-label" v-if="isSerbian"> Prezime: </label>
             <label 
               style="margin-top: 15px;" 
-              class = "register-label" v-else> *Last name: </label>
+              class = "register-label" v-else> Last name: </label>
             <div class="field">
               <input 
                 v-if="isSerbian"
                 class="input is-medium"
                 type="text"
                 placeholder="Prezime"
+                @blur="$v.changedUser.lastName.$touch()"
                 v-model="changedUser.lastName"
               >
               <input 
@@ -69,8 +81,18 @@
                 class="input is-medium"
                 type="text"
                 placeholder="Last name"
+                @blur="$v.changedUser.lastName.$touch()"
                 v-model="changedUser.lastName"
               >
+            </div>
+            <div v-if = "$v.changedUser.lastName.$error" class = "form-error">
+              <span 
+                v-if = "!$v.changedUser.lastName.required"
+                class = "help is-danger"
+              > 
+                <span v-if="isSerbian">Morate uneti prezime</span>
+                <span v-else>Last name is required </span>  
+              </span>
             </div>
           </div>
         </div>
@@ -87,6 +109,7 @@
 
             <div class="l-group-btns">
               <b-button 
+                :disabled="isFormInvalid"
                 class="button is-primary title-btn"
                 @click="saveChanges()"
               >
@@ -179,6 +202,7 @@
 </template>
 
 <script>
+  import {required} from "vuelidate/lib/validators"
   import VuePhoneNumberInput from 'vue-phone-number-input';
   import 'vue-phone-number-input/dist/vue-phone-number-input.css';
 
@@ -203,6 +227,12 @@ export default {
       toasterMessage: ""
     }
   },
+  validations: {
+    changedUser: {
+      lastName: { required },
+      firstName: { required }
+    }
+  },
   computed: {
     isSerbian() {
       return this.$store.state.isSerbian
@@ -222,7 +252,10 @@ export default {
     },
     addressArrayLength() {
       return this.changedUser['homeAddress'].length
-    }
+    },
+    isFormInvalid(){
+      return this.$v.changedUser.$invalid
+    },
   },
   methods: {
     removeElement(resource, element) {
@@ -253,7 +286,6 @@ export default {
     },
     saveChanges() {
       this.changedUser.picture = this.picture;
-      console.log(this.changedUser)
       this.$store.dispatch('editUser', this.changedUser)
       this.$emit('saveEditChanges')
     },
@@ -264,7 +296,6 @@ export default {
     },
     onDrop(e) {
       e.stopPropagation();
-      //console.log(e.dataTransfer.files);
 
       const file = e.dataTransfer.files[0];
       this.addImage(file);
@@ -274,7 +305,6 @@ export default {
       if(!file) {
         this.isDragged = false;
         this.dragCounter = 0;
-        console.log(this.isDragged)
         return 
       }
 
@@ -294,14 +324,12 @@ export default {
     onDragEnter() {
       this.dragCounter ++;
       this.isDragged = true;
-      console.log(this.dragCounter)
     },
     onDragLeave() {
       if(this.dragCounter>0)
         this.dragCounter --;
       if(!this.dragCounter)
         this.isDragged = false;
-      console.log(this.dragCounter)
     }
   }
 }
@@ -436,7 +464,6 @@ export default {
   .l-group-title {
     display:flex;
     flex-direction:row;
-    justify-content: space-between;
   }
 
   .shown {
@@ -445,6 +472,12 @@ export default {
 
   .hidden {
     visibility:hidden;
+  }
+
+  .l-group-btns {
+    display:flex;
+    flex-direction: column;
+    margin-left:30px;
   }
 
   .picture-msg {
