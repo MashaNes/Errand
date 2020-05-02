@@ -1,11 +1,9 @@
 <template>
-  <div>
     <AchAndRatings 
       :tab="'Achievements'" 
       :user="user"
       :isMyProfile="isMyProfile"
     />
-  </div>
 </template>
 
 <script>
@@ -21,17 +19,28 @@ export default {
   components: {
       AchAndRatings
   },
-  created() {
-    const routeId = this.$route.params.id
-    this.$store.dispatch('getUserAchievements', routeId)
-    if(routeId == this.$store.getters['getAuthUserId'])
-      this.user = this.$store.state.authUser
-    else {
-      this.$store.dispatch('getUser', routeId)
-      this.user = this.$store.state.user
-      this.isMyProfile = false
+  methods: {
+    changedRoute() {
+      console.log("changed route")
+      const routeId = this.$route.params.id
+      this.$store.dispatch('getUserAchievements', routeId)
+      if(routeId == this.$store.getters['getAuthUserId'])
+        this.user = this.$store.state.authUser
+      else {
+        this.$store.dispatch('getUser', routeId)
+        this.user = this.$store.state.user
+        this.isMyProfile = false
+      }
     }
-  }
+  },
+  created() {
+    this.changedRoute()
+  },
+  watch: {
+    $route() {
+      this.changedRoute()
+    }
+  } 
 }
 </script>
 
