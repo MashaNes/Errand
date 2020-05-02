@@ -1,15 +1,14 @@
 <template>
     <div class="wrapper">
         <div class="dodavanje-wrap">
-            <!--<label class = "login-label" v-if="isAdding"> Email: </label>-->
-            <input type="email"
-                    v-if="isAdding"
-                    placeholder="Email"
-                    autofocus=""
-                    autocomplete="email"
-                    v-model="email"
-                    class="dodavanje">
-            <button type="button" @click = "dodajKorisnika" class="btn btn-primary">Dodaj korisnika</button>
+            <label class = "login-label" v-if="isAdding"> Email: </label>
+            <v-select :options="emails" label="Email" v-model="email" class="selekt" v-if="isAdding"></v-select>
+            <div class="dugmici">
+                <button type="button" @click = "dodajKorisnika" class="btn btn-primary dugme" :disabled="isAdding && !email" v-if="isSerbian">Dodaj korisnika</button>
+                <button type="button" @click = "dodajKorisnika" class="btn btn-primary dugme" :disabled="isAdding && !email" v-else>Add a user</button>
+                <button type="button" v-if="isAdding && isSerbian" @click="isAdding = false" class="btn btn-secondary dugme">Odustani</button>
+                <button type="button" v-if="isAdding && !isSerbian" @click="isAdding = false" class="btn btn-secondary dugme">Cancel</button>
+            </div>
         </div>
         <div class="prikaz-wrap">
             <div class="natpis">
@@ -26,17 +25,20 @@
 
 <script>
 import UserBenefitBox from "@/components/UserBenefitBox"
+import vSelect from "vue-select";
+import "vue-select/dist/vue-select.css";
 export default {
     data()
     {
         return{
             isAdding: false,
-            email: ""
+            email: "",
         }
     },
     components:
     {
-        UserBenefitBox
+        UserBenefitBox,
+        vSelect
     },
     computed:
     {
@@ -47,6 +49,10 @@ export default {
         BenefitedUsers() 
         {
             return this.$store.state.usersWithBenefit
+        },
+        emails()
+        {
+            return this.$store.state.emails.emails
         }
     },
     methods:
@@ -58,9 +64,15 @@ export default {
             else
             {
                 console.log(this.email)
+                this.email = null
                 this.isAdding = false;
             }
         }
+    },
+    created()
+    {
+        this.$store.dispatch("fillEmails")
+        console.log(this.$store.state.emails)
     }
 }
 </script>
@@ -69,7 +81,8 @@ export default {
     .wrapper
     {
         display: flex;
-        flex-direction: row;
+        flex-direction: column;
+        align-items: center;
         justify-content: flex-start;
         width: 100%;
         padding-top: 30px;
@@ -78,11 +91,12 @@ export default {
 
     .dodavanje-wrap
     {
-        width: 350px;
+        width: 100%;
         display: flex;
         flex-direction: column;
         align-items: center;
-        padding-top: 100px;
+        padding-top: 10px;
+        padding-bottom: 20px;
     }
 
     .users 
@@ -130,19 +144,24 @@ export default {
         width: 84%;
     }
 
-    @media only screen and (max-width: 900px)
+    .selekt
     {
-        .wrapper
-        {
-            flex-direction: column;
-            align-items: center;
-        }
+        width: 84%;
+        margin-bottom: 20px;
+        background-color: white;
+        word-break:break-all;
+    }
 
-        .dodavanje-wrap
-        {
-            padding-top: 10px;
-            padding-bottom: 20px;
-            width: 100%;
-        }
+    .dugmici
+    {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .dugme
+    {
+        margin:5px;
     }
 </style>
