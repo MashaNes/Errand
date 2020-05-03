@@ -3,10 +3,10 @@
     <div class="side-info">
       <AsideProfileInfo :user="user" />
       <div class="btns">
-        <router-link :to = "'/profile/' + user.id" class="button is-primary" style="width:100%;">
+        <b-button @click="$emit('cancelRate')" class="button is-primary" style="width:100%;">
           <strong v-if="isSerbian">Detalji profila</strong>
           <strong v-else>Profile details</strong>
-        </router-link>
+        </b-button>
       </div>  
     </div>
     <div class="req-wrap">
@@ -17,6 +17,16 @@
         :key="request.id"
       >
         <div class="request-top">
+          <div class="request-btns">
+            <b-button 
+              class="req-btn" 
+              v-text="isSerbian ? 'Oceni': 'Rate'"
+              @click="showModalRate = true"
+            >
+            </b-button>
+            <b-button class="req-btn" v-text="isSerbian ? 'Detalji': 'Details'">
+            </b-button>
+          </div>
           <div class = "request-name">
               {{request.name}}
           </div>
@@ -34,24 +44,55 @@
             </div>
           </div>
         </div>
+
+        <ModalAreYouSure 
+          :naslovS = "'Da li ste sigurni?'"
+          :naslovE = "'Are you sure?'"
+          :tekstS = "'Ocenjujete korisnika ' + fullUserName + ', ocenom ' + rating.grade + ', za zahtev ' + request.name + '. Da li želite da potvrdite?'"
+          :tekstE = "'You are rating user ' + fullUserName + ', with grade ' + rating.grade + ', for request ' + request.name + '. Do you wish to confirm?'"
+          @yes="rateUser(request)"
+          @close="dismissRate"
+          v-if="showModalAreYouSure"
+        />
+
       </div>
     </div>
+
+    <ModalRateUser 
+      @close="showModalRate = false" 
+      @tryToRateUser="tryRate"
+      v-if="showModalRate" 
+    />
+
+    
+
   </div>
 </template>
 
 <script>
 
 import AsideProfileInfo from "@/components/AsideProfileInfo"
+import ModalRateUser from "@/components/ModalRateUser"
+import ModalAreYouSure from "@/components/ModalAreYouSure"
 
 export default {
   
   components: {
-    AsideProfileInfo
+    AsideProfileInfo,
+    ModalRateUser,
+    ModalAreYouSure
   },
   props: {
     user: {
       required: true,
       type: Object
+    }
+  },
+  data() {
+    return {
+      showModalRate: false,
+      showModalAreYouSure: false,
+      rating: {}
     }
   },
   computed: {
@@ -69,8 +110,14 @@ export default {
     cancel() {
       this.$emit('cancelRate')
     },
-    rateUser() {
-      this.$store.dispatch('')
+    rateUser(request) {
+      this.rating.request = request
+      this.$store.dispatch('addRating', this.rating)
+      this.showModalAreYouSure = false
+    },
+    dismissRate() {
+      this.rating = {}
+      this.showModalAreYouSure = false
     },
     color(request)
     {
@@ -78,9 +125,16 @@ export default {
           return "zeleno"
       else 
           return "crveno"
-    }
+    },
+    tryRate(rtg) {
+      this.rating.grade = rtg.grade
+      this.rating.comment = rtg.comment
+      this.showModalRate = false
+      this.showModalAreYouSure = true
+    },
   },
   created() {
+    window.scrollTo(0, 0)
     const userName = this.user.firstName
     console.log(userName)
     this.$store.dispatch('fillSpecificRequests', userName)
@@ -118,8 +172,7 @@ export default {
 
   .button {
     width:100%;
-    margin-bottom:10px;
-    margin-top:10px;
+    margin: 10px 5px 10px 5px;
   }
 
   .req-wrap {
@@ -127,6 +180,21 @@ export default {
     display: flex;
     flex-direction:column;
     align-items:center;
+  }
+
+  .request-btns {
+    display: flex;
+    flex-direction:row;
+    flex-grow:1;
+    justify-content: flex-end;
+  }
+
+  .req-btn {
+    margin: 5px 5px 5px 5px;
+    font-size:12px;
+    font-weight: bold;
+    background-color: rgb(15, 170, 221);
+    border:hidden;
   }
 
   .wrapper
