@@ -5,7 +5,7 @@
         <div class="column is-4 is-offset-4">
           <h3 v-if="isSerbian" class="title has-text-grey">Prijavi se kao administrator</h3>
           <h3 v-else class="title has-text-grey">Login as administrator</h3>
-          <p v-if="isSerbian" class="subtitle has-text-grey">Prijavite se kako bi nastavili.</p>
+          <p v-if="isSerbian" class="subtitle has-text-grey">Prijavite se kako biste nastavili.</p>
           <p v-else class="subtitle has-text-grey">Please login to proceed.</p>
           <div class="box">
             <form>
