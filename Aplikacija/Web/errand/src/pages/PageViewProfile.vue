@@ -1,16 +1,21 @@
 <template>
     <div class = "wrapper">
       <ProfileInfo 
-        v-if="!showProfileEdit"
+        v-if="componentToShow == 'Info'"
         :user="user" 
         :isMyProfile="isMyProfile"
-        @editProfile="showProfileEdit=true"
+        @editProfile="componentToShow = 'Edit'"
+        @rateUser="componentToShow = 'Rate'"
       />
       <EditProfileInfo
-        v-if="showProfileEdit"
+        v-if="componentToShow == 'Edit'"
         :user="user"
         @saveEditChanges="editSaved"
         @cancelChanges="showProfileEdit=false"
+      />
+      <RateUser
+        v-if="componentToShow == 'Rate'"
+        :user="user"
       />
     </div>
 </template>
@@ -19,15 +24,17 @@
 
 import ProfileInfo from "@/components/ProfileInfo"
 import EditProfileInfo from "@/components/EditProfileInfo"
+import RateUser from "@/components/RateUser"
 
 export default {
   components: {
     ProfileInfo,
-    EditProfileInfo
+    EditProfileInfo,
+    RateUser
   },
   data() {
     return {
-      showProfileEdit: false,
+      componentToShow: "Info",
       user: {},
       isMyProfile: true
     }
@@ -47,7 +54,7 @@ export default {
   methods: {
     editSaved() {
       this.isMyProfile = true
-      this.showProfileEdit = false
+      this.componentToShow = "Info"
       this.user = this.$store.state.authUser
     }
   },

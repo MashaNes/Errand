@@ -48,6 +48,7 @@
             <div class="l-group-btns" v-else>
               <b-button 
                 class="button is-primary title-btn"
+                @click="$emit('rateUser')"
               >
                 <strong v-if="isSerbian">Oceni korisnika</strong>
                 <strong v-else>Rate user</strong>
