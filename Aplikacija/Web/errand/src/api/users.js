@@ -10,6 +10,10 @@ export const fetchUsers = () => {
             rating: 3.45,
             phone: ["123456", "220098123", "13455562"],
             status: "active",
+            minRating: 4.25,
+            maxDist: 10,
+            benefitDiscount: 10,
+            benefitRequirement: 5,
             achievements: {
                 "1": {
                     id: 1,

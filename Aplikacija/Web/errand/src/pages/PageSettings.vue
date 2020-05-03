@@ -89,11 +89,11 @@ export default {
     data()
     {
         return{
-            scale: 0,
-            maxDistance: 1000,
+            scale: (this.$store.state.authUser.minRating - 1) * 25,
+            maxDistance: this.$store.state.authUser.maxDist,
             IsMaxDistance: true,
-            discount: 0,
-            brSaradnji: 5
+            discount: this.$store.state.authUser.benefitDiscount,
+            brSaradnji: this.$store.state.authUser.benefitRequirement
         }
     },
     computed:
@@ -145,7 +145,7 @@ export default {
         isBrSaradnjiInvalid() 
         {
             return this.$v.brSaradnji.$invalid
-        },
+        }
     },
     methods:
     {
@@ -164,6 +164,13 @@ export default {
             if(this.isBrSaradnjiInvalid)
                 this.brSaradnji = 5
         }
+    },
+    beforeDestroy()
+    {
+        this.$store.state.authUser.minRating = this.minRating
+        this.$store.state.authUser.maxDist = this.maxDistance
+        this.$store.state.authUser.benefitDiscount = this.discount
+        this.$store.state.authUser.benefitRequirement = this.brSaradnji
     }
 }
 </script>

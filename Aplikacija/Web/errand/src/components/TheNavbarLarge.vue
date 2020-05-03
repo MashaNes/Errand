@@ -61,7 +61,7 @@
                 <div class="navbar-item has-dropdown is-hoverable" v-else>
                     <span class="nav-item dropdown">
                         <button class="nav-link dropdown-toggle title is-6 btn btn-link ime svetli" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            Jovan Jovanovic
+                            {{authUserFullName}}
                         </button>
                         <div class="dropdown-menu profil-meni" aria-labelledby="navbarDropdownMenuLink">
                             <router-link :to = "'/profile/' + authUserId" class="dropdown-item">
@@ -106,6 +106,10 @@ export default {
       },
       authUserId() {
           return this.$store.getters['getAuthUserId']
+      },
+      authUserFullName()
+      {
+          return this.$store.state.authUser.firstName + " " + this.$store.state.authUser.lastName
       }
     },
     methods:
@@ -218,6 +222,7 @@ export default {
     .profil-meni
     {
         width: 10px;
+        margin-right: 30px;
     }
 
     .slika
