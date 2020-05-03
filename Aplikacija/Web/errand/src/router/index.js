@@ -16,6 +16,7 @@ import PageFAQ from "@/pages/PageFAQ"
 import PageSettings from "@/pages/PageSettings"
 import PageBrowseUsers from "@/pages/PageBrowseUsers"
 import PageBenefitList from "@/pages/PageBenefitList"
+import PageServiceList from "@/pages/PageServiceList"
 
 Vue.use(Router)
 
@@ -92,6 +93,11 @@ const router = new Router(
                 path: "/benefitList",
                 name: "PageBenefitList",
                 component: PageBenefitList
+            },
+            {
+                path: "/serviceList",
+                name: "PageServiceList",
+                component: PageServiceList
             }
         ],
         mode: "history",

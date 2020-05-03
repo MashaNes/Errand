@@ -9,6 +9,8 @@ import {fetchRatings} from "@/api/ratings.js"
 import {fetchAchievements} from "@/api/achievements.js"
 import {fetchBenefitUsers} from "@/api/benefitUsers.js"
 import {fetchEmails} from "@/api/email.js"
+import {fetchServices} from "@/api/services.js"
+import {fetchUserServices} from "@/api/userServices.js"
 
 export default new Vuex.Store({
     state:{
@@ -23,7 +25,9 @@ export default new Vuex.Store({
         usersPortion: {},
         usersWithBenefit: {},
         emails: null,
-        specificRequests: {}
+        specificRequests: {},
+        services: null,
+        userServices: null
     },
     getters:{
         getAuthUserId(state) {
@@ -82,6 +86,14 @@ export default new Vuex.Store({
                 return (r.status == 'finished' || r.status == 'failed') && r.user.firstName == userName 
             })
             commit('setSpecificRequests', filteredRequests)
+        },
+        fillUserServices()
+        {
+            this.state.userServices = fetchUserServices();
+        },
+        fillServices()
+        {
+            this.state.services = fetchServices();
         }
     },
     mutations:{
