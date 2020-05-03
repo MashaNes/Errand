@@ -18,8 +18,6 @@ export default {
     TheNavbar
   },
   created(){
-    this.$store.dispatch("fillRequests")
-    this.$store.dispatch("fillUsersWithBenefit")
     this.$store.dispatch("fillAuthUser")
   }
 }

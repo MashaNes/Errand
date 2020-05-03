@@ -90,6 +90,10 @@
             {
                 this.tab = "Finished"
             }
+        },
+        created()
+        {
+            this.$store.dispatch("fillRequests")
         }
     }
 </script>

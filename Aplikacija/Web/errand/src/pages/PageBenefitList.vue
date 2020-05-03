@@ -59,14 +59,15 @@ export default {
     {
         dodajKorisnika()
         {
-            if(!this.isAdding)
+            /*if(!this.isAdding)
                 this.isAdding = true;
             else
             {
                 console.log(this.email)
                 this.email = null
                 this.isAdding = false;
-            }
+            }*/
+            this.$router.push({ name: 'PageBrowseUsers', params: {benefitList: true }})
         },
         odustani()
         {
@@ -76,6 +77,7 @@ export default {
     },
     created()
     {
+        this.$store.dispatch("fillUsersWithBenefit")
         this.$store.dispatch("fillEmails")
         console.log(this.$store.state.emails)
     }

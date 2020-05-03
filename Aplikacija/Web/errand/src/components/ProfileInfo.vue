@@ -35,12 +35,14 @@
                 class="button is-primary title-btn"
                 @click="goToProfileEdit()"
               >
+                <img class="slika-dugme" src="../assets/edit.png">
                 <strong v-if="isSerbian">Izmeni</strong>
                 <strong v-else>Edit</strong>
               </b-button>
               <router-link :to="'/settings'"
                 class="button is-primary title-btn"
               >
+                <img class="slika-dugme" src="../assets/settings-white.png">
                 <strong v-if="isSerbian">Podešavanja</strong>
                 <strong v-else>Settings</strong>
               </router-link>
@@ -50,14 +52,24 @@
                 class="button is-primary title-btn"
                 @click="$emit('rateUser')"
               >
+                <img class="slika-dugme" src="../assets/rate.png">
                 <strong v-if="isSerbian">Oceni korisnika</strong>
                 <strong v-else>Rate user</strong>
               </b-button>
               <b-button 
                 class="button is-primary title-btn"
               >
+                <img class="slika-dugme" src="../assets/report.png">
                 <strong v-if="isSerbian">Prijavi korisnika</strong>
                 <strong v-else>Report user</strong>
+              </b-button>
+              <b-button 
+                class="button is-primary title-btn"
+                @click="showModal = true"
+              >
+                <img class="slika-dugme" src="../assets/benefit.png">
+                <strong v-if="isSerbian">Dodeli povlastice</strong>
+                <strong v-else>Give benefits</strong>
               </b-button>
             </div>
           </b-list-group-item>
@@ -111,10 +123,12 @@
         </b-list-group>
       </div>
     </div>
+     <ModalAddBenefit v-if="showModal" @close="showModal = false" :user="user"/>
   </div>
 </template>
 
 <script>
+import ModalAddBenefit from "@/components/ModalAddBenefit"
 export default {
   props: {
     user: {
@@ -124,6 +138,16 @@ export default {
     isMyProfile: {
       type: Boolean,
       required: true
+    }
+  },
+  components:
+  {
+    ModalAddBenefit
+  },
+  data()
+  {
+    return{
+      showModal : false
     }
   },
   computed: {
@@ -292,6 +316,13 @@ export default {
 
   .l-item-progress {
     width:85%;
+  }
+
+  .slika-dugme
+  {
+    width: 22px;
+    height: 22px;
+    margin-right: 5px;
   }
 
   @media only screen and (max-width: 750px)

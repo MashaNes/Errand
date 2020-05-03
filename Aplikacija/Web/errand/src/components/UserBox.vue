@@ -8,6 +8,10 @@
           <p class="image is-96x96" @click="goToProfile">
             <img class="rounded-image" :src="user.picture">
           </p>
+          <p class = "dodaj-dugme"> 
+            <button type="button" class="btn btn-success dugme" v-if="BenefitList && isSerbian" @click="showModal = true"> Dodaj</button> 
+            <button type="button" class="btn btn-success dugme" v-if="BenefitList && !isSerbian" @click="showModal = true"> Add </button>
+          </p>
         </div>
           
         <div class="info">
@@ -48,15 +52,29 @@
           </div>
         </div>
       </b-card-body>
+      <ModalAddBenefit v-if="showModal" @close="showModal = false" :user="user"/>
     </b-card>
 </template>
 
 <script>
+import ModalAddBenefit from "@/components/ModalAddBenefit"
 export default {
     props: {
       user: {
         required: true, 
         type: Object
+      },
+      BenefitList:
+      {
+        type: Boolean,
+        required: false,
+        default: false
+      }
+    },
+    data()
+    {
+      return{
+        showModal:false
       }
     },
     computed: {
@@ -74,7 +92,16 @@ export default {
     methods: {
       goToProfile() {
         this.$router.push(`/profile/${this.user.id}`)
+      },
+      addUser(discount)
+      {
+        console.log(discount)
+        console.log(this.user)
       }
+    },
+    components:
+    {
+      ModalAddBenefit
     }
 }
 </script>
@@ -90,7 +117,20 @@ export default {
     flex-wrap: wrap;
   } */
 
+  .dugme
+  {
+    padding: 1px;
+    padding-right: 5px;
+    padding-left: 5px;
+    margin-top: 7px;
+  }
 
+  .dodaj-dugme
+  {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+  }
 
   .rounded-image {
     border-radius: 60px;
