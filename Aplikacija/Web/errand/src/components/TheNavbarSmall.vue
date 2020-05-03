@@ -28,12 +28,12 @@
                                 <span v-if="isSerbian" class = "ikonica"> Dostignuća </span>
                                 <span v-else class = "ikonica"> Achievements </span>
                             </router-link>
-                            <router-link :to="'/ratings'" class="dropdown-item">
+                            <router-link :to="'/ratings/' + authUserId" class="dropdown-item">
                                 <img src = "../assets/ratings.svg" class="ikonica-uvucena">
                                 <span v-if="isSerbian" class = "ikonica"> Ocene </span>
                                 <span v-else class = "ikonica"> Ratings </span>
                             </router-link>
-                            <router-link :to = "'/requests/' + authUserId" class="dropdown-item">
+                            <router-link :to = "'/requests'" class="dropdown-item">
                                 <img src = "../assets/requests.svg">
                                 <span v-if="isSerbian" class = "ikonica"> Zahtevi </span>
                                 <span v-else class = "ikonica"> Requests </span>

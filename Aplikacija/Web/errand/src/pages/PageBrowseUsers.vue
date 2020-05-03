@@ -14,6 +14,7 @@
         :user="user"
         v-for="user in users.users" 
         :key="user.id"
+        :BenefitList="benefitList"
       />
     </div>
     <b-pagination 
@@ -23,7 +24,6 @@
       align="center"
       class="pag-bottom"
     ></b-pagination>
-
   </div>
 </template>
 
@@ -31,6 +31,15 @@
 import UserBox from "@/components/UserBox"
 
 export default {
+  props:
+  {
+    benefitList:
+    {
+      type: Boolean,
+      required: false,
+      default: false
+    }
+  },
   components: {
     UserBox
   },

@@ -85,7 +85,8 @@ const router = new Router(
             {
                 path: "/users",
                 name: "PageBrowseUsers",
-                component: PageBrowseUsers
+                component: PageBrowseUsers,
+                props: true
             },
             {
                 path: "/benefitList",
