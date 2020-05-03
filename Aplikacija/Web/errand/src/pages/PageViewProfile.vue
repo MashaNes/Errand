@@ -86,9 +86,12 @@ export default {
 
 <style scoped>
   
-  .wrapper
+  @media only screen and (min-width: 499px)
   {
-    padding-top: 10px;
+    .wrapper
+    {
+      padding-top: 10px;
+    }
   }
 
 </style>

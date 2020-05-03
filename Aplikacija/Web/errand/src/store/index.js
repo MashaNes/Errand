@@ -78,10 +78,22 @@ export default new Vuex.Store({
             commit('setUsersPortion', toCommit)
         },
         fillSpecificRequests({commit}, userName) {
-            const filteredRequests = Object.values(this.state.requests).filter(r => {
+            const requests = fetchRequests()
+            const filteredRequests = Object.values(requests).filter(r => {
                 return (r.status == 'finished' || r.status == 'failed') && r.user.firstName == userName 
             })
             commit('setSpecificRequests', filteredRequests)
+        },
+        addRating({commit}, rating) {
+            const newRating = {
+                id: Object.values(fetchRatings()).length + 1,
+                grade: rating.grade,
+                comment: rating.comment,
+                createdBy: this.state.authUser,
+                request: rating.request,
+                ratedUser: this.state.user.id
+            }
+            commit('addRatingToUser', newRating)
         }
     },
     mutations:{
@@ -109,6 +121,9 @@ export default new Vuex.Store({
         },
         setSpecificRequests(state, requests) {
             state.specificRequests = requests
+        },
+        addRatingToUser(state, rating) {
+            console.log(rating)
         }
     }
 })

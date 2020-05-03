@@ -1,110 +1,115 @@
 <template>
-  <div class="main-container">
-    <div class="picture-side">
-      <div class="media-center">
-        <p class="image is-128x128">
-          <img class="rounded-image" :src="user.picture">
-        </p>
-      </div>
-      <div class="content">
-        {{ fullUserName }}
+
+  <transition name="modal">
+    <div class="modal-mask">
+      <div class="modal-wrapper">
+        <div class="modal-container">
+
+          <div class="modal-header">
+            <h3 name="header" v-if="isSerbian">
+              Ocenite korisnika
+            </h3>
+            <h3 name="header" v-else>
+              Rate user
+            </h3>
+          </div>
+
+          <div class="modal-body">
+            <slot name="body">
+
+              <span class="grade-label" v-text="isSerbian ? 'Ocena:' : 'Grade:'"></span>
+              
+              <vue-slider
+                :interval="1"
+                :min="1"
+                :max="5"
+                :marks="true"
+                tooltip="active"
+                v-model="rating.grade"
+              />
+
+              <b-form-textarea 
+                class="txt-area"
+                id="textarea"
+                :placeholder="isSerbian ? 'Unesite kratak komentar...': 'Add a short comment...'"
+                rows="3"
+                no-resize
+                v-model="rating.comment"
+                :maxlength="maxChar"
+                @blur="$v.rating.comment.$touch()"
+              >
+              </b-form-textarea>
+
+              <span 
+                v-if="$v.rating.comment.$error" 
+                class='text-danger'
+                v-text="isSerbian ? 'Morate uneti komentar' : 'You must enter a comment'"
+              ></span>
+
+              <span 
+                v-if="rating.comment.length == maxChar" 
+                class='text-danger max-char'
+                v-text="isSerbian ? 'Uneli ste maksimalan broj karaktera' : 'You entered the maximum number of characters'"
+              >
+              </span>
+            </slot>
+          </div>
+
+          <div class="modal-footer">
+            <slot name="footer">
+              <button 
+                type="button" 
+                @click="tryToRate"
+                class="btn btn-primary"
+                v-text="isSerbian ? 'Oceni' : 'Rate'"
+                :disabled="isInvalid"
+              >
+              </button>
+
+              <button 
+                type="button" 
+                class="btn btn-secondary" 
+                @click="$emit('close')"
+                v-text="isSerbian ? 'Odustani' : 'Cancel'"
+              >
+              </button>
+            </slot>
+          </div>
+        </div>
       </div>
     </div>
-    <div class="personal-info">
-      <div class="grade-title">
-        <span style="margin-right:10px;" v-text="isSerbian ? 'Ocenite korisnika ': 'Rate user '"></span>
-        <span> {{fullUserName}} </span>
-      </div>
-      <span class="grade-label" v-text="isSerbian ? 'Ocena:' : 'Grade:'"></span>
-
-      <vue-slider
-        :interval="1"
-        :min="1"
-        :max="5"
-        :marks="true"
-        v-model="rating.grade"
-      />
-
-      <b-form-textarea 
-        class="txt-area"
-        id="textarea"
-        :placeholder="isSerbian ? 'Unesite kratak komentar...': 'Add a short comment...'"
-        rows="3"
-        max-rows="6"
-        no-resize
-        v-model="rating.comment"
-        tooltip="active"
-        :maxlength="maxChar"
-      >
-      </b-form-textarea>
-
-      <span 
-        v-if="rating.comment.length == maxChar" 
-        class='text-danger max-char'
-        v-text="isSerbian ? 'Uneli ste maksimalan broj karaktera' : 'You entered the maximum number of characters'"
-      >
-      </span>
-
-      <div class="btns">
-        <b-button   
-          class="button is-primary action-btn"
-          @click="$emit('cancelRate')"
-        > <strong v-text="isSerbian ? 'Odustani' : 'Cancel'"></strong>  </b-button>
-        <b-button   
-          class="button is-primary action-btn"
-          @click="showModalAreYouSure = true"
-        > <strong v-text="isSerbian ? 'Potvrdi' : 'Confirm'"></strong> </b-button>
-        <b-button   
-          class="button is-primary action-btn"
-          @click="showModalChooseRequest = true"
-        > <strong v-text="isSerbian ? 'Izaberi zahtev' : 'Choose request'"></strong> </b-button>
-      </div>
-    </div>
-    <ModalAreYouSure 
-      :naslovS="'Potvrda ocene'" 
-      :tekstS="'Da li ste sigurni da želite da ocenite korisnika?'" 
-      :naslovE="'Confirm rating'"
-      :tekstE="'Are you sure you want to rate this user?'"
-      @close="showModalAreYouSure = false" @yes="rateUser" v-if="showModalAreYouSure"
-    />
-  </div>
+  </transition>
 </template>
 
 <script>
 
-import {maxLength, required} from "vuelidate/lib/validators"
+import {required} from "vuelidate/lib/validators"
 import VueSlider from 'vue-slider-component'
 import 'vue-slider-component/theme/default.css'
-import ModalAreYouSure from "@/components/ModalAreYouSure"
 
 
 export default {
   components: {
-    VueSlider,
-    ModalAreYouSure
+    VueSlider
   },
   props: {
-    user: {
-      required: true,
-      type: Object
+    userName: {
+      type: String
     }
   },
   data() {
     return {
       rating: {
-        grade:1,
+        grade:3,
         comment: ""
       },
-      maxChar: 20,
-      numOfMaxEnters: 0,
-      showMaxEnterWarning: false,
-      showModalAreYouSure: false,
-      showModalChooseRequest: false
+      maxChar: 100,
+      showModalAreYouSure: false
     }
   },
   validations: {
     rating: {
-      comment: {required, maxLength: maxLength(50)}
+      comment: {required}
     }
   },
   computed: {
@@ -116,77 +121,91 @@ export default {
     },
     requests() {
       return this.$store.state.specificRequests
+    },
+    isInvalid() {
+      return this.$v.rating.$invalid
     }
   },
   methods: {
-    cancel() {
-      this.$emit('cancelRate')
-    },
-    rateUser() {
-      this.$store.dispatch('')
+    tryToRate() {
+      this.$emit('tryToRateUser', this.rating)
     }
-  },
-  created() {
-    const userName = this.user.firstName
-    console.log(userName)
-    this.$store.dispatch('fillSpecificRequests', userName)
   }
 }
 </script>
 
 <style scoped>
 
-  .main-container {
-    margin-top: 30px;
-    margin-left: 10%;
-    margin-right: 10%;
-    display: flex;
-    flex-direction: row;
-    align-items:flex-start;
-    border-radius: 10px;
+  .modal-mask {
+    position: fixed;
+    z-index: 9998;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: table;
+    transition: opacity 0.3s ease;
   }
 
-  .rounded-image {
-    border-radius: 60px;
-    border: 2px solid grey;
-    height: 250px;
-    width:250px;
-    object-fit:cover;
+  .modal-wrapper {
+    display: table-cell;
+    vertical-align: middle;
   }
 
-  .content {
-    background-color: black;
-    font-size: 20px;
-    color:white;
-    text-align: center;
-    margin-top: 15px;
-    margin-bottom: 2px;
-    border-radius: 5px;
-    word-break: break-all;
+  .modal-container {
+    width: 500px;
+    margin: 0px auto;
+    padding: 20px 30px;
+    background-color: #fff;
+    border-radius: 2px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.33);
+    transition: all 0.3s ease;
+    font-family: Helvetica, Arial, sans-serif;
   }
 
-  .is-128x128 {
-    width: 250px;
-    height: 250px;
+  @media only screen and (max-width: 600px)
+  {
+      .modal-mask 
+      {
+          height: 110%;
+      }
+
+      .modal-container {
+        padding: 5px 10px;
+        width:90%;
+        min-width: 300px;
+      }
   }
 
-  .personal-info {
-    display:flex;
-    flex-direction: column;
-    flex-grow:1;
-    margin: 30px 15px 0 15px;
+  .modal-header{
+    margin-top: 0;
+    color: rgb(41, 80, 207);
+    font-size: 18px;
   }
 
-  .picture-side {
-    flex-grow:1;
-    margin-bottom: 30px;
+  .modal-body {
+    margin: 20px 0;
   }
 
-  .media-center {
-    display:flex;
-    flex-direction:column;
-    align-items:center;
+  .modal-default-button {
+    float: right;
   }
+
+  .modal-enter {
+    opacity: 0;
+  }
+
+  .modal-leave-active {
+    opacity: 0;
+  }
+
+  .modal-enter .modal-container,
+  .modal-leave-active .modal-container {
+    -webkit-transform: scale(1.1);
+    transform: scale(1.1);
+  }
+
 
   .txt-area {
     margin-top:40px;
@@ -212,7 +231,7 @@ export default {
   }
 
   .form-control {
-    width:auto;
+    width:100%;
   }
 
   .btns {
@@ -225,57 +244,8 @@ export default {
     margin: 0 0 0 5px;
   }
 
-  .requests-div {
-    flex-grow:1;
-    display:flex;
-    flex-direction: column;
+  .vue-slider {
+    margin-top: 30px;
   }
-
-  
-
-  @media only screen and (max-width: 750px)
-  {
-    .main-container {
-      flex-direction: column;
-      margin-top: 30px;
-      margin-left: 1%;
-      margin-right: 1%;
-      align-items:center;
-      border-radius: 10px;
-    }
-
-    .personal-info {
-      align-self:stretch;
-      margin: 10px 10px 40px 10px;
-    }
-
-    .slide {
-      margin: 0 10px 0 10px;
-    }
-
-    .grade-title {
-      margin: 0 10px 20px 10px;
-    }
-
-    .grade-label {
-      margin: 0 10px 40px 10px;
-    }
-
-    .vue-slider {
-      margin: 0 10px 0 10px;
-    }
-
-
-
-    .txt-area {
-      margin: 40px 10px 0 10px;
-      align-self:stretch;
-    }
-
-    .max-char {
-      margin: 10px 10px 0 10px;
-    }
-  }
-
 
 </style>
