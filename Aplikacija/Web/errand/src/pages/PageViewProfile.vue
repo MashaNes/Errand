@@ -11,11 +11,12 @@
         v-if="componentToShow == 'Edit'"
         :user="user"
         @saveEditChanges="editSaved"
-        @cancelChanges="showProfileEdit=false"
+        @cancelChanges="componentToShow = 'Info'"
       />
       <RateUser
         v-if="componentToShow == 'Rate'"
         :user="user"
+        @cancelRate="componentToShow = 'Info'"
       />
     </div>
 </template>
@@ -56,16 +57,28 @@ export default {
       this.isMyProfile = true
       this.componentToShow = "Info"
       this.user = this.$store.state.authUser
+    },
+    changedRoute() {
+      const routeId = this.$route.params.id
+      if(routeId == this.$store.getters['getAuthUserId'])
+      {
+        this.user = this.$store.state.authUser
+        this.isMyProfile = true
+      }
+      else {
+        this.$store.dispatch('getUser', routeId)
+        this.user = this.$store.state.user
+        this.isMyProfile = false
+      }
+      this.componentToShow = 'Info'
     }
   },
   created() {
-    const routeId = this.$route.params.id
-    if(routeId == this.$store.getters['getAuthUserId'])
-      this.user = this.$store.state.authUser
-    else {
-      this.$store.dispatch('getUser', routeId)
-      this.user = this.$store.state.user
-      this.isMyProfile = false
+    this.changedRoute()
+  },
+  watch: {
+    $route() {
+      this.changedRoute()
     }
   }
 }

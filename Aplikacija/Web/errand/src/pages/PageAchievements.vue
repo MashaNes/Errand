@@ -25,7 +25,10 @@ export default {
       const routeId = this.$route.params.id
       this.$store.dispatch('getUserAchievements', routeId)
       if(routeId == this.$store.getters['getAuthUserId'])
+      {
         this.user = this.$store.state.authUser
+        this.isMyProfile = true
+      }
       else {
         this.$store.dispatch('getUser', routeId)
         this.user = this.$store.state.user

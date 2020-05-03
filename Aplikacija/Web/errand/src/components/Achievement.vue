@@ -89,9 +89,7 @@ export default {
   .card {
     margin: 25px 30px 25px 30px;
     border-radius: 15px;
-    min-width:200px;
-    max-width:250px;
-    flex-grow:1;
+    width: 250px;
     /* height:max-content; */
   }
 

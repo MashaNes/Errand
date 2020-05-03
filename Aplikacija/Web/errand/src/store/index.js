@@ -22,7 +22,8 @@ export default new Vuex.Store({
         logedIn: true,
         usersPortion: {},
         usersWithBenefit: {},
-        emails: null
+        emails: null,
+        specificRequests: {}
     },
     getters:{
         getAuthUserId(state) {
@@ -74,10 +75,13 @@ export default new Vuex.Store({
                 currentCount: filteredUsers.length,
                 users: filteredUsers
             }
-            // console.log(toCommit + " " + startingIndex + " " + numOfElements)
-            // console.log(toCommit)
-            // console.log(users)
             commit('setUsersPortion', toCommit)
+        },
+        fillSpecificRequests({commit}, userName) {
+            const filteredRequests = Object.values(this.state.requests).filter(r => {
+                return (r.status == 'finished' || r.status == 'failed') && r.user.firstName == userName 
+            })
+            commit('setSpecificRequests', filteredRequests)
         }
     },
     mutations:{
@@ -102,6 +106,9 @@ export default new Vuex.Store({
         },
         setAuthUser(state, user) {
             state.authUser = user
+        },
+        setSpecificRequests(state, requests) {
+            state.specificRequests = requests
         }
     }
 })

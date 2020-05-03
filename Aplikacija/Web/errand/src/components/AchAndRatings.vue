@@ -1,95 +1,52 @@
 <template>
-  <!-- <div> -->
-    <!-- <div class="main-window">
-      <div class="bordered-container">
-        <div class="aside"> -->
-      <div class="main-wrapper">
-        <div class="side-info">
-          <div class="pic-plus-info">
-            <div class="media-center">
-              <p class="image is-96x96">
-                <img class="rounded-image" :src="user.picture">
-              </p>
-            </div>        
-            <div class="info-only">
-              <div class="info-element">
-                <img 
-                  src="@/assets/signature.svg" 
-                  height = "20" 
-                  width = "20"
-                  style = "margin-right: 15px"
-                />
-                <span>{{fullUserName}}</span>
-              </div>
-              <div class="info-element to-hide">
-                <img 
-                  src="@/assets/email.svg" 
-                  height = "20" 
-                  width = "20"
-                  style = "margin-right: 15px"
-                />
-                <span>{{user.email}}</span>
-              </div>
-              <div class="info-element to-hide">
-                <img 
-                  src="@/assets/call.svg" 
-                  height = "20" 
-                  width = "20"
-                  style = "margin-right: 10%"
-                />
-                <div class="phone-number">
-                  <div v-for="p in user.phone" :key="p">{{ p }}</div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="btns">
-              <router-link
-                class="button is-primary " 
-                style="width:100%;"
-                :to="tab=='Ratings' ? '/achievements/'+user.id : '/ratings/'+user.id "
-              >
-                <strong v-if="isSerbian && tab=='Ratings'"> Dostignuća </strong>
-                <strong v-else-if="tab=='Ratings'"> Achievements </strong>
-                <strong v-else-if="isSerbian"> Ocene </strong>
-                <strong v-else> Ratings </strong>
-              </router-link>
-            <router-link :to = "'/profile/' + user.id" class="button is-primary" style="width:100%;">
-              <strong v-if="isSerbian">Detalji profila</strong>
-              <strong v-else>Profile details</strong>
-            </router-link>
-          </div>
-        </div>
-          <!-- </div>
-        </div>
-      </div> -->
-      <div v-if="tab=='Achievements'" class="ach-wrap"> 
-        <Achievement 
-          v-for="achievement in achievements"
-          :key="achievement.id"
-          :achievement="achievement"
-        />
+  <div class="main-wrapper">
+    <div class="side-info">
+      <AsideProfileInfo :user="user" />
+      <div class="btns">
+        <router-link
+          class="button is-primary " 
+          style="width:100%;"
+          :to="tab=='Ratings' ? '/achievements/'+user.id : '/ratings/'+user.id "
+        >
+          <strong v-if="isSerbian && tab=='Ratings'"> Dostignuća </strong>
+          <strong v-else-if="tab=='Ratings'"> Achievements </strong>
+          <strong v-else-if="isSerbian"> Ocene </strong>
+          <strong v-else> Ratings </strong>
+        </router-link>
+        <router-link :to = "'/profile/' + user.id" class="button is-primary" style="width:100%;">
+          <strong v-if="isSerbian">Detalji profila</strong>
+          <strong v-else>Profile details</strong>
+        </router-link>
       </div>
-      <div v-if="tab=='Ratings'" class="rating-wrap"> 
-        <Rating 
-          v-for="rating in ratings"
-          :key="rating.id"
-          :rating="rating"
-        />
-      </div>
+    </div>   
+    <div v-if="tab=='Achievements'" class="ach-wrap"> 
+      <Achievement 
+        v-for="achievement in achievements"
+        :key="achievement.id"
+        :achievement="achievement"
+      />
     </div>
-  <!-- </div> -->
+    <div v-if="tab=='Ratings'" class="rating-wrap"> 
+      <Rating 
+        v-for="rating in ratings"
+        :key="rating.id"
+        :rating="rating"
+      />
+    </div>
+  </div>
 </template>
 
 <script>
 
 import Achievement from "@/components/Achievement.vue"
 import Rating from "@/components/Rating.vue"
+import AsideProfileInfo from "@/components/AsideProfileInfo"
 
 export default {
   components: {
     Achievement,
-    Rating
+    Rating,
+    AsideProfileInfo
   },
   props: {
     tab: {
@@ -135,7 +92,7 @@ export default {
 
 <style scoped>
 
- .rounded-image {
+  .rounded-image {
     border-radius: 60px;
     border: 2px solid grey;
     height:96px;
@@ -167,12 +124,6 @@ export default {
     word-break: break-all;
     font-size:15px;
     max-width: 250px;
-    /* display: flex;
-    flex-direction: column;
-    align-items: center;
-    position:sticky;
-    margin: 30px 15% 20px 40%;
-    top:100px; */
   }
 
   .pic-plus-info {
@@ -225,10 +176,10 @@ export default {
   }
 
   .button {
-      width:100%;
-      margin-bottom:10px;
-      margin-top:10px;
-    }
+    width:100%;
+    margin-bottom:10px;
+    margin-top:10px;
+  }
 
   @media only screen and (max-width:499px)
   {

@@ -1,79 +1,57 @@
 <template>
-  <div class="main-container">
-    <div class="picture-side">
-      <div class="media-center">
-        <p class="image is-128x128">
-          <img class="rounded-image" :src="user.picture">
-        </p>
-      </div>
-      <div class="content">
-        {{ fullUserName }}
-      </div>
+  <div class="main-wrapper">
+    <div class="side-info">
+      <AsideProfileInfo :user="user" />
+      <div class="btns">
+        <router-link :to = "'/profile/' + user.id" class="button is-primary" style="width:100%;">
+          <strong v-if="isSerbian">Detalji profila</strong>
+          <strong v-else>Profile details</strong>
+        </router-link>
+      </div>  
     </div>
-    <div class="personal-info">
-      <div class="grade-title">
-        <span style="margin-right:10px;" v-text="isSerbian ? 'Ocenite korisnika ': 'Rate user '"></span>
-        <span> {{fullUserName}} </span>
-      </div>
-      <span class="grade-label" v-text="isSerbian ? 'Ocena:' : 'Grade:'"></span>
-
-      <vue-slide-bar 
-        class="slide"
-        v-model="grade.value" 
-        :data="grade.data"
-        :range="grade.range"
-      ></vue-slide-bar>
-
-      <b-form-textarea 
-        class="txt-area"
-        id="textarea"
-        :placeholder="isSerbian ? 'Unesite kratak komentar...': 'Add a short comment...'"
-        rows="3"
-        max-rows="6"
-        no-resize
+    <div class="req-wrap">
+      <div 
+        class = "wrapper" 
+        :class="color(request)"
+        v-for="request in requests"
+        :key="request.id"
       >
-      </b-form-textarea>
+        <div class="request-top">
+          <div class = "request-name">
+              {{request.name}}
+          </div>
+        </div>
+        <div class="request-bottom">
+          <div class="status-div">
+            <img v-if="request.status == 'finished'" src = "../assets/finished.svg">
+            <img v-if="request.status == 'failed'" src = "../assets/failed.svg">
+            <span class = "request-status"> {{request.status}} </span>
+          </div>
+          <div class = "bottom-left">
+            <div class = "request-date"> {{request.date | showTime}} </div>
+            <div class = "tagovi">
+              <div v-for="tag in request.tags" :key="tag" class = "request-tag">{{tag}}</div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
 
-import VueSlideBar from 'vue-slide-bar'
+import AsideProfileInfo from "@/components/AsideProfileInfo"
 
 export default {
+  
   components: {
-    VueSlideBar
+    AsideProfileInfo
   },
   props: {
     user: {
       required: true,
       type: Object
-    }
-  },
-  data() {
-    return {
-      grade: {
-        value: 1,
-        data: [1, 2, 3, 4, 5],
-        range: [
-          {
-            label:1
-          },
-          {
-            label:2
-          },
-          {
-            label:3
-          },
-          {
-            label:4
-          },
-          {
-            label:5
-          }
-        ]
-      }
     }
   },
   computed: {
@@ -83,128 +61,274 @@ export default {
     fullUserName() {
       return this.user.firstName + " " +this.user.lastName
     },
-    progressBarVariant() {
-      return this.user.rating < 2.5 ? 'danger' : 
-             this.user.rating < 4.5 ? 'warning' : 'success'
-    },
-    formattedRating() {
-      return this.user.rating.toFixed(2);
+    requests() {
+      return this.$store.state.specificRequests
     }
   },
   methods: {
-    goToProfileEdit() {
-      this.$emit("editProfile");
+    cancel() {
+      this.$emit('cancelRate')
     },
-    firstElements(resource) {
-      const lastIndex = this.user[resource].length;
-      const arrayCopy = [...this.user[resource]];
-      arrayCopy.splice(lastIndex-1, 1);
-      return arrayCopy;
+    rateUser() {
+      this.$store.dispatch('')
     },
-    lastElement(resource) {
-      return this.user[resource][this.user[resource].length-1];
+    color(request)
+    {
+      if (request.status == "finished")
+          return "zeleno"
+      else 
+          return "crveno"
     }
+  },
+  created() {
+    const userName = this.user.firstName
+    console.log(userName)
+    this.$store.dispatch('fillSpecificRequests', userName)
   }
 }
 </script>
 
 <style scoped>
 
-  .main-container {
-    margin-top: 30px;
-    margin-left: 10%;
-    margin-right: 5%;
-    display: flex;
-    flex-direction: row;
-    align-items:flex-start;
-    border-radius: 10px;
+  .main-wrapper {
+    display:flex; 
+    flex-direction:row;
+    min-height:73vh;
   }
 
-  .rounded-image {
-    border-radius: 60px;
-    border: 2px solid grey;
-    height: 250px;
-    width:250px;
-    object-fit:cover;
-  }
-
-  .content {
-    background-color: black;
-    font-size: 20px;
-    color:white;
-    text-align: center;
-    margin-top: 15px;
-    margin-bottom: 2px;
-    border-radius: 5px;
-    word-break: break-all;
-  }
-
-  .is-128x128 {
-    width: 250px;
-    height: 250px;
-  }
-
-  .personal-info {
+  .side-info {
     display:flex;
     flex-direction: column;
-    margin-left: 15px;
-    flex-grow:2;
-    margin-bottom: 30px;
+    align-items: center;
+    position: sticky;
+    top:20%;
+    align-self:flex-start;
+    margin: 15px 1% 15px 2%;
+    z-index: 1;
+    word-break: break-all;
+    font-size:15px;
+    max-width: 250px;
   }
 
-  .picture-side {
-    flex-grow:1;
-    margin-bottom: 30px;
-  }
-
-  .media-center {
+  .btns {
     display:flex;
+    flex-direction:column;
+    width:100%;
+  }
+
+  .button {
+    width:100%;
+    margin-bottom:10px;
+    margin-top:10px;
+  }
+
+  .req-wrap {
+    width:100%;
+    display: flex;
     flex-direction:column;
     align-items:center;
   }
 
-  .txt-area {
-    width:100%;
-    margin-top:20px;
-  }
-
-  .grade-title {
-    font-size: 25px;
-    font-weight: bold;
-    margin-bottom: 20px;
-    display: flex;
-    flex-wrap: wrap;
-    word-break:break-all;
-  }
-
-  @media only screen and (max-width: 750px)
+  .wrapper
   {
-    .main-container {
+    margin:10px;
+    border: 1px solid rgb(43, 41, 41);
+    border-radius: 15px;
+    min-height: 100px;
+    padding:5px;
+    width: 80%;
+    display:flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .request-top
+  {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: flex-start;
+    align-items: center;
+    width: 100%;
+  }
+
+  .request-bottom
+  {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: flex-start;
+    align-items: center;
+    width: 100%;
+    margin-top: 30px;
+  }
+
+  .user-div
+  {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-items: center;
+    margin-right: 10px;
+    margin-top:10px;
+    font-size: 18px;
+  }
+
+  .status-div
+  {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;
+    justify-items: flex-end;
+    margin-right: 10px;
+    font-size: 18px;
+  }
+
+  .tagovi
+  {
+    display: flex;
+    flex-direction: row;
+  }
+    
+  .bottom-left
+  {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+  }
+  
+  .request-date
+  {
+    padding: 10px;
+    text-align: center;
+  }
+
+  .user-name
+  {
+    margin-right: 10px;
+  }
+
+  @media only screen and (max-width:600px)
+  {
+    .wrapper
+    {
+      width:95%;
+    }
+
+    .request-top
+    {
+      flex-direction: column-reverse;
+      align-items: flex-start;
+    }
+
+    .user-div
+    {
+      margin-left: 15px;
+      margin-top: 10px;
+      flex-direction: row-reverse;
+    }
+
+    .bottom-left
+    {
       flex-direction: column;
-      margin-top: 30px;
-      margin-left: 1%;
-      margin-right: 1%;
-      align-items:center;
-      border-radius: 10px;
+      align-items: flex-start;
     }
 
-    .personal-info {
-      align-self:stretch;
-      margin: 10px 10px 40px 10px;
+    .request-bottom
+    {
+      margin-top: 10px;
     }
 
-    .slide {
-      margin: 0 10px 0 10px;
+    .tagovi
+    {
+      margin-bottom: 5px;
+      margin-left: 5px;
+    }
+    
+    .request-date
+    {
+      padding: 2px;
+      padding-left: 10px;
     }
 
-    .grade-title {
-      margin: 0 10px 20px 10px;
-    }
-
-    .grade-label {
-      margin: 0 10px 0 10px;
+    .user-name
+    {
+      margin-left: 10px;
     }
   }
+
+  @media only screen and (max-width: 499px)
+  {
+    .main-wrapper {
+      flex-direction: column;
+    }
+    .side-info {
+      flex-direction: column;
+      margin:0 10px 0 10px;
+      align-self:left;
+      border-right: 1px solid black;
+      border-left: 1px solid black;
+      border-bottom: 1px solid black;
+      top:85px;
+      font-size: 13px;
+      background-color:white;
+      border-radius: 0 0 10px 10px;
+      justify-items: baseline;
+      word-break: break-all;
+      max-width:initial;
+    }
+
+    .btns {
+      flex-direction:row;
+    }
+
+    .button {
+      font-size: 15px;
+      height: 30px;
+      width:100%;
+      margin: 5px 5px 5px 5px;
+    }
+
+    
+  }
+
+  .request-name
+    {
+        font-weight: bold;
+        font-size: 25px;
+        color:rgb(11, 97, 126);
+        text-align: left;
+        flex-grow: 1;
+        margin-left: 10px;
+        margin-top:2px;
+    }
+
+    .request-tag
+    {
+      border-radius: 5px;
+      padding-left:7px;
+      padding-right:7px;
+      padding-top:5px;
+      margin:5px;
+      background-color: rgb(15, 170, 221);
+      color: white;
+      font-weight: bold;
+    }
+
+    .request-status
+    {
+      margin-left:7px;
+    }
+
+    .crveno
+    {
+      background-color: rgb(255, 212, 212);
+    }
+
+    .zeleno
+    {
+      background-color: rgb(217, 250, 217);
+    }
 
 
 </style>
