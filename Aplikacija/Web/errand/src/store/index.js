@@ -9,8 +9,6 @@ import {fetchRatings} from "@/api/ratings.js"
 import {fetchAchievements} from "@/api/achievements.js"
 import {fetchBenefitUsers} from "@/api/benefitUsers.js"
 import {fetchEmails} from "@/api/email.js"
-import {fetchServices} from "@/api/services.js"
-import {fetchUserServices} from "@/api/userServices.js"
 
 export default new Vuex.Store({
     state:{
@@ -97,14 +95,6 @@ export default new Vuex.Store({
                 ratedUser: this.state.user.id
             }
             commit('addRatingToUser', newRating)
-        },
-        fillUserServices()
-        {
-            this.state.userServices = fetchUserServices();
-        },
-        fillServices()
-        {
-            this.state.services = fetchServices();
         }
     },
     mutations:{
