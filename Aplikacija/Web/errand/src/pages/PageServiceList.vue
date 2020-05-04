@@ -4,17 +4,19 @@
             <NewUserService />
         </div>
         <div class="cenovnik">
-            
+            <ServiceList :editable="true"/>
         </div>
     </div>
 </template>
 
 <script>
 import NewUserService from "@/components/NewUserService"
+import ServiceList from "@/components/ServiceList"
 export default {
     components:
     {
-        NewUserService
+        NewUserService,
+        ServiceList
     },
     created()
     {
@@ -48,7 +50,7 @@ export default {
         padding:15px
     }
 
-    @media only screen and (max-width: 499px)
+    @media only screen and (max-width: 1100px)
     {
         .wrapper
         {
