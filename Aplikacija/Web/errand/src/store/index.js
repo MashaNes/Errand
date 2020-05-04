@@ -23,7 +23,9 @@ export default new Vuex.Store({
         usersPortion: {},
         usersWithBenefit: {},
         emails: null,
-        specificRequests: {}
+        specificRequests: {},
+        services: null,
+        userServices: null
     },
     getters:{
         getAuthUserId(state) {
