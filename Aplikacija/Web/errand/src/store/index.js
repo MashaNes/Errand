@@ -99,6 +99,16 @@ export default new Vuex.Store({
             }
             commit('addRatingToUser', newRating)
         },
+        addReport({commit}, report) {
+            const newReport = {
+                //id = ...
+                comment: report.comment,
+                createdBy: this.state.authUser,
+                user: this.state.user,
+                reportType: report.reportType
+            }
+            commit('addNewReport', newReport)
+        },
         fillUserServices()
         {
             this.state.userServices = fetchUserServices();
@@ -136,6 +146,9 @@ export default new Vuex.Store({
         },
         addRatingToUser(state, rating) {
             console.log(rating)
+        },
+        addNewReport(state, report) {
+            console.log(report)
         }
     }
 })

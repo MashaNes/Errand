@@ -7,47 +7,41 @@
 
           <div class="modal-header">
             <h3 name="header" v-if="isSerbian">
-              Ocenite korisnika
+              Prijavite korisnika
             </h3>
             <h3 name="header" v-else>
-              Rate user
+              Report user
             </h3>
           </div>
 
           <div class="modal-body">
             <slot name="body">
 
-              <span class="grade-label" v-text="isSerbian ? 'Ocena:' : 'Grade:'"></span>
+              <span class="report-label" v-text="isSerbian ? 'Tip prijave:' : 'Report type:'"></span>
+              <v-select :options="tmpTypes" label="reportType" v-model="report.reportType" class="select-type"></v-select> 
               
-              <vue-slider
-                :interval="1"
-                :min="1"
-                :max="5"
-                :marks="true"
-                tooltip="active"
-                v-model="rating.grade"
-              />
-
+              
               <b-form-textarea 
+                v-if="report.reportType"
                 class="txt-area"
                 id="textarea"
-                :placeholder="isSerbian ? 'Unesite kratak komentar...': 'Add a short comment...'"
-                rows="3"
+                :placeholder="isSerbian ? 'Unesite obrazloženje...': 'Add an explanation...'"
+                rows="4"
                 no-resize
-                v-model="rating.comment"
+                v-model="report.comment"
                 :maxlength="maxChar"
-                @blur="$v.rating.comment.$touch()"
+                @blur="$v.report.comment.$touch()"
               >
               </b-form-textarea>
 
               <span 
-                v-if="$v.rating.comment.$error" 
+                v-if="$v.report.comment.$error && report.reportType" 
                 class='text-danger'
-                v-text="isSerbian ? 'Morate uneti komentar' : 'You must enter a comment'"
+                v-text="isSerbian ? 'Morate uneti obrazloženje' : 'You must enter an explanation'"
               ></span>
 
               <span 
-                v-if="rating.comment.length == maxChar" 
+                v-if="report.comment.length == maxChar && report.reportType" 
                 class='text-danger max-char'
                 v-text="isSerbian ? 'Uneli ste maksimalan broj karaktera' : 'You entered the maximum number of characters'"
               >
@@ -59,10 +53,10 @@
             <slot name="footer">
               <button 
                 type="button" 
-                @click="tryToRate"
+                @click="tryToReport"
                 class="btn btn-primary"
-                v-text="isSerbian ? 'Oceni' : 'Rate'"
-                :disabled="isInvalid"
+                v-text="isSerbian ? 'Prijavi' : 'Report'"
+                :disabled="isInvalid || !report.reportType"
               >
               </button>
 
@@ -84,26 +78,31 @@
 <script>
 
 import {required} from "vuelidate/lib/validators"
-import VueSlider from 'vue-slider-component'
-import 'vue-slider-component/theme/default.css'
-
+import vSelect from "vue-select"
 
 export default {
   components: {
-    VueSlider
+    vSelect
+  },
+  props: {
+    userName: {
+      type: String
+    }
   },
   data() {
     return {
-      rating: {
-        grade:3,
+      report: {
+        reportType: null,
         comment: ""
       },
-      maxChar: 100
+      maxChar: 300,
+      tmpTypes: ['tip1', 'tip2', 'tip3']
     }
   },
   validations: {
-    rating: {
-      comment: {required}
+    report: {
+      comment: {required},
+      reportType: {required}
     }
   },
   computed: {
@@ -113,16 +112,13 @@ export default {
     fullUserName() {
       return this.user.firstName + " " +this.user.lastName
     },
-    requests() {
-      return this.$store.state.specificRequests
-    },
     isInvalid() {
-      return this.$v.rating.$invalid
+      return this.$v.report.$invalid
     }
   },
   methods: {
-    tryToRate() {
-      this.$emit('tryToRateUser', this.rating)
+    tryToReport() {
+      this.$emit('tryToReportUser', this.report)
     }
   }
 }
@@ -179,8 +175,9 @@ export default {
   }
 
   .modal-body {
-    margin: 20px 0;
+    margin: 10px;
   }
+
 
   .modal-default-button {
     float: right;
@@ -200,28 +197,18 @@ export default {
     transform: scale(1.1);
   }
 
-
   .txt-area {
-    margin-top:40px;
-  }
-
-  .grade-title {
-    font-size: 25px;
-    font-weight: bold;
-    margin-bottom: 20px;
-    display: flex;
-    flex-wrap: wrap;
-    word-break:break-all;
-    width:fit-content;
+    margin-top:20px;
   }
 
   .grade-label {
     width:fit-content;
-    margin-bottom: 40px;
+    font-size: 18px;
   }
 
-  .max-char {
+  .text-danger {
     margin-top:10px;
+    font-size:12px;
   }
 
   .form-control {
@@ -240,6 +227,11 @@ export default {
 
   .vue-slider {
     margin-top: 30px;
+  }
+
+  .select-type {
+    width:100%;
+    margin-top:5px;
   }
 
 </style>

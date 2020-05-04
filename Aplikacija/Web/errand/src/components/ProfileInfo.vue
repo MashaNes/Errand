@@ -58,6 +58,7 @@
               </b-button>
               <b-button 
                 class="button is-primary title-btn"
+                @click="showModalReport = true"
               >
                 <img class="slika-dugme" src="../assets/report.png">
                 <strong v-if="isSerbian">Prijavi korisnika</strong>
@@ -124,11 +125,24 @@
       </div>
     </div>
      <ModalAddBenefit v-if="showModal" @close="showModal = false" :user="user"/>
+     <ModalReportUser v-if="showModalReport" @close="showModalReport = false" @tryToReportUser="tryReport"/>
+     <ModalAreYouSure 
+      :naslovS = "'Da li ste sigurni?'"
+      :naslovE = "'Are you sure?'"
+      :tekstS = "'Prijavljujete korisnika ' + fullUserName + '. Da li želite da potvrdite?'"
+      :tekstE = "'You are reporting user ' + fullUserName + '. Do you wish to confirm?'"
+      @yes="reportUser()"
+      @close="dismissReport"
+      v-if="showModalAreYouSure" 
+    />
   </div>
 </template>
 
 <script>
 import ModalAddBenefit from "@/components/ModalAddBenefit"
+import ModalReportUser from "@/components/ModalReportUser"
+import ModalAreYouSure from "@/components/ModalAreYouSure"
+
 export default {
   props: {
     user: {
@@ -142,12 +156,17 @@ export default {
   },
   components:
   {
-    ModalAddBenefit
+    ModalAddBenefit,
+    ModalReportUser,
+    ModalAreYouSure
   },
   data()
   {
     return{
-      showModal : false
+      showModal : false,
+      showModalReport: false,
+      showModalAreYouSure: false,
+      report: {}
     }
   },
   computed: {
@@ -177,6 +196,20 @@ export default {
     },
     lastElement(resource) {
       return this.user[resource][this.user[resource].length-1];
+    },
+    tryReport(rep) {
+      this.report.reportType = rep.reportType
+      this.report.comment = rep.comment
+      this.showModalReport = false
+      this.showModalAreYouSure = true
+    },
+    dismissReport() {
+      this.report = {}
+      this.showModalAreYouSure = false
+    },
+    reportUser() {
+      this.$store.dispatch('addReport', this.report)
+      this.showModalAreYouSure = false
     }
   }
 }
