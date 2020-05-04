@@ -19,19 +19,45 @@
         </router-link>
       </div>
     </div>   
-    <div v-if="tab=='Achievements'" class="ach-wrap"> 
-      <Achievement 
-        v-for="achievement in achievements"
-        :key="achievement.id"
-        :achievement="achievement"
-      />
-    </div>
-    <div v-if="tab=='Ratings'" class="rating-wrap"> 
-      <Rating 
-        v-for="rating in ratings"
-        :key="rating.id"
-        :rating="rating"
-      />
+
+    <div class = "content-wrapper">
+      <div class="filter-wrapper" v-if="tab=='Ratings'"> 
+        <div class="filter-inner-wrap">
+          <div class="filter-input-and-span">
+            <span 
+              class="filter-span" 
+              v-text="isSerbian ? 'Prikaži ocene veće od:' : 'Show grades greater than:'"
+            ></span> 
+            <input 
+              type="number" 
+              :class="{'filter-input':true, 'ne-valja':isFilterInvalid}" 
+              v-model="filterValue"
+              max="4"
+              min="0"
+              @blur="resetFilter"
+            />
+          </div>
+          <span 
+            v-if="isFilterInvalid"
+            class="filter-invalid-span" 
+            v-text="isSerbian ? 'Između 0 i 4' : 'Between 0 and 4'"
+          ></span>
+        </div>
+      </div>
+      <div v-if="tab=='Achievements'" class="ach-wrap"> 
+        <Achievement 
+          v-for="achievement in achievements"
+          :key="achievement.id"
+          :achievement="achievement"
+        />
+      </div>
+      <div v-if="tab=='Ratings'" class="rating-wrap"> 
+        <Rating 
+          v-for="rating in ratings"
+          :key="rating.id"
+          :rating="rating"
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -41,6 +67,7 @@
 import Achievement from "@/components/Achievement.vue"
 import Rating from "@/components/Rating.vue"
 import AsideProfileInfo from "@/components/AsideProfileInfo"
+import {between} from "vuelidate/lib/validators"
 
 export default {
   components: {
@@ -62,6 +89,14 @@ export default {
       required: true
     }
   },
+  data() {
+    return {
+      filterValue: 0
+    }
+  },
+  validations: {
+    filterValue: {between: between(0, 4)}
+  },
   computed: {
     fullUserName() {
       return this.user.firstName + " " +this.user.lastName
@@ -73,7 +108,13 @@ export default {
       return this.$store.state.userAchievements
     },
     ratings() {
-      return this.$store.state.userRatings
+      const allRatings = this.$store.state.userRatings
+      if(this.filterValue < 1 || this.filterValue > 4)
+        return allRatings
+      return Object.values(allRatings).filter(rat => rat.grade > this.filterValue)
+    },
+    isFilterInvalid() {
+      return this.$v.filterValue.$invalid
     }
   },
   methods: {
@@ -81,6 +122,10 @@ export default {
       if(this.tab === "Ratings")
         this.tab = "Achievements";
       else this.tab = "Ratings";
+    },
+    resetFilter() {
+      if(this.filterValue > 4 || this.filterValue < 0 || !this.filterValue)
+        this.filterValue = 0
     }
   },
   created() {
@@ -181,8 +226,61 @@ export default {
     margin-top:10px;
   }
 
+  .content-wrapper {
+    width:100%; 
+    display:flex; 
+    flex-direction:column; 
+    align-items:center;
+  }
+
+  .filter-wrapper {
+    width: 100%; 
+    display: flex;
+  }
+
+  .filter-inner-wrap {
+    margin: 30px 20% 10px 20%; 
+    border: 1px solid black;
+    display:flex;
+    flex-direction: column;
+    padding: 10px;
+    border-radius: 5px;
+    background-color: white
+  }
+
+  .filter-input-and-span {
+    display: flex; 
+    align-items: center;
+  }
+
+  .filter-span {
+    flex-grow: 1; 
+    margin-right: 10px; 
+    font-weight: 600; 
+    color: #4a4a4a;
+  }
+
+  .filter-input {
+    flex-grow: 1;
+    width: 40px;
+  }
+
+  .filter-invalid-span {
+    color: red;
+    font-size: 14px;
+  }
+
+  .ne-valja
+  {
+    background-color: rgb(255, 212, 212);
+  }
+
   @media only screen and (max-width:499px)
   {
+    .filter-inner-wrap {
+      margin: 30px 10px 10px 10px;
+    }
+
     .to-hide {
       visibility: hidden;
       height: 0px;
@@ -211,9 +309,7 @@ export default {
 
     .btns {
       flex-direction:row;
-
     }
-
 
     .rounded-image {
       height: 60px;
