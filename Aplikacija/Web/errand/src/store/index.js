@@ -87,6 +87,17 @@ export default new Vuex.Store({
             })
             commit('setSpecificRequests', filteredRequests)
         },
+        addRating({commit}, rating) {
+            const newRating = {
+                id: Object.values(fetchRatings()).length + 1,
+                grade: rating.grade,
+                comment: rating.comment,
+                createdBy: this.state.authUser,
+                request: rating.request,
+                ratedUser: this.state.user.id
+            }
+            commit('addRatingToUser', newRating)
+        },
         fillUserServices()
         {
             this.state.userServices = fetchUserServices();
