@@ -240,4 +240,12 @@ export default {
         padding-left: 10px;
         font-weight: bolder;
     }
+
+    @media only screen and (max-width: 1088px)
+    {
+        a.navbar-item.router-link-active
+        {
+            padding-top: 12px;
+        }
+    }
 </style>

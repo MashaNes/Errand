@@ -17,6 +17,8 @@ import PageSettings from "@/pages/PageSettings"
 import PageBrowseUsers from "@/pages/PageBrowseUsers"
 import PageBenefitList from "@/pages/PageBenefitList"
 import PageServiceList from "@/pages/PageServiceList"
+import PageNotAuthenticated from "@/pages/PageNotAuthenticated"
+import PageNotFound from "@/pages/PageNotFound"
 
 Vue.use(Router)
 
@@ -98,6 +100,16 @@ const router = new Router(
                 path: "/serviceList",
                 name: "PageServiceList",
                 component: PageServiceList
+            },
+            {
+              path: '/401',
+              name: 'PageNotAuthenticated',
+              component: PageNotAuthenticated
+            },
+            {
+              path: '*',
+              name: 'PageNotFound',
+              component: PageNotFound
             }
         ],
         mode: "history",
