@@ -1,5 +1,15 @@
 <template>
   <div class="wrapper">
+    <div class="filter-sticky">
+      <div class="filter">
+        <span v-text="isSerbian ? 'Minimalna prosečna ocena:' : 'Minimal average rating:'"></span>
+        <input class="filter-rating" type="number" min="0" max="4">
+      </div>
+      <div class="filter">
+        <span v-text="isSerbian ? 'Tražite po imenu:' : 'Search by name:'"></span>
+        <input class="filter-name" type="text">
+      </div>
+    </div>
     <b-pagination 
       v-model="currentPage" 
       :total-rows="users.totalCount" 
@@ -53,6 +63,9 @@ export default {
   computed: {
     users() {
       return this.$store.state.usersPortion
+    },
+    isSerbian() {
+      return this.$store.state.isSerbian
     }
   },
   methods: {
@@ -76,11 +89,16 @@ export default {
 
 
 <style scoped>
-  
+ 
   .wrapper
   {
-    padding-top:30px;
-    padding-bottom:30px;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .body {
+    background-color: #f8f9fa!important;
   }
 
   .users {
@@ -91,10 +109,55 @@ export default {
 
   .pag-top {
     margin-bottom: 40px;
+    margin-top: 20px;
+    z-index:0;
   }
 
   .pag-bottom {
     margin: 40px 0 0px 0;
+    z-index:0;
+  }
+
+  .filter-sticky {
+    position: sticky;
+    top:70px;
+    border: 1px solid black;
+    border-top: hidden;
+    align-self:center;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    padding:10px;
+    border-bottom-left-radius:5px;
+    border-bottom-right-radius:5px;
+  }
+
+  .filter {
+    display:flex;
+    margin: 5px;
+    font-weight: 600;
+    align-items: center;
+  }
+
+  .filter-rating {
+    width: 40px;
+    margin-left:10px
+  }
+
+  .filter-name {
+    max-width:200px;
+    margin-left:10px;
+  }
+
+  @media only screen and (max-width: 499px)
+  {
+    .filter-sticky {
+      top:85px;
+      margin-left:10px;
+      margin-right: 10px;
+      font-size: 15px;
+    }
   }
 
 </style>
