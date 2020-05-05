@@ -109,7 +109,7 @@ export default {
       },
       authUserFullName()
       {
-          return this.$store.state.authUser.firstName + " " + this.$store.state.authUser.lastName
+          return this.$store.state.authUser.first_name + " " + this.$store.state.authUser.last_name
       }
     },
     methods:
@@ -125,6 +125,8 @@ export default {
       odjaviSe()
       {
         this.$store.state.logedIn = false
+        this.state.authUser = null
+        this.state.token = null
         this.$router.push('/');
       }
     }

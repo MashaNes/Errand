@@ -1,6 +1,6 @@
 export const login = (email, password) => {
-    var code = "";
-    fetch("http://localhost:8000/api/auth/token/login",
+    var result = ""
+    fetch("http://localhost:8000/api/v1/login/",
     {
         method: 'POST',
         headers:
@@ -18,16 +18,15 @@ export const login = (email, password) => {
             {
                 p.json().then(data =>
                 {
-                    //console.log(data["auth_token"])
-                    code = data["auth_token"]
+                    console.log(data)
+                    result =  data
                 })
             }
             else
             {
-                code = "Error"
-                //console.log("Error")
+                console.log("Error")
+                result =  "Error"
             }
         });
-        
-    return code;
+    return result
 }
