@@ -97,10 +97,12 @@ class Request(models.Model):
     picture_required = models.BooleanField(default=False)
     pictures = models.ManyToManyField(Picture)
     note = models.CharField(max_length=256)
+    # TODO: Delete request_type
     request_type = models.IntegerField()
     tasklist = models.ManyToManyField(Task)
     max_dist = models.FloatField()
     min_rating = models.FloatField()
+    # TODO: Delete service_type
     service_type = models.ForeignKey(Service, null=True, on_delete=models.SET_NULL)
     created_by = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
 

@@ -53,10 +53,12 @@ class TaskEditSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class UserSerializer(serializers.ModelSerializer):
+    picture = serializers.CharField()
     class Meta:
         model = models.User
         fields = ('id', 'email', 'first_name', 'last_name', 'phone',
-                  'picture', 'avg_rating', 'status', 'password')
+                  'picture', 'avg_rating', 'min_rating', 'max_dist',
+                  'status', 'password')
         extra_kwargs = {'password': {'write_only': True}}
 
 class AchievementSerializer(serializers.ModelSerializer):

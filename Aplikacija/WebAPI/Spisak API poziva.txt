@@ -6,18 +6,25 @@ URL = api/v1/{endpoint_name}
 
 + GET users_info/{id} 				// Returns only basic user data
 + GET users/{id} 					// Returns full user data
-- GET filtered_users/ 				// Returns users based on filters
++ GET filtered_users/ 				// Returns users based on filters
+
+TODO: Return separately full user info
+
 + GET requests_info/{id} 			// Returns only basic request data
-- GET requests/{id} 				// Returns full request data (including offers and rating)
++ GET requests/{id} 				// Returns full request data (including offers and rating)
+- GET filtered_requests/ 			// Returns users based on filters
 + GET achievements/{id}				// Returns list of all achievements
 - GET stats/ (A)		 			// Returns statistics based on filters
 
+TODO: Return request from user for rating
+
 + POST login/                       // Login as some user
+- POST logout/                      // Logout user
 + POST user_create/					// Creates new user
 + POST benefit_add/					// Adds new user to benefit list
 + POST address_add/					// Adds new address to addresses
 + POST working_hours_add/ 			// Adds new working hours for user
-+ POST userservice_add/				// Adds new user service for user
++ POST user_service_add/			// Adds new user service for user
 - POST offer_create/ 				// Creates offer for request
 + POST request_create/ 				// Creates request
 - POST rate_user/ 					// Adds new rating for completed request
@@ -28,13 +35,19 @@ URL = api/v1/{endpoint_name}
 
 - UPDATE request_update/ 			// Edits request
 - UPDATE users_info_update/			// Updates basic user data
-- UPDATE user_update/ 				// Updates full user data
+- UPDATE benefit_update/			// Updates benefit to benefit list
+- UPDATE address_update/			// Updates address to addresses
+- UPDATE working_hours_update/ 		// Updates working hours for user
+- UPDATE user_service_update/		// Updates user service for user
 
-- DELETE request_remove/ 			// Cancels request
-- DELETE benefit_remove/ 			// Removes user from benefit list
-- DELETE address_remove/ 			// Removes address from user
-- DELETE working_hours_remove/ 		// Removes working hours from user
-- DELETE userservice_remove/ 		// Removes user service from user
++ DELETE request_cancel/ 			// Cancels request (when pending)
++ DELETE benefit_remove/ 			// Removes user from benefit list
++ DELETE address_remove/ 			// Removes address from user
++ DELETE working_hours_remove/ 		// Removes working hours from user
++ DELETE user_service_remove/ 		// Removes user service from user
+
+(DEL)
++ GET userservice/{id}				// Returns full userservice data
 
 (+ -> Done)
 (- -> Not)
