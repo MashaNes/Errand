@@ -71,13 +71,23 @@ export default new Vuex.Store({
 
             commit('setChangedUser', newUser)
         },
-        fillUsersPortion({commit}, {startingIndex, numOfElements}) {
+        fillUsersPortion({commit}, {startingIndex, numOfElements, filterName, filterRating}) {
             const users = fetchUsers();
-            const filteredUsers = Object.values(users).filter((user, ind) => ind >= startingIndex && ind < startingIndex + numOfElements)
+            const filteredUsers = Object.values(users).filter((user) => {
+                
+                const fullName = user.firstName + " " + user.lastName
+                const okFilterName = !filterName ? true : fullName.toLowerCase().includes(filterName.toLowerCase())
+                const okFilterRating = user.rating > filterRating
+                
+                return (okFilterName && okFilterRating)
+            })
+
+            const usersInRange = filteredUsers.filter((user, ind) => ind >= startingIndex && ind < startingIndex + numOfElements)
+
             const toCommit = {
-                totalCount: Object.values(users).length,
-                currentCount: filteredUsers.length,
-                users: filteredUsers
+                totalCount: Object.values(filteredUsers).length,
+                currentCount: usersInRange.length,
+                users: usersInRange
             }
             commit('setUsersPortion', toCommit)
         },
