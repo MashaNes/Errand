@@ -91,10 +91,10 @@ export default new Vuex.Store({
             }
             commit('setUsersPortion', toCommit)
         },
-        fillSpecificRequests({commit}, userName) {
+        fillSpecificRequests({commit}, userId) {
             const requests = fetchRequests()
             const filteredRequests = Object.values(requests).filter(r => {
-                return (r.status == 'finished' || r.status == 'failed') && r.user.firstName == userName 
+                return (r.status == 'finished' || r.status == 'failed') && r.user.id == userId 
             })
             commit('setSpecificRequests', filteredRequests)
         },

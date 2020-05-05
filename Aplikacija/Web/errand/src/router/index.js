@@ -17,6 +17,7 @@ import PageSettings from "@/pages/PageSettings"
 import PageBrowseUsers from "@/pages/PageBrowseUsers"
 import PageBenefitList from "@/pages/PageBenefitList"
 import PageServiceList from "@/pages/PageServiceList"
+import PageOfferedServices from "@/pages/PageOfferedServices"
 import PageNotAuthenticated from "@/pages/PageNotAuthenticated"
 import PageNotFound from "@/pages/PageNotFound"
 
@@ -100,6 +101,11 @@ const router = new Router(
                 path: "/serviceList",
                 name: "PageServiceList",
                 component: PageServiceList
+            },
+            {
+                path: "/offeredServices/:id",
+                name: "PageOfferedServices",
+                component: PageOfferedServices
             },
             {
               path: '/401',
