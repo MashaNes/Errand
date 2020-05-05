@@ -1,7 +1,7 @@
 <template>
   <div class="main-wrapper">
     <div class="side-info">
-      <AsideProfileInfo :user="user" />
+      <AsideProfileInfo :user="user" :forWideScreen="false" />
       <div class="btns">
         <router-link
           class="button is-primary " 
