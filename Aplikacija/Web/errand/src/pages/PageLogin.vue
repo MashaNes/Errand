@@ -60,13 +60,19 @@
                     </span>    
                 </div>
               </div>
-              <button @click.prevent="login" 
+              <button @click="loginFunc" 
                       class="button is-block is-info is-large is-fullwidth"
-                      :disabled="isFormInvalid">
-                      <span v-if="isSerbian">Prijavi se</span>
-                      <span v-else>Login</span>
+                      :disabled="isFormInvalid || !isDataLoaded">
+                      <span v-if="isSerbian && isDataLoaded">Prijavi se</span>
+                      <span v-if="!isSerbian && isDataLoaded">Login</span>
                       </button>
             </form>
+            <p class = "text-danger upozorenje" v-if="TryLogIn && isDataLoaded && isSerbian">
+              Pogrešan email ili lozinka
+            </p>
+            <p class = "text-danger upozorenje" v-if="TryLogIn && isDataLoaded && !isSerbian">
+              Incorrect email or password
+            </p>
             <p class = "text-danger upozorenje" v-if="isSerbian">
               Stavke označene sa * su obavezne
             </p>
@@ -98,7 +104,8 @@
                 {
                     email : null,
                     password : null
-                }
+                },
+                TryLogIn: false
             }
         },
         validations:
@@ -121,16 +128,22 @@
             isSerbian()
             {
                 return this.$store.state.isSerbian
+            },
+            isDataLoaded()
+            {
+              return this.$store.state.isDataLoaded
             }
         },
         methods:
         {
-            login()
+            loginFunc()
             {
                 this.$v.form.$touch()
-                this.$store.state.logedIn = true
+                /*this.$store.state.logedIn = true
                 this.$router.push('/requests')
-                console.log(this.form)
+                console.log(this.form)*/
+                this.$store.dispatch("fillAuthUser", this.form)
+                this.TryLogIn = true
             }
         }
     }

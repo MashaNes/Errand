@@ -16,7 +16,7 @@ export default new Vuex.Store({
     state:{
         requests: {},
         user: {},
-        authUser: {},
+        authUser: null,
         userAchievements: {},
         userRatings: {},
         isSerbian: true,
@@ -27,7 +27,9 @@ export default new Vuex.Store({
         emails: null,
         specificRequests: {},
         services: null,
-        userServices: null
+        userServices: null,
+        token: null,
+        isDataLoaded: true
     },
     getters:{
         getAuthUserId(state) {
@@ -53,6 +55,43 @@ export default new Vuex.Store({
         },
         fillAuthUser({commit}) {
             commit('setAuthUser', fetchUsers()["1"])
+        },
+        // eslint-disable-next-line no-unused-vars
+        fillAuthUser2({commit}, payload) {
+            this.state.isDataLoaded = false
+            fetch("http://localhost:8000/api/v1/login/",
+            {
+                method: 'POST',
+                headers:
+                {
+                    "Content-type" : "application/json"
+                },
+                body:  JSON.stringify(
+                {
+                    "username" : payload.email,
+                    "password" : payload.password
+                })
+            }).then( p => 
+                {
+                    if(p.ok)
+                    {
+                        p.json().then(data =>
+                        {
+                            // eslint-disable-next-line no-debugger
+                            console.log(data)
+                            this.state.authUser = data['user']['user']
+                            this.state.logedIn = true
+                            this.state.token = data['token']
+                            this.state.isDataLoaded = true
+                            //this.$router.push('/requests')
+                        })
+                    }
+                    else
+                    {
+                        console.log("Error")
+                        this.state.isDataLoaded = true
+                    }
+                });
         },
         getAllUsers({commit}) {
             commit('setAllUsers', fetchUsers())
