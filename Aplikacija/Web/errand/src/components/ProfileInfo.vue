@@ -20,6 +20,16 @@
             <span v-else> Ratings and achievements </span>
           </b-button>
         </div>
+        <div class="nav-buttons" v-if="!isMyProfile">
+          <b-button
+            size="lg"
+            class="services button is-primary"
+            :to="'/offeredServices/' + user.id"
+          >
+            <span v-if="isSerbian"> Lista ponuđenih usluga </span>
+            <span v-else> List of offered services </span>
+          </b-button>
+        </div>
       </div>
       <div class="personal-info">
         <b-list-group>
@@ -311,6 +321,12 @@ export default {
   .ocene-dostignuca {
     margin: 10% 0 20px 0; 
     width: 100%;
+    font-size: 20px;
+    font-weight: bold;
+  }
+
+  .services {
+    width:100%;
     font-size: 20px;
     font-weight: bold;
   }

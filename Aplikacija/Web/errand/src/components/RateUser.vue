@@ -1,7 +1,7 @@
 <template>
   <div class="main-wrapper">
     <div class="side-info">
-      <AsideProfileInfo :user="user" />
+      <AsideProfileInfo :user="user" :forWideScreen="false" />
       <div class="btns">
         <b-button @click="$emit('cancelRate')" class="button is-primary" style="width:100%;">
           <strong v-if="isSerbian">Detalji profila</strong>
@@ -135,9 +135,9 @@ export default {
   },
   created() {
     window.scrollTo(0, 0)
-    const userName = this.user.firstName
-    console.log(userName)
-    this.$store.dispatch('fillSpecificRequests', userName)
+    const userId = this.user.id
+    console.log(userId)
+    this.$store.dispatch('fillSpecificRequests', userId)
   }
 }
 </script>
