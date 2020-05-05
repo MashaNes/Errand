@@ -2,9 +2,9 @@
     <div class = "wrapper" :class="color">
         <div class="request-top" v-if="myRequest.status != 'pending'">
             <div class="user-div"> 
-                <span class="user-name"> {{userName}} </span>
+                <span class="user-name" @click="goToProfile"> {{userName}} </span>
                 <p class="image is-128x128" >
-                    <img class="rounded-image" :src="userPicture">
+                    <img class="rounded-image" :src="userPicture" @click="goToProfile">
                 </p>
             </div>
             <div class = "request-name">
@@ -89,6 +89,13 @@ export default {
                 return this.myRequest.user.picture;
             else
                 return ""
+        },
+        userId() 
+        {
+            if(this.myRequest.status != "pending")
+                return this.myRequest.user.id
+            else
+                return ""
         }
     },
     methods:
@@ -97,6 +104,10 @@ export default {
         {
             console.log(this.myRequest)
             this.showModal = false
+        },
+        goToProfile() 
+        {
+            this.$router.push('profile/' + this.userId)
         }
     }
 }
@@ -196,6 +207,14 @@ export default {
     .user-name
     {
         margin-right: 10px;
+    }
+
+    .user-name:hover 
+    {
+        cursor: pointer !important;
+        text-decoration: underline;
+        color:lightseagreen;
+
     }
 
     @media only screen and (max-width: 600px)
@@ -307,5 +326,6 @@ export default {
         height: 50px;
         width:50px;
         object-fit:cover;
+        cursor: pointer;
     }
 </style>
