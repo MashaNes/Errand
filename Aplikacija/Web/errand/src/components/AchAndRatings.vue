@@ -23,24 +23,47 @@
     <div class = "content-wrapper">
       <div class="filter-wrapper" v-if="tab=='Ratings'"> 
         <div class="filter-inner-wrap">
+          <span class="filter-span" v-text="isSerbian ? 'Prikaži ocene u opsegu' : 'Show grades in range'"></span>
           <div class="filter-input-and-span">
             <span 
               class="filter-span" 
-              v-text="isSerbian ? 'Prikaži ocene veće od:' : 'Show grades greater than:'"
+              v-text="isSerbian ? 'od:' : 'from:'"
             ></span> 
             <input 
               type="number" 
-              :class="{'filter-input':true, 'ne-valja':isFilterInvalid}" 
-              v-model="filterValue"
+              :class="{'filter-input':true, 'ne-valja':isFilterLowerInvalid}" 
+              v-model="filterValueLower"
               max="4"
-              min="0"
-              @blur="resetFilter"
+              min="1"
+              @blur="resetFilterLower"
+            />
+            <span 
+              class="filter-span" 
+              v-text="isSerbian ? 'do:' : 'to:'"
+            ></span> 
+            <input 
+              type="number" 
+              :class="{'filter-input':true, 'ne-valja':isFilterHigherInvalid}" 
+              v-model="filterValueHigher"
+              max="5"
+              min="2"
+              @blur="resetFilterHigher"
             />
           </div>
           <span 
-            v-if="isFilterInvalid"
+            v-if="isFilterLowerInvalid"
             class="filter-invalid-span" 
-            v-text="isSerbian ? 'Između 0 i 4' : 'Between 0 and 4'"
+            v-text="isSerbian ? 'Vrednost \'od\' mora biti između 1 i 4' : 'The \'from\' value must be between 1 and 4'"
+          ></span>
+          <span 
+            v-if="isFilterHigherInvalid"
+            class="filter-invalid-span" 
+            v-text="isSerbian ? 'Vrednost \'do\' mora biti između 2 i 5' : 'The \'to\' value must be between 2 and 5'"
+          ></span>
+          <span 
+            v-if="!isFilterLowerInvalid && !isFilterHigherInvalid && filterValueHigher && filterValueLower && filterValueLower >= filterValueHigher"
+            class="filter-invalid-span" 
+            v-text="isSerbian ? 'Vrednost \'od\' mora biti manja od vrednosti \'do\'' : 'The \'to\' value must be lower than the \'from\' value'"
           ></span>
         </div>
       </div>
@@ -91,11 +114,13 @@ export default {
   },
   data() {
     return {
-      filterValue: 0
+      filterValueLower: 1,
+      filterValueHigher: 5
     }
   },
   validations: {
-    filterValue: {between: between(0, 4)}
+    filterValueLower: {between: between(1, 4)},
+    filterValueHigher: {between: between(2, 5)}
   },
   computed: {
     fullUserName() {
@@ -109,12 +134,15 @@ export default {
     },
     ratings() {
       const allRatings = this.$store.state.userRatings
-      if(this.filterValue < 1 || this.filterValue > 4)
+      if(this.isFilterLowerInvalid || this.isFilterHigherInvalid || !this.filterValueLower || !this.filterValueHigher || this.filterValueHigher <= this.filterValueLower)
         return allRatings
-      return Object.values(allRatings).filter(rat => rat.grade > this.filterValue)
+      return Object.values(allRatings).filter(rat => rat.grade >= this.filterValueLower && rat.grade <= this.filterValueHigher)
     },
-    isFilterInvalid() {
-      return this.$v.filterValue.$invalid
+    isFilterLowerInvalid() {
+      return this.$v.filterValueLower.$invalid
+    },
+    isFilterHigherInvalid() {
+      return this.$v.filterValueHigher.$invalid
     }
   },
   methods: {
@@ -123,9 +151,13 @@ export default {
         this.tab = "Achievements";
       else this.tab = "Ratings";
     },
-    resetFilter() {
-      if(this.filterValue > 4 || this.filterValue < 0 || !this.filterValue)
-        this.filterValue = 0
+    resetFilterLower() {
+      if(this.filterValueLower > 4 || this.filterValueLower < 1 || !this.filterValueLower || this.filterValueLower >= this.filterValueHigher)
+        this.filterValueLower = 1
+    },
+    resetFilterHigher() {
+      if(this.filterValueHigher > 5 || this.filterValueHigher < 2 || !this.filterValueHigher || this.filterValueLower >= this.filterValueHigher)
+        this.filterValueHigher = 5
     }
   },
   created() {
@@ -249,20 +281,24 @@ export default {
   }
 
   .filter-input-and-span {
+    margin-top: 10px;
     display: flex; 
     align-items: center;
   }
 
   .filter-span {
-    flex-grow: 1; 
-    margin-right: 10px; 
+    /* flex-grow: 1;  */
+    margin-right: 5px; 
     font-weight: 600; 
     color: #4a4a4a;
   }
 
   .filter-input {
-    flex-grow: 1;
+    /* flex-grow: 1; */
     width: 40px;
+    margin-right: 20px;
+    border: 1px solid grey;
+    border-radius:5px;
   }
 
   .filter-invalid-span {

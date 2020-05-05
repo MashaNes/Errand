@@ -110,13 +110,14 @@ export default new Vuex.Store({
 
             commit('setChangedUser', newUser)
         },
-        fillUsersPortion({commit}, {startingIndex, numOfElements, filterName, filterRating}) {
+        fillUsersPortion({commit}, {startingIndex, numOfElements, filterName, filterRatingLower, filterRatingHigher}) {
+            
             const users = fetchUsers();
             const filteredUsers = Object.values(users).filter((user) => {
                 
                 const fullName = user.firstName + " " + user.lastName
                 const okFilterName = !filterName ? true : fullName.toLowerCase().includes(filterName.toLowerCase())
-                const okFilterRating = user.rating > filterRating
+                const okFilterRating = user.rating >= filterRatingLower && user.rating <= filterRatingHigher
                 
                 return (okFilterName && okFilterRating)
             })
