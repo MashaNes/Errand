@@ -1,11 +1,10 @@
 from django.core.files.base import ContentFile
 import base64
 from . import models
-from . import parsers
 
 PIC_PATH = 'db/images/'
 
-def parse_picture(data, name):
+def create_picture(data, name):
     img = None
     if data.startswith('data:image'):
         imgformat, imgstr = data.split(';base64,')
@@ -13,13 +12,60 @@ def parse_picture(data, name):
         img = ContentFile(base64.b64decode(imgstr), name=PIC_PATH + name + ext)
     return img
 
-def parse_working_hour(data):
-    working_hour = models.WorkingHour(day=data['day'],
-                                      work_from=data['work_from'],
-                                      work_until=data['work_until'])
-    return working_hour
 
-def parse_address(data):
+# ================== USER ==================
+def create_user(data):
+    user = models.User(email=data['email'],
+                       username=data['email'],
+                       first_name=data['first_name'],
+                       last_name=data['last_name'],
+                       phone=data['phone'],
+                       picture=None,
+                       status=1)
+    user.save()
+
+    user.set_password(data['password'])
+    if data['picture']:
+        picture = create_picture(data['picture'], 'users/' + str(user.id))
+        user.picture = picture
+        user.save()
+
+    return user
+
+def update_user(user, data):
+    user.email = data['email']
+    user.username = data['email']
+    user.first_name = data['first_name']
+    user.last_name = data['last_name']
+    user.phone = data['phone']
+    user.min_rating = data['min_rating']
+    user.max_dist = data['max_dist']
+
+    if data['password']:
+        user.set_password(data['password'])
+
+    if data['picture']:
+        user.picture = create_picture(data['picture'], 'users/' + str(user.id))
+    user.save()
+
+    return user
+
+
+# ================== BENEFIT ==================
+def create_benefit(data):
+    benefit_user = models.User.objects.get(id=data['benefit_user'])
+    benefit = models.Benefit(discount=data['discount'],
+                             benefit_user=benefit_user)
+    return benefit
+
+def update_benefit(benefit, data):
+    benefit.discount = data['discount']
+    benefit.save()
+    return benefit
+
+
+# ================== ADDRESS ==================
+def create_address(data):
     address = models.Address(name=data['name'],
                              longitude=data['longitude'],
                              latitude=data['latitude'],
@@ -28,13 +74,33 @@ def parse_address(data):
     address.save()
     return address
 
-def parse_service(data):
-    service = models.Service(service_type=data['service_type'],
-                             description=data['description'],
-                             picture_required=data['picture_required'])
-    return service
+def update_address(address, data):
+    address.name = data['name']
+    address.longitude = data['longitude']
+    address.latitude = data['latitude']
+    address.home = data['home']
+    address.arrived = data['arrived']
+    address.save()
+    return address
 
-def parse_user_service(data):
+
+# ================== WORKING HOURS ==================
+def create_working_hour(data):
+    working_hour = models.WorkingHour(day=data['day'],
+                                      work_from=data['work_from'],
+                                      work_until=data['work_until'])
+    return working_hour
+
+def update_working_hour(working_hour, data):
+    working_hour.day = data['day']
+    working_hour.work_from = data['work_from']
+    working_hour.work_until = data['work_until']
+    working_hour.save()
+    return working_hour
+
+
+# ================== USER SERVICE ==================
+def create_user_service(data):
     service = models.Service.objects.get(id=data['service'])
 
     user_service = models.UserService(max_dist=data['max_dist'],
@@ -42,41 +108,34 @@ def parse_user_service(data):
                                       payment_ammount=data['payment_ammount'],
                                       min_rating=data['min_rating'],
                                       service=service)
+    user_service.save()
     return user_service
 
-def parse_user(data):
-    picture = None
-    user = models.User(email=data['email'],
-                       username=data['email'],
-                       first_name=data['first_name'],
-                       last_name=data['last_name'],
-                       phone=data['phone'],
-                       picture=picture)
-    return user
+def update_user_service(user_service, data):
+    user_service.max_dist = data['max_dist']
+    user_service.payment_type = data['payment_type']
+    user_service.payment_ammount = data['payment_ammount']
+    user_service.min_rating = data['min_rating']
+    user_service.save()
+    return user_service
 
-def parse_achievement(data):
-    icon = None
-    achievement = models.Achievement(name=data['name'],
-                                     description=data['description'],
-                                     icon=icon,
-                                     requirements=data['requirements'])
-    return achievement
 
-def parse_achievement_level(data):
-    achievement = models.Achievement.objects.filter(id=data['achievement'])
-    user = models.User.objects.filter(id=data['user'])
-    achievements_level = models.AchievementLevel(level=data['level'],
-                                                 achievement=achievement,
-                                                 user=user)
-    return achievements_level
+# ================== RATING ==================
+def create_rating(data):
+    # TODO: Check if rating is valid (request.status = 3)
+    created_by = models.User.objects.get(id=data['created_by'])
+    rated_user = models.User.objects.get(id=data['rated_user'])
+    request = models.Request.objects.get(id=data['request'])
+    rating = models.Rating(grade=data['grade'],
+                           comment=data['comment'],
+                           created_by=created_by,
+                           rated_user=rated_user,
+                           request=request)
+    return rating
 
-def parse_benefit(data):
-    benefit_user = models.User.objects.get(id=data['benefit_user'])
-    benefit = models.Benefit(discount=data['discount'],
-                             benefit_user=benefit_user)
-    return benefit
 
-def parse_report(data):
+# ================== REPORT ==================
+def create_report(data):
     reported_user = models.User.objects.filter(id=data['reported_user'])
     created_by = models.User.objects.filter(id=data['created_by'])
     report = models.Report(comment=data['comment'],
@@ -85,17 +144,12 @@ def parse_report(data):
                            created_by=created_by)
     return report
 
-def parse_banned(data):
-    banned_user = models.User.objects.filter(id=data['banned_user'])
-    banned = models.Banned(until=data['until'],
-                           comment=data['comment'],
-                           banned_user=banned_user)
-    return banned
 
-def parse_task(data):
+# ================== REQUEST ==================
+def create_task(data):
     address = None
     if data['address']:
-        address = parse_address(data['address'])
+        address = create_address(data['address'])
     service_type = models.Service.objects.get(id=data['service_type'])
 
     task = models.Task(name=data['name'],
@@ -116,7 +170,7 @@ def parse_task(data):
     task.save()
     return task
 
-def parse_request(data):
+def create_request(data):
     service_type = models.Service.objects.get(id=data['service_type'])
     created_by = models.User.objects.get(id=data['created_by'])
 
@@ -138,32 +192,32 @@ def parse_request(data):
 
     if len(_task_list) > 0:
         for _t in _task_list:
-            _nt = parse_task(_t)
+            _nt = create_task(_t)
             request.tasklist.add(_nt)
     request.save()
 
     return request
 
-def parse_task_edit(data):
+def create_task_edit(data):
     task = models.Task.objects.get(id=data['task'])
-    address = parse_address(data['address'])
+    address = create_address(data['address'])
     task_edit = models.TaskEdit(task=task,
                                 address=address)
     return task_edit
 
-def parse_request_edit(data):
-    # TODO: Parse tasks as array
-    tasks = parse_task_edit(data['tasks'])
+def create_request_edit(data):
+    # TODO: Create tasks as array
+    tasks = create_task_edit(data['tasks'])
     request = models.Request.objects.get(id=data['request'])
     request_edit = models.RequestEdit(time=data['time'],
                                       tasks=tasks,
                                       request=request)
     return request_edit
 
-def parse_offer(data):
+def create_offer(data):
     created_by = models.User.objects.filter(id=data['created_by'])
     request = models.Request.objects.filter(id=data['request'])
-    edit = parse_task_edit(data['edit'])
+    edit = create_task_edit(data['edit'])
     offer = models.Offer(payment_type=data['payment_type'],
                          payment_ammount=data['payment_ammount'],
                          created_by=created_by,
@@ -171,21 +225,34 @@ def parse_offer(data):
                          edit=edit)
     return offer
 
+
+# ================== ADMIN ==================
+def create_achievement(data):
+    icon = None
+    achievement = models.Achievement(name=data['name'],
+                                     description=data['description'],
+                                     icon=icon,
+                                     requirements=data['requirements'])
+    return achievement
+
+def create_service(data):
+    service = models.Service(service_type=data['service_type'],
+                             description=data['description'],
+                             picture_required=data['picture_required'])
+    return service
+
+def create_ban(data):
+    banned_user = models.User.objects.filter(id=data['banned_user'])
+    banned = models.Banned(until=data['until'],
+                           comment=data['comment'],
+                           banned_user=banned_user)
+    return banned
+
+
 # TODO: DELETE???
-def parse_notification(data):
+def create_notification(data):
     notification = models.Notification(title=data['title'],
                                        body=data['body'],
                                        notification_type=data['notofication_type'],
                                        type_id=data['type_id'])
     return notification
-
-def parse_rating(data):
-    created_by = models.User.objects.filter(id=data['created_by'])
-    rated_user = models.User.objects.filter(id=data['rated_user'])
-    request = models.Request.objects.filter(id=data['request'])
-    rating = models.Rating(grade=data['grade'],
-                           comment=data['comment'],
-                           created_by=created_by,
-                           rated_user=rated_user,
-                           request=request)
-    return rating

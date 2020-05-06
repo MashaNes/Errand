@@ -15,68 +15,80 @@ Endpoints:
 + GET users_info/{id} 				// Returns only basic user data
 + GET users/{id} 					// Returns full user data
 + GET filtered_users/ 				// Returns users based on filters
-
-TODO: Return separately full user info
++ GET user_info_filtered            // Returns users info on filters
 
 + GET requests_info/{id} 			// Returns only basic request data
 + GET requests/{id} 				// Returns full request data (including offers and rating)
+- GET requests_unrated              // Returns unrated requests
+- GET offers_unrated                // Returns unrated accepted offers
 - GET filtered_requests/ 			// Returns users based on filters
 + GET achievements/{id}				// Returns list of all achievements
++ GET services/{id}                 // Returns list of all types of services
 - GET stats/ (A)		 			// Returns statistics based on filters
 
-TODO: Return request from user for rating
-
 + POST login/                       // Login as some user
-- POST logout/                      // Logout user
 + POST user_create/					// Creates new user
 + POST benefit_add/					// Adds new user to benefit list
 + POST address_add/					// Adds new address to addresses
 + POST working_hours_add/ 			// Adds new working hours for user
 + POST user_service_add/			// Adds new user service for user
++ POST block_add/			        // Adds new user to blocklist
 - POST offer_create/ 				// Creates offer for request
 + POST request_create/ 				// Creates request
-- POST rate_user/ 					// Adds new rating for completed request
++ POST rate_user/ 					// Adds new rating for completed request
 - POST report_user/					// Reports user
 - POST ban_user/ (A)	 			// Bans user
 ~ POST achievement_create/ (A)	 	// Creates new achievement
 ~ POST service_type_create/ (A)		// Creates new service type
 
-- UPDATE request_update/ 			// Edits request
-- UPDATE users_info_update/			// Updates basic user data
-- UPDATE benefit_update/			// Updates benefit to benefit list
-- UPDATE address_update/			// Updates address to addresses
-- UPDATE working_hours_update/ 		// Updates working hours for user
-- UPDATE user_service_update/		// Updates user service for user
++ PUT logout/                       // Logout user
++ PUT user_update/			        // Updates basic user data
++ PUT benefit_update/			    // Updates benefit to benefit list
++ PUT address_update/			    // Updates address to addresses
++ PUT working_hours_update/ 		// Updates working hours for user
++ PUT user_service_update/		    // Updates user service for user
 
-+ DELETE request_cancel/ 			// Cancels request (when pending)
 + DELETE benefit_remove/ 			// Removes user from benefit list
 + DELETE address_remove/ 			// Removes address from user
 + DELETE working_hours_remove/ 		// Removes working hours from user
 + DELETE user_service_remove/ 		// Removes user service from user
-
-(DEL)
-+ GET userservice/{id}				// Returns full userservice data
++ DELETE block_remove/ 			    // Removes user from blocklist
++ DELETE request_cancel/ 			// Cancels request (when pending)
+- DELETE offer_cancel/ 			    // Cancels offer (when not accepted)
 '''
 
 
-''' 
-    USER
-=============
-'''
+# =================== USER ===================
+# ============================================
 # POST login/
-class TokenObtainView(ObtainAuthToken):
+class LogIn(ObtainAuthToken):
     def post(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data,
                                            context={'request':request})
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data['user']
+        user.status = 1
+        user.save()
         _s = serializers.UserSerializer(user)
+        _s = _s.data
+        _s['picture'] = utils.encode_img('users/' + str(user.id))
         token, _ = Token.objects.get_or_create(user=user)
         custom_response = {
             'token': token.key,
-            'user': _s.data
+            'user': _s
         }
         return Response(custom_response)
+
+# POST logout/
+class LogOut(generics.UpdateAPIView):
+    def update(self, request):
+        created_by = request.data['created_by']
+        user = models.User.objects.get(id=created_by)
+        user.auth_token.delete()
+        user.status = 0
+        user.save()
+        response = {'success' : 'Logged out.'}
+        return Response(response)
 
 # POST user_create/
 class UserCreate(generics.ListCreateAPIView):
@@ -85,18 +97,31 @@ class UserCreate(generics.ListCreateAPIView):
     serializer_class = serializers.UserSerializer
 
     def create(self, request):
-        user = parsers.parse_user(request.data)
-        user.set_password(request.data['password'])
-        user.save()
-        if request.data['picture']:
-            picture = parsers.parse_picture(request.data['picture'], 'users/' + str(user.id))
-            user.picture = picture
-            user.save()
+        user = parsers.create_user(request.data)
         Token.objects.create(user=user)
+        token, _ = Token.objects.get_or_create(user=user)
         fulluser = models.FullUser(user=user)
         fulluser.save()
+        _s = serializers.UserSerializer(user)
+        _s = _s.data
+        _s['picture'] = utils.encode_img('users/' + str(user.id))
+        custom_response = {
+            'token': token.key,
+            'user': _s
+        }
+        return Response(custom_response)
+
+# PUT user_update/
+class UserUpdate(generics.UpdateAPIView):
+    def update(self, request):
+        created_by = request.data['created_by']
+        user = models.User.objects.get(id=created_by)
+        user = parsers.update_user(user, request.data)
         serializer = serializers.UserSerializer(user)
-        return Response(serializer.data)
+        response = serializer.data
+        response['picture'] = utils.encode_img('users/' + str(user.id))
+
+        return Response(response)
 
 # GET users_info/{id}
 class UserViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
@@ -120,9 +145,10 @@ class UserViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
     def retrieve(self, request, pk):
         user = get_object_or_404(self.queryset, pk=pk)
         serializer = serializers.UserSerializer(user)
-        serializer.data['user'] = utils.encode_img('users/' + str(user.id))
+        response = serializer.data
+        response['picture'] = utils.encode_img('users/' + str(user.id))
 
-        return Response(serializer.data)
+        return Response(response)
 
 # GET users/{id}
 class FullUserViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
@@ -137,7 +163,7 @@ class FullUserViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
         custom_response = {
             'count' : len(serializer.data),
             'next' : None,
-            'prev' : None,
+            'previous' : None,
             'results' : serializer.data
         }
 
@@ -149,6 +175,17 @@ class FullUserViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
         serializer.data['user']['picture'] = utils.encode_img('users/' + str(fulluser.user.id))
 
         return Response(serializer.data)
+
+# GET users_info_filtered/id
+class UserInfoFilteredViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
+    queryset = models.FullUser.objects.all()
+
+    def list(self, request):
+        fulluser = get_object_or_404(self.queryset, pk=request.data['created_by'])
+        serializer = serializers.FullUserSerializer(fulluser)
+        response = utils.filter_user_info(serializer.data, request.data)
+
+        return Response(response)
 
 # GET filtered_users/
 class FilterUserViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
@@ -165,27 +202,27 @@ class FilterUserViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
         custom_response = {
             'count' : len(serializer.data),
             'next' : None,
-            'prev' : None,
+            'previous' : None,
             'results' : serializer.data
         }
 
         return Response(custom_response)
 
+
+# ================= BENEFIT =================
 # POST benefit_add/
 class BenefitAdd(generics.ListCreateAPIView):
-    serializer_class = serializers.BenefitSerializer
-
     def create(self, request):
         created_by = request.data['created_by']
         user = models.FullUser.objects.get(id=created_by)
 
-        for b in user.benefitlist.all():
-            if b.benefit_user.id == request.data['benefit_user']:
+        for _b in user.benefitlist.all():
+            if _b.benefit_user.id == request.data['benefit_user']:
                 return Response({
                     'success' : False,
                     'description' : 'User is in the list.'})
 
-        benefit = parsers.parse_benefit(request.data)
+        benefit = parsers.create_benefit(request.data)
         benefit.save()
         user.benefitlist.add(benefit)
         user.save()
@@ -193,6 +230,25 @@ class BenefitAdd(generics.ListCreateAPIView):
         serializer.data['benefit_user']['picture'] = utils.encode_img('users/' + \
                                                         str(benefit.benefit_user.id))
         return Response(serializer.data)
+
+# PUT benefit_update/
+class BenefitUpdate(generics.UpdateAPIView):
+    def update(self, request):
+        created_by = request.data['created_by']
+        user = models.FullUser.objects.get(id=created_by)
+
+        response = {'success' : False, 'description' : 'User is not in the list.'}
+        for _b in user.benefitlist.all():
+            if _b.id == request.data['benefit']:
+                _b = parsers.update_benefit(_b, request.data)
+                serializer = serializers.BenefitSerializer(_b)
+                serializer.data['benefit_user']['picture'] = utils.encode_img('users/' + \
+                                                        str(_b.benefit_user.id))
+
+                response = serializer.data
+                break
+
+        return Response(response)
 
 # DELETE benefit_remove/
 class BenefitRemove(generics.RetrieveDestroyAPIView):
@@ -203,22 +259,22 @@ class BenefitRemove(generics.RetrieveDestroyAPIView):
         ben_user = models.User.objects.get(id=benefit_user)
 
         benefits = user.benefitlist.all()
-        response = {'succes' : False, 'description' : 'User is not in the list.'}
-        for b in benefits:
-            if b.benefit_user.id == ben_user.id:
-                user.benefitlist.remove(b)
+        response = {'success' : False, 'description' : 'User is not in the list.'}
+        for _b in benefits:
+            if _b.benefit_user.id == ben_user.id:
+                user.benefitlist.remove(_b)
                 user.save()
-                response = {'succes' : True}
+                response = {'success' : True}
                 break
 
         return Response(response)
 
+
+# ================= ADDRESS =================
 # POST address_add/
 class AddressAdd(generics.ListCreateAPIView):
-    serializer_class = serializers.AddressSerializer
-
     def create(self, request):
-        address = parsers.parse_address(request.data)
+        address = parsers.create_address(request.data)
         created_by = request.data['created_by']
         user = models.FullUser.objects.get(id=created_by)
         user.addresses.add(address)
@@ -226,36 +282,55 @@ class AddressAdd(generics.ListCreateAPIView):
         serializer = serializers.AddressSerializer(address)
         return Response(serializer.data)
 
+# PUT address_update/
+class AddressUpdate(generics.UpdateAPIView):
+    def update(self, request):
+        created_by = request.data['created_by']
+        user = models.FullUser.objects.get(id=created_by)
+        aid = request.data['address']
+
+        response = {'success' : False,
+                    'description' : 'Address is not in the list.'}
+
+        for _a in user.addresses.all():
+            if _a.id == aid:
+                _a = parsers.update_address(_a, request.data)
+                serializer = serializers.AddressSerializer(_a)
+                response = serializer.data
+                break
+
+        return Response(response)
+
 # DELETE address_remove/
 class AddressRemove(generics.RetrieveDestroyAPIView):
     def destroy(self, request):
         created_by = request.data['created_by']
         user = models.FullUser.objects.get(id=created_by)
-        adr = request.data['address']
+        aid = request.data['address']
 
         found = False
-        for a in user.addresses.all():
-            if a.id == adr:
+        for _a in user.addresses.all():
+            if _a.id == aid:
                 found = True
                 break
 
         if not found:
             return Response({
-                'succes' : False,
+                'success' : False,
                 'description' : 'Address is not in the list.'})
 
-        address = models.Address.objects.get(id=adr)
+        address = models.Address.objects.get(id=aid)
         user.addresses.remove(address)
         user.save()
 
-        return Response({'succes' : True})
+        return Response({'success' : True})
 
+
+# ======================= WORKING HOURS =======================
 # POST working_hours_add/
 class WorkingHoursAdd(generics.ListCreateAPIView):
-    serializer_class = serializers.WorkingHourSerializer
-
     def create(self, request):
-        working_hours = parsers.parse_working_hour(request.data)
+        working_hours = parsers.create_working_hour(request.data)
         working_hours.save()
         created_by = request.data['created_by']
         user = models.FullUser.objects.get(id=created_by)
@@ -263,6 +338,25 @@ class WorkingHoursAdd(generics.ListCreateAPIView):
         user.save()
         serializer = serializers.WorkingHourSerializer(working_hours)
         return Response(serializer.data)
+
+# PUT working_hours_update/
+class WorkingHoursUpdate(generics.UpdateAPIView):
+    def update(self, request):
+        created_by = request.data['created_by']
+        user = models.FullUser.objects.get(id=created_by)
+        wid = request.data['working_hours']
+
+        response = {'success' : False,
+                    'description' : 'Working hours are not in the list.'}
+
+        for _w in user.working_hours.all():
+            if _w.id == wid:
+                _w = parsers.update_working_hour(_w, request.data)
+                serializer = serializers.WorkingHourSerializer(_w)
+                response = serializer.data
+                break
+
+        return Response(response)
 
 # DELETE working_hours_remove/
 class WokringHoursRemove(generics.RetrieveDestroyAPIView):
@@ -272,8 +366,8 @@ class WokringHoursRemove(generics.RetrieveDestroyAPIView):
         wid = request.data['working_hours']
 
         found = False
-        for w in user.working_hours.all():
-            if w.id == wid:
+        for _w in user.working_hours.all():
+            if _w.id == wid:
                 found = True
                 break
 
@@ -286,21 +380,46 @@ class WokringHoursRemove(generics.RetrieveDestroyAPIView):
         user.working_hours.remove(_working_hours)
         user.save()
 
-        return Response({'succes' : True})
+        return Response({'success' : True})
 
+
+# ====================== USER SERVICE ======================
 # POST user_service_add/
 class UserServiceAdd(generics.ListCreateAPIView):
-    serializer_class = serializers.UserServiceSerializer
-
     def create(self, request):
-        user_service = parsers.parse_user_service(request.data)
-        user_service.save()
         created_by = request.data['created_by']
+        user_service = parsers.create_user_service(request.data)
         user = models.FullUser.objects.get(id=created_by)
+
+        for _s in user.services.all():
+            if _s.service.id == request.data['service']:
+                return Response({
+                    'success' : False,
+                    'description' : 'Service is in the list.'})
+
         user.services.add(user_service)
         user.save()
         serializer = serializers.UserServiceSerializer(user_service)
         return Response(serializer.data)
+
+# PUT user_service_update/
+class UserServiceUpdate(generics.UpdateAPIView):
+    def update(self, request):
+        created_by = request.data['created_by']
+        user = models.FullUser.objects.get(id=created_by)
+        sid = request.data['user_service']
+
+        response = {'success' : False,
+                    'description' : 'Working hours are not in the list.'}
+
+        for _s in user.services.all():
+            if _s.id == sid:
+                _s = parsers.update_user_service(_s, request.data)
+                serializer = serializers.UserServiceSerializer(_s)
+                response = serializer.data
+                break
+
+        return Response(response)
 
 # DELETE user_services_remove/
 class UserServiceRemove(generics.RetrieveDestroyAPIView):
@@ -310,34 +429,80 @@ class UserServiceRemove(generics.RetrieveDestroyAPIView):
         sid = request.data['service']
 
         found = False
-        for s in user.services.all():
-            if s.id == sid:
+        for _s in user.services.all():
+            if _s.id == sid:
                 found = True
                 break
 
         if not found:
             return Response({
-                'succes' : False,
+                'success' : False,
                 'description' : 'Service is not in the list.'})
 
         service = models.UserService.objects.get(id=sid)
         user.services.remove(service)
         user.save()
 
-        return Response({'succes' : True})
+        return Response({'success' : True})
 
 
-''' 
-    REQUEST
-==============
-'''
+# ================= BENEFIT =================
+# POST block_add/
+class BlockAdd(generics.ListCreateAPIView):
+    def create(self, request):
+        created_by = request.data['created_by']
+        user = models.FullUser.objects.get(id=created_by)
+        blocked = models.User.objects.get(id=request.data['blocked'])
 
+        for _b in user.blocked.all():
+            if _b.id == blocked.id:
+                return Response({
+                    'success' : False,
+                    'description' : 'User is blocked.'})
+
+        user.blocked.add(blocked)
+        user.save()
+        serializer = serializers.FullUserSerializer(user)
+        return Response(serializer.data['blocked'])
+
+
+# DELETE block_remove/
+class BlockRemove(generics.RetrieveDestroyAPIView):
+    def destroy(self, request):
+        created_by = request.data['created_by']
+        user = models.FullUser.objects.get(id=created_by)
+
+        response = {'success' : False, 'description' : 'User is not in the list.'}
+        for _b in user.blocked.all():
+            if _b.id == request.data['blocked']:
+                user.blocked.remove(_b)
+                user.save()
+                response = {'success' : True}
+                break
+
+        return Response(response)
+
+
+# =============== RATE USER ===============
+# POST rate_user/
+class RateUser(generics.ListCreateAPIView):
+    def create(self, request):
+        rating = parsers.create_rating(request.data)
+        rating.save()
+        created_by = request.data['rated_user']
+        user = models.FullUser.objects.get(id=created_by)
+        user.ratings.add(rating)
+        user.save()
+        serializer = serializers.RatingSerializer(rating)
+        return Response(serializer.data)
+
+
+# ==================== REQUEST ====================
+# =================================================
 # POST request_create/
 class RequestCreate(generics.ListCreateAPIView):
-    serializer_class = serializers.RequestSerializer
-
     def create(self, request):
-        req = parsers.parse_request(request.data)
+        req = parsers.create_request(request.data)
         created_by = request.data['created_by']
         user = models.FullUser.objects.get(id=created_by)
         user.requests.add(req)
@@ -345,7 +510,7 @@ class RequestCreate(generics.ListCreateAPIView):
         serializer = serializers.RequestSerializer(req)
         return Response(serializer.data)
 
-# DELETE user_services_remove/
+# DELETE request/
 class RequestCancel(generics.RetrieveDestroyAPIView):
     def destroy(self, request):
         created_by = request.data['created_by']
@@ -369,8 +534,6 @@ class RequestCancel(generics.RetrieveDestroyAPIView):
 
         return Response({'succes' : True})
 
-
-
 # GET requests_info/{id}
 class RequestViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
     queryset = models.Request.objects.all()
@@ -386,24 +549,21 @@ class AchievementViewSet(viewsets.ModelViewSet):
     queryset = models.Achievement.objects.all()
     serializer_class = serializers.AchievementSerializer
 
-# GET userservice/{id} (TODO: DELETE)
-class UserServiceViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
-    queryset = models.UserService.objects.all()
-    serializer_class = serializers.UserServiceSerializer
+# GET services/{id}
+class ServiceViewSet(viewsets.ModelViewSet):
+    queryset = models.Service.objects.all()
+    serializer_class = serializers.ServiceSerializer
 
-''' 
-    ADMIN
-=============
-'''
+
+# ======================== ADMIN ========================
+# =======================================================
 # POST achievement_create/
 class AchievementCreate(generics.ListCreateAPIView):
-    serializer_class = serializers.AchievementSerializer
-
     def create(self, request):
-        achievement = parsers.parse_achievement(request.data)
+        achievement = parsers.create_achievement(request.data)
         achievement.save()
-        icon = parsers.parse_picture(data=request.data['icon'],
-                                     name='achievements/' + achievement.name)
+        icon = parsers.create_picture(data=request.data['icon'],
+                                      name='achievements/' + achievement.name)
         achievement.icon = icon
         achievement.save()
         serializer = serializers.AchievementSerializer(achievement)
@@ -411,10 +571,8 @@ class AchievementCreate(generics.ListCreateAPIView):
 
 # POST service_type_create/
 class ServiceCreate(generics.ListCreateAPIView):
-    serializer_class = serializers.ServiceSerializer
-
     def create(self, request):
-        service = parsers.parse_service(request.data)
+        service = parsers.create_service(request.data)
         service.save()
         serializer = serializers.ServiceSerializer(service)
         return Response(serializer.data)

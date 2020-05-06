@@ -1,0 +1,1228 @@
+{
+	"info": {
+		"_postman_id": "f5be7422-1e84-4237-b6af-b47335e3c952",
+		"name": "Errand",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Login",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "",
+						"value": "",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "username",
+							"value": "djordjepav@errand.com",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "djordjepav",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "127.0.0.1:8000/api/v1/login/",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"v1",
+						"login",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Logout",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "16a37edb-ebd4-43ff-8f5f-c2296d668b78",
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token c3b4dbe95d8a489c8c2d54bb74638b01ce39288a",
+						"type": "text"
+					},
+					{
+						"key": "",
+						"value": "",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"created_by\" : 10\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "127.0.0.1:8000/api/v1/logout/",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"v1",
+						"logout",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "UserCreate",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"email\" : \"u12@errand.com\",\n\t\"password\" : \"u12\",\n\t\"first_name\" : \"u12\",\n\t\"last_name\" : \"u12\",\n\t\"phone\" : \"+381123456789\",\n\t\"picture\" : null\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "127.0.0.1:8000/api/v1/user_create/",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"v1",
+						"user_create",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "UserUpdate",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token 265b777d262ec5a7cb6dc9880e359dbcd83bce72",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"created_by\": 10,\n    \"email\": \"u4@errand.com\",\n    \"first_name\": \"u4\",\n    \"last_name\": \"u4\",\n    \"password\" : null,\n    \"phone\": \"+381123466689\",\n    \"picture\": null,\n    \"min_rating\": 3.0,\n    \"max_dist\": 500.0\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "127.0.0.1:8000/api/v1/user_update/",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"v1",
+						"user_update",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "UsersInfo",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token 265b777d262ec5a7cb6dc9880e359dbcd83bce72",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "127.0.0.1:8000/api/v1/users_info/",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"v1",
+						"users_info",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Users",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token 265b777d262ec5a7cb6dc9880e359dbcd83bce72",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "127.0.0.1:8000/api/v1/users/",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"v1",
+						"users",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "FilterUsers",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token 265b777d262ec5a7cb6dc9880e359dbcd83bce72",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"created_by\" : 3,\n\t\"services\" : [\n\t\t{\n\t\t\t\"id\" : 3,\n\t\t\t\"min_rating\" : 3.5,\n\t\t\t\"max_dist\" : 100\n\t\t}\n\t],\n\t\"name\" : \"Masa Nes\",\n\t\"no_rating\" : true,\n\t\"not_in_benefit\" : false\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "127.0.0.1:8000/api/v1/filtered_users/",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"v1",
+						"filtered_users",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "UsersInfoFiltered",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token 265b777d262ec5a7cb6dc9880e359dbcd83bce72",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"created_by\" : 3,\n\t\"blocked\" : false,\n\t\"working_hours\" : false,\n\t\"addresses\" : true,\n\t\"services\" : false,\n\t\"offers\" : false,\n\t\"notifications\" : false,\n\t\"ratings\" : false,\n\t\"benefitlist\" : false,\n\t\"achievements\" : false,\n\t\"requests\" : false\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "127.0.0.1:8000/api/v1/user_info_filtered/",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"v1",
+						"user_info_filtered",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "BenefitAdd",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token 265b777d262ec5a7cb6dc9880e359dbcd83bce72",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"created_by\":3,\n\t\"benefit_user\":2,\n\t\"discount\":\"0.3\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "127.0.0.1:8000/api/v1/benefit_add/",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"v1",
+						"benefit_add",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "BenefitUpdate",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token 265b777d262ec5a7cb6dc9880e359dbcd83bce72",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"created_by\" : 3,\n\t\"benefit\" : 41,\n\t\"discount\" : 0.1\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "127.0.0.1:8000/api/v1/benefit_update/",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"v1",
+						"benefit_update",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "BenefitRemove",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token 265b777d262ec5a7cb6dc9880e359dbcd83bce72",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"created_by\":3,\n\t\"benefit_user\":2\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "127.0.0.1:8000/api/v1/benefit_remove/",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"v1",
+						"benefit_remove",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "BlockRemove",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "Token 265b777d262ec5a7cb6dc9880e359dbcd83bce72"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"created_by\":3,\n\t\"blocked\":2\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "127.0.0.1:8000/api/v1/block_remove/",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"v1",
+						"block_remove",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "AddressAdd",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token 265b777d262ec5a7cb6dc9880e359dbcd83bce72",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"created_by\" : 6,\n\t\"name\" : \"Dragise Cvetkovica 42\",\n\t\"longitude\" : 43.319185,\n\t\"latitude\" : 21.913395,\n\t\"home\" : true,\n\t\"arrived\" : false\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "127.0.0.1:8000/api/v1/address_add/",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"v1",
+						"address_add",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "AddressUpdate",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token 265b777d262ec5a7cb6dc9880e359dbcd83bce72",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"created_by\" : 3,\n\t\"address\" : 7,\n\t\"name\" : \"Dragise Cvetkovica 41\",\n\t\"longitude\" : 43.319185,\n\t\"latitude\" : 21.913395,\n\t\"home\" : true,\n\t\"arrived\" : false\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "127.0.0.1:8000/api/v1/address_update/",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"v1",
+						"address_update",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "AddressRemove",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token 265b777d262ec5a7cb6dc9880e359dbcd83bce72",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"created_by\" : 3,\n\t\"address\" : 3\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "127.0.0.1:8000/api/v1/address_remove/",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"v1",
+						"address_remove",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "WorkingHoursAdd",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token 265b777d262ec5a7cb6dc9880e359dbcd83bce72",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"created_by\" : 5,\n\t\"day\" : \"mon\",\n\t\"work_from\" : \"18:00:00\",\n\t\"work_until\" : \"19:45:00\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "127.0.0.1:8000/api/v1/working_hours_add/",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"v1",
+						"working_hours_add",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "WorkingHoursUpdate",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token 265b777d262ec5a7cb6dc9880e359dbcd83bce72",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"created_by\" : 3,\n\t\"working_hours\" : 1,\n\t\"day\" : \"mon\",\n\t\"work_from\" : \"17:00:00\",\n\t\"work_until\" : \"19:45:00\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "127.0.0.1:8000/api/v1/working_hours_update/",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"v1",
+						"working_hours_update",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "WorkingHoursRemove",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token 265b777d262ec5a7cb6dc9880e359dbcd83bce72",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"created_by\" : 5,\n\t\"working_hours\" : 3\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "127.0.0.1:8000/api/v1/working_hours_remove/",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"v1",
+						"working_hours_remove",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "UserServiceAdd",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token 265b777d262ec5a7cb6dc9880e359dbcd83bce72",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"created_by\" : 2,\n\t\"service\" : 3,\n\t\"max_dist\" : 10.0,\n\t\"payment_type\" : \"h\",\n\t\"payment_ammount\" : 600.0,\n\t\"min_rating\" : 4.2\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "127.0.0.1:8000/api/v1/user_service_add/",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"v1",
+						"user_service_add",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "UserServiceUpdate",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token 265b777d262ec5a7cb6dc9880e359dbcd83bce72",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"created_by\" : 3,\n\t\"user_service\" : 1,\n\t\"max_dist\": 5.0,\n\t\"payment_type\": \"fix\",\n    \"payment_ammount\": 800.0,\n    \"min_rating\": 3.5\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "127.0.0.1:8000/api/v1/user_service_update/",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"v1",
+						"user_service_update",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "UserServiceRemove",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token 265b777d262ec5a7cb6dc9880e359dbcd83bce72",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"created_by\" : 5,\n\t\"service\" : 3\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "127.0.0.1:8000/api/v1/user_service_remove/",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"v1",
+						"user_service_remove",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "RequestCreate",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token 265b777d262ec5a7cb6dc9880e359dbcd83bce72",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"created_by\" : 5,\n\t\"name\" : \"Req1\",\n\t\"time\" : \"18:00:00\",\n\t\"picture_required\" : false,\n\t\"note\" : \"Budi brz\",\n\t\"max_dist\" : 10.0,\n\t\"min_rating\" : 3.8,\n\t\"service_type\" : 3,\n\t\"request_type\" : 1,\n\t\"tasklist\" : [\n\t\t{\n\t\t\t\"name\" : \"task1\",\n\t\t\t\"description\" : \"Ovde nesto pise.\",\n\t\t\t\"picture_required\" : false,\n\t\t\t\"checklist\" : [\n\t\t\t\t{\n\t\t\t\t\t\"item\" : \"i1\"\n\t\t\t\t\t\n\t\t\t\t},\n\t\t\t\t{\n\t\t\t\t\t\"item\" : \"i2\"\n\t\t\t\t\t\n\t\t\t\t}\n\t\t\t],\n\t\t\t\"address\" : {\n\t\t\t\t\"name\" : \"Dragise Cvetkovica 42\",\n\t\t\t\t\"longitude\" : 43.319185,\n\t\t\t\t\"latitude\" : 21.913395,\n\t\t\t\t\"home\" : true,\n\t\t\t\t\"arrived\" : false\n\t\t\t},\n\t\t\t\"service_type\" : 3\n\t\t},\n\t\t{\n\t\t\t\"name\" : \"task2\",\n\t\t\t\"description\" : \"Ovde nesto pise.\",\n\t\t\t\"picture_required\" : false,\n\t\t\t\"checklist\" : [\n\t\t\t\t{\n\t\t\t\t\t\"item\" : \"i3\"\n\t\t\t\t\t\n\t\t\t\t},\n\t\t\t\t{\n\t\t\t\t\t\"item\" : \"i4\"\n\t\t\t\t\t\n\t\t\t\t}\n\t\t\t],\n\t\t\t\"address\" : null,\n\t\t\t\"service_type\" : 3\n\t\t}\n\t]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "127.0.0.1:8000/api/v1/request_create/",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"v1",
+						"request_create",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "RequestCancel",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token 265b777d262ec5a7cb6dc9880e359dbcd83bce72",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"created_by\" : 5,\n\t\"request\" : 44\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "127.0.0.1:8000/api/v1/request_cancel/",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"v1",
+						"request_cancel",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "RequestsInfo",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token 265b777d262ec5a7cb6dc9880e359dbcd83bce72",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "127.0.0.1:8000/api/v1/requests_info/",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"v1",
+						"requests_info",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Requests",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token 265b777d262ec5a7cb6dc9880e359dbcd83bce72",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "127.0.0.1:8000/api/v1/requests/",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"v1",
+						"requests",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "AchievementCreate",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "Token 265b777d262ec5a7cb6dc9880e359dbcd83bce72"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"name\":\"Eko korisnik1\",\n\t\"description\":\"Usluge izvrsava bez koriscenja motornih vozila\",\n\t\"requirements\":\"Pseudo SQL query?\",\n\t\"icon\" : \"data:image/png;base64,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\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "127.0.0.1:8000/api/v1/achievement_create/",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"v1",
+						"achievement_create",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Achievements",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token 265b777d262ec5a7cb6dc9880e359dbcd83bce72",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"url": {
+					"raw": "127.0.0.1:8000/api/v1/achievements/",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"v1",
+						"achievements",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ServiceCreate",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token 265b777d262ec5a7cb6dc9880e359dbcd83bce72",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"service_type\" : \"Dostava\",\n\t\"description\" : \"Dostava paketa na kucnu adresu\",\n\t\"picture_required\" : false\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "127.0.0.1:8000/api/v1/service_create/",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"v1",
+						"service_create",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "RateUser",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "Token 265b777d262ec5a7cb6dc9880e359dbcd83bce72"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"created_by\" : 4,\n\t\"rated_user\" : 3,\n\t\"request\" : 54,\n\t\"grade\" : 5,\n\t\"comment\" : \"Preporuka za saradnju.\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "127.0.0.1:8000/api/v1/rate_user/",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"v1",
+						"rate_user",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ServiceTypes",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token 265b777d262ec5a7cb6dc9880e359dbcd83bce72",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"url": {
+					"raw": "127.0.0.1:8000/api/v1/services/",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"v1",
+						"services",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "BlockedAdd",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token 265b777d262ec5a7cb6dc9880e359dbcd83bce72",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"created_by\":3,\n\t\"blocked\":2\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "127.0.0.1:8000/api/v1/block_add/",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"v1",
+						"block_add",
+						""
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}

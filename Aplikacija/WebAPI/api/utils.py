@@ -7,6 +7,7 @@ PIC_PATH = 'db/images/'
 def encode_img(img_path):
     ext = ".png"
     path = PIC_PATH + img_path + ext
+    base64_string = None
 
     if not os.path.exists(path):
         return None
@@ -16,7 +17,7 @@ def encode_img(img_path):
         base64_string = "data:image/png;base64," + base64_string[2:-1]
     return base64_string
 
-def calc_rating(user):
+def update_rating(user):
     avg = 0
 
     if user.ratings.all():
@@ -47,7 +48,92 @@ def filter_user(queryset, data):
                 found = False
                 for _q_s in _q.services.all():
                     if (_s['id'] == _q_s.service.id and _s['max_dist'] >= _q_s.max_dist):
-                        if data['no_rating'] or _s['min_rating'] <= calc_rating(_q):
+                        if data['no_rating'] or _s['min_rating'] <= _q.avg_rating:
+                            found = True
+                            break
+                to_add = found
+
+        if to_add and data['name']:
+            found = False
+            name = _q.user.first_name + " " + _q.user.last_name
+            if data['name'] in name:
+                found = True
+            to_add = found
+
+        if to_add and data['not_in_benefit']:
+            found = False
+            for _b in user.benefitlist.all():
+                if _b.benefit_user.id == _q.user.id:
+                    found = True
+                    break
+            to_add = not found
+
+        # TODO: Add other filter params if needed
+
+        if to_add:
+            new_queryset.append(_q)
+
+    queryset = new_queryset
+    new_queryset = list()
+
+    for _q in queryset:
+        new_queryset.append(models.User.objects.get(id=_q.user.id))
+
+    return new_queryset
+
+
+def filter_user_info(serializer, data):
+    response = {}
+
+    if data['blocked']:
+        response['bloclked'] = serializer['blocked']
+    if data['working_hours']:
+        response['working_hours'] = serializer['working_hours']
+    if data['addresses']:
+        response['addresses'] = serializer['addresses']
+    if data['services']:
+        response['services'] = serializer['services']
+    if data['offers']:
+        response['offers'] = serializer['offers']
+    if data['notifications']:
+        response['notifications'] = serializer['notifications']
+    if data['ratings']:
+        response['ratings'] = serializer['ratings']
+    if data['benefitlist']:
+        response['benefitlist'] = serializer['benefitlist']
+    if data['achievements']:
+        response['achievements'] = serializer['achievements']
+        for _r, _a in zip(response['achievements'], serializer['achievements']):
+            _r['picture'] = encode_img('achievements/' + str(_a.name))
+    if data['requests']:
+        response['requests'] = serializer['requests']
+
+    return response
+
+
+def filter_request(queryset, data):
+    new_queryset = list()
+    user = models.FullRequest.objects.get(id=data['request'])
+
+    for _q in queryset:
+        to_add = True
+        if user.id == _q.id:
+            to_add = False
+
+        found = False
+        if to_add:
+            for _b in user.blocked.all():
+                if _b.id == _q.user.id:
+                    found = True
+                    break
+            to_add = not found
+
+        if to_add and data['services']:
+            for _s in data['services']:
+                found = False
+                for _q_s in _q.services.all():
+                    if (_s['id'] == _q_s.service.id and _s['max_dist'] >= _q_s.max_dist):
+                        if data['no_rating'] or _s['min_rating'] <= _q.avg_rating:
                             found = True
                             break
                 to_add = found

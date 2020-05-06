@@ -8,6 +8,7 @@ class CheckList(models.Model):
     check_list = models.CharField(max_length=100)
 
 class WorkingHour(models.Model):
+    # TODO: Change to DataField
     day = models.CharField(max_length=3, default='mon')
     work_from = models.TimeField()
     work_until = models.TimeField()
@@ -20,12 +21,15 @@ class Address(models.Model):
     arrived = models.BooleanField(default=False)
 
 class Service(models.Model):
+    # TODO: Add sr and en version of service_type
     service_type = models.CharField(max_length=50)
+    # TODO: Add sr and en version of description
     description = models.CharField(max_length=256)
     picture_required = models.BooleanField(default=False)
 
 class UserService(models.Model):
     max_dist = models.FloatField()
+    # TODO: Change payment_type to IntegerField
     payment_type = models.CharField(max_length=4)
     payment_ammount = models.FloatField()
     min_rating = models.FloatField()
@@ -51,12 +55,15 @@ class User(AbstractUser):
     phone = models.CharField(max_length=16)
     picture = models.ImageField(null=True, blank=True)
     avg_rating = models.FloatField(null=True, blank=True)
-    min_rating = models.FloatField(null=True, blank=True)
-    max_dist = models.FloatField(null=True, blank=True)
+    min_rating = models.FloatField(null=True, default=1)
+    max_dist = models.FloatField(null=True, default=1000)
     status = models.IntegerField(null=True, default=0, choices=STATUS_TYPES)
+    # TODO: Add benefit_discount, benefit_requirement
 
 class Achievement(models.Model):
+    # TODO: Add sr and en version of name
     name = models.CharField(max_length=50)
+    # TODO: Add sr and en version of description
     description = models.CharField(max_length=256)
     icon = models.ImageField()
     requirements = models.CharField(max_length=256)
@@ -87,7 +94,7 @@ class Banned(models.Model):
     banned_user = models.ForeignKey(User, on_delete=models.CASCADE)
 
 class Request(models.Model):
-    STATUS_TYPES = (('pending', 0), ('active', 1)) #TODO: Add types
+    STATUS_TYPES = (('pending', 0), ('active', 1), ('finished', 2)) #TODO: Add types
     LOCATION_STATUS_TYPES = () #TODO: Add types
 
     name = models.CharField(max_length=50)
@@ -139,6 +146,8 @@ class Rating(models.Model):
 
 class FullUser(models.Model):
     user = models.ForeignKey(User, related_name='user_id', on_delete=models.CASCADE)
+
+    # TODO: Move benefit_discount, benefit_requirement to User
     benefit_discount = models.FloatField(null=True, blank=True)
     benefit_requirement = models.IntegerField(null=True, blank=True)
 

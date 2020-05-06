@@ -2,6 +2,7 @@ from rest_framework import serializers
 from rest_framework.authtoken.models import Token
 from . import models
 from . import parsers
+from . import utils
 
 class PictureSerializer(serializers.ModelSerializer):
     class Meta:
@@ -59,6 +60,7 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ('id', 'email', 'first_name', 'last_name', 'phone',
                   'picture', 'avg_rating', 'min_rating', 'max_dist',
                   'status', 'password')
+        # TODO: Add benefit_discount, benefit_requirement
         extra_kwargs = {'password': {'write_only': True}}
 
 class AchievementSerializer(serializers.ModelSerializer):
