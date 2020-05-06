@@ -199,6 +199,8 @@ export default {
       filterRatingLower: this.filterRatingLower,
       filterRatingHigher: this.filterRatingHigher
     })
+    //ako je benefitList true ide zahtev sa filterom da se prikazu samo korisnici koji nisu beneficirani
+    //ako je false ide get zahtev bez filtera
   }
 }
 </script>

@@ -40,6 +40,7 @@ export default {
     this.user = this.$store.state.user
     this.isMyProfile = false
     this.$store.dispatch('fillUserServices')
+    //get userServices za tekućeg user-a
   }
 }
 </script>

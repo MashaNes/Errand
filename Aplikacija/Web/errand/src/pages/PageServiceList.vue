@@ -21,7 +21,9 @@ export default {
     created()
     {
         this.$store.dispatch("fillUserServices")
+        //pribavljanje user services
         this.$store.dispatch("fillServices")
+        //pribavljanje servisa, prolazak kroz listu i izbacivanje onih za koje vec postoji userService
     }
 }
 </script>

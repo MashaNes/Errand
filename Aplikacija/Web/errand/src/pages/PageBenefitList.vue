@@ -1,13 +1,9 @@
 <template>
     <div class="wrapper">
         <div class="dodavanje-wrap">
-            <label class = "login-label" v-if="isAdding"> Email: </label>
-            <v-select :options="emails" label="Email" v-model="email" class="selekt" v-if="isAdding"></v-select>
             <div class="dugmici">
-                <button type="button" @click = "dodajKorisnika" class="btn btn-primary dugme" :disabled="isAdding && !email" v-if="isSerbian">Dodaj korisnika</button>
-                <button type="button" @click = "dodajKorisnika" class="btn btn-primary dugme" :disabled="isAdding && !email" v-else>Add a user</button>
-                <button type="button" v-if="isAdding && isSerbian" @click="odustani" class="btn btn-secondary dugme">Odustani</button>
-                <button type="button" v-if="isAdding && !isSerbian" @click="odustani" class="btn btn-secondary dugme">Cancel</button>
+                <button type="button" @click = "dodajKorisnika" class="btn btn-primary dugme" v-if="isSerbian">Dodaj korisnika</button>
+                <button type="button" @click = "dodajKorisnika" class="btn btn-primary dugme" v-else>Add a user</button>
             </div>
         </div>
         <div class="prikaz-wrap">
@@ -25,20 +21,10 @@
 
 <script>
 import UserBenefitBox from "@/components/UserBenefitBox"
-import vSelect from "vue-select";
-import "vue-select/dist/vue-select.css";
 export default {
-    data()
-    {
-        return{
-            isAdding: false,
-            email: "",
-        }
-    },
     components:
     {
-        UserBenefitBox,
-        vSelect
+        UserBenefitBox
     },
     computed:
     {
@@ -59,27 +45,13 @@ export default {
     {
         dodajKorisnika()
         {
-            /*if(!this.isAdding)
-                this.isAdding = true;
-            else
-            {
-                console.log(this.email)
-                this.email = null
-                this.isAdding = false;
-            }*/
             this.$router.push({ name: 'PageBrowseUsers', params: {benefitList: true }})
-        },
-        odustani()
-        {
-            this.email = null
-            this.isAdding = false
         }
     },
     created()
     {
         this.$store.dispatch("fillUsersWithBenefit")
-        this.$store.dispatch("fillEmails")
-        console.log(this.$store.state.emails)
+        //get beneficirane usere
     }
 }
 </script>

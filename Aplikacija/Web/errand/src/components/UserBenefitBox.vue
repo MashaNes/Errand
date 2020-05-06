@@ -144,10 +144,13 @@ export default {
       {
         console.log(this.user.email)
         this.showModal = false
+        //posalji delete za tog user-a ka bazi
+        //ukloni ga iz liste beneficiranih korisnika
       },
       saveBenefit()
       {
         this.userBenefit.benefit = this.newBenefit
+        //posalji update za taj userBenefit
         this.discardBenefit()
       },
       discardBenefit()

@@ -85,15 +85,18 @@
             tabRunning()
             {
                 this.tab = "Running"
+                //ako nisu popunjeni requests koje izvrsavam, get za njih (morace da budu posebna stavka u store-i, a mozda i ovde)
             },
             tabFinished()
             {
                 this.tab = "Finished"
+                //ako nisu popunjeni get za zavrsene zahteve (morace da budu posebna stavka u store-i, a mozda i ovde)
             }
         },
         created()
         {
             this.$store.dispatch("fillRequests")
+            //get za requests (koje sam ja zahtevao)
         }
     }
 </script>

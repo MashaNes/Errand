@@ -55,10 +55,10 @@ export default {
     {
         return{
             servis: null,
-            maxDistance: this.$store.state.authUser.maxDist,
+            maxDistance: this.$store.state.authUser.max_dist,
             paymentType: null,
             paymentAmount: 0,
-            scale: (this.$store.state.authUser.minRating - 1) *25
+            scale: (this.$store.state.authUser.min_rating - 1) *25
         }
     },
     components:
@@ -89,10 +89,10 @@ export default {
         cancel()
         {
             this.servis = null
-            this.maxDistance = this.$store.state.authUser.maxDist
+            this.maxDistance = this.$store.state.authUser.max_dist
             this.paymentType = null
             this.paymentAmount = 0
-            this.scale = (this.$store.state.authUser.minRating - 1) *25
+            this.scale = (this.$store.state.authUser.min_rating - 1) *25
         },
         dodaj()
         {
@@ -101,6 +101,9 @@ export default {
             console.log(this.paymentType)
             console.log(this.paymentAmount)
             console.log(this.minRating)
+            //dodati userService u listu UserService-a u store-u
+            //poslati dodavanjanje u bazu
+            //izbaciti ovaj servis iz liste servisa
             this.cancel();
         }
     },

@@ -104,6 +104,8 @@ export default {
         {
             console.log(this.myRequest)
             this.showModal = false
+            //ukloniti request iz odgovajace liste iz store-a
+            //poslati delete ka bazi
         },
         goToProfile() 
         {

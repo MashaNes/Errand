@@ -161,6 +161,9 @@ export default {
         {
             console.log(this.userService)
             this.showModal = false;
+            //izbaciti userServis iz liste userServisa
+            //dodati servis u listu servisa
+            //poslati delete za taj UserService
         },
         saveChanges()
         {
@@ -169,6 +172,7 @@ export default {
             this.userService.paymentAmount = this.paymentAmount
             this.userService.paymentType = this.paymentType
             this.isEditing = false
+            //posalji update za taj user service
         },
         cancel()
         {

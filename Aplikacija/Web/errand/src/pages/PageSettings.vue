@@ -89,11 +89,11 @@ export default {
     data()
     {
         return{
-            scale: (this.$store.state.authUser.minRating - 1) * 25,
-            maxDistance: this.$store.state.authUser.maxDist,
+            scale: (this.$store.state.authUser.min_rating - 1) * 25,
+            maxDistance: this.$store.state.authUser.max_dist,
             IsMaxDistance: true,
-            discount: this.$store.state.authUser.benefitDiscount,
-            brSaradnji: this.$store.state.authUser.benefitRequirement
+            discount: this.$store.state.authUser.benefit_discount,
+            brSaradnji: this.$store.state.authUser.benefit_requirement
         }
     },
     computed:
@@ -167,10 +167,11 @@ export default {
     },
     beforeDestroy()
     {
-        this.$store.state.authUser.minRating = this.minRating
-        this.$store.state.authUser.maxDist = this.maxDistance
-        this.$store.state.authUser.benefitDiscount = this.discount
-        this.$store.state.authUser.benefitRequirement = this.brSaradnji
+        this.$store.state.authUser.min_rating = this.minRating
+        this.$store.state.authUser.max_dist = this.maxDistance
+        this.$store.state.authUser.benefit_discount = this.discount
+        this.$store.state.authUser.benefit_requirement = this.brSaradnji
+        //pozovi update za user_info
     }
 }
 </script>
