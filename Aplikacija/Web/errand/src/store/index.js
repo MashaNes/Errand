@@ -21,7 +21,7 @@ export default new Vuex.Store({
         userRatings: {},
         isSerbian: true,
         allUsers: {},
-        logedIn: true,
+        logedIn: false,
         usersPortion: {},
         usersWithBenefit: {},
         emails: null,
@@ -53,11 +53,8 @@ export default new Vuex.Store({
             const specificUser = Object.values(users).find(u => u.id == userId)
             commit('setUser', specificUser)
         },
-        fillAuthUser({commit}) {
-            commit('setAuthUser', fetchUsers()["1"])
-        },
         // eslint-disable-next-line no-unused-vars
-        fillAuthUser2({commit}, payload) {
+        fillAuthUser({commit}, payload) {
             this.state.isDataLoaded = false
             fetch("http://localhost:8000/api/v1/login/",
             {
@@ -77,12 +74,49 @@ export default new Vuex.Store({
                     {
                         p.json().then(data =>
                         {
-                            // eslint-disable-next-line no-debugger
                             console.log(data)
-                            this.state.authUser = data['user']['user']
+                            this.state.authUser = data['user']
                             this.state.logedIn = true
                             this.state.token = data['token']
                             this.state.isDataLoaded = true
+                            //this.$router.push('/requests')
+                        })
+                    }
+                    else
+                    {
+                        console.log("Error")
+                        this.state.isDataLoaded = true
+                    }
+                });
+        },
+        // eslint-disable-next-line no-unused-vars
+        createUser({commit}, payload)
+        {
+            this.state.isDataLoaded = false
+            fetch("http://localhost:8000/api/v1/user_create/",
+            {
+                method: 'POST',
+                headers:
+                {
+                    "Content-type" : "application/json"
+                },
+                body:  JSON.stringify(
+                {
+                    "email" : payload.email,
+                    "password" : payload.password,
+                    "first_name": payload.name,
+                    "last_name": payload.lastName,
+                    "phone": payload.phone,
+                    "picture":null
+                })
+            }).then( p => 
+                {
+                    if(p.ok)
+                    {
+                        p.json().then(data =>
+                        {
+                            console.log(data)
+                            this.dispatch('fillAuthUser', payload)
                             //this.$router.push('/requests')
                         })
                     }

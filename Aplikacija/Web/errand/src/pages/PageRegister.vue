@@ -1,6 +1,6 @@
 <template>
   <section class="hero is-success is-fullheight">
-    <div class="hero-body">
+    <div class="hero-body" v-if="!tryRegister || !isDataLoaded || !isLogedIn">
       <div class="container has-text-centered">
         <div class="column is-4 is-offset-4">
           <h3 class="title has-text-grey" v-if = "isSerbian">Registruj se</h3>
@@ -154,14 +154,23 @@
                     </span>
                 </div>
               </div>
-              <button :disabled="isFormInvalid"
+              <button :disabled="isFormInvalid || !isDataLoaded"
                       @click.prevent = "register" 
                       type="submit" 
                       class="button is-block is-info is-large is-fullwidth">
-                        <span v-if="isSerbian">Registruj se</span>
-                        <span v-else>Register</span>
+                        <div class="spinner-border ucitavanje" role="status" v-if="!isDataLoaded">
+                          <span class="sr-only">Loading...</span>
+                        </div>
+                        <span v-if="isSerbian && isDataLoaded">Registruj se</span>
+                        <span v-if="!isSerbian && isDataLoaded">Register</span>
                       </button>
             </form>
+            <p class = "text-danger upozorenje" v-if="tryRegister && isDataLoaded && isSerbian">
+              Već postoji nalog sa tom email adresom
+            </p>
+            <p class = "text-danger upozorenje" v-if="tryRegister && isDataLoaded && !isSerbian">
+              An account with that email address already exists
+            </p>
             <p class = "text-danger upozorenje" v-if="isSerbian">
               Stavke označene sa * su obavezne
             </p>
@@ -184,6 +193,8 @@
           <div id="mapid"></div>
         </div>
       </div>
+    </div>
+    <div v-else @mouseover="navigateTo" class="ceoEkran">
     </div>
   </section>
 </template>
@@ -209,7 +220,8 @@
                     passwordConformation: null,
                     phone: null,
                     address: null
-                }
+                },
+                tryRegister: false
             }
         },
         computed:
@@ -220,6 +232,14 @@
             isSerbian()
             {
                 return this.$store.state.isSerbian
+            },
+            isDataLoaded()
+            {
+              return this.$store.state.isDataLoaded
+            },
+            isLogedIn()
+            {
+              return this.$store.state.logedIn
             }
         },
         validations:
@@ -238,9 +258,17 @@
             register()
             {
               this.$v.form.$touch()
-              this.$store.state.logedIn = true;
-              this.$router.push('/profile')
-              console.log(this.form)
+              //this.$router.push('/profile')
+              this.$store.dispatch("createUser", this.form)
+                /*.then(() => {
+                  if(this.$store.state.authUser != null)
+                    this.$router.push('/requests')
+                })*/
+              this.tryRegister = true
+            },
+            navigateTo()
+            {
+              this.$router.push('/profile/' + this.$store.state.authUser.id)
             }
         }
     } 

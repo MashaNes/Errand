@@ -1,6 +1,6 @@
 <template>
-  <section class="hero is-success is-fullheight">
-    <div class="hero-body">
+  <section class="hero is-success is-fullheight">   
+    <div class="hero-body" v-if="!TryLogIn || !isDataLoaded || !isLogedIn">
       <div class="container has-text-centered">
         <div class="column is-4 is-offset-4">
           <h3 v-if="isSerbian" class="title has-text-grey">Prijavi se</h3>
@@ -63,6 +63,9 @@
               <button @click="loginFunc" 
                       class="button is-block is-info is-large is-fullwidth"
                       :disabled="isFormInvalid || !isDataLoaded">
+                      <div class="spinner-border ucitavanje" role="status" v-if="!isDataLoaded">
+                        <span class="sr-only">Loading...</span>
+                      </div>
                       <span v-if="isSerbian && isDataLoaded">Prijavi se</span>
                       <span v-if="!isSerbian && isDataLoaded">Login</span>
                       </button>
@@ -91,6 +94,8 @@
           </p>
         </div>
       </div>
+    </div>
+    <div v-else @mouseover="navigateTo" class="ceoEkran">
     </div>
   </section>
 </template>
@@ -132,6 +137,10 @@
             isDataLoaded()
             {
               return this.$store.state.isDataLoaded
+            },
+            isLogedIn()
+            {
+              return this.$store.state.logedIn
             }
         },
         methods:
@@ -139,17 +148,29 @@
             loginFunc()
             {
                 this.$v.form.$touch()
-                /*this.$store.state.logedIn = true
-                this.$router.push('/requests')
-                console.log(this.form)*/
+                //this.$router.push('/requests')
                 this.$store.dispatch("fillAuthUser", this.form)
+                /*.then(() => {
+                  if(this.$store.state.authUser != null)
+                    this.$router.push('/requests')
+                })*/
                 this.TryLogIn = true
+            },
+            navigateTo()
+            {
+              this.$router.push('/requests')
             }
         }
     }
 </script>
 
 <style scoped>
+  .ceoEkran
+  {
+    width: 100%;
+    height:75vh;
+  }
+
   .hero.is-success {
     background: #F2F6FA;
   }
@@ -191,5 +212,10 @@
   {
     margin-top: 10px;
     font-weight: lighter;
+  }
+
+  .ucitavanje
+  {
+    margin-right:7px;
   }
 </style>

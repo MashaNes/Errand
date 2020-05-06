@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-vars */
 import Vue from "vue"
 import Router from "vue-router"
+import store from "@/store"
 
 import PageRequests from "@/pages/PageRequests"
 import PageLogin from "@/pages/PageLogin"
@@ -29,42 +30,98 @@ const router = new Router(
             {
                 path: "/",
                 name: "PageWelcome",
-                component: PageWelcome
+                component: PageWelcome,
+                beforeEnter(to,from,next)
+                {
+                    if(store.state.logedIn)
+                        next({name: 'PageRequests'})
+                    else
+                        next()
+                }
             },
             {
                 path: "/requests",
                 name: "PageRequests",
-                component: PageRequests
+                component: PageRequests,
+                beforeEnter(to,from,next)
+                {
+                    if(store.state.logedIn)
+                        next()
+                    else
+                        next({name: 'PageNotAuthenticated'})
+                }
             },
             {
                 path: "/login",
                 name: "PageLogin",
-                component: PageLogin
+                component: PageLogin,
+                beforeEnter(to,from,next)
+                {
+                    if(store.state.logedIn)
+                        next({name: 'PageRequests'})
+                    else
+                        next()
+                }
             },
             {
                 path: "/register",
                 name: "PageRegister",
-                component: PageRegister
+                component: PageRegister,
+                beforeEnter(to,from,next)
+                {
+                    if(store.state.logedIn)
+                        next({name: 'PageRequests'})
+                    else
+                        next()
+                }
             },
             {
                 path: "/profile/:id",
                 name: "PageViewProfile",
-                component: PageViewProfile
+                component: PageViewProfile,
+                beforeEnter(to,from,next)
+                {
+                    if(store.state.logedIn)
+                        next()
+                    else
+                        next({name: 'PageNotAuthenticated'})
+                }
             },
             {
                 path: "/help",
                 name: "PageHelp",
-                component: PageHelp
+                component: PageHelp,
+                beforeEnter(to,from,next)
+                {
+                    if(store.state.logedIn)
+                        next()
+                    else
+                        next({name: 'PageNotAuthenticated'})
+                }
             },
             {
                 path: "/achievements/:id",
                 name: "PageAchievements",
-                component: PageAchievements
+                component: PageAchievements,
+                beforeEnter(to,from,next)
+                {
+                    if(store.state.logedIn)
+                        next()
+                    else
+                        next({name: 'PageNotAuthenticated'})
+                }
             },
             {
                 path: "/ratings/:id",
                 name: "PageRatings",
-                component: PageRatings
+                component: PageRatings,
+                beforeEnter(to,from,next)
+                {
+                    if(store.state.logedIn)
+                        next()
+                    else
+                        next({name: 'PageNotAuthenticated'})
+                }
             },
             {
                 path: "/loginAdmin",
@@ -79,33 +136,75 @@ const router = new Router(
             {
                 path: "/faq",
                 name: "PageFAQ",
-                component: PageFAQ
+                component: PageFAQ,
+                beforeEnter(to,from,next)
+                {
+                    if(store.state.logedIn)
+                        next()
+                    else
+                        next({name: 'PageNotAuthenticated'})
+                }
             },
             {
                 path: "/settings",
                 name: "PageSettings",
-                component: PageSettings
+                component: PageSettings,
+                beforeEnter(to,from,next)
+                {
+                    if(store.state.logedIn)
+                        next()
+                    else
+                        next({name: 'PageNotAuthenticated'})
+                }
             },
             {
                 path: "/users",
                 name: "PageBrowseUsers",
                 component: PageBrowseUsers,
-                props: true
+                props: true,
+                beforeEnter(to,from,next)
+                {
+                    if(store.state.logedIn)
+                        next()
+                    else
+                        next({name: 'PageNotAuthenticated'})
+                }
             },
             {
                 path: "/benefitList",
                 name: "PageBenefitList",
-                component: PageBenefitList
+                component: PageBenefitList,
+                beforeEnter(to,from,next)
+                {
+                    if(store.state.logedIn)
+                        next()
+                    else
+                        next({name: 'PageNotAuthenticated'})
+                }
             },
             {
                 path: "/serviceList",
                 name: "PageServiceList",
-                component: PageServiceList
+                component: PageServiceList,
+                beforeEnter(to,from,next)
+                {
+                    if(store.state.logedIn)
+                        next()
+                    else
+                        next({name: 'PageNotAuthenticated'})
+                }
             },
             {
                 path: "/offeredServices/:id",
                 name: "PageOfferedServices",
-                component: PageOfferedServices
+                component: PageOfferedServices,
+                beforeEnter(to,from,next)
+                {
+                    if(store.state.logedIn)
+                        next()
+                    else
+                        next({name: 'PageNotAuthenticated'})
+                }
             },
             {
               path: '/401',

@@ -18,7 +18,6 @@ export default {
     TheNavbar
   },
   created(){
-    this.$store.dispatch("fillAuthUser")
   }
 }
 </script>

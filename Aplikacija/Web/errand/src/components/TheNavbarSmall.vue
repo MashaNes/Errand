@@ -2,7 +2,10 @@
     <nav class="navigacija">
         <div class = "top-navigacija"> 
             <div class="top-navigacija-beginning">
-                <router-link :to = "'/'" class="navbar-item">
+                <router-link :to = "'/'" class="navbar-item" v-if="!isLogedIn">
+                    <h1 class="title is-4">Errand</h1>
+                </router-link>
+                <router-link :to = "'/requests'" class="navbar-item" v-else>
                     <h1 class="title is-4">Errand</h1>
                 </router-link>
                 <div class="navbar-start" v-if="isLogedIn">
@@ -114,8 +117,8 @@ export default {
       odjaviSe()
       {
         this.$store.state.logedIn = false
-        this.state.authUser = null
-        this.state.token = null
+        this.$store.state.authUser = null
+        this.$store.state.token = null
         this.$router.push('/');
       }
     }
