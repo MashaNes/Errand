@@ -58,9 +58,8 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.User
         fields = ('id', 'email', 'first_name', 'last_name', 'phone',
-                  'picture', 'avg_rating', 'min_rating', 'max_dist',
-                  'status', 'password')
-        # TODO: Add benefit_discount, benefit_requirement
+                  'picture', 'avg_rating', 'min_rating', 'max_dist', 'is_admin',
+                  'status', 'password', 'benefit_discount', 'benefit_requirement')
         extra_kwargs = {'password': {'write_only': True}}
 
 class AchievementSerializer(serializers.ModelSerializer):
@@ -99,20 +98,12 @@ class BannedSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class RequestSerializer(serializers.ModelSerializer):
-    service_type = ServiceSerializer()
     created_by = UserSerializer()
     tasklist = TaskSerializer(many=True)
 
     class Meta:
         model = models.Request
         fields = '__all__'
-
-    def create(self, validated_data):
-        request = parsers.parse_request(validated_data)
-        request.save()
-        fullrequest = models.FullRequest(request=request)
-        fullrequest.save()
-        return request
 
 class RequestEditSerializer(serializers.ModelSerializer):
     class Meta:

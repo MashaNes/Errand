@@ -1,10 +1,10 @@
 from rest_framework import viewsets, generics
 from rest_framework.views import APIView
+from rest_framework.authtoken.models import Token
+from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.response import Response
 from rest_framework_extensions.mixins import NestedViewSetMixin
 from django.shortcuts import get_object_or_404
-from rest_framework.authtoken.models import Token
-from rest_framework.authtoken.views import ObtainAuthToken
 from . import models
 from . import serializers
 from . import parsers
@@ -84,10 +84,13 @@ class LogOut(generics.UpdateAPIView):
     def update(self, request):
         created_by = request.data['created_by']
         user = models.User.objects.get(id=created_by)
-        user.auth_token.delete()
-        user.status = 0
-        user.save()
-        response = {'success' : 'Logged out.'}
+        if user.status == 0:
+            response = {'success' : 'Not logged in.'}
+        else:
+            user.auth_token.delete()
+            user.status = 0
+            user.save()
+            response = {'success' : 'Logged out.'}
         return Response(response)
 
 # POST user_create/
@@ -100,8 +103,6 @@ class UserCreate(generics.ListCreateAPIView):
         user = parsers.create_user(request.data)
         Token.objects.create(user=user)
         token, _ = Token.objects.get_or_create(user=user)
-        fulluser = models.FullUser(user=user)
-        fulluser.save()
         _s = serializers.UserSerializer(user)
         _s = _s.data
         _s['picture'] = utils.encode_img('users/' + str(user.id))
@@ -128,6 +129,12 @@ class UserViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
     queryset = models.User.objects.all()
 
     def list(self, request):
+        new_q = []
+        for _q in self.queryset:
+            if not _q.is_admin:
+                new_q.append(_q)
+        self.queryset = new_q
+
         serializer = serializers.UserSerializer(self.queryset, many=True)
         for _q, _s in zip(self.queryset, serializer.data):
             _s['picture'] = utils.encode_img('users/' + str(_q.id))
@@ -144,6 +151,9 @@ class UserViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
 
     def retrieve(self, request, pk):
         user = get_object_or_404(self.queryset, pk=pk)
+        if user.is_admin:
+            return Response({'success' : False,
+                             'description' : 'Cannot return admin user.'})
         serializer = serializers.UserSerializer(user)
         response = serializer.data
         response['picture'] = utils.encode_img('users/' + str(user.id))
@@ -155,6 +165,12 @@ class FullUserViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
     queryset = models.FullUser.objects.all()
 
     def list(self, request):
+        new_q = []
+        for _q in self.queryset:
+            if not _q.user.is_admin:
+                new_q.append(_q)
+        self.queryset = new_q
+
         serializer = serializers.FullUserSerializer(self.queryset, many=True)
         for _q, _s in zip(self.queryset, serializer.data):
             _s['user']['picture'] = utils.encode_img('users/' + str(_q.user.id))
@@ -171,6 +187,9 @@ class FullUserViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
 
     def retrieve(self, request, pk):
         fulluser = get_object_or_404(self.queryset, pk=pk)
+        if fulluser.user.is_admin:
+            return Response({'success' : False,
+                             'description' : 'Cannot return admin user.'})
         serializer = serializers.FullUserSerializer(fulluser)
         serializer.data['user']['picture'] = utils.encode_img('users/' + str(fulluser.user.id))
 
@@ -410,7 +429,7 @@ class UserServiceUpdate(generics.UpdateAPIView):
         sid = request.data['user_service']
 
         response = {'success' : False,
-                    'description' : 'Working hours are not in the list.'}
+                    'description' : 'User service is not in the list.'}
 
         for _s in user.services.all():
             if _s.id == sid:
@@ -472,7 +491,8 @@ class BlockRemove(generics.RetrieveDestroyAPIView):
         created_by = request.data['created_by']
         user = models.FullUser.objects.get(id=created_by)
 
-        response = {'success' : False, 'description' : 'User is not in the list.'}
+        response = {'success' : False,
+                    'description' : 'User is not in the list.'}
         for _b in user.blocked.all():
             if _b.id == request.data['blocked']:
                 user.blocked.remove(_b)
@@ -560,19 +580,29 @@ class ServiceViewSet(viewsets.ModelViewSet):
 # POST achievement_create/
 class AchievementCreate(generics.ListCreateAPIView):
     def create(self, request):
-        achievement = parsers.create_achievement(request.data)
-        achievement.save()
-        icon = parsers.create_picture(data=request.data['icon'],
-                                      name='achievements/' + achievement.name)
-        achievement.icon = icon
-        achievement.save()
-        serializer = serializers.AchievementSerializer(achievement)
-        return Response(serializer.data)
+        created_by = request.data['created_by']
+        user = models.User.objects.get(id=created_by)
+
+        if user.is_admin:
+            achievement = parsers.create_achievement(request.data)
+            serializer = serializers.AchievementSerializer(achievement)
+            response = serializer.data
+            response['icon'] = utils.encode_img('achievements/' + str(achievement.id))
+            return Response(response)
+        else:
+            return Response({"success" : False,
+                             "description" : "User is not admin."})
 
 # POST service_type_create/
 class ServiceCreate(generics.ListCreateAPIView):
     def create(self, request):
-        service = parsers.create_service(request.data)
-        service.save()
-        serializer = serializers.ServiceSerializer(service)
-        return Response(serializer.data)
+        created_by = request.data['created_by']
+        user = models.User.objects.get(id=created_by)
+
+        if user.is_admin:
+            service = parsers.create_service(request.data)
+            serializer = serializers.ServiceSerializer(service)
+            return Response(serializer.data)
+        else:
+            return Response({"success" : False,
+                             "description" : "User is not admin."})

@@ -1,45 +1,77 @@
-from django.core.files.base import ContentFile
 import base64
+import datetime
+from django.core.files.base import ContentFile
 from . import models
 
 PIC_PATH = 'db/images/'
+ADMIN_KEY = "hR6s7RPPRtEhQNSL3IT1LwM5XC0J1LcdOvXPFFlk"
 
 def create_picture(data, name):
-    img = None
-    if data.startswith('data:image'):
-        imgformat, imgstr = data.split(';base64,')
-        ext = '.' + imgformat.split('/')[-1]
-        img = ContentFile(base64.b64decode(imgstr), name=PIC_PATH + name + ext)
+    ext = '.png'
+    img = ContentFile(base64.b64decode(data), name=PIC_PATH + name + ext)
     return img
 
 
 # ================== USER ==================
 def create_user(data):
-    user = models.User(email=data['email'],
-                       username=data['email'],
-                       first_name=data['first_name'],
-                       last_name=data['last_name'],
-                       phone=data['phone'],
-                       picture=None,
-                       status=1)
+    if data['is_admin'] and data['admin_key'] == ADMIN_KEY:
+        user = models.User(is_admin=1,
+                           email=data['email'],
+                           username=data['email'],
+                           first_name=data['first_name'],
+                           last_name=data['last_name'],
+                           picture=None,
+                           status=1)
+    else:
+        _bd = 0.1
+        _br = 5
+        if data['benefit_discount']:
+            _bd = data['benefit_discount']
+        if data['benefit_requirement']:
+            _br = data['benefit_requirement']
+        user = models.User(is_admin=0,
+                           email=data['email'],
+                           username=data['email'],
+                           first_name=data['first_name'],
+                           last_name=data['last_name'],
+                           phone=data['phone'],
+                           picture=None,
+                           benefit_discount=_bd,
+                           benefit_requirement=_br,
+                           status=1)
     user.save()
 
-    user.set_password(data['password'])
+    fulluser = models.FullUser(user=user)
+    fulluser.save()
+
+    if data['password']:
+        user.set_password(data['password'])
+
     if data['picture']:
         picture = create_picture(data['picture'], 'users/' + str(user.id))
         user.picture = picture
-        user.save()
+
+    user.save()
 
     return user
 
 def update_user(user, data):
-    user.email = data['email']
-    user.username = data['email']
-    user.first_name = data['first_name']
-    user.last_name = data['last_name']
-    user.phone = data['phone']
-    user.min_rating = data['min_rating']
-    user.max_dist = data['max_dist']
+
+    if user.is_admin:
+        user.email = data['email']
+        user.username = data['email']
+        user.first_name = data['first_name']
+        user.last_name = data['last_name']
+    else:
+        user.email = data['email']
+        user.username = data['email']
+        user.first_name = data['first_name']
+        user.last_name = data['last_name']
+        user.phone = data['phone']
+        user.min_rating = data['min_rating']
+        user.max_dist = data['max_dist']
+        user.benefit_discount = data['benefit_discount']
+        user.benefit_requirement = data['benefit_requirement']
 
     if data['password']:
         user.set_password(data['password'])
@@ -86,13 +118,13 @@ def update_address(address, data):
 
 # ================== WORKING HOURS ==================
 def create_working_hour(data):
-    working_hour = models.WorkingHour(day=data['day'],
-                                      work_from=data['work_from'],
-                                      work_until=data['work_until'])
+    _wf = datetime.datetime.strptime(data['work_from'], '%Y-%m-%d %H:%M')
+    _wu = datetime.datetime.strptime(data['work_until'], '%Y-%m-%d %H:%M')
+    working_hour = models.WorkingHour(work_from=_wf,
+                                      work_until=_wu)
     return working_hour
 
 def update_working_hour(working_hour, data):
-    working_hour.day = data['day']
     working_hour.work_from = data['work_from']
     working_hour.work_until = data['work_until']
     working_hour.save()
@@ -171,7 +203,6 @@ def create_task(data):
     return task
 
 def create_request(data):
-    service_type = models.Service.objects.get(id=data['service_type'])
     created_by = models.User.objects.get(id=data['created_by'])
 
     time = None
@@ -182,10 +213,8 @@ def create_request(data):
                              time=time,
                              picture_required=data['picture_required'],
                              note=data['note'],
-                             request_type=data['request_type'],
                              max_dist=data['max_dist'],
                              min_rating=data['min_rating'],
-                             service_type=service_type,
                              created_by=created_by)
     request.save()
     _task_list = data['tasklist']
@@ -195,6 +224,9 @@ def create_request(data):
             _nt = create_task(_t)
             request.tasklist.add(_nt)
     request.save()
+
+    fullrequest = models.FullRequest(request=request)
+    fullrequest.save()
 
     return request
 
@@ -229,16 +261,27 @@ def create_offer(data):
 # ================== ADMIN ==================
 def create_achievement(data):
     icon = None
-    achievement = models.Achievement(name=data['name'],
-                                     description=data['description'],
+    achievement = models.Achievement(name_sr=data['name_sr'],
+                                     name_en=data['name_en'],
+                                     description_sr=data['description_sr'],
+                                     description_en=data['description_en'],
                                      icon=icon,
                                      requirements=data['requirements'])
+    achievement.save()
+    if data['icon']:
+        icon = create_picture(data=data['icon'],
+                              name='achievements/' + str(achievement.id))
+        achievement.icon = icon
+        achievement.save()
     return achievement
 
 def create_service(data):
-    service = models.Service(service_type=data['service_type'],
-                             description=data['description'],
+    service = models.Service(service_type_sr=data['service_type_sr'],
+                             service_type_en=data['service_type_en'],
+                             description_sr=data['description_sr'],
+                             description_en=data['description_en'],
                              picture_required=data['picture_required'])
+    service.save()
     return service
 
 def create_ban(data):
@@ -248,8 +291,6 @@ def create_ban(data):
                            banned_user=banned_user)
     return banned
 
-
-# TODO: DELETE???
 def create_notification(data):
     notification = models.Notification(title=data['title'],
                                        body=data['body'],

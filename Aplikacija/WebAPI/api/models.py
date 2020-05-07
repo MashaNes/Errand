@@ -8,10 +8,9 @@ class CheckList(models.Model):
     check_list = models.CharField(max_length=100)
 
 class WorkingHour(models.Model):
-    # TODO: Change to DataField
-    day = models.CharField(max_length=3, default='mon')
-    work_from = models.TimeField()
-    work_until = models.TimeField()
+    # DONE: Change to DateField
+    work_from = models.DateTimeField()
+    work_until = models.DateTimeField()
 
 class Address(models.Model):
     name = models.CharField(max_length=50)
@@ -21,18 +20,20 @@ class Address(models.Model):
     arrived = models.BooleanField(default=False)
 
 class Service(models.Model):
-    # TODO: Add sr and en version of service_type
-    service_type = models.CharField(max_length=50)
-    # TODO: Add sr and en version of description
-    description = models.CharField(max_length=256)
+    # DONE: Add sr and en version of service_type
+    service_type_sr = models.CharField(max_length=50)
+    service_type_en = models.CharField(max_length=50)
+    # DONE: Add sr and en version of description
+    description_sr = models.CharField(max_length=256)
+    description_en = models.CharField(max_length=256)
     picture_required = models.BooleanField(default=False)
 
 class UserService(models.Model):
     max_dist = models.FloatField()
-    # TODO: Change payment_type to IntegerField
-    payment_type = models.CharField(max_length=4)
-    payment_ammount = models.FloatField()
-    min_rating = models.FloatField()
+    # DONE: Change payment_type to IntegerField
+    payment_type = models.IntegerField(default=0)
+    payment_ammount = models.FloatField(default=0)
+    min_rating = models.FloatField(default=1)
     service = models.ForeignKey(Service, null=True, on_delete=models.CASCADE)
 
 class Task(models.Model):
@@ -49,8 +50,9 @@ class TaskEdit(models.Model):
     address = models.ForeignKey(Address, on_delete=models.CASCADE)
 
 class User(AbstractUser):
-    STATUS_TYPES = (("inactive", 0), ("active", 1))
-
+    STATUS_TYPES = (("offline", 0), ("online", 1))
+    # DONE: Added is_admin for admin users
+    is_admin = models.BooleanField(default=False)
     email = models.EmailField(unique=True)
     phone = models.CharField(max_length=16)
     picture = models.ImageField(null=True, blank=True)
@@ -58,13 +60,17 @@ class User(AbstractUser):
     min_rating = models.FloatField(null=True, default=1)
     max_dist = models.FloatField(null=True, default=1000)
     status = models.IntegerField(null=True, default=0, choices=STATUS_TYPES)
-    # TODO: Add benefit_discount, benefit_requirement
+    # DONE: Add benefit_discount, benefit_requirement
+    benefit_discount = models.FloatField(null=True, default=0.1)
+    benefit_requirement = models.IntegerField(null=True, default=5)
 
 class Achievement(models.Model):
-    # TODO: Add sr and en version of name
-    name = models.CharField(max_length=50)
-    # TODO: Add sr and en version of description
-    description = models.CharField(max_length=256)
+    # DONE: Add sr and en version of name
+    name_sr = models.CharField(max_length=50)
+    name_en = models.CharField(max_length=50)
+    # DONE: Add sr and en version of description
+    description_sr = models.CharField(max_length=256)
+    description_en = models.CharField(max_length=256)
     icon = models.ImageField()
     requirements = models.CharField(max_length=256)
 
@@ -79,10 +85,8 @@ class Benefit(models.Model):
                                      on_delete=models.CASCADE)
 
 class Report(models.Model):
-    REPORT_TYPES = ()
-
+    # DONE: Delete report_type
     comment = models.CharField(max_length=256)
-    report_type = models.IntegerField(choices=REPORT_TYPES)
     reported_user = models.ForeignKey(User, related_name='report_reported_user_id',
                                       on_delete=models.CASCADE)
     created_by = models.ForeignKey(User, related_name='report_created_by_id',
@@ -104,13 +108,11 @@ class Request(models.Model):
     picture_required = models.BooleanField(default=False)
     pictures = models.ManyToManyField(Picture)
     note = models.CharField(max_length=256)
-    # TODO: Delete request_type
-    request_type = models.IntegerField()
+    # DONE: Delete request_type
     tasklist = models.ManyToManyField(Task)
     max_dist = models.FloatField()
     min_rating = models.FloatField()
-    # TODO: Delete service_type
-    service_type = models.ForeignKey(Service, null=True, on_delete=models.SET_NULL)
+    # DONE: Delete service_type
     created_by = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
 
 class RequestEdit(models.Model):
@@ -126,8 +128,8 @@ class Offer(models.Model):
     edit = models.ForeignKey(RequestEdit, null=True, on_delete=models.SET_NULL)
 
 class Notification(models.Model):
-    NOTIFICATION_TYPES = (('request', 0), ('offer', 1), ('edit_request', 2), ('rating', 3),
-                          ('achievement', 4))
+    NOTIFICATION_TYPES = (('request', 0), ('offer', 1), ('edit_request', 2), 
+                          ('rating', 3), ('achievement', 4))
 
     title = models.CharField(max_length=50)
     body = models.CharField(max_length=256)
@@ -146,11 +148,6 @@ class Rating(models.Model):
 
 class FullUser(models.Model):
     user = models.ForeignKey(User, related_name='user_id', on_delete=models.CASCADE)
-
-    # TODO: Move benefit_discount, benefit_requirement to User
-    benefit_discount = models.FloatField(null=True, blank=True)
-    benefit_requirement = models.IntegerField(null=True, blank=True)
-
     working_hours = models.ManyToManyField(WorkingHour, blank=True)
     addresses = models.ManyToManyField(Address, blank=True)
     services = models.ManyToManyField(UserService, blank=True)
@@ -161,6 +158,7 @@ class FullUser(models.Model):
     benefitlist = models.ManyToManyField(Benefit)
     achievements = models.ManyToManyField(AchievementLevel)
     requests = models.ManyToManyField(Request)
+    # DONE: Move benefit_discount, benefit_requirement to User
 
 class FullRequest(models.Model):
     request = models.ForeignKey(Request, related_name='request_id', on_delete=models.CASCADE)

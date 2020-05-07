@@ -9,9 +9,11 @@ SECRET_KEY = 'ftda2i=o^=_6)c9m&^w-u*lxf-p)b(_4tsa-^he-d^v$uwhxaw'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
-
+ALLOWED_HOSTS = [
+    "127.0.0.1",
+    "10.42.0.1",
+    "10.0.2.2"
+]
 
 # Application definition
 REST_FRAMEWORK = {

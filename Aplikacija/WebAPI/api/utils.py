@@ -14,7 +14,7 @@ def encode_img(img_path):
 
     with open(path, 'rb') as img_file:
         base64_string = str(base64.b64encode(img_file.read()))
-        base64_string = "data:image/png;base64," + base64_string[2:-1]
+        base64_string = base64_string[2:-1]
     return base64_string
 
 def update_rating(user):
@@ -32,7 +32,7 @@ def filter_user(queryset, data):
 
     for _q in queryset:
         to_add = True
-        if user.id == _q.id:
+        if user.id == _q.id or not user.user.is_admin:
             to_add = False
 
         found = False
