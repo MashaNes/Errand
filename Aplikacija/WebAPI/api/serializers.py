@@ -1,8 +1,5 @@
 from rest_framework import serializers
-from rest_framework.authtoken.models import Token
 from . import models
-from . import parsers
-from . import utils
 
 class PictureSerializer(serializers.ModelSerializer):
     class Meta:

@@ -1,3 +1,4 @@
+import os
 import base64
 import datetime
 from django.core.files.base import ContentFile
@@ -8,7 +9,10 @@ ADMIN_KEY = "hR6s7RPPRtEhQNSL3IT1LwM5XC0J1LcdOvXPFFlk"
 
 def create_picture(data, name):
     ext = '.png'
-    img = ContentFile(base64.b64decode(data), name=PIC_PATH + name + ext)
+    path = PIC_PATH + name + ext
+    if os.path.exists(path):
+        os.remove(path)
+    img = ContentFile(base64.b64decode(data), name=path)
     return img
 
 
@@ -77,7 +81,8 @@ def update_user(user, data):
         user.set_password(data['password'])
 
     if data['picture']:
-        user.picture = create_picture(data['picture'], 'users/' + str(user.id))
+        picture = create_picture(data['picture'], 'users/' + str(user.id))
+        user.picture = picture
     user.save()
 
     return user
