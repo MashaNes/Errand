@@ -31,7 +31,7 @@ export default {
   components: {
     ProfileInfo,
     EditProfileInfo,
-    RateUser
+    RateUser,
   },
   data() {
     return {

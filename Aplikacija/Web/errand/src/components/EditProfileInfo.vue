@@ -168,47 +168,36 @@
                 <img src="@/assets/remove.svg" height="15" width="15" class="acc-or-remove-icon" @click="removeElement('homeAddress', lastElement('homeAddress'))"> 
                 <span >{{lastElement('homeAddress')}} </span>
               </div>
-              <label 
-                style="margin-top: 15px;" 
-                class = "register-label" v-if="isSerbian"> Dodajte adresu: </label>
-              <label 
-                style="margin-top: 15px;" 
-                class = "register-label" v-else> Add a new address: </label>
               <div class="field flex-row-elements">
-                <input 
-                  v-if="isSerbian"
-                  class="input is-medium"
-                  type="text"
-                  placeholder="Adresa"
-                  v-model="newAddress"
-
-                >
-                <input 
-                  v-else
-                  class="input is-medium"
-                  type="text"
-                  placeholder="Address"
-                  v-model="newAddress"
-
-                >
-                <img v-if="newAddress != ''" src="@/assets/confirm.svg" height="23" width="23" class="acc-or-remove-icon" @click="addElement('homeAddress', newAddress)">
+                <b-button 
+                  class="button is-primary"
+                  style="margin-top: 20px; font-weight: bold;"
+                  v-text="isSerbian ? 'Dodaj adresu' : 'Add an address'"
+                  v-if="!showMapView"
+                  @click="showMapView = true"
+                ></b-button>
               </div>
             </div>
           </b-list-group-item>
         </b-list-group>
       </div>
     </div>
+    <div class="map-wrap">
+      <MapView v-if="showMapView" @close="showMapView=false" />
+    </div>
   </div>
 </template>
 
 <script>
-  import {required} from "vuelidate/lib/validators"
-  import VuePhoneNumberInput from 'vue-phone-number-input';
-  import 'vue-phone-number-input/dist/vue-phone-number-input.css';
+import {required} from "vuelidate/lib/validators"
+import VuePhoneNumberInput from 'vue-phone-number-input';
+import 'vue-phone-number-input/dist/vue-phone-number-input.css';
+import MapView from "@/components/MapView"
 
 export default {
   components: {
-    VuePhoneNumberInput
+    VuePhoneNumberInput,
+    MapView
   },
   props: {
     user: {
@@ -224,7 +213,8 @@ export default {
       newPicture: null,
       isDragged: false,
       dragCounter: 0,
-      toasterMessage: ""
+      toasterMessage: "",
+      showMapView: false
     }
   },
   validations: {
@@ -263,7 +253,6 @@ export default {
       this.changedUser[resource].splice(index, 1);
     },
     addElement(resource, element) {
-      // eslint-disable-next-line no-debugger
       if(element != "")
         this.changedUser[resource].push(element)
       if(resource == 'homeAddress')

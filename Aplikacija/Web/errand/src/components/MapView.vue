@@ -1,0 +1,238 @@
+<template>
+  <div class="main-wrapper">
+    <div class="btns">
+      <b-button 
+        class="button is-primary upper-btn"
+        @click="$emit('close')"
+        v-text="isSerbian ? 'Zatvori mapu' : 'Close map'"
+      ></b-button>
+      <b-button 
+        class="button is-primary"
+        @click="convertToAddress"
+        v-text="isSerbian ? 'Preuzmi adresu sa mape' : 'Get address from the map'"
+      ></b-button>
+    </div>
+    <div class="addr-input">
+      <input 
+        class="input is-medium"
+        type="text"
+        :placeholder="isSerbian ? 'Adresa' : 'Address'"
+        v-model="newAddress"
+      >
+      <img 
+        v-if="newAddress && addressChecked && !invalidAddress" 
+        class="btn-img" 
+        src="@/assets/check.svg" 
+        height="33" 
+        width="33"
+        @click="confirmAddress"
+      >
+      <img 
+        v-if="newAddress && !addressChecked" 
+        class="search btn-img" 
+        src="@/assets/search.svg" 
+        height="35" 
+        width="35"
+        @click="convertFromAddress"
+      >
+    </div>
+    <span  class="span-danger" v-if="invalidAddress" v-text="isSerbian ? 
+    'Adresa nije pronađena na mapi. Jeste li sigurni da postoji?' :
+    'The address was not found on the map. Are you sure it exists?'"></span>
+    <div id="map" class="map" ref="map"></div>
+  </div>
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      map: null,
+      marker: null,
+      pos: {
+        lat: 43.639696,
+        lng: 21.878703
+      },
+      previousPosition: {},
+      newAddress: "",
+      previousInput: "",
+      invalidAddress: false,
+      markerMoved: true
+    }
+  },
+  methods: {
+    moveMarker(latLng) {
+
+      this.marker.setMap(null)
+      this.marker = null
+      this.marker = new window.google.maps.Marker({
+        position: latLng,
+        map: this.map
+      })
+      this.map.setZoom(14)
+      this.map.setCenter(latLng)
+      this.markerMoved = true
+    },
+    convertToAddress() {
+      if(this.markerMoved || !this.addressChecked) {
+
+        fetch('https://maps.googleapis.com/maps/api/geocode/json?latlng='
+              + this.marker.position.lat() + ',' + this.marker.position.lng() + 
+              '&key=AIzaSyBc7vAECB9mQ1RbCrySraxt6ve0VxXO7zs', {
+          method:'GET'
+        }).then(p => {
+          if(p.ok)
+          {
+            p.json().then(data => {
+              this.newAddress = data.results[0].formatted_address
+              this.previousInput = this.newAddress
+              this.invalidAddress = false
+              this.markerMoved = false
+            })
+          }
+        })
+      }
+    },
+    convertFromAddress() {
+
+      if(this.newAddress == this.previousInput)
+      {
+        return
+      }
+      else {
+        const vm = this
+        this.previousInput = this.newAddress
+        fetch('https://maps.googleapis.com/maps/api/geocode/json?address='
+        + this.newAddress +'&key=AIzaSyBc7vAECB9mQ1RbCrySraxt6ve0VxXO7zs', {
+          method: 'GET'
+          }).then(p => {
+          if(p.ok) {
+            p.json().then(data => {
+              if(data.status!='ZERO_RESULTS') {
+                // eslint-disable-next-line no-debugger
+                debugger
+                vm.moveMarker(data.results[0].geometry.location)
+                this.markerMoved = false
+                this.invalidAddress = false
+              }
+              else {
+                this.invalidAddress = true
+              }
+            })
+          }
+        })
+      }
+    },
+    confirmAddress() {
+      console.log(this.newAddress)
+      console.log(this.marker.position.lat())
+      console.log(this.marker.position.lng())
+      this.$emit('close')
+    }
+  },
+  computed: {
+    isSerbian() {
+      return this.$store.state.isSerbian
+    },
+    addressChecked() {
+      return this.newAddress == this.previousInput
+    }
+  },
+  mounted() {
+    this.map = new window.google.maps.Map(this.$refs["map"], {
+      center: {
+        lat: 43.639696,
+        lng: 21.878703
+      },
+      zoom: 10
+    })
+    const vm = this
+    function checkForMap() {
+      if(vm.map) 
+        vm.marker = new window.google.maps.Marker({
+          position: vm.pos,
+          map: vm.map
+        })
+      else 
+        setTimeout(checkForMap, 200)
+    }
+    checkForMap()
+    this.map.addListener('click', (event) => {
+      vm.moveMarker(event.latLng)
+    })
+  }
+}
+</script>
+
+<style scoped>
+
+  .main-wrapper {
+    display:flex;
+    flex-direction: column;
+    align-items: flex-start;
+    height:100%;
+    padding: 10px 5% 100px 5%;
+  }
+
+  .map {
+    min-height: 400px;
+    align-self: stretch;
+  }
+
+  .button {
+    align-self: flex-start;
+    justify-self: flex-start;
+    margin-right: 10px;
+    font-weight: bold;
+  }
+
+  .input {
+    margin: 10px 0px 10px 0;
+  }
+
+  .addr-input {
+    display:flex;
+    justify-content: stretch;
+    align-items:center;
+    width:100%;
+  }
+
+  .btn-img {
+    cursor: pointer;
+    margin-left: 10px;
+  }
+
+  .span-danger {
+    color: red;
+    font-size: 14px;
+    margin-bottom:10px;
+
+  }
+
+  @media only screen and (max-width: 499px)
+  {
+    .span-danger {
+      font-size: 12px;
+    }
+
+    .btns {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .button {
+      width: 100%;
+      margin-bottom: 10px;
+    }
+
+    .upper-btn {
+      margin-top: 30px;
+    }
+
+    .map {
+      margin-top: 20px;
+    }
+  }
+
+</style>

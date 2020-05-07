@@ -51,6 +51,7 @@
     "vue-socket.io": "^3.0.5",
     "vue-toasted": "^1.1.28",
     "vue-upload-image": "^1.1.5",
+    "vue2-google-maps": "^0.10.7",
     "vue2-timepicker": "^0.1.4",
     "vuejs-datepicker": "^1.5.4",
     "vuelidate": "^0.7.5",
