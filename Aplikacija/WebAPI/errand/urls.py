@@ -12,6 +12,7 @@ router.register(r'achievements', api_views.AchievementViewSet)
 router.register(r'services', api_views.ServiceViewSet)
 router.register(r'filtered_users', api_views.FilterUserViewSet)
 router.register(r'user_info_filtered', api_views.UserInfoFilteredViewSet)
+router.register(r'get_cookie', api_views.GetCookieViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),

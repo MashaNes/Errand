@@ -5,6 +5,7 @@ from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.response import Response
 from rest_framework_extensions.mixins import NestedViewSetMixin
 from django.shortcuts import get_object_or_404
+from django.http import HttpResponse
 from . import models
 from . import serializers
 from . import parsers
@@ -16,6 +17,7 @@ Endpoints:
 + GET users/{id} 					// Returns full user data
 + GET filtered_users/ 				// Returns users based on filters
 + GET user_info_filtered            // Returns users info on filters
++ GET get_cookie/    				// Returns only basic user data
 
 + GET requests_info/{id} 			// Returns only basic request data
 + GET requests/{id} 				// Returns full request data (including offers and rating)
@@ -78,6 +80,35 @@ class LogIn(ObtainAuthToken):
             'user': _s
         }
         return Response(custom_response)
+
+# GET get_cookie/
+class GetCookieViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
+    queryset = models.User.objects.all()
+    authentication_classes = ()
+    permission_classes = ()
+    def list(self, request):
+        user = get_object_or_404(self.queryset, pk=request.data['created_by'])
+        _s = serializers.UserSerializer(user)
+        _s = _s.data
+        _s['picture'] = utils.encode_img('users/' + str(user.id))
+        token, _ = Token.objects.get_or_create(user=user)
+        response = HttpResponse()
+        response.set_cookie('token', token)
+        response.set_cookie('id', _s['id'])
+        response.set_cookie('email', _s['email'])
+        response.set_cookie('first_name', _s['first_name'])
+        response.set_cookie('last_name', _s['last_name'])
+        response.set_cookie('phone', _s['phone'])
+        response.set_cookie('picture', _s['picture'])
+        response.set_cookie('avg_rating', _s['avg_rating'])
+        response.set_cookie('min_rating', _s['min_rating'])
+        response.set_cookie('max_dist', _s['max_dist'])
+        response.set_cookie('is_admin', _s['is_admin'])
+        response.set_cookie('status', _s['status'])
+        response.set_cookie('benefit_discount', _s['benefit_discount'])
+        response.set_cookie('benefit_requirement', _s['benefit_requirement'])
+
+        return response
 
 # POST logout/
 class LogOut(generics.UpdateAPIView):
