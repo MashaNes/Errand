@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import runners.errand.MainActivity;
 import runners.errand.R;
@@ -35,7 +36,9 @@ public class AchievementsFragment extends Fragment {
 				achievements
 		);
 
-		((ListView) root.findViewById(R.id.list_view)).setAdapter(adapter);
+		ListView list = root.findViewById(R.id.list_view);
+		list.setAdapter(adapter);
+		if (achievements.size() <= 0) list.setVisibility(View.GONE);
 
 		return root;
 	}

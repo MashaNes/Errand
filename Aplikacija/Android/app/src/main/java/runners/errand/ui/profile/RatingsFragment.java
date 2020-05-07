@@ -38,6 +38,7 @@ public class RatingsFragment extends Fragment {
 
 		ListView list = root.findViewById(R.id.list_view);
 		list.setAdapter(adapter);
+		if (ratings.size() <= 0) list.setVisibility(View.GONE);
 
 		return root;
 	}

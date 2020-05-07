@@ -1,6 +1,8 @@
 <resources>
 	<string name="app_name">Errand</string>
 
+	<string name="google_api_key">AIzaSyDCQIiJU1NFcdJF0gSqCsQ9FRtPP-OgL34</string>
+	
 	<string name="navigation_drawer_open">Open navigation drawer</string>
 	<string name="navigation_drawer_close">Close navigation drawer</string>
 
@@ -11,21 +13,30 @@
 	<string name="generic_ok">OK</string>
 	<string name="generic_yes">Yes</string>
 	<string name="generic_no">No</string>
+	<string name="generic_save">Save</string>
+	<string name="generic_close">Close</string>
+	<string name="generic_success">Success</string>
+	<string name="generic_enabled">Enabled</string>
+	<string name="generic_disabled">Disabled</string>
 
 	<string name="autofill_email">emailAddress</string>
 	<string name="autofill_password">password</string>
-	<string name="autofill_name">name</string>
+	<string name="autofill_new_password">newPassword</string>
+	<string name="autofill_name">personGivenName</string>
+	<string name="autofill_lastname">personFamilyName</string>
 	<string name="autofill_address">postalAddress</string>
 	<string name="autofill_phone">phone</string>
 
 	<string name="login_email">Email</string>
 	<string name="login_pass">Password</string>
-	<string name="login_name">Name</string>
+	<string name="login_name">First Name</string>
+	<string name="login_lastname">Last Name</string>
 	<string name="login_address">Address</string>
 	<string name="login_phone">Phone</string>
 	<string name="login_email_hint">" Email Address"</string>
 	<string name="login_pass_hint">" Password"</string>
-	<string name="login_name_hint">" Full Name"</string>
+	<string name="login_name_hint">" First Name"</string>
+	<string name="login_lastname_hint">" Last Name"</string>
 	<string name="login_address_hint">" Home Address"</string>
 	<string name="login_phone_hint">" Phone Number"</string>
 	<string name="login_in">Sign in</string>
@@ -43,36 +54,112 @@
 	<string name="menu_settings">Settings</string>
 	<string name="menu_logout">Sign out</string>
 
-	<string name="request_tab_requested">Requested</string>
-	<string name="request_tab_running">Running</string>
-	<string name="request_tab_history">History</string>
-	<string name="no_requests">You don\'t have any requests in this category</string>
+	<string name="requests_tab_requested">Requested</string>
+	<string name="requests_tab_running">Running</string>
+	<string name="requests_tab_history">History</string>
+	<string name="no_requests">You don\'t have any requests in this category.</string>
 
 	<string name="profile_tab_info">Info</string>
 	<string name="profile_tab_ratings">Ratings</string>
 	<string name="profile_tab_achievements">Achievements</string>
-	<string name="profile_info_name">Name</string>
+	<string name="profile_info_name">First Name</string>
+	<string name="profile_info_name_hint">" First Name"</string>
+	<string name="profile_info_lastname">Last Name</string>
+	<string name="profile_info_lastname_hint">" Last Name"</string>
 	<string name="profile_info_email">Email</string>
+	<string name="profile_info_email_hint">" Email"</string>
 	<string name="profile_info_phone">Phone</string>
+	<string name="profile_info_phone_hint">" Phone"</string>
+	<string name="profile_info_address">Address</string>
+	<string name="profile_info_address_hint">" Address"</string>
+	<string name="profile_info_address_add">Add a new address</string>
 	<string name="profile_info_rating">Rating</string>
+	<string name="profile_info_rating_hint">" Rating"</string>
 	<string name="profile_info_achievement">Achievements</string>
+	<string name="profile_info_achievement_hint">" Achievements"</string>
+	<string name="no_achievements">There are no achievements available.</string>
+	<string name="no_ratings">You don\'t have any ratings yet.</string>
+
+	<string name="request_tab_info">Info</string>
+	<string name="request_tab_map">Map</string>
+	<string name="request_tab_messages">Messages</string>
+	<string name="request_tab_offers">Offers</string>
+	<string name="request_info_name">Name</string>
+	<string name="request_info_name_hint">" Name"</string>
+	<string name="request_info_note">Note</string>
+	<string name="request_info_note_hint">" Note"</string>
+	<string name="request_info_service">Service</string>
+	<string name="request_info_service_hint">" Service"</string>
+	<string name="request_info_picture_saved">Picture successfully saved to local storage.</string>
+
+	<string name="newrequest_tab_info">Info</string>
+	<string name="newrequest_tab_tasks">Tasks</string>
+	<string name="newrequest_tab_offers">Offers</string>
+	<string name="newrequest_info_name">Name</string>
+	<string name="newrequest_info_name_hint">" Name"</string>
+	<string name="newrequest_info_note">Note</string>
+	<string name="newrequest_info_note_hint">" Note"</string>
+	<string name="newrequest_info_max_distance">Max distance</string>
+	<string name="newrequest_info_max_distance_hint">" Maximum distance"</string>
+	<string name="newrequest_info_max_distance_info">Maximum distance (in meters) of a Runner from the addresses specified in this requests tasks that can send you offers for this request.</string>
+	<string name="newrequest_info_min_rating">Min rating</string>
+	<string name="newrequest_info_min_rating_hint">" Minimum rating"</string>
+	<string name="newrequest_info_min_rating_info">Minimum rating of a Runner that can send offers for this request.</string>
+	<string name="newrequest_task_service">Service</string>
+	<string name="newrequest_task_service_hint">" Service"</string>
+	<string name="newrequest_task_service_default">Select a service</string>
+	<string name="newrequest_task_title">Title</string>
+	<string name="newrequest_task_title_hint">" Title"</string>
+	<string name="newrequest_task_description">Description</string>
+	<string name="newrequest_task_description_hint">" Description"</string>
+	<string name="newrequest_task_checklist">Checklist</string>
+	<string name="newrequest_task_checklist_hint">" Checklist"</string>
+	<string name="newrequest_task_address">Address</string>
+	<string name="newrequest_task_address_hint">" Address"</string>
+	<string name="newrequest_task_address_other">Other</string>
+	<string name="newrequest_task_address_other_desc">Choose an address that isn\'t saved to your account.</string>
+	<string name="newrequest_offers_broadcast">Broadcast</string>
+	<string name="newrequest_offers_broadcast_hint">" Broadcast"</string>
+	<string name="newrequest_offers_broadcast_info">Broadcasting requests will allow others to see them and send you offers.</string>
+	<string name="newrequest_offers_direct_info">You can send requests directly to Runners you prefer, they\'ll be notified and able to send you an offer.</string>
+	<string name="newrequest_offers_direct_add">Add another Runner</string>
 
 	<string name="notifications_tab_requested">Requested</string>
 	<string name="notifications_tab_running">Running</string>
 	<string name="notifications_tab_other">Other</string>
-	<string name="no_notifications">You don\'t have any notifications in this category</string>
+	<string name="no_notifications">You don\'t have any notifications in this category.</string>
 
 	<string name="image_cd_add">Add</string>
 	<string name="image_cd_logout">Logout</string>
 	<string name="image_cd_help">Help</string>
 	<string name="image_cd_request_status">Request status</string>
-	<string name="image_cd_edit_name">Edit name</string>
-	<string name="image_cd_edit_email">Edit email</string>
-	<string name="image_cd_edit_phone">Edit phone number</string>
+	<string name="image_cd_edit">Edit</string>
+	<string name="image_cd_save">Save</string>
+	<string name="image_cd_cancel">Cancel</string>
+	<string name="image_cd_close">Close</string>
 	<string name="image_cd_goto_ratings">Go to ratings tab</string>
 	<string name="image_cd_goto_achievements">Go to achievements tab</string>
+	<string name="image_cd_request_note">Request note</string>
+	<string name="image_cd_request_pictures">Request pictures</string>
 
 	<string name="error">Error</string>
+	<string name="error_generic">An error occurred.</string>
+	<string name="error_location_required">To use this functionality your location tracking needs to be on.</string>
+	<string name="error_file_write">Failed to write file to storage.</string>
 	<string name="error_login">Failed to sign in with given credentials.</string>
 	<string name="error_json">An error occurred while parsing the response.</string>
+	<string name="error_request_load_failed">Failed to load selected request.</string>
+	<string name="error_image_load">Failed to load selected image.</string>
+	<string name="error_last_item">You can\'t remove the last item in the task-list. The task-list has to contain at least one item.</string>
+	<string name="error_top_item">You can\'t move the item that is at the top of the task-list further up.</string>
+	<string name="error_bottom_item">You can\'t move the item that is at the bottom of the task-list further down.</string>
+	<string name="error_address">Failed to locate given address.</string>
+	<string name="error_user_update">Failed to update profile details.</string>
+
+	<string name="permissions">Permissions</string>
+	<string name="permissions_location_runner">Permissions for location access need to be granted in order to use this application as a Runner (send offers to requests and fulfil them) and detecting your current location instead of needing to type in an address.\n\nWould you like to grand location access permission to Errand?</string>
+	<string name="permissions_location_map_dialog">Permissions for location access need to be granted in order to detect your current location. You can grant Errand this permission on the settings page.</string>
+
+	<string name="debug_server_ip">Server IP</string>
+	<string name="debug_server_ip_set">Server IP was successfully set to \'%1$s\'.</string>
 </resources>

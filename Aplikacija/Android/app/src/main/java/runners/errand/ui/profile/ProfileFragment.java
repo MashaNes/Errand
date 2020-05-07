@@ -32,10 +32,10 @@ public class ProfileFragment extends Fragment {
         Bundle args = getArguments();
         if (args != null) tabSelect = args.getInt(ARG_KEY_TAB_SELECT, 0);
 
-
 		MainActivity activity = ((MainActivity) getActivity());
         if (activity == null) return root;
 
+		fragments.clear();
         fragments.add(new InfoFragment());
         fragments.add(new RatingsFragment());
         fragments.add(new AchievementsFragment());

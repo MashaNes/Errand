@@ -5,6 +5,7 @@
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
 	android:orientation="vertical"
+	android:background="@color/colorWhite"
 	tools:context=".ui.profile.AchievementsFragment">
 
 	<TextView
@@ -12,16 +13,26 @@
 		android:text="@string/profile_tab_achievements"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:padding="8dp"
-		android:textColor="@color/colorBlack"
-		android:textSize="20sp"/>
+		style="@style/TextView.Header"/>
 
-
-	<ListView
-		android:id="@+id/list_view"
+	<FrameLayout
 		android:layout_width="match_parent"
-		android:layout_height="match_parent"
-		android:overScrollMode="never"
-		android:background="@color/colorWhite"/>
+		android:layout_height="match_parent">
 
+		<TextView
+			android:text="@string/no_achievements"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:textAlignment="center"
+			android:padding="16dp"
+			android:gravity="center_horizontal"
+			android:textSize="16sp"/>
+
+		<ListView
+			android:id="@+id/list_view"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:overScrollMode="never"
+			android:background="@color/colorWhite"/>
+	</FrameLayout>
 </LinearLayout>

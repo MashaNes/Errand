@@ -1,6 +1,7 @@
 package runners.errand.model;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.json.JSONObject;
 
@@ -9,6 +10,23 @@ public class Address {
 	private String name;
 	private float lng, lat;
 	private boolean home, arrived;
+
+	public Address() {}
+
+	public Address(String name, float lat, float lng) {
+		this.name = name;
+		this.lat = lat;
+		this.lng = lng;
+	}
+
+	public Address(Address address) {
+		this.id = address.getId();
+		this.name = address.getName();
+		this.lng = address.getLng();
+		this.lat = address.getLat();
+		this.home = address.isHome();
+		this.arrived = address.isArrived();
+	}
 
 	public Address(@NonNull JSONObject o) {
 		this.id = o.optInt("id");
@@ -41,5 +59,30 @@ public class Address {
 
 	public boolean isArrived() {
 		return arrived;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public void copy(Address address) {
+		this.name = address.getName();
+		this.lat = address.getLat();
+		this.lng = address.getLng();
+	}
+
+	@NonNull
+	public Address clone() {
+		return new Address(this);
+	}
+
+	@Override
+	public boolean equals(@Nullable Object obj) {
+		Address comp = ((Address) obj);
+		return comp != null && comp.getLat() == lat && comp.getLng() == lng && comp.getName().equals(name);
 	}
 }

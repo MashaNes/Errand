@@ -77,6 +77,7 @@ public class NotificationsListFragment extends Fragment {
 		ListView list = root.findViewById(R.id.list_view);
 		final NotificationAdapter adapter = new NotificationAdapter(activity, notifications);
         list.setAdapter(adapter);
+        if (notifications.size() <= 0) list.setVisibility(View.GONE);
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {

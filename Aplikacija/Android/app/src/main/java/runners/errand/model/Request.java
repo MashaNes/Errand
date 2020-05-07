@@ -31,6 +31,8 @@ public class Request {
     private ArrayList<Offer> offers = new ArrayList<>();
     private User createdBy;
 
+    public Request() {};
+
     public Request(@NonNull JSONObject o) {
         this.id = o.optInt("id");
 
@@ -155,5 +157,49 @@ public class Request {
 
     public User getCreatedBy() {
         return createdBy;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
+
+    public void setLocationStatus(int locationStatus) {
+        this.locationStatus = locationStatus;
+    }
+
+    public void setRequestType(int requestType) {
+        this.requestType = requestType;
+    }
+
+    public void setMaxDistance(double maxDistance) {
+        this.maxDistance = maxDistance;
+    }
+
+    public void setMinRating(double minRating) {
+        this.minRating = minRating;
+    }
+
+    public void setTime(Date time) {
+        this.time = time;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
+    }
+
+    public void setPictureRequired(boolean pictureRequired) {
+        this.pictureRequired = pictureRequired;
+    }
+
+    public void setService(Service service) {
+        this.service = service;
+    }
+
+    public void setCreatedBy(User createdBy) {
+        this.createdBy = createdBy;
     }
 }

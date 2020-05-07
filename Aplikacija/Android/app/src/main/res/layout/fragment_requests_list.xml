@@ -6,6 +6,7 @@
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
 	android:orientation="vertical"
+	android:background="@color/colorWhite"
 	tools:context="runners.errand.ui.requests.RequestsListFragment">
 
 	<androidx.constraintlayout.widget.ConstraintLayout
@@ -18,9 +19,7 @@
 			app:layout_constraintTop_toTopOf="parent"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
-			android:padding="8dp"
-			android:textColor="@color/colorBlack"
-			android:textSize="20sp"/>
+			style="@style/TextView.Header"/>
 
 		<ImageView
 			android:id="@+id/header_button"
@@ -33,7 +32,6 @@
 			android:layout_marginRight="8dp"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"/>
-
 	</androidx.constraintlayout.widget.ConstraintLayout>
 
 	<FrameLayout
@@ -45,6 +43,7 @@
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:textAlignment="center"
+			android:padding="16dp"
 			android:gravity="center_horizontal"
 			android:textSize="16sp"/>
 

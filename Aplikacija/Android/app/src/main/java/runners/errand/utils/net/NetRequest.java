@@ -1,71 +1,116 @@
 package runners.errand.utils.net;
 
-import androidx.annotation.NonNull;
+import android.content.Context;
+import android.util.Log;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 public class NetRequest {
-	private String url = "", type = "";
+	private String url, type;
 	private Map<String, String> params = new HashMap<>();
 	private boolean login = false;
 	private NetResult result;
+	private JSONObject json = new JSONObject();
+	private Context context;
 
-	public void success() {};
-	public void error() {};
+	public void success() {}
+	public void error() {}
 
-	public NetRequest(String url, String type) {
+	protected NetRequest(String url, String type) {
 		this.url = url;
 		this.type = type;
 	}
 
-	public boolean isLogin() {
+	boolean isLogin() {
 		return login;
 	}
 
-	public String getUrl() {
-		return url;
-	}
-
-	public String getType() {
+	String getType() {
 		return type;
-	}
-
-	public Map<String, String> getParams() {
-		return params;
 	}
 
 	public NetResult getResult() {
 		return result;
 	}
 
-	public void setLogin(boolean login) {
+	public void setLogin(boolean login, Context context) {
 		this.login = login;
+		this.context = context;
 	}
 
-	public void setUrl(String url) {
-		this.url = url;
-	}
-
-	public void setType(String type) {
-		this.type = type;
-	}
-
-	public void setParams(Map<String, String> params) {
-		this.params = params;
+	public Context getContext() {
+		return context;
 	}
 
 	public void putParam(String key, String value) {
-		this.params.put(key, value);
+		try {
+			this.json.put(key, value == null ? JSONObject.NULL : value);
+		} catch (JSONException e) {
+			e.printStackTrace();
+			try {
+				this.json.put(key, JSONObject.NULL);
+			} catch (JSONException ex) {
+				ex.printStackTrace();
+			}
+		}
+
+		this.params.put(key, value == null ? "null" : value);
 	}
 
-	public void setResult(NetResult result) {
+	public void putParam(String key, boolean value) {
+		try {
+			this.json.put(key, value);
+		} catch (JSONException e) {
+			e.printStackTrace();
+			try {
+				this.json.put(key, JSONObject.NULL);
+			} catch (JSONException ex) {
+				ex.printStackTrace();
+			}
+		}
+		this.params.put(key, (value ? "true" : "false"));
+	}
+
+	public void putParam(String key, int value) {
+		try {
+			this.json.put(key, value);
+		} catch (JSONException e) {
+			e.printStackTrace();
+			try {
+				this.json.put(key, JSONObject.NULL);
+			} catch (JSONException ex) {
+				ex.printStackTrace();
+			}
+		}
+		this.params.put(key, String.format(Locale.getDefault(), "%d", value));
+	}
+
+	public void putParam(String key, float value) {
+		try {
+			this.json.put(key, value);
+		} catch (JSONException e) {
+			e.printStackTrace();
+			try {
+				this.json.put(key, JSONObject.NULL);
+			} catch (JSONException ex) {
+				ex.printStackTrace();
+			}
+		}
+		this.params.put(key, String.format(Locale.getDefault(), "%f", value));
+	}
+
+	void setResult(NetResult result) {
 		this.result = result;
 	}
 
-	String getEncodedParams() {
+	private String getEncodedParams() {
 		StringBuilder s = new StringBuilder();
 
 		for (String key : params.keySet()) {
@@ -87,18 +132,12 @@ public class NetRequest {
 		return s.toString();
 	}
 
-	String getFullUrl() {
-		if (type.equals(NetManager.GET)) return url += getEncodedParams();
-		return url;
+	String getJsonParams() {
+		return json.toString();
 	}
 
-	@Override
-	@NonNull
-	public String toString() {
-		return "Request{" +
-				"url='" + url + '\'' +
-				", type='" + type + '\'' +
-				", params=" + params.toString() +
-				'}';
+	String getFullUrl() {
+		if (type.equals(NetManager.GET)) return url + getEncodedParams();
+		return url;
 	}
 }

@@ -10,7 +10,8 @@
 		android:id="@+id/nav_page_requests"
 		android:name="runners.errand.ui.requests.RequestsFragment"
 		android:label="@string/menu_requests"
-		tools:layout="@layout/fragment_requests" />
+		tools:layout="@layout/fragment_requests" >
+	</fragment>
 
 	<fragment
 		android:id="@+id/nav_page_newrequest"
@@ -41,4 +42,11 @@
 		android:name="runners.errand.ui.settings.SettingsFragment"
 		android:label="@string/menu_settings"
 		tools:layout="@layout/fragment_settings" />
+
+	<fragment
+		android:id="@+id/nav_page_request"
+		android:name="runners.errand.ui.request.RequestFragment"
+		android:label=""
+		tools:layout="@layout/fragment_request" >
+	</fragment>
 </navigation>

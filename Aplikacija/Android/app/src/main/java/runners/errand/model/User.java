@@ -1,6 +1,9 @@
 package runners.errand.model;
 
-import android.widget.ArrayAdapter;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.util.Base64;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 
@@ -10,6 +13,8 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
+import runners.errand.utils.BitmapUtils;
+
 public class User {
 	public static final int
 		STATUS_NOT_RUNNING = 0,
@@ -17,13 +22,16 @@ public class User {
 
 	private int id, status, benefitRequirements;
 	private String firstName, lastName, email, phone;
-	private String picture;
+	private String picture_b64;
+	private Bitmap picture_bmp;
 	private float rating, minRating, maxDistance, benefitDiscount;
 	private ArrayList<Achievement> achievements = new ArrayList<>();
 	private ArrayList<Address> addresses = new ArrayList<>();
 	private ArrayList<Benefit> benefits = new ArrayList<>();
 	private ArrayList<Rating> ratings = new ArrayList<>();
 	private ArrayList<Request> requests = new ArrayList<>();
+	private ArrayList<Offer> offers = new ArrayList<>();
+	private ArrayList<Request> history = new ArrayList<>();
 	private ArrayList<Notification> notifications = new ArrayList<>();
 	private ArrayList<ServicePrefs> servicePrefs = new ArrayList<>();
 	private ArrayList<WorkingHours> workingHours = new ArrayList<>();
@@ -37,8 +45,13 @@ public class User {
 			this.firstName = user.optString("first_name");
 			this.lastName = user.optString("last_name");
 			this.phone = user.optString("phone");
-			this.picture = user.optString("picture");
 			this.rating = (float) user.optDouble("avg_rating");
+			this.picture_b64 = user.optString("picture");
+			if (picture_b64.contains("data:image/png;base64,")) {
+				picture_b64 = picture_b64.substring(22);
+			} else {
+				picture_bmp = BitmapUtils.decode(picture_b64);
+			}
 		}
 
 		JSONArray achievements = o.optJSONArray("achievements");
@@ -125,49 +138,6 @@ public class User {
 		this.benefitRequirements = o.optInt("benefit_requirement");
 	}
 
-	public User(int id, int status, int benefitRequirements, String firstName, String lastName, String email, String phone, String picture, float rating, float minRating, float maxDistance, float benefitDiscount) {
-		this.id = id;
-		this.status = status;
-		this.benefitRequirements = benefitRequirements;
-		this.firstName = firstName;
-		this.lastName = lastName;
-		this.email = email;
-		this.phone = phone;
-		this.picture = picture;
-		this.rating = rating;
-		this.minRating = minRating;
-		this.maxDistance = maxDistance;
-		this.benefitDiscount = benefitDiscount;
-	}
-
-	public void setAchievements(ArrayList<Achievement> achievements) {
-		this.achievements = achievements;
-	}
-
-	public void setAddresses(ArrayList<Address> addresses) {
-		this.addresses = addresses;
-	}
-
-	public void setBenefits(ArrayList<Benefit> benefits) {
-		this.benefits = benefits;
-	}
-
-	public void setRatings(ArrayList<Rating> ratings) {
-		this.ratings = ratings;
-	}
-
-	public void setRequests(ArrayList<Request> requests) {
-		this.requests = requests;
-	}
-
-	public void setStatus(int status) {
-		this.status = status;
-	}
-
-	public void setNotifications(ArrayList<Notification> notifications) {
-		this.notifications = notifications;
-	}
-
 	public int getId() {
 		return id;
 	}
@@ -176,8 +146,8 @@ public class User {
 		return status;
 	}
 
-	public int getBenefitRequirements() {
-		return benefitRequirements;
+	public float getRating() {
+		return rating;
 	}
 
 	public String getFirstName() {
@@ -200,36 +170,12 @@ public class User {
 		return phone;
 	}
 
-	public String getPicture() {
-		return picture;
-	}
-
-	public float getRating() {
-		return rating;
-	}
-
-	public float getMinRating() {
-		return minRating;
-	}
-
-	public float getMaxDistance() {
-		return maxDistance;
-	}
-
-	public float getBenefitDiscount() {
-		return benefitDiscount;
-	}
-
-	public ArrayList<Achievement> getAchievements() {
-		return achievements;
-	}
-
 	public ArrayList<Address> getAddresses() {
 		return addresses;
 	}
 
-	public ArrayList<Benefit> getBenefits() {
-		return benefits;
+	public ArrayList<Achievement> getAchievements() {
+		return achievements;
 	}
 
 	public ArrayList<Rating> getRatings() {
@@ -240,7 +186,71 @@ public class User {
 		return requests;
 	}
 
+	public Request getRequest(int id) {
+		for (Request r : requests)
+			if (r.getId() == id)
+				return r;
+
+		return null;
+	}
+
 	public ArrayList<Notification> getNotifications() {
 		return notifications;
+	}
+
+	public String getPicture_b64() {
+		return picture_b64;
+	}
+
+	public Bitmap getPicture_bmp() {
+		return picture_bmp;
+	}
+
+	public float getMinRating() {
+		return minRating;
+	}
+
+	public float getMaxDistance() {
+		return maxDistance;
+	}
+
+	public int getBenefitRequirements() {
+		return benefitRequirements;
+	}
+
+	public float getBenefitDiscount() {
+		return benefitDiscount;
+	}
+
+	public void setStatus(int status) {
+		this.status = status;
+	}
+
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public void setPhone(String phone) {
+		this.phone = phone;
+	}
+
+	public void setPicture_b64(String picture_b64) {
+		this.picture_b64 = picture_b64;
+	}
+
+	public void setPicture_bmp(Bitmap picture_bmp) {
+		this.picture_bmp = picture_bmp;
+	}
+
+	public void setAddresses(ArrayList<Address> addresses) {
+		this.addresses = addresses;
 	}
 }

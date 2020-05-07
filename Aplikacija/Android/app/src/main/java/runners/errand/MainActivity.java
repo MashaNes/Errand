@@ -1,11 +1,17 @@
 package runners.errand;
 
+import android.Manifest;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
+import android.location.Criteria;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -13,6 +19,7 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -28,33 +35,30 @@ import com.google.android.material.tabs.TabLayout;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.sql.Date;
 import java.util.ArrayList;
 
-import runners.errand.model.Achievement;
-import runners.errand.model.Notification;
-import runners.errand.model.Rating;
-import runners.errand.model.Request;
 import runners.errand.model.Service;
-import runners.errand.model.Task;
 import runners.errand.model.User;
-import runners.errand.utils.Dialog;
+import runners.errand.utils.dialogs.SimpleDialog;
+import runners.errand.utils.PreferenceManager;
 import runners.errand.utils.net.NetManager;
-import runners.errand.utils.net.NetRequest;
-import runners.errand.utils.net.NetResult;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
-    private static final int TAB_ICON_TRANSPARENCY = 125;
+	public static final int PERMISSION_LOCATION = 0, PERMISSION_STORAGE = 1;
+    private static final int TAB_ICON_TRANSPARENCY = 125, PERMISSION_REQUEST_CALLBACK_ID = 1;
 
     private NavController navController;
 	private NavigationView navigationView;
     private AppBarConfiguration mAppBarConfiguration;
     private DrawerLayout drawer;
     private TabLayout tabs;
-    private User user;
+	private Toolbar toolbar;
 
-    public boolean active = false;
-    private Activity activity;
+	private Activity activity;
+	public boolean active = false;
+
+	private User user;
+	private ArrayList<Service> services;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,7 +67,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         activity = this;
 
-        Toolbar toolbar = findViewById(R.id.toolbar);
+        toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         tabs = findViewById(R.id.tabs);
@@ -116,10 +120,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 				user = new User(new JSONObject(tmp));
 			} catch (JSONException e) {
 				e.printStackTrace();
-				Dialog.buildMessageDialog(activity, getString(R.string.error), getString(R.string.error_json), "MA-L", null);
+				SimpleDialog.buildMessageDialog(activity, getString(R.string.error), getString(R.string.error_json), "user_json/MA-L", null);
 			}
 		}
     }
+
+	@Override
+	public void setTitle(CharSequence title) {
+		toolbar.setTitle(title);
+	}
+
+	@Override
+	public void setTitle(int titleId) {
+		toolbar.setTitle(titleId);
+	}
 
 	@Override
 	protected void onPause() {
@@ -146,8 +160,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 			navigationView.setCheckedItem(item.getItemId());
 			navController.navigate(item.getItemId());
 		} else {
-			// TODO: Logout
-			NetManager.clearToken();
+			NetManager.clearToken(activity);
 			Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
 			intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 			startActivity(intent);
@@ -156,16 +169,80 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return false;
     }
 
+	public boolean permissionsGranted(int permission) {
+    	switch (permission) {
+			case PERMISSION_LOCATION:
+				return ContextCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED;
+			case PERMISSION_STORAGE:
+				return ContextCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
+			default:
+				return false;
+		}
+	}
+
+	public boolean permissionsRequireExplanation(int permission) {
+    	switch (permission) {
+			case PERMISSION_LOCATION:
+				return ActivityCompat.shouldShowRequestPermissionRationale(activity, Manifest.permission.ACCESS_FINE_LOCATION) || ActivityCompat.shouldShowRequestPermissionRationale(activity, Manifest.permission.ACCESS_COARSE_LOCATION);
+			case PERMISSION_STORAGE:
+				return ActivityCompat.shouldShowRequestPermissionRationale(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+			default:
+				return false;
+		}
+	}
+
+	public void permissionsRequest(int permission, int callbackId) {
+    	switch (permission) {
+			case PERMISSION_LOCATION:
+				ActivityCompat.requestPermissions(activity, new String[] { Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION }, callbackId);
+				break;
+			case PERMISSION_STORAGE:
+				ActivityCompat.requestPermissions(activity, new String[] { Manifest.permission.WRITE_EXTERNAL_STORAGE }, callbackId);
+				break;
+		}
+	}
+
+	public void permissionsRun(Runnable r) {
+		if (!permissionsGranted(PERMISSION_LOCATION)) {
+			if (permissionsRequireExplanation(PERMISSION_LOCATION)) {
+				SimpleDialog.buildSelectDialog(activity, getString(R.string.permissions), getString(R.string.permissions_location_runner), getString(R.string.generic_yes), getString(R.string.generic_no), new Runnable() {
+					@Override
+					public void run() {
+						permissionsRequest(PERMISSION_LOCATION, PERMISSION_REQUEST_CALLBACK_ID);
+					}
+				}, null);
+			} else {
+				permissionsRequest(PERMISSION_LOCATION, PERMISSION_REQUEST_CALLBACK_ID);
+			}
+		} else {
+			r.run();
+		}
+	}
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
 
         menu.getItem(0).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                user.setStatus(user.getStatus() == User.STATUS_RUNNING ? User.STATUS_NOT_RUNNING : User.STATUS_RUNNING);
-                updateMenuItemRun(item);
-                return false;
+            public boolean onMenuItemClick(final MenuItem item) {
+				permissionsRun(new Runnable() {
+					@Override
+					public void run() {
+						LocationManager locationManager = (LocationManager) activity.getSystemService(Context.LOCATION_SERVICE);
+						if (locationManager != null) {
+							String provider = locationManager.getBestProvider(new Criteria(), true);
+							if (provider != null && (provider.equals(LocationManager.GPS_PROVIDER) || provider.equals(LocationManager.NETWORK_PROVIDER))) {
+								Log.e("LM", provider);
+								user.setStatus(user.getStatus() == User.STATUS_RUNNING ? User.STATUS_NOT_RUNNING : User.STATUS_RUNNING);
+								updateMenuItemRun(item);
+								return;
+							}
+						}
+						SimpleDialog.buildMessageDialog(activity, getString(R.string.error), getString(R.string.error_location_required), "lm/MA-L", null);
+					}
+				});
+				return false;
             }
         });
 
@@ -208,6 +285,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public User getUser() {
         return user;
     }
+
+    public void setUser(User user) { this.user = user; }
+
+    public ArrayList<Service> getServices() { return services; }
 
     public void navigateTo(int id) {
         navController.navigate(id);

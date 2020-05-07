@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -18,6 +19,7 @@ import runners.errand.MainActivity;
 import runners.errand.R;
 import runners.errand.adapter.RequestAdapter;
 import runners.errand.model.Request;
+import runners.errand.ui.request.RequestFragment;
 
 public class RequestsListFragment extends Fragment {
 	private static final String
@@ -53,7 +55,7 @@ public class RequestsListFragment extends Fragment {
 
 		switch (index) {
 			case 0:
-				title = getString(R.string.request_tab_requested);
+				title = getString(R.string.requests_tab_requested);
 				hidePlusButton = false;
 				listener = new View.OnClickListener() {
 					@Override
@@ -64,7 +66,7 @@ public class RequestsListFragment extends Fragment {
 				icon_id = R.drawable.ic_add;
 				break;
 			case 1:
-				title = getString(R.string.request_tab_running);
+				title = getString(R.string.requests_tab_running);
 				hidePlusButton = false;
 				listener = new View.OnClickListener() {
 					@Override
@@ -75,7 +77,7 @@ public class RequestsListFragment extends Fragment {
 				icon_id = R.drawable.ic_find;
 				break;
 			case 2:
-				title = getString(R.string.request_tab_history);
+				title = getString(R.string.requests_tab_history);
 				hidePlusButton = true;
 				break;
 		}
@@ -104,6 +106,17 @@ public class RequestsListFragment extends Fragment {
 		ListView list = root.findViewById(R.id.list_view);
 		RequestAdapter adapter = new RequestAdapter(activity, requests);
 		list.setAdapter(adapter);
+		if (requests.size() <= 0) list.setVisibility(View.GONE);
+
+		list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+				Bundle bundle = new Bundle();
+				bundle.putInt(RequestFragment.ARG_KEY_REQUEST_ID, requests.get(position).getId());
+				activity.navigateTo(R.id.nav_page_request, bundle);
+				activity.setTitle(requests.get(position).getName());
+			}
+		});
 
         return root;
     }

@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -17,6 +18,7 @@ import java.util.Locale;
 
 import runners.errand.R;
 import runners.errand.model.Request;
+import runners.errand.model.Task;
 
 public class RequestAdapter extends BaseAdapter {
     private Context context;
@@ -53,15 +55,23 @@ public class RequestAdapter extends BaseAdapter {
 		} else {
 			view = convertView;
 		}
+		
+		Request request = requests.get(position);
 
-        ((TextView) view.findViewById(R.id.item_request_name)).setText(requests.get(position).getName());
-        ((TextView) view.findViewById(R.id.item_request_date)).setText(new SimpleDateFormat("HH:mm dd.MM.yyyy", Locale.getDefault()).format(requests.get(position).getTime()));
-        ((TextView) view.findViewById(R.id.item_request_service)).setText(requests.get(position).getService().getType());
+        ((TextView) view.findViewById(R.id.item_request_name)).setText(request.getName());
+        ((TextView) view.findViewById(R.id.item_request_date)).setText(new SimpleDateFormat("HH:mm dd.MM.yyyy", Locale.getDefault()).format(request.getTime()));
+        ((TextView) view.findViewById(R.id.item_request_note)).setText(request.getNote());;
 
         ImageView image = view.findViewById(R.id.item_request_status);
 
+        LinearLayout services = view.findViewById(R.id.item_request_services);
+        for (Task task : request.getTasks()) {
+            View v = LayoutInflater.from(context).inflate(R.layout.item_service, services, false);
+            ((TextView) v.findViewById(R.id.item_request_service)).setText(task.getService().getType());
+            services.addView(v);
+        }
 
-        switch (requests.get(position).getStatus()) {
+        switch (request.getStatus()) {
             case Request.STATUS_PAUSED:
             case Request.STATUS_PENDING:
                 image.setImageResource(R.drawable.ic_status_pending);

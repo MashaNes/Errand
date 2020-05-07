@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:background="@color/colorWhite"
+	android:orientation="vertical">
+
+	<LinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="28dp"
+		android:layout_marginTop="12dp"
+		android:orientation="horizontal"
+		android:layout_marginBottom="12dp"
+		android:layout_marginHorizontal="8dp"
+		android:layout_weight="0"
+		android:background="@drawable/edit_text_login">
+
+		<TextView
+			android:id="@+id/dialog_map_address_label"
+			android:text="@string/profile_info_address"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			style="@style/TextView.Service"
+			android:layout_marginStart="8dp"
+			android:layout_marginLeft="8dp"/>
+
+		<EditText
+			android:id="@+id/dialog_map_address_et"
+			android:hint="@string/profile_info_address_hint"
+			android:inputType="textPersonName"
+			android:layout_width="0dp"
+			android:layout_height="match_parent"
+			android:layout_weight="1"
+			style="@style/EditText.Login"
+			android:paddingStart="8dp"
+			android:paddingEnd="8dp"
+			android:importantForAutofill="no"
+			tools:ignore="NestedWeights" />
+	</LinearLayout>
+
+	<FrameLayout
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:layout_weight="1">
+
+		<com.google.android.gms.maps.MapView
+			android:id="@+id/dialog_map"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent" />
+
+		<com.google.android.material.floatingactionbutton.FloatingActionButton
+			android:id="@+id/dialog_map_search_name"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_margin="16dp"
+			android:src="@drawable/ic_my_location_white"
+			app:fabSize="mini"
+			android:layout_gravity="bottom|end"/>
+	</FrameLayout>
+
+	<androidx.constraintlayout.widget.ConstraintLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_weight="0">
+
+		<Button
+			android:id="@+id/dialog_button_positive"
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:layout_marginEnd="8dp"
+			android:text="@string/generic_ok"
+			style="?android:attr/borderlessButtonStyle"
+			app:layout_constraintStart_toStartOf="parent"
+			app:layout_constraintEnd_toStartOf="@id/dialog_button_negative"
+			tools:ignore="MissingConstraints,RtlCompat" />
+
+		<Button
+			android:id="@+id/dialog_button_negative"
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:layout_marginStart="8dp"
+			android:text="@string/generic_close"
+			style="?android:attr/borderlessButtonStyle"
+			app:layout_constraintEnd_toEndOf="parent"
+			app:layout_constraintStart_toEndOf="@id/dialog_button_positive"
+			android:layout_marginLeft="8dp"
+			tools:ignore="MissingConstraints" />
+	</androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>

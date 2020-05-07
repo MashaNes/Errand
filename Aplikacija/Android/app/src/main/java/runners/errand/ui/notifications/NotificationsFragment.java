@@ -25,9 +25,9 @@ public class NotificationsFragment extends Fragment {
 		MainActivity activity = ((MainActivity) getActivity());
         if (activity == null) return root;
 
-        for (int i = 0; i < 3; i++) {
+        fragments.clear();
+        for (int i = 0; i < 3; i++)
             fragments.add(new NotificationsListFragment(i));
-        }
 
         ViewPager pager = root.findViewById(R.id.view_pager);
         CustomPagerAdapter adapter = new CustomPagerAdapter(
@@ -37,9 +37,9 @@ public class NotificationsFragment extends Fragment {
         pager.setAdapter(adapter);
 
         activity.setupTabs(pager, new int[] {
-                R.drawable.ic_tab_request,
-                R.drawable.ic_tab_offer,
-                R.drawable.ic_tab_other
+                R.drawable.ic_sit,
+                R.drawable.ic_walk,
+                R.drawable.ic_other
         });
 
         return root;

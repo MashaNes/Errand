@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_height="match_parent"
+	android:layout_width="match_parent"
+	android:paddingVertical="4dp"
+	android:background="@color/colorWhite"
+	android:paddingHorizontal="16dp"
+	android:orientation="vertical">
+
+	<TextView
+		android:id="@+id/item_address_select_address"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:textSize="@dimen/text_small"
+		android:textColor="@color/colorBlack"/>
+
+	<TextView
+		android:id="@+id/item_address_select_latlng"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:textSize="@dimen/text_small"
+		android:textColor="@color/colorDarkGrey"/>
+</LinearLayout>

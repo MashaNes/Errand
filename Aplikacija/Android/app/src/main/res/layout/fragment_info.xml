@@ -6,16 +6,52 @@
 	android:layout_height="match_parent"
 	xmlns:app="http://schemas.android.com/apk/res-auto"
 	android:orientation="vertical"
+	android:background="@color/colorWhite"
 	tools:context=".ui.profile.InfoFragment">
 
-	<TextView
-		android:id="@+id/page_title"
-		android:text="@string/profile_tab_info"
+	<androidx.constraintlayout.widget.ConstraintLayout
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:padding="8dp"
-		android:textColor="@color/colorBlack"
-		android:textSize="20sp"/>
+		android:animateLayoutChanges="true">
+
+		<TextView
+			android:id="@+id/page_title"
+			android:text="@string/profile_tab_info"
+			app:layout_constraintStart_toStartOf="parent"
+			app:layout_constraintTop_toTopOf="parent"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			style="@style/TextView.Header"/>
+
+		<ImageView
+			android:visibility="invisible"
+			android:focusable="true"
+			android:clickable="true"
+			android:id="@+id/profile_info_cancel"
+			android:contentDescription="@string/image_cd_cancel"
+			app:layout_constraintEnd_toStartOf="@id/profile_info_edit"
+			app:layout_constraintTop_toTopOf="parent"
+			app:layout_constraintBottom_toBottomOf="parent"
+			android:src="@drawable/ic_status_canceled"
+			android:padding="4dp"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"/>
+
+		<ImageView
+			android:focusable="true"
+			android:clickable="true"
+			android:id="@+id/profile_info_edit"
+			android:contentDescription="@string/image_cd_edit"
+			app:layout_constraintEnd_toEndOf="parent"
+			app:layout_constraintTop_toTopOf="parent"
+			app:layout_constraintBottom_toBottomOf="parent"
+			android:src="@drawable/ic_edit"
+			android:padding="4dp"
+			android:layout_marginEnd="4dp"
+			android:layout_marginRight="4dp"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"/>
+	</androidx.constraintlayout.widget.ConstraintLayout>
 
 	<ScrollView
 		android:layout_width="match_parent"
@@ -27,182 +63,167 @@
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:padding="16dp"
+			android:animateLayoutChanges="true"
 			android:orientation="vertical">
 
 			<de.hdodenhof.circleimageview.CircleImageView
-				android:id="@+id/profile_image"
+				android:id="@+id/profile_info_picture"
 				android:layout_gravity="center_horizontal"
 				android:src="@drawable/ic_face"
+				app:civ_circle_background_color="@color/colorLightGrey"
 				android:layout_width="96dp"
 				android:layout_height="96dp"
+				android:layout_marginBottom="12dp"
 				app:civ_border_width="0dp"/>
 
-			<androidx.constraintlayout.widget.ConstraintLayout
-				android:id="@+id/profile_name_layout"
-				android:layout_marginTop="24dp"
-				android:clickable="true"
+			<LinearLayout
 				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:focusable="true">
+				android:layout_height="28dp"
+				android:layout_marginTop="12dp"
+				android:orientation="horizontal"
+				android:background="@drawable/edit_text_login">
 
 				<TextView
-					android:id="@+id/profile_name_label"
-					app:layout_constraintTop_toTopOf="parent"
-					app:layout_constraintBottom_toBottomOf="parent"
-					app:layout_constraintStart_toStartOf="parent"
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:background="@drawable/service_background"
-					android:paddingStart="8dp"
-					android:paddingLeft="8dp"
-					android:paddingEnd="8dp"
-					android:paddingRight="8dp"
-					android:textSize="12sp"
 					android:text="@string/profile_info_name"
-					android:textColor="@color/colorBlack" />
-
-				<ImageView
-					android:id="@+id/profile_name_edit"
-					app:layout_constraintTop_toTopOf="parent"
-					app:layout_constraintBottom_toBottomOf="parent"
-					app:layout_constraintEnd_toEndOf="parent"
-					android:src="@drawable/ic_edit"
-					android:contentDescription="@string/image_cd_edit_name"
-					android:layout_width="24dp"
-					android:layout_height="24dp"/>
-
-				<TextView
-					android:id="@+id/profile_name_value"
-					app:layout_constraintTop_toTopOf="parent"
-					app:layout_constraintBottom_toBottomOf="parent"
-					app:layout_constraintStart_toEndOf="@id/profile_name_label"
-					app:layout_constraintEnd_toStartOf="@id/profile_name_edit"
-					android:layout_width="0dp"
-					android:layout_height="wrap_content"
-					android:paddingStart="8dp"
-					android:paddingLeft="8dp"
-					android:paddingEnd="8dp"
-					android:paddingRight="8dp"
-					android:lines="1"
-					android:maxLines="1"
-					android:ellipsize="end"
-					android:textColor="@color/colorBlack" />
-
-			</androidx.constraintlayout.widget.ConstraintLayout>
-
-			<androidx.constraintlayout.widget.ConstraintLayout
-				android:id="@+id/profile_email_layout"
-				android:layout_marginTop="12dp"
-				android:clickable="true"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:focusable="true">
-
-				<TextView
-					android:id="@+id/profile_email_label"
-					app:layout_constraintTop_toTopOf="parent"
-					app:layout_constraintBottom_toBottomOf="parent"
-					app:layout_constraintStart_toStartOf="parent"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
-					android:background="@drawable/service_background"
+					style="@style/TextView.Service"
+					android:layout_marginStart="8dp"
+					android:layout_marginLeft="8dp"/>
+
+				<EditText
+					android:id="@+id/profile_info_name_et"
+					android:hint="@string/profile_info_name_hint"
+					android:enabled="false"
+					android:inputType="textPersonName"
+					android:layout_width="0dp"
+					android:layout_height="match_parent"
+					android:layout_weight="1"
+					style="@style/EditText.Login"
 					android:paddingStart="8dp"
-					android:paddingLeft="8dp"
 					android:paddingEnd="8dp"
-					android:paddingRight="8dp"
-					android:textSize="12sp"
+					android:importantForAutofill="no" />
+			</LinearLayout>
+
+			<LinearLayout
+				android:layout_width="match_parent"
+				android:layout_height="28dp"
+				android:layout_marginTop="12dp"
+				android:orientation="horizontal"
+				android:background="@drawable/edit_text_login">
+
+				<TextView
+					android:text="@string/profile_info_lastname"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					style="@style/TextView.Service"
+					android:layout_marginStart="8dp"
+					android:layout_marginLeft="8dp"/>
+
+				<EditText
+					android:id="@+id/profile_info_lastname_et"
+					android:hint="@string/profile_info_lastname_hint"
+					android:enabled="false"
+					android:inputType="textPersonName"
+					android:layout_width="0dp"
+					android:layout_height="match_parent"
+					android:layout_weight="1"
+					style="@style/EditText.Login"
+					android:paddingStart="8dp"
+					android:paddingEnd="8dp"
+					android:importantForAutofill="no" />
+			</LinearLayout>
+
+			<LinearLayout
+				android:layout_width="match_parent"
+				android:layout_height="28dp"
+				android:layout_marginTop="12dp"
+				android:orientation="horizontal"
+				android:background="@drawable/edit_text_login">
+
+				<TextView
 					android:text="@string/profile_info_email"
-					android:textColor="@color/colorBlack" />
-
-				<ImageView
-					android:id="@+id/profile_email_edit"
-					app:layout_constraintTop_toTopOf="parent"
-					app:layout_constraintBottom_toBottomOf="parent"
-					app:layout_constraintEnd_toEndOf="parent"
-					android:src="@drawable/ic_edit"
-					android:contentDescription="@string/image_cd_edit_email"
-					android:layout_width="24dp"
-					android:layout_height="24dp"/>
-
-				<TextView
-					android:id="@+id/profile_email_value"
-					app:layout_constraintTop_toTopOf="parent"
-					app:layout_constraintBottom_toBottomOf="parent"
-					app:layout_constraintStart_toEndOf="@id/profile_email_label"
-					app:layout_constraintEnd_toStartOf="@id/profile_email_edit"
-					android:layout_width="0dp"
-					android:layout_height="wrap_content"
-					android:paddingStart="8dp"
-					android:paddingLeft="8dp"
-					android:paddingEnd="8dp"
-					android:paddingRight="8dp"
-					android:lines="1"
-					android:maxLines="1"
-					android:ellipsize="end"
-					android:textColor="@color/colorBlack" />
-
-			</androidx.constraintlayout.widget.ConstraintLayout>
-
-			<androidx.constraintlayout.widget.ConstraintLayout
-				android:id="@+id/profile_phone_layout"
-				android:layout_marginTop="12dp"
-				android:clickable="true"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:focusable="true">
-
-				<TextView
-					android:id="@+id/profile_phone_label"
-					app:layout_constraintTop_toTopOf="parent"
-					app:layout_constraintBottom_toBottomOf="parent"
-					app:layout_constraintStart_toStartOf="parent"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
-					android:background="@drawable/service_background"
-					android:paddingStart="8dp"
-					android:paddingLeft="8dp"
-					android:paddingEnd="8dp"
-					android:paddingRight="8dp"
-					android:textSize="12sp"
-					android:text="@string/profile_info_phone"
-					android:textColor="@color/colorBlack" />
+					style="@style/TextView.Service"
+					android:layout_marginStart="8dp"
+					android:layout_marginLeft="8dp"/>
 
-				<ImageView
-					android:id="@+id/profile_phone_edit"
-					app:layout_constraintTop_toTopOf="parent"
-					app:layout_constraintBottom_toBottomOf="parent"
-					app:layout_constraintEnd_toEndOf="parent"
-					android:src="@drawable/ic_edit"
-					android:contentDescription="@string/image_cd_edit_phone"
-					android:layout_width="24dp"
-					android:layout_height="24dp"/>
+				<EditText
+					android:id="@+id/profile_info_email_et"
+					android:hint="@string/profile_info_email_hint"
+					android:enabled="false"
+					android:inputType="textEmailAddress"
+					android:layout_width="0dp"
+					android:layout_height="match_parent"
+					android:layout_weight="1"
+					style="@style/EditText.Login"
+					android:paddingStart="8dp"
+					android:paddingEnd="8dp"
+					android:importantForAutofill="no" />
+			</LinearLayout>
+
+			<LinearLayout
+				android:layout_width="match_parent"
+				android:layout_height="28dp"
+				android:layout_marginTop="12dp"
+				android:orientation="horizontal"
+				android:background="@drawable/edit_text_login">
 
 				<TextView
-					android:id="@+id/profile_phone_value"
-					app:layout_constraintTop_toTopOf="parent"
-					app:layout_constraintBottom_toBottomOf="parent"
-					app:layout_constraintStart_toEndOf="@id/profile_phone_label"
-					app:layout_constraintEnd_toStartOf="@id/profile_phone_edit"
-					android:layout_width="0dp"
+					android:text="@string/profile_info_phone"
+					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
-					android:paddingStart="8dp"
-					android:paddingLeft="8dp"
-					android:paddingEnd="8dp"
-					android:paddingRight="8dp"
-					android:lines="1"
-					android:maxLines="1"
-					android:ellipsize="end"
-					android:textColor="@color/colorBlack" />
+					style="@style/TextView.Service"
+					android:layout_marginStart="8dp"
+					android:layout_marginLeft="8dp"/>
 
-			</androidx.constraintlayout.widget.ConstraintLayout>
+				<EditText
+					android:id="@+id/profile_info_phone_et"
+					android:hint="@string/profile_info_phone_hint"
+					android:enabled="false"
+					android:inputType="phone"
+					android:layout_width="0dp"
+					android:layout_height="match_parent"
+					android:layout_weight="1"
+					style="@style/EditText.Login"
+					android:paddingStart="8dp"
+					android:paddingEnd="8dp"
+					android:importantForAutofill="no" />
+			</LinearLayout>
+
+			<LinearLayout
+				android:id="@+id/profile_info_addresses"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:orientation="vertical"/>
+
+			<TextView
+				android:visibility="gone"
+				android:id="@+id/profile_info_address_add"
+				android:layout_width="wrap_content"
+				android:layout_marginTop="4dp"
+				android:layout_height="wrap_content"
+				android:layout_gravity="center"
+				android:text="@string/profile_info_address_add"
+				android:gravity="center_vertical"
+				android:textColor="@color/colorBlack"
+				android:drawableStart="@drawable/ic_add"
+				android:drawableLeft="@drawable/ic_add" />
 
 			<androidx.constraintlayout.widget.ConstraintLayout
 				android:id="@+id/profile_rating_layout"
 				android:layout_marginTop="12dp"
 				android:clickable="true"
+				android:paddingVertical="2dp"
+				android:paddingHorizontal="6dp"
+				android:paddingEnd="2dp"
+				android:paddingRight="2dp"
+				android:background="@drawable/edit_text_login"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:focusable="true">
+				android:focusable="true"
+				tools:ignore="RtlSymmetry">
 
 				<TextView
 					android:id="@+id/profile_rating_label"
@@ -227,6 +248,7 @@
 					app:layout_constraintEnd_toEndOf="parent"
 					android:src="@drawable/ic_goto"
 					android:contentDescription="@string/image_cd_goto_ratings"
+					android:scaleType="center"
 					android:layout_width="24dp"
 					android:layout_height="24dp"/>
 
@@ -258,6 +280,7 @@
 					android:lines="1"
 					android:maxLines="1"
 					android:ellipsize="end"
+					android:textSize="@dimen/text_medium"
 					android:textColor="@color/colorBlack" />
 
 			</androidx.constraintlayout.widget.ConstraintLayout>
@@ -266,9 +289,15 @@
 				android:id="@+id/profile_achievement_layout"
 				android:layout_marginTop="12dp"
 				android:clickable="true"
+				android:paddingVertical="2dp"
+				android:paddingHorizontal="6dp"
+				android:paddingEnd="2dp"
+				android:paddingRight="2dp"
+				android:background="@drawable/edit_text_login"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:focusable="true">
+				android:focusable="true"
+				tools:ignore="RtlSymmetry">
 
 				<TextView
 					android:id="@+id/profile_achievement_label"
@@ -293,6 +322,7 @@
 					app:layout_constraintEnd_toEndOf="parent"
 					android:src="@drawable/ic_goto"
 					android:contentDescription="@string/image_cd_goto_achievements"
+					android:scaleType="center"
 					android:layout_width="24dp"
 					android:layout_height="24dp"/>
 
@@ -324,8 +354,8 @@
 					android:lines="1"
 					android:maxLines="1"
 					android:ellipsize="end"
-					android:textColor="@color/colorBlack" />
-
+					android:textColor="@color/colorBlack"
+					android:textSize="@dimen/text_medium"/>
 			</androidx.constraintlayout.widget.ConstraintLayout>
 		</LinearLayout>
 	</ScrollView>

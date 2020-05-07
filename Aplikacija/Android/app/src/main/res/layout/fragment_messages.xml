@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+	android:orientation="vertical"
+	android:background="@color/colorWhite"
+    tools:context=".ui.request.MessagesFragment">
+
+	<TextView
+		android:id="@+id/page_title"
+		android:text="@string/request_tab_messages"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		style="@style/TextView.Header"/>
+</LinearLayout>

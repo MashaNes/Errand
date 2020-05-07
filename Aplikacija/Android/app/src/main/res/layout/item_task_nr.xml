@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	android:paddingBottom="8dp"
+	android:orientation="horizontal">
+
+	<LinearLayout
+		android:layout_width="29dp"
+		android:padding="2dp"
+		android:layout_height="match_parent"
+		android:orientation="vertical">
+
+		<TextView
+			android:id="@+id/item_task_number"
+			android:focusable="true"
+			android:layout_width="match_parent"
+			android:layout_height="25dp"
+			android:layout_marginTop="12dp"
+			android:textColor="@color/colorBlack"
+			android:background="@color/colorLightGrey"
+			android:textSize="@dimen/text_big"
+			android:textStyle="bold"
+			android:gravity="center"/>
+
+		<View
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:layout_weight="1"/>
+
+		<ImageView
+			android:id="@+id/item_task_button_up"
+			android:layout_width="match_parent"
+			android:layout_height="25dp"
+			android:layout_weight="0"
+			android:layout_marginBottom="8dp"
+			android:scaleType="fitCenter"
+			android:background="@color/colorLightGrey"
+			android:src="@drawable/ic_arrow_upward"/>
+
+		<ImageView
+			android:id="@+id/item_task_button_down"
+			android:layout_width="match_parent"
+			android:layout_height="25dp"
+			android:layout_weight="0"
+			android:layout_marginBottom="8dp"
+			android:scaleType="fitCenter"
+			android:background="@color/colorLightGrey"
+			android:src="@drawable/ic_arrow_downward"/>
+
+		<ImageView
+			android:id="@+id/item_task_button_remove"
+			android:layout_width="match_parent"
+			android:layout_height="25dp"
+			android:layout_weight="0"
+			android:scaleType="fitCenter"
+			android:background="@color/colorLightGrey"
+			android:src="@drawable/ic_remove"/>
+	</LinearLayout>
+
+	<LinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:orientation="vertical">
+
+		<LinearLayout
+			android:layout_width="match_parent"
+			android:layout_height="28dp"
+			android:layout_marginTop="12dp"
+			android:layout_marginHorizontal="8dp"
+			android:orientation="horizontal"
+			android:background="@drawable/edit_text_login">
+
+			<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				style="@style/TextView.Service"
+				android:layout_marginStart="8dp"
+				android:layout_marginLeft="8dp"
+				android:text="@string/newrequest_task_title"/>
+
+			<EditText
+				android:id="@+id/item_task_title"
+				android:hint="@string/newrequest_task_title_hint"
+				android:layout_width="0dp"
+				android:layout_height="match_parent"
+				android:layout_weight="1"
+				android:descendantFocusability="beforeDescendants"
+				style="@style/EditText.Login"
+				android:paddingStart="8dp"
+				android:paddingEnd="8dp"
+				android:importantForAutofill="no"
+				android:inputType="text" />
+		</LinearLayout>
+
+		<androidx.constraintlayout.widget.ConstraintLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:minHeight="28dp"
+			android:layout_marginHorizontal="8dp"
+			android:layout_marginTop="12dp"
+			android:paddingBottom="4dp"
+			android:orientation="horizontal"
+			android:background="@drawable/edit_text_login">
+
+			<EditText
+				android:id="@+id/item_task_body"
+				android:hint="@string/newrequest_task_description_hint"
+				app:layout_constraintTop_toTopOf="parent"
+				app:layout_constraintEnd_toEndOf="parent"
+				app:layout_constraintStart_toEndOf="@id/item_task_body_label"
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"
+				android:layout_marginTop="4dp"
+				android:layout_weight="1"
+				android:descendantFocusability="beforeDescendants"
+				style="@style/EditText.Login"
+				android:paddingStart="8dp"
+				android:paddingEnd="8dp"
+				android:importantForAutofill="no"
+				android:inputType="textMultiLine"/>
+
+			<TextView
+				android:id="@+id/item_task_body_label"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				app:layout_constraintTop_toTopOf="parent"
+				app:layout_constraintStart_toStartOf="parent"
+				style="@style/TextView.Service"
+				android:layout_marginTop="6dp"
+				android:layout_marginStart="8dp"
+				android:layout_marginLeft="8dp"
+				android:text="@string/newrequest_task_description" />
+		</androidx.constraintlayout.widget.ConstraintLayout>
+
+		<androidx.constraintlayout.widget.ConstraintLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:minHeight="28dp"
+			android:layout_marginHorizontal="8dp"
+			android:layout_marginTop="12dp"
+			android:paddingBottom="4dp"
+			android:orientation="horizontal"
+			android:background="@drawable/edit_text_login">
+
+			<LinearLayout
+				android:id="@+id/item_task_checklist"
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"
+				android:orientation="vertical"
+				app:layout_constraintTop_toTopOf="parent"
+				app:layout_constraintStart_toEndOf="@id/item_task_checklist_label"
+				app:layout_constraintEnd_toEndOf="parent"
+				android:paddingBottom="4dp"/>
+
+			<TextView
+				android:id="@+id/item_task_checklist_label"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				app:layout_constraintTop_toTopOf="parent"
+				app:layout_constraintStart_toStartOf="parent"
+				style="@style/TextView.Service"
+				android:layout_marginTop="6dp"
+				android:layout_marginStart="8dp"
+				android:layout_marginLeft="8dp"
+				android:text="@string/newrequest_task_checklist" />
+		</androidx.constraintlayout.widget.ConstraintLayout>
+
+		<LinearLayout
+			android:id="@+id/item_task_address_layout"
+			android:layout_width="match_parent"
+			android:layout_height="28dp"
+			android:layout_marginTop="12dp"
+			android:layout_marginHorizontal="8dp"
+			android:orientation="horizontal"
+			android:clickable="true"
+			android:background="@drawable/edit_text_login"
+			tools:ignore="KeyboardInaccessibleWidget">
+
+			<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				style="@style/TextView.Service"
+				android:clickable="false"
+				android:focusable="false"
+				android:layout_marginStart="8dp"
+				android:layout_marginLeft="8dp"
+				android:text="@string/newrequest_task_address"/>
+
+			<EditText
+				android:id="@+id/item_task_address"
+				android:hint="@string/newrequest_task_address_hint"
+				android:layout_width="0dp"
+				android:layout_height="match_parent"
+				android:layout_weight="1"
+				android:focusable="false"
+				style="@style/EditText.Login"
+				android:paddingStart="8dp"
+				android:paddingEnd="8dp"
+				android:importantForAutofill="no"
+				android:inputType="text" />
+		</LinearLayout>
+
+		<LinearLayout
+			android:layout_width="match_parent"
+			android:layout_height="28dp"
+			android:layout_marginTop="12dp"
+			android:layout_marginHorizontal="8dp"
+			android:orientation="horizontal"
+			android:background="@drawable/edit_text_login">
+
+			<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				style="@style/TextView.Service"
+				android:layout_marginStart="8dp"
+				android:layout_marginLeft="8dp"
+				android:text="@string/request_info_service"/>
+
+			<EditText
+				android:id="@+id/item_task_service"
+				android:hint="@string/request_info_service_hint"
+				android:layout_width="0dp"
+				android:layout_height="match_parent"
+				android:layout_weight="1"
+				android:enabled="false"
+				android:text="@string/newrequest_task_service_default"
+				style="@style/EditText.Login"
+				android:paddingStart="8dp"
+				android:paddingEnd="8dp"
+				android:importantForAutofill="no"
+				android:inputType="text" />
+		</LinearLayout>
+	</LinearLayout>
+</LinearLayout>

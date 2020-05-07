@@ -25,6 +25,7 @@ public class RequestsFragment extends Fragment {
 		MainActivity activity = (MainActivity) getActivity();
         if (activity == null) return root;
 
+        fragments.clear();
         for (int i = 0; i < 3; i++)
 			fragments.add(new RequestsListFragment(i));
 
@@ -36,9 +37,9 @@ public class RequestsFragment extends Fragment {
         pager.setAdapter(adapter);
 
         activity.setupTabs(pager, new int[] {
-                R.drawable.ic_tab_request,
-                R.drawable.ic_tab_offer,
-                R.drawable.ic_tab_history
+                R.drawable.ic_sit,
+                R.drawable.ic_walk,
+                R.drawable.ic_history
         });
 
         return root;
