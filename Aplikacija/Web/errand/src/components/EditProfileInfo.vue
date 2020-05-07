@@ -205,6 +205,9 @@ export default {
       type: Object
     }
   },
+  created() {
+    //fetch-ovati sve korisnikove home adrese
+  },
   data() {
     return {
       changedUser: JSON.parse(JSON.stringify(this.user)),
@@ -275,6 +278,10 @@ export default {
     },
     saveChanges() {
       this.changedUser.picture = this.picture;
+      //poslati 'put' zahtev kojim se menjaju sve korisnikove osnovne informacije
+      //poslati 'delete' za svaku izbrisanu adresu, i 'post' za svaku dodatu adresu (mozda da se update-uje cela lista?)
+      //ako se salju 'delete' i 'post' za svaku adresu, treba uvesti privremene nizove za pamcenje dodtih i obrisanih
+      //nizovi treba da se usklade sa 'MapView' komponentom
       this.$store.dispatch('editUser', this.changedUser)
       this.$emit('saveEditChanges')
     },

@@ -33,6 +33,7 @@ export default {
     EditProfileInfo,
     RateUser,
   },
+  //prebaciti da user bude prop, i da se prosledjuje iz komponente preko koje se doslo na ovu stranicu
   data() {
     return {
       componentToShow: "Info",
@@ -59,6 +60,7 @@ export default {
       this.user = this.$store.state.authUser
     },
     changedRoute() {
+      //promeniti da se id pribavlja iz user-a
       const routeId = this.$route.params.id
       if(routeId == this.$store.getters['getAuthUserId'])
       {

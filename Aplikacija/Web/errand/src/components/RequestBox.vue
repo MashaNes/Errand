@@ -109,6 +109,7 @@ export default {
         },
         goToProfile() 
         {
+            //prepraviti da se ruti prosledi ceo user
             this.$router.push('profile/' + this.userId)
         }
     }

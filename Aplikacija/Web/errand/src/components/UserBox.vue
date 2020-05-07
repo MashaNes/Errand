@@ -91,6 +91,7 @@ export default {
     },
     methods: {
       goToProfile() {
+        //prepraviti da se stranici kao prop prosledi user
         this.$router.push(`/profile/${this.user.id}`)
       },
       addUser(discount)
@@ -107,16 +108,6 @@ export default {
 </script>
 
 <style scoped>
-
-  /* .achievement-container {
-    margin: 30px;
-    margin-left: 100px;
-    margin-right:100px;
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-  } */
-
   .dugme
   {
     padding: 1px;

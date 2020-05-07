@@ -25,26 +25,12 @@
               >
             </div>
           </div>
-          <!-- <span 
-            v-if="isFilterLowerInvalid"
-            class="filter-invalid-span" 
-            v-text="isSerbian ? 'Između 0 i 4' : 'Between 0 and 4'"
-          ></span> -->
         </div>
-        <!--<div class="filter-with-warning">
-          
-           <span 
-            v-if="isFilterLowerInvalid"
-            class="filter-invalid-span" 
-            v-text="isSerbian ? 'Između 0 i 4' : 'Between 0 and 4'"
-          ></span> 
-        </div>-->
         <div class="filter-sort-wrap">
           <span v-text="isSerbian ? 'Sortiraj po prosečnoj oceni' : 'Sort by average rating'"></span>
           <input type="checkbox" class="filter-sort" v-model="sortByRating">
         </div>
         <div class="filter-name-wrap">
-          <!-- <span v-text="isSerbian ? 'Tražite po imenu:' : 'Search by name:'"></span> -->
           <input 
             v-model="filterName"
             class="filter-name" 
@@ -86,7 +72,6 @@
       @input="getNextPortion"
     ></b-pagination>
     <div class="users">
-      <!-- <strong> {{user.firstName}} </strong> -->
       <UserBox
         :user="user"
         v-for="user in users.users" 
@@ -157,6 +142,8 @@ export default {
     }
   },
   methods: {
+    //fetch-ovati listu korisnika filtriranu po prosledjenim parametrima
+    //prosledi se obavezno indeks od koga se pribavlja, broj elemenata ne mora
     getNextPortion() {
       if(this.lastPage != this.currentPage)
       {
@@ -180,6 +167,8 @@ export default {
         this.filterRatingHigher = 5
     },
     searchUsers() {
+      //fetch-ovati listu korisnika filtriranu po prosledjenim parametrima
+    //prosledi se obavezno indeks od koga se pribavlja, broj elemenata ne mora
       this.currentPage = 1
       this.lastPage = 1
       this.$store.dispatch('fillUsersPortion', {
@@ -192,6 +181,8 @@ export default {
     }
   },
   created() {
+    //fetch-ovati listu korisnika filtriranu po prosledjenim parametrima
+    //prosledi se obavezno indeks od koga se pribavlja, broj elemenata ne mora
     this.$store.dispatch('fillUsersPortion', {
       startingIndex: 0, 
       numOfElements: 3,

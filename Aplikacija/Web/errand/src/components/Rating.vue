@@ -36,11 +36,13 @@
           <div style="margin-bottom:10px;"> 
             <span v-if="isSerbian">Ocenio/la:</span>
             <span v-else>Rated by:</span>
+            <!-- dodati da se na klik predje na korisnika -->
             <span style="font-size:18px;"> {{givenBy}} </span>
           </div>
           <div> 
             <span v-if="isSerbian">Za zahtev:</span>
             <span v-else>For request:</span>
+            <!-- dodati da se na klik predje na sam request -->
             <span style="font-size:18px;"> {{forRequest}} </span>
           </div>
         </div>

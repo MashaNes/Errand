@@ -112,6 +112,7 @@ export default {
     },
     rateUser(request) {
       this.rating.request = request
+      //poslati 'post' za kreiranje nove ocene
       this.$store.dispatch('addRating', this.rating)
       this.showModalAreYouSure = false
     },
@@ -137,6 +138,7 @@ export default {
     window.scrollTo(0, 0)
     const userId = this.user.id
     console.log(userId)
+    //fetch-ovati sve neocenjene zahteve izmedju ulogovanog korisnika i onog ciji profil se gleda
     this.$store.dispatch('fillSpecificRequests', userId)
   }
 }
