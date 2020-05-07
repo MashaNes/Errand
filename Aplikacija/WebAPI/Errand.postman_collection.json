@@ -103,6 +103,66 @@
 			"response": []
 		},
 		{
+			"name": "GetCookie",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "16a37edb-ebd4-43ff-8f5f-c2296d668b78",
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token c59da368fabda9f06c2e9f948eeb6d5437855fcc",
+						"type": "text"
+					},
+					{
+						"key": "",
+						"value": "",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"created_by\" : 1\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "127.0.0.1:8000/api/v1/get_cookie/",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"v1",
+						"get_cookie",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "UserCreate",
 			"request": {
 				"method": "POST",
