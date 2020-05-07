@@ -7,7 +7,7 @@ URL = api/v1/{endpoint_name}
 + GET users_info/{id} 				// Returns only basic user data
 + GET users/{id} 					// Returns full user data
 + GET filtered_users/ 				// Returns users based on filters
-+ GET user_info_filtered/			// Returns users info on filters
++ GET user_info_filtered            // Returns users info on filters
 
 + GET requests_info/{id} 			// Returns only basic request data
 + GET requests/{id} 				// Returns full request data (including offers and rating)
