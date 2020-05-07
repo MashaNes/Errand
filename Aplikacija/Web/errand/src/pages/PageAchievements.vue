@@ -10,6 +10,8 @@
 import AchAndRatings from "@/components/AchAndRatings"
 
 export default {
+  //prebaciti da 'user' bude properti, i da ga salje roditelj;
+  //izbaciti isMyProfile, i ne prosledjivati ga uopste
   data() {
     return {
       user: {},
@@ -21,6 +23,7 @@ export default {
   },
   methods: {
     changedRoute() {
+      //fetch-ovati sve korisnikove ocene; id se izvlaci iz user-a
       console.log("changed route")
       const routeId = this.$route.params.id
       this.$store.dispatch('getUserAchievements', routeId)

@@ -14,6 +14,8 @@
 import AchAndRatings from "@/components/AchAndRatings"
 
 export default {
+  //prebaciti da user bude properti i da ga salje roditelj
+  //izbaciti isMyProfile
   data() {
     return {
       user: {},
@@ -25,6 +27,7 @@ export default {
   },
   methods: {
     changedRoute() {
+      //fetch-ovati sve korisnikove ocene; id izvuci iz user-a
       const routeId = this.$route.params.id
       this.$store.dispatch('getUserRatings', routeId)
       if(routeId == this.$store.getters['getAuthUserId'])

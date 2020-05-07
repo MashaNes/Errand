@@ -93,6 +93,8 @@ import AsideProfileInfo from "@/components/AsideProfileInfo"
 import {between} from "vuelidate/lib/validators"
 
 export default {
+  //izbaciti isMyProfile
+
   components: {
     Achievement,
     Rating,
@@ -161,6 +163,7 @@ export default {
     }
   },
   created() {
+    //izbaciti
     this.$store.dispatch('getAllUsers')
   }
 
