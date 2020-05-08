@@ -67,7 +67,7 @@ export default {
                this.rating.grade < 5 ? 'warning' : 'success'
       },
       givenBy() {
-        return this.rating.createdBy.firstName + " " + this.rating.createdBy.lastName
+        return this.rating.createdBy.first_name + " " + this.rating.createdBy.last_name
       },
       forRequest() {
         return this.rating.request.name

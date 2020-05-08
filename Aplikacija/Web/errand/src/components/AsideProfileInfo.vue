@@ -2,7 +2,7 @@
   <div :class="!forWideScreen ? 'pic-plus-info' : 'pic-plus-info-wide'">
     <div :class="!forWideScreen ? 'media-center' : 'media-center-wide'">
       <p class="image is-96x96">
-        <img :class="!forWideScreen ? 'rounded-image' : 'rounded-image-wide'" :src="user.picture">
+        <img :class="!forWideScreen ? 'rounded-image' : 'rounded-image-wide'" :src="'data:;base64,'+user.picture">
       </p>
     </div>        
     <div :class="!forWideScreen ? 'info-only' : 'info-only-wide'">

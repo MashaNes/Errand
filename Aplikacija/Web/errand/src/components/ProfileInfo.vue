@@ -132,7 +132,7 @@
                   <span style="font-size:20px; font-weight: 900; color:black;"> {{formattedRating}}</span> 
                 </b-progress-bar>
             </b-progress>
-            <span v-else v-text="isSerbian ? 'Korisnik do sada nije bio ocenjivan' : 'This user has not been rated yet'"></span>
+            <span v-else class="list-value" style="word-break:normal;" v-text="isSerbian ? 'Korisnik do sada nije bio ocenjivan' : 'This user has not been rated yet'"></span>
           </b-list-group-item>
         </b-list-group>
       </div>
@@ -338,10 +338,6 @@ export default {
     border-bottom:dotted 2px lightgray;
     margin-bottom: 7px;
     padding-bottom: 7px;
-  }
-
-  .phones {
-    margin-bottom: 10px;
   }
 
   .l-group-title {

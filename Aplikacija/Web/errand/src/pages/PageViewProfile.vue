@@ -41,20 +41,21 @@ export default {
   data() {
     return {
       componentToShow: "Info",
-      isMyProfile: true,
       computedUser: null
     }
   },
   computed: {
     isSerbian() {
       return this.$store.state.isSerbian
+    },
+    isMyProfile() {
+      return this.$route.params.id == this.$store.state.authUser.id
     }
   },
   methods: {
     editSaved() {
-      this.isMyProfile = true
       this.componentToShow = "Info"
-      this.user = this.$store.state.authUser
+      this.computedUser = this.$store.state.authUser
     },
     changedRoute() {
       //fetch-ovati sve korisnikove home adrese
@@ -66,12 +67,10 @@ export default {
         if(routeId == this.$store.getters['getAuthUserId'])
         {
           this.computedUser = this.$store.state.authUser
-          this.isMyProfile = true
         }
         else {
           this.$store.dispatch('getUser', routeId)
           this.computedUser = this.$store.state.user
-          this.isMyProfile = false
         }
         this.componentToShow = 'Info'
       }

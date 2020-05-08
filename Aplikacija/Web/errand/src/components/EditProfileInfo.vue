@@ -12,7 +12,7 @@
             @mouseleave.prevent="onDragLeave"
             @click="$refs.file.click()"
           >
-            <img class="rounded-image" :src="picture">
+            <img class="rounded-image" :src="'data:;base64,'+picture">
             <img 
               v-show="isDragged" 
               :class="['rounded-image', 'semi-transparent']" 
@@ -51,9 +51,9 @@
                 v-model="changedUser.first_name"
               >
             </div>
-            <div v-if = "$v.changedUser.firstName.$error" class = "form-error">
+            <div v-if="$v.changedUser.first_name.$error" class = "form-error">
               <span 
-                v-if = "!$v.changedUser.firstName.required"
+                v-if="!$v.changedUser.first_name.required"
                 class = "help is-danger"
               > 
                 <span v-if="isSerbian">Morate uneti ime</span>
@@ -85,9 +85,9 @@
                 v-model="changedUser.last_name"
               >
             </div>
-            <div v-if = "$v.changedUser.lastName.$error" class = "form-error">
+            <div v-if="$v.changedUser.last_name.$error" class = "form-error">
               <span 
-                v-if = "!$v.changedUser.lastName.required"
+                v-if="!$v.changedUser.last_name.required"
                 class = "help is-danger"
               > 
                 <span v-if="isSerbian">Morate uneti prezime</span>
@@ -133,24 +133,9 @@
               
             />
             <div class="list-value">
-              <!-- <div class="phones" v-for="p in firstElements('phone')" :key="p">
-                <img src="@/assets/remove.svg" height="15" width="15" class="acc-or-remove-icon" @click="removeElement('phone', p)"> 
-                <span>{{ p }}</span>
-              </div>
-              <div v-if="phoneArrayLength">
-                <img src="@/assets/remove.svg" height="15" width="15" class="acc-or-remove-icon" @click="removeElement('phone', lastElement('phone'))"> 
-                <span v-text="lastElement('phone')"></span>
-              </div> -->
-              <div class="phones">
-                {{user.phone}}
-              </div>
-              <div class = "control" style="margin-top: 10px">
-                <label class = "register-label" v-if="isSerbian"> Dodajte broj telefona: </label>
-                <label class = "register-label" v-else> Add a phone number: </label>
+              <div class = "control">
                 <div class="flex-row-elements">
-                  <VuePhoneNumberInput style="min-width: 250px" no-example v-model="newPhoneNumber"/>
-                  <!-- <img v-if="newPhoneNumber != ''" src="@/assets/confirm.svg" height="23" width="23" class="acc-or-remove-icon" @click="addElement('phone', newPhoneNumber)">   -->
-                  <img v-if="newPhoneNumber != ''" src="@/assets/confirm.svg" height="23" width="23" class="acc-or-remove-icon">
+                  <VuePhoneNumberInput style="min-width: 250px" no-example v-model="changedUser.phone"/>
                 </div>
               </div>
             </div>
@@ -223,14 +208,14 @@ export default {
       newPicture: null,
       isDragged: false,
       dragCounter: 0,
-      toasterMessage: "",
-      showMapView: false
+      showMapView: false,
+      pictureChanged: false
     }
   },
   validations: {
     changedUser: {
-      lastName: { required },
-      firstName: { required }
+      last_name: { required },
+      first_name: { required }
     }
   },
   computed: {
@@ -238,7 +223,15 @@ export default {
       return this.$store.state.isSerbian
     },
     picture() {
-      return this.newPicture ? this.newPicture : this.user.picture
+      if(this.newPicture)
+      {
+        const splitted = this.newPicture.split(',')
+        if (splitted.length == 2)
+          return splitted[1]
+        else 
+          return this.picture
+      }
+      return this.user.picture
     },
     // phoneArrayLength() {
     //   return this.changedUser['phone'].length
@@ -277,12 +270,13 @@ export default {
       return this.changedUser[resource][length-1];
     },
     saveChanges() {
-      this.changedUser.picture = this.picture;
+      this.changedUser.picture = this.picture
       //poslati 'put' zahtev kojim se menjaju sve korisnikove osnovne informacije
       //poslati 'delete' za svaku izbrisanu adresu, i 'post' za svaku dodatu adresu (mozda da se update-uje cela lista?)
       //ako se salju 'delete' i 'post' za svaku adresu, treba uvesti privremene nizove za pamcenje dodtih i obrisanih
       //nizovi treba da se usklade sa 'MapView' komponentom
-      this.$store.dispatch('editUser', this.changedUser)
+      this.$store.state.authUser = this.changedUser
+      this.$store.dispatch('editUser', this.pictureChanged)
       this.$emit('saveEditChanges')
     },
     pictureSelected(e) {
@@ -316,6 +310,7 @@ export default {
       }
       this.isDragged = false;
       this.dragCounter = 0;
+      this.pictureChanged = true
     },
     onDragEnter() {
       this.dragCounter ++;

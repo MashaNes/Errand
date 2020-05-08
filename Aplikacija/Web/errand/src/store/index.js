@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import Vue from "vue"
 import Vuex from "vuex"
 import router from "@/router"
@@ -156,9 +157,39 @@ export default new Vuex.Store({
             const filteredRatings = Object.values(allRatings).filter(r => r.ratedUser == userId)
             commit('setUserRatings', filteredRatings)
         },
-        editUser({commit}, newUser) {
+        editUser({commit}, pictureChanged) {
+            fetch('http://localhost:8000/api/v1/user_update/', {
+                method: 'PUT',
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Token " + this.state.token
+                },
+                body: JSON.stringify({
+                    "created_by": this.state.authUser.id,
+                    "email": this.state.authUser.email,
+                    "first_name": this.state.authUser.first_name,
+                    "last_name": this.state.authUser.last_name,
+                    "password": null,
+                    "phone": this.state.authUser.phone,
+                    "picture": pictureChanged ? this.state.authUser.picture : null,
+                    "min_rating": this.state.authUser.min_rating,
+                    "max_dist": this.state.authUser.max_dist,
+                    "benefit_discount": this.state.authUser.benefit_discount,
+                    "benefit_requirement": this.state.authUser.benefit_requirement
+                })
+            }).then(p => {
 
-            commit('setChangedUser', newUser)
+                if(p.ok) {
+                    p.json().then(data=> {
+                        console.log(data)
+                        console.log(this.state.authUser)
+                    })
+                }
+                else {
+                    console.log("error")
+                }
+
+            })
         },
         fillUsersPortion({commit}, {startingIndex, numOfElements, filterName, filterRatingLower, filterRatingHigher}) {
             
