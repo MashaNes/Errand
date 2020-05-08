@@ -13,7 +13,7 @@
           <strong v-else-if="isSerbian"> Ocene </strong>
           <strong v-else> Ratings </strong>
         </router-link>
-        <router-link :to = "'/profile/' + user.id" class="button is-primary" style="width:100%;">
+        <router-link :to = "goToProfile()" class="button is-primary" style="width:100%;">
           <strong v-if="isSerbian">Detalji profila</strong>
           <strong v-else>Profile details</strong>
         </router-link>
@@ -93,7 +93,6 @@ import AsideProfileInfo from "@/components/AsideProfileInfo"
 import {between} from "vuelidate/lib/validators"
 
 export default {
-  //izbaciti isMyProfile
 
   components: {
     Achievement,
@@ -107,10 +106,6 @@ export default {
     },
     user: {
       type: Object, 
-      required: true
-    },
-    isMyProfile: {
-      type: Boolean,
       required: true
     }
   },
@@ -126,7 +121,7 @@ export default {
   },
   computed: {
     fullUserName() {
-      return this.user.firstName + " " +this.user.lastName
+      return this.user.first_name + " " +this.user.last_name
     },
     isSerbian() {
       return this.$store.state.isSerbian
@@ -160,6 +155,16 @@ export default {
     resetFilterHigher() {
       if(this.filterValueHigher > 5 || this.filterValueHigher < 2 || !this.filterValueHigher || this.filterValueLower >= this.filterValueHigher)
         this.filterValueHigher = 5
+    },
+    goToProfile()
+    {
+      return {
+        name: "PageViewProfile", 
+        params: {
+          id: this.user.id,
+          user: this.user
+        }
+      }
     }
   },
   created() {

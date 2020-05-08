@@ -4,7 +4,7 @@
       <div class="picture-side">
         <div class="media-center">
           <p class="image is-128x128">
-            <img class="rounded-image" :src="user.picture">
+            <img class="rounded-image" :src="'data:;base64,' + user.picture">
           </p>
         </div>
         <div class="content">
@@ -101,8 +101,9 @@
               style = "margin-right: 15px"
             />
             <div class="list-value">
-              <div class="phones" v-for="p in firstElements('phone')" :key="p">{{ p }}</div>
-              <div v-text="lastElement('phone')"></div>
+              <!-- <div class="phones" v-for="p in firstElements('phone')" :key="p">{{ p }}</div>
+              <div v-text="lastElement('phone')"></div> -->
+              <div class="phones">{{user.phone}}</div>
             </div>
           </b-list-group-item>
           <b-list-group-item v-if="isMyProfile">
@@ -113,8 +114,9 @@
               style = "margin-right: 15px"
             />
             <div class="list-value">
-              <div class="addr-or-phone-item" v-for="a in firstElements('homeAddress')" :key="a">{{ a }}</div>
-              <div v-text="lastElement('homeAddress')"></div>
+              <!-- <div class="addr-or-phone-item" v-for="a in firstElements('homeAddress')" :key="a">{{ a }}</div>
+              <div v-text="lastElement('homeAddress')"></div> -->
+              <div class="addr-or-phone-item">Zmaj Jovina 3 Sokobanja</div>
             </div>
           </b-list-group-item>
         </b-list-group>
@@ -122,14 +124,15 @@
           <b-list-group-item>
             <strong style="font-size:20px" v-if="isSerbian"> Prosečna ocena: </strong>
             <strong style="font-size:20px" v-else> Average rating: </strong>
-            <b-progress class="mt-2" max="5.0" height="30px">
+            <b-progress class="mt-2" max="5.0" height="30px" v-if="user.avg_rating">
                 <b-progress-bar 
-                  :value="user.rating"
+                  :value="user.avg_rating"
                   :variant="progressBarVariant"
                 > 
                   <span style="font-size:20px; font-weight: 900; color:black;"> {{formattedRating}}</span> 
                 </b-progress-bar>
             </b-progress>
+            <span v-else v-text="isSerbian ? 'Korisnik do sada nije bio ocenjivan' : 'This user has not been rated yet'"></span>
           </b-list-group-item>
         </b-list-group>
       </div>
@@ -156,8 +159,8 @@ import ModalAreYouSure from "@/components/ModalAreYouSure"
 export default {
   props: {
     user: {
-      required: true,
-      type: Object
+      type: Object,
+      required: true
     },
     isMyProfile: {
       type: Boolean,
@@ -184,29 +187,29 @@ export default {
       return this.$store.state.isSerbian
     },
     fullUserName() {
-      return this.user.firstName + " " +this.user.lastName
+      return this.user.first_name + " " +this.user.last_name
     },
     progressBarVariant() {
-      return this.user.rating < 2.5 ? 'danger' : 
-             this.user.rating < 4.5 ? 'warning' : 'success'
+      return this.user.avg_rating < 2.5 ? 'danger' : 
+             this.user.avg_rating < 4.5 ? 'warning' : 'success'
     },
     formattedRating() {
-      return this.user.rating.toFixed(2);
+      return this.user.avg_rating ? this.user.avg_rating.toFixed(2) : null
     }
   },
   methods: {
     goToProfileEdit() {
       this.$emit("editProfile");
     },
-    firstElements(resource) {
-      const lastIndex = this.user[resource].length;
-      const arrayCopy = [...this.user[resource]];
-      arrayCopy.splice(lastIndex-1, 1);
-      return arrayCopy;
-    },
-    lastElement(resource) {
-      return this.user[resource][this.user[resource].length-1];
-    },
+    // firstElements(resource) {
+    //   const lastIndex = this.user[resource].length;
+    //   const arrayCopy = [...this.user[resource]];
+    //   arrayCopy.splice(lastIndex-1, 1);
+    //   return arrayCopy;
+    // },
+    // lastElement(resource) {
+    //   return this.user[resource][this.user[resource].length-1];
+    // },
     tryReport(rep) {
       this.report.reportType = rep.reportType
       this.report.comment = rep.comment

@@ -32,7 +32,8 @@
           style = "margin-right: 10%"
         />
         <div class="phone-number">
-          <div v-for="p in user.phone" :key="p">{{ p }}</div>
+          <!-- <div v-for="p in user.phone" :key="p">{{ p }}</div> -->
+          <div>{{user.phone}}</div>
         </div>
       </div>
     </div>
@@ -53,7 +54,7 @@ export default {
   },
   computed: {
     fullUserName() {
-      return this.user.firstName + " " +this.user.lastName
+      return this.user.first_name + " " +this.user.last_name
     },
     isSerbian() {
       return this.$store.state.isSerbian

@@ -2,8 +2,9 @@
     <AchAndRatings 
       :tab="'Achievements'" 
       :user="user"
-      :isMyProfile="isMyProfile"
+      
     />
+    <!-- :isMyProfile="isMyProfile" -->
 </template>
 
 <script>

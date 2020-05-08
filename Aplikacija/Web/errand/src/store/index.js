@@ -161,9 +161,9 @@ export default new Vuex.Store({
             const users = fetchUsers();
             const filteredUsers = Object.values(users).filter((user) => {
                 
-                const fullName = user.firstName + " " + user.lastName
+                const fullName = user.first_name + " " + user.last_name
                 const okFilterName = !filterName ? true : fullName.toLowerCase().includes(filterName.toLowerCase())
-                const okFilterRating = user.rating >= filterRatingLower && user.rating <= filterRatingHigher
+                const okFilterRating = user.avg_rating >= filterRatingLower && user.avg_rating <= filterRatingHigher
                 
                 return (okFilterName && okFilterRating)
             })

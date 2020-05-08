@@ -37,13 +37,13 @@
             <span v-if="isSerbian">Ocenio/la:</span>
             <span v-else>Rated by:</span>
             <!-- dodati da se na klik predje na korisnika -->
-            <span style="font-size:18px;"> {{givenBy}} </span>
+            <span class ="link-label" @click="goToProfile()"> {{givenBy}} </span>
           </div>
           <div> 
             <span v-if="isSerbian">Za zahtev:</span>
             <span v-else>For request:</span>
             <!-- dodati da se na klik predje na sam request -->
-            <span style="font-size:18px;"> {{forRequest}} </span>
+            <span class ="link-label"> {{forRequest}} </span>
           </div>
         </div>
       </b-card-footer>
@@ -72,20 +72,23 @@ export default {
       forRequest() {
         return this.rating.request.name
       }
+    },
+    methods: {
+      goToProfile()
+      {
+        this.$router.push({
+          name: "PageViewProfile", 
+          params: {
+            id: this.$store.state.authUser.id, 
+            user: this.$store.state.authUser
+          }
+        })
+      }
     }
 }
 </script>
 
 <style scoped>
-
-  /* .achievement-container {
-    margin: 30px;
-    margin-left: 100px;
-    margin-right:100px;
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-  } */
 
   .card-header {
     font-size: 15px;
@@ -138,6 +141,16 @@ export default {
     flex-grow: 1;
     margin-left:2%;
     word-break: break-all;
+  }
+
+  .link-label {
+    font-size:18px;
+  }
+
+  .link-labe:hover {
+    cursor: pointer !important;
+    text-decoration: underline;
+    color:lightseagreen;
   }
 
   @media only screen and (max-width:650px)
