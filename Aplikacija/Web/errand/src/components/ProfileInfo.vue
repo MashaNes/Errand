@@ -4,7 +4,7 @@
       <div class="picture-side">
         <div class="media-center">
           <p class="image is-128x128">
-            <img class="rounded-image" :src="'data:;base64,' + user.picture">
+            <img class="rounded-image" :src="user.picture ? 'data:;base64,' + user.picture : require('../assets/no-picture.png')">
           </p>
         </div>
         <div class="content">

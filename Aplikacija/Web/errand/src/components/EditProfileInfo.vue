@@ -12,7 +12,7 @@
             @mouseleave.prevent="onDragLeave"
             @click="$refs.file.click()"
           >
-            <img class="rounded-image" :src="'data:;base64,'+picture">
+            <img class="rounded-image" :src="user.picture ? 'data:;base64,'+picture : require('../assets/no-picture.png')">
             <img 
               v-show="isDragged" 
               :class="['rounded-image', 'semi-transparent']" 
