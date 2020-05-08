@@ -2,20 +2,20 @@
     <div class = "wrapper">
       <ProfileInfo 
         v-if="componentToShow == 'Info'"
-        :user="user" 
+        :user="computedUser" 
         :isMyProfile="isMyProfile"
         @editProfile="componentToShow = 'Edit'"
         @rateUser="componentToShow = 'Rate'"
       />
       <EditProfileInfo
         v-if="componentToShow == 'Edit'"
-        :user="user"
+        :user="computedUser"
         @saveEditChanges="editSaved"
         @cancelChanges="componentToShow = 'Info'"
       />
       <RateUser
         v-if="componentToShow == 'Rate'"
-        :user="user"
+        :user="computedUser"
         @cancelRate="componentToShow = 'Info'"
       />
     </div>
@@ -28,29 +28,26 @@ import EditProfileInfo from "@/components/EditProfileInfo"
 import RateUser from "@/components/RateUser"
 
 export default {
+  props: {
+    user: {
+      required: false
+    }
+  },
   components: {
     ProfileInfo,
     EditProfileInfo,
     RateUser,
   },
-  //prebaciti da user bude prop, i da se prosledjuje iz komponente preko koje se doslo na ovu stranicu
   data() {
     return {
       componentToShow: "Info",
-      user: {},
-      isMyProfile: true
+      isMyProfile: true,
+      computedUser: null
     }
   },
   computed: {
     isSerbian() {
       return this.$store.state.isSerbian
-    },
-    fullUserName() {
-      return this.user.firstName + " " +this.user.lastName
-    },
-    progressBarVariant() {
-      return this.user.rating < 2 ? 'danger' : 
-             this.user.rating < 5 ? 'warning' : 'success'
     }
   },
   methods: {
@@ -60,23 +57,30 @@ export default {
       this.user = this.$store.state.authUser
     },
     changedRoute() {
-      //promeniti da se id pribavlja iz user-a
-      const routeId = this.$route.params.id
-      if(routeId == this.$store.getters['getAuthUserId'])
+      //fetch-ovati sve korisnikove home adrese
+      // eslint-disable-next-line no-debugger
+      //debugger
+      if(!this.user)
       {
-        this.user = this.$store.state.authUser
-        this.isMyProfile = true
+        const routeId = this.$route.params.id
+        if(routeId == this.$store.getters['getAuthUserId'])
+        {
+          this.computedUser = this.$store.state.authUser
+          this.isMyProfile = true
+        }
+        else {
+          this.$store.dispatch('getUser', routeId)
+          this.computedUser = this.$store.state.user
+          this.isMyProfile = false
+        }
+        this.componentToShow = 'Info'
       }
-      else {
-        this.$store.dispatch('getUser', routeId)
-        this.user = this.$store.state.user
-        this.isMyProfile = false
-      }
-      this.componentToShow = 'Info'
+      else this.computedUser = this.user
     }
   },
   created() {
     this.changedRoute()
+
     // ako nije moj profil proveri da li je popunjena moja beneficirana lista, ako nije posalji get da se popuni
     //(onda se dodaje jedan computed isBenefited koji je true ako je ovaj user u listi beneficiranih, ako nije onda je false i na osnovu njega je dugme za dodavanje disabled ili ne)
   },

@@ -79,6 +79,7 @@ const router = new Router(
                 path: "/profile/:id",
                 name: "PageViewProfile",
                 component: PageViewProfile,
+                props: true,
                 beforeEnter(to,from,next)
                 {
                     if(store.state.logedIn && !store.state.isAdmin)
