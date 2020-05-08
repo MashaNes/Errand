@@ -39,16 +39,16 @@
                 class="input is-medium"
                 type="text"
                 placeholder="Ime"
-                @blur="$v.changedUser.firstName.$touch()"
-                v-model="changedUser.firstName"
+                @blur="$v.changedUser.first_name.$touch()"
+                v-model="changedUser.first_name"
               >
               <input
                 v-else 
                 class="input is-medium"
                 type="text"
                 placeholder="Name"
-                @blur="$v.changedUser.firstName.$touch()"
-                v-model="changedUser.firstName"
+                @blur="$v.changedUser.first_name.$touch()"
+                v-model="changedUser.first_name"
               >
             </div>
             <div v-if = "$v.changedUser.firstName.$error" class = "form-error">
@@ -73,16 +73,16 @@
                 class="input is-medium"
                 type="text"
                 placeholder="Prezime"
-                @blur="$v.changedUser.lastName.$touch()"
-                v-model="changedUser.lastName"
+                @blur="$v.changedUser.last_name.$touch()"
+                v-model="changedUser.last_name"
               >
               <input 
                 v-else
                 class="input is-medium"
                 type="text"
                 placeholder="Last name"
-                @blur="$v.changedUser.lastName.$touch()"
-                v-model="changedUser.lastName"
+                @blur="$v.changedUser.last_name.$touch()"
+                v-model="changedUser.last_name"
               >
             </div>
             <div v-if = "$v.changedUser.lastName.$error" class = "form-error">
@@ -133,20 +133,24 @@
               
             />
             <div class="list-value">
-              <div class="phones" v-for="p in firstElements('phone')" :key="p">
+              <!-- <div class="phones" v-for="p in firstElements('phone')" :key="p">
                 <img src="@/assets/remove.svg" height="15" width="15" class="acc-or-remove-icon" @click="removeElement('phone', p)"> 
                 <span>{{ p }}</span>
               </div>
               <div v-if="phoneArrayLength">
                 <img src="@/assets/remove.svg" height="15" width="15" class="acc-or-remove-icon" @click="removeElement('phone', lastElement('phone'))"> 
                 <span v-text="lastElement('phone')"></span>
+              </div> -->
+              <div class="phones">
+                {{user.phone}}
               </div>
               <div class = "control" style="margin-top: 10px">
                 <label class = "register-label" v-if="isSerbian"> Dodajte broj telefona: </label>
                 <label class = "register-label" v-else> Add a phone number: </label>
                 <div class="flex-row-elements">
                   <VuePhoneNumberInput style="min-width: 250px" no-example v-model="newPhoneNumber"/>
-                  <img v-if="newPhoneNumber != ''" src="@/assets/confirm.svg" height="23" width="23" class="acc-or-remove-icon" @click="addElement('phone', newPhoneNumber)">  
+                  <!-- <img v-if="newPhoneNumber != ''" src="@/assets/confirm.svg" height="23" width="23" class="acc-or-remove-icon" @click="addElement('phone', newPhoneNumber)">   -->
+                  <img v-if="newPhoneNumber != ''" src="@/assets/confirm.svg" height="23" width="23" class="acc-or-remove-icon">
                 </div>
               </div>
             </div>
@@ -160,13 +164,16 @@
               
             />
             <div class="list-value">
-              <div class="address" v-for="a in firstElements('homeAddress')" :key="a">
+              <!-- <div class="address" v-for="a in firstElements('homeAddress')" :key="a">
                 <img src="@/assets/remove.svg" height="15" width="15" class="acc-or-remove-icon" @click="removeElement('homeAddress', a)">
                 <span >{{ a }}</span>
               </div>
               <div v-if="addressArrayLength">
                 <img src="@/assets/remove.svg" height="15" width="15" class="acc-or-remove-icon" @click="removeElement('homeAddress', lastElement('homeAddress'))"> 
                 <span >{{lastElement('homeAddress')}} </span>
+              </div> -->
+              <div class="address">
+                Zmaj Jovina 3, Sokobanja
               </div>
               <div class="field flex-row-elements">
                 <b-button 
@@ -206,7 +213,7 @@ export default {
     }
   },
   created() {
-    //fetch-ovati sve korisnikove home adrese
+    
   },
   data() {
     return {
@@ -230,22 +237,15 @@ export default {
     isSerbian() {
       return this.$store.state.isSerbian
     },
-    fullUserName() {
-      return this.user.firstName + " " +this.user.lastName
-    },
-    progressBarVariant() {
-      return this.user.rating < 2 ? 'danger' : 
-             this.user.rating < 5 ? 'warning' : 'success'
-    },
     picture() {
       return this.newPicture ? this.newPicture : this.user.picture
     },
-    phoneArrayLength() {
-      return this.changedUser['phone'].length
-    },
-    addressArrayLength() {
-      return this.changedUser['homeAddress'].length
-    },
+    // phoneArrayLength() {
+    //   return this.changedUser['phone'].length
+    // },
+    // addressArrayLength() {
+    //   return this.changedUser['homeAddress'].length
+    // },
     isFormInvalid(){
       return this.$v.changedUser.$invalid
     },
