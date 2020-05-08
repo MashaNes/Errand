@@ -255,7 +255,6 @@ export default new Vuex.Store({
         // eslint-disable-next-line no-unused-vars
         getUserById({commit}, payload)
         {
-            this.state.isDataLoaded = false
             fetch("http://127.0.0.1:8000/api/v1/users_info/" + payload.id,
             {
                 method: 'GET',
@@ -275,7 +274,6 @@ export default new Vuex.Store({
                             this.state.logedIn = true
                             this.state.token = payload.token
                             this.state.isAdmin = data["is_admin"]
-                            this.state.isDataLoaded = true
                             if(router.currentRoute["path"] == "/401")
                                 router.back();
                         })
@@ -283,7 +281,6 @@ export default new Vuex.Store({
                     else
                     {
                         console.log("Error")
-                        this.state.isDataLoaded = true
                     }
                 });
         },
