@@ -23,15 +23,24 @@ export default {
       user:
       {
         id: -1,
-        token: ""
+        token: "",
+        first_name: "",
+        last_name: ""
       }
     }
   },
   created()
   {
-    this.user.token = this.$cookie.get('token');
-    this.user.id = this.$cookie.get('id');
-    this.$store.dispatch("getUserById", this.user)
+    this.user.first_name = this.$cookie.get('ime');
+    this.user.last_name = this.$cookie.get('prezime');
+    if(this.user.first_name != null && this.user.last_name != null)
+    {
+      this.$store.state.authUser = this.user
+      this.$store.state.logedIn = true
+      this.user.token = this.$cookie.get('token');
+      this.user.id = this.$cookie.get('id');
+      this.$store.dispatch("getUserById", this.user)
+    }
   }
 }
 </script>

@@ -83,6 +83,8 @@ export default new Vuex.Store({
                             this.state.isDataLoaded = true
                             Vue.cookie.set('token',data['token'], 1);
                             Vue.cookie.set('id',this.state.authUser.id, 1);
+                            Vue.cookie.set('ime',this.state.authUser.first_name, 1);
+                            Vue.cookie.set('prezime',this.state.authUser.last_name, 1);
                             router.push('/requests')
                         })
                     }
@@ -129,6 +131,8 @@ export default new Vuex.Store({
                             this.state.isDataLoaded = true
                             Vue.cookie.set('token',data['token'], 1);
                             Vue.cookie.set('id',this.state.authUser.id, 1);
+                            Vue.cookie.set('ime',this.state.authUser.first_name, 1);
+                            Vue.cookie.set('prezime',this.state.authUser.last_name, 1);
                             router.push('/requests')
                         })
                     }
@@ -161,9 +165,9 @@ export default new Vuex.Store({
             const users = fetchUsers();
             const filteredUsers = Object.values(users).filter((user) => {
                 
-                const fullName = user.firstName + " " + user.lastName
+                const fullName = user.first_name + " " + user.last_name
                 const okFilterName = !filterName ? true : fullName.toLowerCase().includes(filterName.toLowerCase())
-                const okFilterRating = user.rating >= filterRatingLower && user.rating <= filterRatingHigher
+                const okFilterRating = user.avg_rating >= filterRatingLower && user.avg_rating <= filterRatingHigher
                 
                 return (okFilterName && okFilterRating)
             })
@@ -255,6 +259,7 @@ export default new Vuex.Store({
         // eslint-disable-next-line no-unused-vars
         getUserById({commit}, payload)
         {
+            this.state.isDataLoaded = false
             fetch("http://127.0.0.1:8000/api/v1/users_info/" + payload.id,
             {
                 method: 'GET',
@@ -276,10 +281,12 @@ export default new Vuex.Store({
                             this.state.isAdmin = data["is_admin"]
                             if(router.currentRoute["path"] == "/401")
                                 router.back();
+                            this.state.isDataLoaded = true
                         })
                     }
                     else
                     {
+                        this.state.isDataLoaded = true
                         console.log("Error")
                     }
                 });
@@ -305,6 +312,10 @@ export default new Vuex.Store({
                         console.log("loged out")
                         this.state.authUser = null
                         this.state.token = null
+                        Vue.cookie.delete('id');
+                        Vue.cookie.delete('token');
+                        Vue.cookie.delete('ime');
+                        Vue.cookie.delete('prezime');
                     }
                     else
                     {

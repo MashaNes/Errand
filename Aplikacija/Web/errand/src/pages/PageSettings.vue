@@ -107,7 +107,7 @@ export default {
             scale: (this.$store.state.authUser.min_rating - 1) * 25,
             maxDistance: this.$store.state.authUser.max_dist,
             IsMaxDistance: true,
-            discount: this.$store.state.authUser.benefit_discount,
+            discount: this.$store.state.authUser.benefit_discount * 100,
             brSaradnji: this.$store.state.authUser.benefit_requirement,
             isEditing: false
         }
@@ -184,7 +184,7 @@ export default {
         {
             this.$store.state.authUser.min_rating = this.minRating
             this.$store.state.authUser.max_dist = this.maxDistance
-            this.$store.state.authUser.benefit_discount = this.discount
+            this.$store.state.authUser.benefit_discount = this.discount / 100
             this.$store.state.authUser.benefit_requirement = this.brSaradnji
             this.$store.dispatch("updateUserInfo")
             this.isEditing = false
@@ -193,7 +193,7 @@ export default {
         {
             this.scale = (this.$store.state.authUser.min_rating - 1) * 25,
             this.maxDistance = this.$store.state.authUser.max_dist
-            this.discount = this.$store.state.authUser.benefit_discount
+            this.discount = this.$store.state.authUser.benefit_discount * 100
             this.brSaradnji = this.$store.state.authUser.benefit_requirement
             this.isEditing = false
         }
