@@ -17,7 +17,21 @@ export default {
     TheFooter,
     TheNavbar
   },
-  created(){
+  data()
+  {
+    return{
+      user:
+      {
+        id: -1,
+        token: ""
+      }
+    }
+  },
+  created()
+  {
+    this.user.token = this.$cookie.get('token');
+    this.user.id = this.$cookie.get('id');
+    this.$store.dispatch("getUserById", this.user)
   }
 }
 </script>

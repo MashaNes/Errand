@@ -10,8 +10,9 @@
                         <span v-else> Minimal rating: </span>
                     </div>
                     <div class="settings-row">
-                        <input type="range" class="form-control-range skala" id="formControlRange" v-model="scale">
-                        <span class="brojka"> {{minRating}}</span>
+                        <input type="range" class="form-control-range skala" id="formControlRange" v-model="scale" v-if="isEditing">
+                        <span class="brojka" v-if="isEditing"> {{minRating}}</span>
+                        <span class="brojka fs1" v-else> {{minRating}}</span>
                     </div>
                 </div>
                 <div class="settings-element"> 
@@ -24,7 +25,9 @@
                         <div class="settings-row">
                             <input type="number" class="skala" v-model="maxDistance" min="0.1" max="1000" step="0.1" :disabled="!IsMaxDistance" 
                                    :class="{'ne-valja' : isMaxDistInvalid}"
-                                   @blur="MaxDistReset">
+                                   @blur="MaxDistReset"
+                                   v-if="isEditing">
+                            <div class="brojka fs2" v-else> {{maxDistance}} </div>
                             <span class="brojka"> km </span>
                             <!--<input class = "checkBox" type="checkbox" v-model="IsMaxDistance">-->
                         </div>
@@ -42,7 +45,9 @@
                         <div class="settings-row">
                             <input type="number" class="skala" v-model="discount" min="0" max="100" step="5"
                                    :class="{'ne-valja' : isDiscountInvalid}"
-                                   @blur="DiscountReset">
+                                   @blur="DiscountReset"
+                                   v-if="isEditing">
+                            <div class="brojka fs3" v-else> {{discount}} </div>
                             <span class="brojka"> % </span>
                         </div>
                         <label v-if="isDiscountInvalid && isSerbian" class="danger">Između 0 i 100</label>
@@ -59,12 +64,22 @@
                         <div class="settings-row">
                             <input type="number" class="skala" v-model="brSaradnji" min="0" max="20" step="1"
                                    :class="{'ne-valja' : isBrSaradnjiInvalid}"
-                                   @blur="BrSaradnjiReset">
+                                   @blur="BrSaradnjiReset"
+                                   v-if="isEditing">
+                            <div class="brojka" v-else> {{brSaradnji}} </div>
                             <span class="skriveno"> % </span>
                         </div>
                         <label v-if="isBrSaradnjiInvalid && isSerbian" class="danger">Između 0 i 20</label>
                         <label v-if="isBrSaradnjiInvalid && !isSerbian" class="danger">Between 0 and 20</label>
                     </div>
+                </div>
+                <div class="button-element">
+                    <button v-if="!isEditing && isSerbian" type="button" class="btn btn-primary dugme-edit" @click="isEditing = true">Izmeni</button>
+                    <button v-if="!isEditing && !isSerbian" type="button" class="btn btn-primary dugme-edit" @click="isEditing = true">Edit</button>
+                    <button v-if="isEditing && isSerbian" type="button" class="btn btn-primary dugme-edit" @click="save">Sačuvaj</button>
+                    <button v-if="isEditing && !isSerbian" type="button" class="btn btn-primary dugme-edit" @click="save">Save</button>
+                    <button v-if="isEditing && isSerbian" type="button" class="btn btn-secondary dugme-edit" @click="cancel">Odustani</button>
+                    <button v-if="isEditing && !isSerbian" type="button" class="btn btn-secondary dugme-edit" @click="cancel">Cancel</button>
                 </div>
             </div>
             <div class="dugmici"> 
@@ -93,7 +108,8 @@ export default {
             maxDistance: this.$store.state.authUser.max_dist,
             IsMaxDistance: true,
             discount: this.$store.state.authUser.benefit_discount,
-            brSaradnji: this.$store.state.authUser.benefit_requirement
+            brSaradnji: this.$store.state.authUser.benefit_requirement,
+            isEditing: false
         }
     },
     computed:
@@ -163,15 +179,24 @@ export default {
         {
             if(this.isBrSaradnjiInvalid)
                 this.brSaradnji = 5
+        },
+        save()
+        {
+            this.$store.state.authUser.min_rating = this.minRating
+            this.$store.state.authUser.max_dist = this.maxDistance
+            this.$store.state.authUser.benefit_discount = this.discount
+            this.$store.state.authUser.benefit_requirement = this.brSaradnji
+            this.$store.dispatch("updateUserInfo")
+            this.isEditing = false
+        },
+        cancel()
+        {
+            this.scale = (this.$store.state.authUser.min_rating - 1) * 25,
+            this.maxDistance = this.$store.state.authUser.max_dist
+            this.discount = this.$store.state.authUser.benefit_discount
+            this.brSaradnji = this.$store.state.authUser.benefit_requirement
+            this.isEditing = false
         }
-    },
-    beforeDestroy()
-    {
-        this.$store.state.authUser.min_rating = this.minRating
-        this.$store.state.authUser.max_dist = this.maxDistance
-        this.$store.state.authUser.benefit_discount = this.discount
-        this.$store.state.authUser.benefit_requirement = this.brSaradnji
-        //pozovi update za user_info
     }
 }
 </script>
@@ -218,6 +243,12 @@ export default {
         margin: 15px;
     }
 
+    .dugme-edit
+    {
+        margin-left:10px;
+        margin-right:10px;
+    }
+
     .settings-main
     {
         flex-grow: 2;
@@ -230,7 +261,7 @@ export default {
         align-items: center;
     }
 
-    .settings-element
+    .settings-element, .button-element
     {
         display: flex;
         flex-direction: row;
@@ -343,6 +374,21 @@ export default {
     .e3
     {
         margin-right: 178px;
+    }
+
+    .fs2, .fs3
+    {
+        margin-right:0px
+    }
+
+    .fs3
+    {
+        margin-left: 11px;
+    }
+
+    .fs1
+    {
+        margin-left: 38px;
     }
 
     @media only screen and (max-width: 1160px)

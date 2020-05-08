@@ -4,6 +4,7 @@ import router from "@/router"
 import store from "@/store"
 import moment from "moment"
 import vuelidate from "vuelidate"
+import VueCookie from 'vue-cookie'
 
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { faUserSecret } from '@fortawesome/free-solid-svg-icons'
@@ -28,6 +29,7 @@ Vue.component('upload-image', UploadImage)
 Vue.component('vue-phone-number-input', VuePhoneNumberInput);
 
 Vue.use(BootstrapVue)
+Vue.use(VueCookie)
 
 library.add(faUserSecret)
 
