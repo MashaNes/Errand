@@ -1,5 +1,6 @@
 import Vue from "vue"
 import Vuex from "vuex"
+import router from "@/router"
 
 Vue.use(Vuex)
 
@@ -29,7 +30,8 @@ export default new Vuex.Store({
         services: null,
         userServices: null,
         token: null,
-        isDataLoaded: true
+        isDataLoaded: true,
+        isAdmin: false
     },
     getters:{
         getAuthUserId(state) {
@@ -56,7 +58,7 @@ export default new Vuex.Store({
         // eslint-disable-next-line no-unused-vars
         fillAuthUser({commit}, payload) {
             this.state.isDataLoaded = false
-            fetch("http://localhost:8000/api/v1/login/",
+            fetch("http://127.0.0.1:8000/api/v1/login/",
             {
                 method: 'POST',
                 headers:
@@ -79,7 +81,9 @@ export default new Vuex.Store({
                             this.state.logedIn = true
                             this.state.token = data['token']
                             this.state.isDataLoaded = true
-                            //this.$router.push('/requests')
+                            Vue.cookie.set('token',data['token'], 1);
+                            Vue.cookie.set('id',this.state.authUser.id, 1);
+                            router.push('/requests')
                         })
                     }
                     else
@@ -93,7 +97,7 @@ export default new Vuex.Store({
         createUser({commit}, payload)
         {
             this.state.isDataLoaded = false
-            fetch("http://localhost:8000/api/v1/user_create/",
+            fetch("http://127.0.0.1:8000/api/v1/user_create/",
             {
                 method: 'POST',
                 headers:
@@ -102,12 +106,15 @@ export default new Vuex.Store({
                 },
                 body:  JSON.stringify(
                 {
+                    "is_admin" : false,
                     "email" : payload.email,
                     "password" : payload.password,
-                    "first_name": payload.name,
-                    "last_name": payload.lastName,
-                    "phone": payload.phone,
-                    "picture":null
+                    "first_name" : payload.name,
+                    "last_name" : payload.lastName,
+                    "phone" : payload.phone,
+                    "picture" : null,
+                    "benefit_discount" : null,
+                    "benefit_requirement" : null
                 })
             }).then( p => 
                 {
@@ -116,8 +123,13 @@ export default new Vuex.Store({
                         p.json().then(data =>
                         {
                             console.log(data)
-                            this.dispatch('fillAuthUser', payload)
-                            //this.$router.push('/requests')
+                            this.state.authUser = data['user']
+                            this.state.logedIn = true
+                            this.state.token = data['token']
+                            this.state.isDataLoaded = true
+                            Vue.cookie.set('token',data['token'], 1);
+                            Vue.cookie.set('id',this.state.authUser.id, 1);
+                            router.push('/requests')
                         })
                     }
                     else
@@ -200,6 +212,108 @@ export default new Vuex.Store({
         fillServices()
         {
             this.state.services = fetchServices();
+        },
+        updateUserInfo()
+        {
+            fetch("http://127.0.0.1:8000/api/v1/user_update/",
+            {
+                method: 'PUT',
+                headers:
+                {
+                    "Content-type" : "application/json",
+                    "Authorization" : "Token " + this.state.token
+                },
+                body:  JSON.stringify(
+                {
+                    "created_by": this.state.authUser.id,
+                    "email": this.state.authUser.email,
+                    "first_name": this.state.authUser.first_name,
+                    "last_name": this.state.authUser.last_name,
+                    "password" : null,
+                    "phone": this.state.authUser.phone,
+                    "picture": null,
+                    "min_rating": this.state.authUser.min_rating,
+                    "max_dist": this.state.authUser.max_dist,
+                    "benefit_discount" : this.state.authUser.benefit_discount,
+                    "benefit_requirement" : this.state.authUser.benefit_requirement
+                })
+            }).then( p => 
+                {
+                    if(p.ok)
+                    {
+                        p.json().then(data =>
+                        {
+                            console.log(data)
+                        })
+                    }
+                    else
+                    {
+                        console.log("Error")
+                    }
+                });
+        },
+        // eslint-disable-next-line no-unused-vars
+        getUserById({commit}, payload)
+        {
+            this.state.isDataLoaded = false
+            fetch("http://127.0.0.1:8000/api/v1/users_info/" + payload.id,
+            {
+                method: 'GET',
+                headers:
+                {
+                    "Content-type" : "application/json",
+                    "Authorization" : "Token " + payload.token
+                }
+            }).then( p => 
+                {
+                    if(p.ok)
+                    {
+                        p.json().then(data =>
+                        {
+                            console.log(data)
+                            this.state.authUser = data
+                            this.state.logedIn = true
+                            this.state.token = payload.token
+                            this.state.isAdmin = data["is_admin"]
+                            this.state.isDataLoaded = true
+                            if(router.currentRoute["path"] == "/401")
+                                router.back();
+                        })
+                    }
+                    else
+                    {
+                        console.log("Error")
+                        this.state.isDataLoaded = true
+                    }
+                });
+        },
+        logoutUser()
+        {
+            fetch("http://127.0.0.1:8000/api/v1/logout/",
+            {
+                method: 'PUT',
+                headers:
+                {
+                    "Content-type" : "application/json",
+                    "Authorization" : "Token " + this.state.token
+                },
+                body:  JSON.stringify(
+                {
+                    "created_by" : this.state.authUser.id
+                })
+            }).then( p => 
+                {
+                    if(p.ok)
+                    {
+                        console.log("loged out")
+                        this.state.authUser = null
+                        this.state.token = null
+                    }
+                    else
+                    {
+                        console.log("Error")
+                    }
+                });
         }
     },
     mutations:{

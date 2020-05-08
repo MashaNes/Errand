@@ -194,8 +194,8 @@
         </div>
       </div>
     </div>
-    <div v-else @mouseover="navigateTo" class="ceoEkran">
-    </div>
+    <!--<div v-else @mouseover="navigateTo" class="ceoEkran">
+    </div>-->
   </section>
 </template>
 

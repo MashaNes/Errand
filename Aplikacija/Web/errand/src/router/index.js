@@ -45,7 +45,7 @@ const router = new Router(
                 component: PageRequests,
                 beforeEnter(to,from,next)
                 {
-                    if(store.state.logedIn)
+                    if(store.state.logedIn && !store.state.isAdmin)
                         next()
                     else
                         next({name: 'PageNotAuthenticated'})
@@ -81,7 +81,7 @@ const router = new Router(
                 component: PageViewProfile,
                 beforeEnter(to,from,next)
                 {
-                    if(store.state.logedIn)
+                    if(store.state.logedIn && !store.state.isAdmin)
                         next()
                     else
                         next({name: 'PageNotAuthenticated'})
@@ -93,7 +93,7 @@ const router = new Router(
                 component: PageHelp,
                 beforeEnter(to,from,next)
                 {
-                    if(store.state.logedIn)
+                    if(store.state.logedIn && !store.state.isAdmin)
                         next()
                     else
                         next({name: 'PageNotAuthenticated'})
@@ -105,7 +105,7 @@ const router = new Router(
                 component: PageAchievements,
                 beforeEnter(to,from,next)
                 {
-                    if(store.state.logedIn)
+                    if(store.state.logedIn && !store.state.isAdmin)
                         next()
                     else
                         next({name: 'PageNotAuthenticated'})
@@ -117,7 +117,7 @@ const router = new Router(
                 component: PageRatings,
                 beforeEnter(to,from,next)
                 {
-                    if(store.state.logedIn)
+                    if(store.state.logedIn && !store.state.isAdmin)
                         next()
                     else
                         next({name: 'PageNotAuthenticated'})
@@ -126,12 +126,30 @@ const router = new Router(
             {
                 path: "/loginAdmin",
                 name: "PageLoginAdmin",
-                component: PageLoginAdmin
+                component: PageLoginAdmin,
+                beforeEnter(to,from,next)
+                {
+                    if(store.state.logedIn && !store.state.isAdmin)
+                        next({name: 'PageRequests'})
+                    else if(store.state.logedIn && store.state.isAdmin)
+                        next({name: 'PageWelcome'}) //Neka stranica koja je samo za admina!!!!!!!!!!
+                    else
+                        next()
+                }
             },
             {
                 path: "/registerAdmin",
                 name: "PageRegisterAdmin",
-                component: PageRegisterAdmin
+                component: PageRegisterAdmin,
+                beforeEnter(to,from,next)
+                {
+                    if(store.state.logedIn && !store.state.isAdmin)
+                        next({name: 'PageRequests'})
+                    else if(store.state.logedIn && store.state.isAdmin)
+                        next({name: 'PageWelcome'}) //Neka stranica koja je samo za admina!!!!!!!!!!
+                    else
+                        next()
+                }
             },
             {
                 path: "/faq",
@@ -139,7 +157,7 @@ const router = new Router(
                 component: PageFAQ,
                 beforeEnter(to,from,next)
                 {
-                    if(store.state.logedIn)
+                    if(store.state.logedIn && !store.state.isAdmin)
                         next()
                     else
                         next({name: 'PageNotAuthenticated'})
@@ -151,7 +169,7 @@ const router = new Router(
                 component: PageSettings,
                 beforeEnter(to,from,next)
                 {
-                    if(store.state.logedIn)
+                    if(store.state.logedIn && !store.state.isAdmin)
                         next()
                     else
                         next({name: 'PageNotAuthenticated'})
@@ -164,7 +182,7 @@ const router = new Router(
                 props: true,
                 beforeEnter(to,from,next)
                 {
-                    if(store.state.logedIn)
+                    if(store.state.logedIn && !store.state.isAdmin)
                         next()
                     else
                         next({name: 'PageNotAuthenticated'})
@@ -176,7 +194,7 @@ const router = new Router(
                 component: PageBenefitList,
                 beforeEnter(to,from,next)
                 {
-                    if(store.state.logedIn)
+                    if(store.state.logedIn && !store.state.isAdmin)
                         next()
                     else
                         next({name: 'PageNotAuthenticated'})
@@ -188,7 +206,7 @@ const router = new Router(
                 component: PageServiceList,
                 beforeEnter(to,from,next)
                 {
-                    if(store.state.logedIn)
+                    if(store.state.logedIn && !store.state.isAdmin)
                         next()
                     else
                         next({name: 'PageNotAuthenticated'})
@@ -200,7 +218,7 @@ const router = new Router(
                 component: PageOfferedServices,
                 beforeEnter(to,from,next)
                 {
-                    if(store.state.logedIn)
+                    if(store.state.logedIn && !store.state.isAdmin)
                         next()
                     else
                         next({name: 'PageNotAuthenticated'})

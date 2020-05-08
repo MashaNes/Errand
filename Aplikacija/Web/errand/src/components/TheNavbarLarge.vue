@@ -128,9 +128,8 @@ export default {
       odjaviSe()
       {
         this.$store.state.logedIn = false
-        this.$store.state.authUser = null
-        this.$store.state.token = null
-        this.$router.push('/');
+        this.$router.push('/')
+        this.$store.dispatch("logoutUser")        
       }
     }
 }

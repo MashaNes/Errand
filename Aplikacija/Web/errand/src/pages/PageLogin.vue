@@ -1,6 +1,6 @@
 <template>
   <section class="hero is-success is-fullheight">   
-    <div class="hero-body" v-if="!TryLogIn || !isDataLoaded || !isLogedIn">
+    <div class="hero-body">
       <div class="container has-text-centered">
         <div class="column is-4 is-offset-4">
           <h3 v-if="isSerbian" class="title has-text-grey">Prijavi se</h3>
@@ -94,8 +94,6 @@
           </p>
         </div>
       </div>
-    </div>
-    <div v-else @mouseover="navigateTo" class="ceoEkran">
     </div>
   </section>
 </template>
