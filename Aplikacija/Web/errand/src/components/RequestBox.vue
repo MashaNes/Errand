@@ -79,7 +79,7 @@ export default {
         userName()
         {
             if(this.myRequest.status != "pending")
-                return this.myRequest.user.firstName + " " + this.myRequest.user.lastName
+                return this.myRequest.user.first_name + " " + this.myRequest.user.last_name
             else
                 return ""
         },
@@ -107,10 +107,15 @@ export default {
             //ukloniti request iz odgovajace liste iz store-a
             //poslati delete ka bazi
         },
-        goToProfile() 
+        goToProfile()
         {
-            //prepraviti da se ruti prosledi ceo user
-            this.$router.push('profile/' + this.userId)
+            this.$router.push({
+                name: "PageViewProfile", 
+                params: {
+                    id: this.myRequest.user.id, 
+                    user: this.myRequest.user
+                }
+            })
         }
     }
 }

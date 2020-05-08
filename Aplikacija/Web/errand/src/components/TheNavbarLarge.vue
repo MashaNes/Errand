@@ -67,7 +67,7 @@
                             {{authUserFullName}}
                         </button>
                         <div class="dropdown-menu profil-meni" aria-labelledby="navbarDropdownMenuLink">
-                            <router-link :to = "'/profile/' + authUserId" class="dropdown-item">
+                            <router-link :to = "goToProfile()" class="dropdown-item">
                                 <img src = "../assets/profile.svg">
                                 <span v-if="isSerbian" class = "ikonica"> Profil </span>
                                 <span v-else class = "ikonica"> Profile </span>
@@ -130,6 +130,16 @@ export default {
         this.$store.state.logedIn = false
         this.$router.push('/')
         this.$store.dispatch("logoutUser")        
+      },
+      goToProfile()
+      {
+        return {
+            name: "PageViewProfile", 
+            params: {
+                id: this.$store.state.authUser.id, 
+                user: this.$store.state.authUser
+            }
+        }
       }
     }
 }

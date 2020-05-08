@@ -43,10 +43,10 @@
           
             <b-progress class="mt-2" max="5.0" height="20px">
               <b-progress-bar 
-                :value="user.rating"
+                :value="user.avg_rating"
                 :variant="progressBarVariant"
               > 
-                <span class="rating-grade"> {{user.rating}} </span> 
+                <span class="rating-grade"> {{user.avg_rating}} </span> 
               </b-progress-bar>
             </b-progress>
           </div>
@@ -82,17 +82,17 @@ export default {
         return this.$store.state.isSerbian
       },
       progressBarVariant() {
-        return this.user.rating < 2.5 ? 'danger' : 
-               this.user.rating < 4.5 ? 'warning' : 'success'
+        return this.user.avg_rating < 2.5 ? 'danger' : 
+               this.user.avg_rating < 4.5 ? 'warning' : 'success'
       },
       fullUserName() {
-        return this.user.firstName + " " +this.user.lastName
+        return this.user.first_name + " " +this.user.last_name
       }
     },
     methods: {
       goToProfile() {
         //prepraviti da se stranici kao prop prosledi user
-        this.$router.push(`/profile/${this.user.id}`)
+        this.$router.push({name: "PageViewProfile", params: {id: this.user.id, user: this.user}})
       },
       addUser(discount)
       {

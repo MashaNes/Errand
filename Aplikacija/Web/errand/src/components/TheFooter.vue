@@ -8,7 +8,7 @@
               <li class="stavka-navigacije" v-if="isSerbian"> Obaveštenja </li>
               <li class="stavka-navigacije" v-else> Notifications </li>
             <!--</router-link>-->
-            <router-link :to="'/profile/' + authUserId" >
+            <router-link :to="goToProfile()" >
               <li class="stavka-navigacije" v-if="isSerbian"> Profil </li>
               <li class="stavka-navigacije" v-else> Profile </li>
             </router-link>
@@ -114,6 +114,16 @@
       {
         this.$store.state.logedIn = false
         this.$router.push('/');
+      },
+      goToProfile()
+      {
+        return {
+            name: "PageViewProfile", 
+            params: {
+                id: this.$store.state.authUser.id, 
+                user: this.$store.state.authUser
+            }
+        }
       }
     }
   }
