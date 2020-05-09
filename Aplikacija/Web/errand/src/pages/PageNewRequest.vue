@@ -12,11 +12,14 @@
                          @ratingChanged="ratingChanged"
                          @distanceChanged="distanceChanged"
                          v-if="step == 1"/>
+            <NewRequest2 :address="request.address"
+                         @addressChanged="addressChanged"
+                         v-if="step == 2"/>
             <div class="buttonDiv">
                 <button type="button" class="btn btn-secondary" v-if="isSerbian" :disabled="step == 1" @click="step = step - 1">Nazad</button>
                 <button type="button" class="btn btn-secondary" v-else :disabled="step == 1" @click="step = step - 1">Back</button>
-                <button type="button" class="btn btn-primary" v-if="isSerbian" :disabled="disabledNextButton" @click="step = step + 1">Dalje</button>
-                <button type="button" class="btn btn-primary" v-else :disabled="disabledNextButton" @click="step = step + 1">Next</button>
+                <button type="button" class="btn btn-primary" v-if="isSerbian && step < 4" :disabled="disabledNextButton" @click="step = step + 1">Dalje</button>
+                <button type="button" class="btn btn-primary"  v-if="!isSerbian && step < 4" :disabled="disabledNextButton" @click="step = step + 1">Next</button>
             </div>
         </div>
     </div>
@@ -24,10 +27,12 @@
 
 <script>
 import NewRequest1 from "@/components/NewRequest1"
+import NewRequest2 from "@/components/NewRequest2"
 export default {
     components:
     {
-        NewRequest1
+        NewRequest1,
+        NewRequest2
     },
     data()
     {
@@ -39,8 +44,8 @@ export default {
                 time: this.getCurrendTimeAndDate(),
                 note: "",
                 broadcast: false,
-                max_dist: this.$store.state.authUser.max_dist,
-                min_rating: this.$store.state.authUser.min_rating,
+                max_dist: this.$store.state.authUser.max_dist.toString(),
+                min_rating: this.$store.state.authUser.min_rating.toString(),
                 address:
                 {
                     name: "",
@@ -110,6 +115,10 @@ export default {
         distanceChanged(distanceCopy)
         {
             this.request.max_dist = distanceCopy
+        },
+        addressChanged(addressCopy)
+        {
+            this.request.address = addressCopy
         }
     }
 }
