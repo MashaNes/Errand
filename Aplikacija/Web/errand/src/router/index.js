@@ -21,6 +21,7 @@ import PageServiceList from "@/pages/PageServiceList"
 import PageOfferedServices from "@/pages/PageOfferedServices"
 import PageNotAuthenticated from "@/pages/PageNotAuthenticated"
 import PageNotFound from "@/pages/PageNotFound"
+import PageNewRequest from "@/pages/PageNewRequest"
 
 Vue.use(Router)
 
@@ -217,6 +218,18 @@ const router = new Router(
                 path: "/offeredServices/:id",
                 name: "PageOfferedServices",
                 component: PageOfferedServices,
+                beforeEnter(to,from,next)
+                {
+                    if(store.state.logedIn && !store.state.isAdmin)
+                        next()
+                    else
+                        next({name: 'PageNotAuthenticated'})
+                }
+            },
+            {
+                path: "/newRequest",
+                name: "PageNewRequest",
+                component: PageNewRequest,
                 beforeEnter(to,from,next)
                 {
                     if(store.state.logedIn && !store.state.isAdmin)

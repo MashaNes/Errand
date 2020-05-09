@@ -1,0 +1,163 @@
+<template>
+    <div class="wrapperDiv"> 
+        <div class="bodyDiv">
+            <NewRequest1 :name="request.name" 
+                         :time="request.time" 
+                         :note="request.note" 
+                         :minRating="request.min_rating" 
+                         :maxDistance="request.max_dist" 
+                         @nameChanged="NameChanged"
+                         @noteChanged="NoteChanged"
+                         @dateChanged="dateChanged"
+                         @ratingChanged="ratingChanged"
+                         @distanceChanged="distanceChanged"
+                         v-if="step == 1"/>
+            <div class="buttonDiv">
+                <button type="button" class="btn btn-secondary" v-if="isSerbian" :disabled="step == 1" @click="step = step - 1">Nazad</button>
+                <button type="button" class="btn btn-secondary" v-else :disabled="step == 1" @click="step = step - 1">Back</button>
+                <button type="button" class="btn btn-primary" v-if="isSerbian" :disabled="disabledNextButton" @click="step = step + 1">Dalje</button>
+                <button type="button" class="btn btn-primary" v-else :disabled="disabledNextButton" @click="step = step + 1">Next</button>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script>
+import NewRequest1 from "@/components/NewRequest1"
+export default {
+    components:
+    {
+        NewRequest1
+    },
+    data()
+    {
+        return{
+            step:1,
+            request:
+            {
+                name: "",
+                time: this.getCurrendTimeAndDate(),
+                note: "",
+                broadcast: false,
+                max_dist: this.$store.state.authUser.max_dist,
+                min_rating: this.$store.state.authUser.min_rating,
+                address:
+                {
+                    name: "",
+                    longitude: null,
+                    latitude: null,
+                },
+                tasklist:[]
+            },
+            userDirect: null
+        }
+    },
+    computed:
+    {
+        isSerbian()
+        {
+            return this.$store.state.isSerbian
+        },
+        disabledNextButton()
+        {
+            if(this.step == 1 && (this.request.name == "" || this.request.max_dist == "" || this.request.max_dist < 0.1 || this.request.max_dist > 1000))
+            {
+                return true
+            }
+            return false
+        }
+    },
+    methods:
+    {
+        getCurrendTimeAndDate()
+        {
+            var date = new Date()
+            var day = date.getDate()
+            var month = date.getMonth()+1
+            var year = date.getFullYear()
+            var hours = date.getHours()
+            var minutes = date.getMinutes()
+            var monthString = month
+            var dayString = day
+            var hoursString = hours
+            var minutesString = minutes
+            if(month < 10)
+                monthString = "0" + month
+            if(day < 10)
+                dayString = "0" + day
+            if(hours < 10)
+                hoursString = "0" + hours
+            if(minutes < 10)
+                minutesString = "0" + minutes
+            return year + "-" + monthString + "-" + dayString + " " + hoursString + ":" + minutesString
+        },
+        NameChanged(nameCopy)
+        {
+            this.request.name = nameCopy
+        },
+        NoteChanged(noteCopy)
+        {
+            this.request.note = noteCopy
+        },
+        dateChanged(dateCopy)
+        {
+            this.request.date = dateCopy
+        },
+        ratingChanged(ratingCopy)
+        {
+            this.request.min_rating = ratingCopy
+        },
+        distanceChanged(distanceCopy)
+        {
+            this.request.max_dist = distanceCopy
+        }
+    }
+}
+</script>
+
+<style scoped>
+    .wrapperDiv
+    {
+        width: 100%;
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+        padding: 10px;
+        padding-top: 30px;
+        padding-bottom:30px;
+    }
+
+    .bodyDiv
+    {
+        background-color: white;
+        border-radius: 15px;
+        border:1px solid black;
+        padding:10px;
+        margin-left: 15%;
+        margin-right:15%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width:800px;
+    }
+
+    .buttonDiv
+    {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-around;
+        align-items: center;
+        width:100%;
+        margin-top:15px;
+    }
+
+     @media only screen and (max-width: 950px)
+     {
+        .bodyDiv
+        {
+            margin-left: 0px;
+            margin-right:0px
+        }
+     }
+</style>
