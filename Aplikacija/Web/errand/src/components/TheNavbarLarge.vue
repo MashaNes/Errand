@@ -20,6 +20,11 @@
                                 <span v-else class = "ikonica"> Notifications </span>
                             </div>
                         </a>
+                        <router-link :to = "'/newRequest'" class="dropdown-item">
+                            <img src = "../assets/add.svg">
+                            <span v-if="isSerbian" class = "ikonica"> Novi zahtev </span>
+                            <span v-else class = "ikonica"> New request </span>
+                        </router-link>
                         <router-link :to = "'/requests'" class="dropdown-item">
                             <img src = "../assets/requests.svg">
                             <span v-if="isSerbian" class = "ikonica"> Zahtevi </span>

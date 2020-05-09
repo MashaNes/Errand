@@ -20,6 +20,10 @@
               <li class="stavka-navigacije" v-if="isSerbian"> Ocene </li>
               <li class="stavka-navigacije" v-else> Ratings </li>
             </router-link>
+             <router-link :to="'/newRequest'" >
+              <li class="stavka-navigacije" v-if="isSerbian"> Novi zahtev </li>
+              <li class="stavka-navigacije" v-else> New Request </li>
+            </router-link>
             <router-link :to="'/requests'" >
               <li class="stavka-navigacije" v-if="isSerbian"> Zahtevi </li>
               <li class="stavka-navigacije" v-else> Requests </li>
