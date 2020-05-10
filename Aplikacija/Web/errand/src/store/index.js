@@ -248,7 +248,7 @@ export default new Vuex.Store({
         {
             fetch("http://127.0.0.1:8000/api/v1/user_info_filtered/",
             {
-                method: 'GET',
+                method: 'POST',
                 headers:
                 {
                     "Content-type" : "application/json",
@@ -276,6 +276,7 @@ export default new Vuex.Store({
                         {
                             console.log(data)
                             this.state.userServices = data["services"]
+                            this.dispatch("fillServices")
                         })
                     }
                     else
@@ -286,7 +287,39 @@ export default new Vuex.Store({
         },
         fillServices()
         {
-            this.state.services = fetchServices(); 
+            fetch("http://127.0.0.1:8000/api/v1/services/",
+            {
+                method: 'GET',
+                headers:
+                {
+                    "Content-type" : "application/json",
+                    "Authorization" : "Token " + this.state.token
+                }
+            }).then( p => 
+                {
+                    if(p.ok)
+                    {
+                        p.json().then(data =>
+                        {
+                            console.log(data)
+                            var services = data["results"]
+                            this.state.userServices.forEach((item, index) =>
+                            {
+                                for(var i = services.length - 1; i >= 0; i--)
+                                {
+                                    if(item.service.id == services[i].id)
+                                        services.splice(i,1)
+                                }
+                            })
+                            this.state.services = services
+                            console.log(this.state.services)
+                        })
+                    }
+                    else
+                    {
+                        console.log("Error")
+                    }
+                }); 
         },
         updateUserInfo()
         {
@@ -352,6 +385,8 @@ export default new Vuex.Store({
                             this.state.isAdmin = data["is_admin"]
                             if(router.currentRoute["path"] == "/401")
                                 router.back();
+                            if(router.currentRoute["path"] == "/")
+                                router.push("/requests");
                             this.state.isDataLoaded = true
                         })
                     }
@@ -387,6 +422,104 @@ export default new Vuex.Store({
                         Vue.cookie.delete('token');
                         Vue.cookie.delete('ime');
                         Vue.cookie.delete('prezime');
+                    }
+                    else
+                    {
+                        console.log("Error")
+                    }
+                });
+        },
+        updateUserService({commit}, payload)
+        {
+            fetch("http://127.0.0.1:8000/api/v1/user_service_update/",
+            {
+                method: 'PUT',
+                headers:
+                {
+                    "Content-type" : "application/json",
+                    "Authorization" : "Token " + this.state.token
+                },
+                body:  JSON.stringify(
+                {
+                    "created_by" :this.state.authUser.id,
+                    "user_service" : payload.id,
+                    "max_dist": payload.max_dist,
+                    "payment_type": payload.payment_type,
+                    "payment_ammount": payload.payment_ammount,
+                    "min_rating": payload.min_rating
+                })
+            }).then( p => 
+                {
+                    if(p.ok)
+                    {
+                        p.json().then(data =>
+                        {
+                            console.log(data)
+                        })
+                    }
+                    else
+                    {
+                        console.log("Error")
+                    }
+                });
+        },
+        removeUserService({commit}, id)
+        {
+            fetch("http://127.0.0.1:8000/api/v1/user_service_remove/",
+            {
+                method: 'DELETE',
+                headers:
+                {
+                    "Content-type" : "application/json",
+                    "Authorization" : "Token " + this.state.token
+                },
+                body:  JSON.stringify(
+                {
+                    "created_by" :this.state.authUser.id,
+                    "service" : id
+                })
+            }).then( p => 
+                {
+                    if(p.ok)
+                    {
+                        p.json().then(data =>
+                        {
+                            console.log(data)
+                        })
+                    }
+                    else
+                    {
+                        console.log("Error")
+                    }
+                });
+        },
+        addUserService({commit}, payload)
+        {
+            fetch("http://127.0.0.1:8000/api/v1/user_service_add/",
+            {
+                method: 'POST',
+                headers:
+                {
+                    "Content-type" : "application/json",
+                    "Authorization" : "Token " + this.state.token
+                },
+                body:  JSON.stringify(
+                {
+                    "created_by" : this.state.authUser.id,
+                    "service" : payload.service.id,
+                    "max_dist" : payload.max_dist,
+                    "payment_type" : payload.payment_type,
+                    "payment_ammount" : payload.payment_ammount,
+                    "min_rating" : payload.min_rating
+                })
+            }).then( p => 
+                {
+                    if(p.ok)
+                    {
+                        p.json().then(data =>
+                        {
+                            console.log(data)
+                        })
                     }
                     else
                     {

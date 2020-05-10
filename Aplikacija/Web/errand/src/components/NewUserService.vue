@@ -6,39 +6,41 @@
             <label class="labela" v-else> New service </label>
         </div>
         <div class="opcije"> 
-            <v-select :options="services" label="serviceType" v-model="servis" class="selekt"></v-select> 
-            <img src="../assets/info.svg" v-if="servis != null" v-b-popover.hover.bottom="servis.description">
+            <v-select :options="services" label="service_type_sr" v-model="service" class="selekt" v-if="isSerbian"></v-select> 
+            <v-select :options="services" label="service_type_en" v-model="service" class="selekt" v-else></v-select> 
+            <img src="../assets/info.svg" v-if="service != null && isSerbian" v-b-popover.hover.bottom="service.description_sr">
+            <img src="../assets/info.svg" v-if="service != null && !isSerbian" v-b-popover.hover.bottom="service.description_en">
         </div>
-        <div class="opcije" v-if="servis != null">
+        <div class="opcije" v-if="service != null">
             <label class="labela-stavka" v-if="isSerbian"> Maksimalno rastojanje: </label>
             <label class="labela-stavka" v-else> Maximum distance: </label>
-            <input type="number" class="input-polje" min="0.1" max="1000" step="0.1" v-model="maxDistance"> km
+            <input type="number" class="input-polje" min="0.1" max="1000" step="0.1" v-model="max_dist"> km
         </div>
-        <div class="opcije" v-if="servis != null">
+        <div class="opcije" v-if="service != null">
             <label class="labela-stavka" v-if="isSerbian"> Tip naplate: </label>
             <label class="labela-stavka" v-else> Payment type: </label>
-            <select v-model="paymentType">
-                <option v-if="isSerbian">po satu</option>
-                <option v-if="isSerbian">po kilometru</option>
-                <option v-if="isSerbian">fiksno</option>
-                <option v-if="isSerbian">početna cena</option>
-                <option v-if="!isSerbian">per hour</option>
-                <option v-if="!isSerbian">per kilometer</option>
-                <option v-if="!isSerbian">fixed</option>
-                <option v-if="!isSerbian">starting price</option>
+            <select v-model="payment_type">
+                <option v-if="isSerbian" value="0">po satu</option>
+                <option v-if="isSerbian" value="1">po kilometru</option>
+                <option v-if="isSerbian" value="2">fiksno</option>
+                <option v-if="isSerbian" value="3">početna cena</option>
+                <option v-if="!isSerbian" value="0">per hour</option>
+                <option v-if="!isSerbian" value="1">per kilometer</option>
+                <option v-if="!isSerbian" value="2">fixed</option>
+                <option v-if="!isSerbian" value="3">starting price</option>
             </select>
         </div>
-        <div class="opcije" v-if="servis != null">
+        <div class="opcije" v-if="service != null">
             <label class="labela-stavka" v-if="isSerbian"> Cena: </label>
             <label class="labela-stavka" v-else> Payment amount: </label>
-            <input type="number" class="input-polje vece" min="0" step="100" v-model="paymentAmount"> rsd
+            <input type="number" class="input-polje vece" min="0" step="100" v-model="payment_ammount"> rsd
         </div>
-        <div class="opcije" v-if="servis != null">
+        <div class="opcije" v-if="service != null">
             <label class="labela-stavka" v-if="isSerbian"> Minimalna ocena: </label>
             <label class="labela-stavka" v-else> Minimum rating: </label>
             <input type="range" class="form-control-range skala" id="formControlRange" v-model="scale"> {{minRating}}
         </div>
-        <div class="opcije" v-if="servis != null">
+        <div class="opcije" v-if="service != null">
             <button type="button" class="btn btn-primary dugme" v-if="isSerbian" :disabled="isInvalid" @click="dodaj">Dodaj</button>
             <button type="button" class="btn btn-primary dugme" v-else :disabled="isInvalid" @click="dodaj">Add</button>
             <button type="button" class="btn btn-secondary" v-if="isSerbian" @click="cancel">Odustani</button>
@@ -55,11 +57,19 @@ export default {
     data()
     {
         return{
-            servis: null,
-            maxDistance: this.$store.state.authUser.max_dist,
-            paymentType: null,
-            paymentAmount: 0,
-            scale: (this.$store.state.authUser.min_rating - 1) *25
+            userService:
+            {
+                service: null,
+                max_dist: this.$store.state.authUser.max_dist,
+                payment_type: null,
+                payment_ammount: 0,
+                min_rating: this.$store.state.authUser.min_rating
+            },
+            scale: (this.$store.state.authUser.min_rating - 1) *25,
+            service: null,
+            max_dist: this.$store.state.authUser.max_dist,
+            payment_type: null,
+            payment_ammount: 0,
         }
     },
     components:
@@ -74,7 +84,7 @@ export default {
         },
         services()
         {
-            return this.$store.state.services.services
+            return this.$store.state.services
         },
         minRating()
         {
@@ -82,36 +92,41 @@ export default {
         },
         isInvalid()
         {
-            return this.$v.maxDistance.$invalid || this.$v.paymentAmount.$invalid || this.paymentType == null
+            return this.$v.max_dist.$invalid || this.$v.payment_ammount.$invalid || this.payment_type == null
         }
     },
     methods:
     {
         cancel()
         {
-            this.servis = null
-            this.maxDistance = this.$store.state.authUser.max_dist
-            this.paymentType = null
-            this.paymentAmount = 0
+            this.service = null
+            this.max_dist = this.$store.state.authUser.max_dist
+            this.payment_type = null
+            this.payment_ammount = 0
             this.scale = (this.$store.state.authUser.min_rating - 1) *25
         },
         dodaj()
         {
-            console.log(this.servis)
-            console.log(this.maxDistance)
-            console.log(this.paymentType)
-            console.log(this.paymentAmount)
-            console.log(this.minRating)
-            //dodati userService u listu UserService-a u store-u
-            //poslati dodavanjanje u bazu
-            //izbaciti ovaj servis iz liste servisa
+            this.userService.min_rating = this.minRating
+            this.userService.max_dist = this.max_dist
+            this.userService.payment_type = this.payment_type
+            this.userService.payment_ammount = this.payment_ammount
+            this.userService.service = this.service
+            this.$store.state.userServices.push(this.userService)
+            this.$store.dispatch("addUserService", this.userService)
+            this.$store.state.services.forEach((item, index) =>
+            {
+                if(item.id == this.userService.service.id)
+                    this.$store.state.services.splice(index,1)
+            })
             this.cancel();
         }
     },
     validations:
     {
-        maxDistance: { between : between(0.1,1000) },
-        paymentAmount: {between: between(0,10000000000000000000) },
+
+        max_dist: { between : between(0.1,1000) },
+        payment_ammount: {between: between(0,10000000000000000000) }
     },
 }
 </script>

@@ -24,7 +24,7 @@ export default {
         UserServices()
         {
             if(this.editable)
-                return this.$store.state.UserServices
+                return this.$store.state.userServices
             else
                 return []
         }
