@@ -32,7 +32,8 @@ export default new Vuex.Store({
         userServices: null,
         token: null,
         isDataLoaded: true,
-        isAdmin: false
+        isAdmin: false,
+        mapMarkerPositions: []
     },
     getters:{
         getAuthUserId(state) {
@@ -40,6 +41,9 @@ export default new Vuex.Store({
         }
     },
     actions:{
+        setMarkerPositions({commit}, positions) {
+            commit('setMarkers', positions)
+        },
         fillRequests(){
             this.state.requests = fetchRequests();
         },
@@ -422,6 +426,9 @@ export default new Vuex.Store({
         },
         addNewReport(state, report) {
             console.log(report)
+        },
+        setMarkers(state, positions) {
+            state.mapMarkerPositions = positions
         }
     }
 })

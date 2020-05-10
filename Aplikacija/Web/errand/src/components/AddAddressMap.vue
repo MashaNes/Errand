@@ -39,12 +39,18 @@
     <span  class="span-danger" v-if="invalidAddress" v-text="isSerbian ? 
     'Adresa nije pronađena na mapi. Jeste li sigurni da postoji?' :
     'The address was not found on the map. Are you sure it exists?'"></span>
-    <div id="map" class="map" ref="map"></div>
+    <div class="map">
+      <Map @mapClick="moveMarker" />
+    </div>
   </div>
 </template>
 
 <script>
+import Map from "@/components/Map"
 export default {
+  components: {
+    Map
+  },
   data() {
     return {
       map: null,
@@ -62,22 +68,18 @@ export default {
   },
   methods: {
     moveMarker(latLng) {
-
-      this.marker.setMap(null)
-      this.marker = null
-      this.marker = new window.google.maps.Marker({
-        position: latLng,
-        map: this.map
-      })
-      this.map.setZoom(14)
-      this.map.setCenter(latLng)
-      this.markerMoved = true
+      const newMarkerPositions = [{
+        lat: latLng.lat(),
+        lng: latLng.lng()
+      }]
+      this.$store.dispatch('setMarkerPositions', newMarkerPositions)
+      this.movedMarker = true
     },
     convertToAddress() {
       if(this.markerMoved || !this.addressChecked) {
 
         fetch('https://maps.googleapis.com/maps/api/geocode/json?latlng='
-              + this.marker.position.lat() + ',' + this.marker.position.lng() + 
+              + this.markerPosition.lat + ',' + this.markerPosition.lng + 
               '&key=AIzaSyBc7vAECB9mQ1RbCrySraxt6ve0VxXO7zs', {
           method:'GET'
         }).then(p => {
@@ -94,7 +96,6 @@ export default {
       }
     },
     convertFromAddress() {
-
       if(this.newAddress == this.previousInput)
       {
         return
@@ -109,9 +110,11 @@ export default {
           if(p.ok) {
             p.json().then(data => {
               if(data.status!='ZERO_RESULTS') {
-                // eslint-disable-next-line no-debugger
-                debugger
-                vm.moveMarker(data.results[0].geometry.location)
+                const newPositions = [{
+                  lat: data.results[0].geometry.location.lat,
+                  lng: data.results[0].geometry.location.lng
+                }]
+                vm.$store.dispatch('setMarkerPositions', newPositions)
                 this.markerMoved = false
                 this.invalidAddress = false
               }
@@ -125,8 +128,8 @@ export default {
     },
     confirmAddress() {
       console.log(this.newAddress)
-      console.log(this.marker.position.lat())
-      console.log(this.marker.position.lng())
+      console.log(this.markerPosition.lat)
+      console.log(this.markerPosition.lng)
       this.$emit('close')
     }
   },
@@ -136,31 +139,40 @@ export default {
     },
     addressChecked() {
       return this.newAddress == this.previousInput
+    },
+    markerPosition() {
+      return this.$store.state.mapMarkerPositions[0]
     }
   },
-  mounted() {
-    this.map = new window.google.maps.Map(this.$refs["map"], {
-      center: {
-        lat: 43.639696,
-        lng: 21.878703
-      },
-      zoom: 10
-    })
-    const vm = this
-    function checkForMap() {
-      if(vm.map) 
-        vm.marker = new window.google.maps.Marker({
-          position: vm.pos,
-          map: vm.map
-        })
-      else 
-        setTimeout(checkForMap, 200)
+  created() {
+    this.$store.state.mapMarkerPositions[0] = {
+      lat: 43.639696,
+      lng: 21.878703
     }
-    checkForMap()
-    this.map.addListener('click', (event) => {
-      vm.moveMarker(event.latLng)
-    })
   }
+  // mounted() {
+  //   this.map = new window.google.maps.Map(this.$refs["map"], {
+  //     center: {
+  //       lat: 43.639696,
+  //       lng: 21.878703
+  //     },
+  //     zoom: 10
+  //   })
+  //   const vm = this
+  //   function checkForMap() {
+  //     if(vm.map) 
+  //       vm.marker = new window.google.maps.Marker({
+  //         position: vm.pos,
+  //         map: vm.map
+  //       })
+  //     else 
+  //       setTimeout(checkForMap, 200)
+  //   }
+  //   checkForMap()
+  //   this.map.addListener('click', (event) => {
+  //     vm.moveMarker(event.latLng)
+  //   })
+  // }
 }
 </script>
 
