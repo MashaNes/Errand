@@ -24,6 +24,7 @@ export default {
   },
   watch: {
     mapMarkerPositions(newVal, oldVal) {
+      console.log('watcher')
       if(oldVal.length == newVal.length) {
         this.markers[0].setMap(null)
         this.markers[0] = null
@@ -49,30 +50,39 @@ export default {
   },
   mounted() {
     this.map = new window.google.maps.Map(this.$refs["map"], {
-      center: {
-        lat: 43.639696,
-        lng: 21.878703
-      },
-      zoom: 10
+      zoom: 17
     })
     const vm = this
+    
+    window.google.maps.event.addListener(this.map, 'idle', checkForMap)
+
     function checkForMap() {
       if(vm.map) {
+        let bounds = new window.google.maps.LatLngBounds()
         vm.mapMarkerPositions.forEach(mark => {
           const newMark = new window.google.maps.Marker({
             position: mark,
             map:vm.map
           })
           vm.markers.push(newMark)
+          bounds.extend(newMark.getPosition())
         }) 
+        console.log('startAdjust')
+        vm.map.setCenter(bounds.getCenter())
+        vm.map.panToBounds(bounds)
+        vm.map.fitBounds(bounds)
+        console.log('endAdjust')
+        window.google.maps.event.clearListeners(vm.map, 'idle')
       }
       else 
         setTimeout(checkForMap, 200)
     }
-    checkForMap()
+    // checkForMap()
     this.map.addListener('click', (event) => {
       this.mapClick(event.latLng)
     })
+    console.log('mounted')
+    console.log(this.map.getZoom())
   }
 }
 </script>
