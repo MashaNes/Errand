@@ -22,12 +22,20 @@ def update_rating(user):
 
     if user.ratings.all():
         for _r in user.ratings.all():
-            avg += _r
+            avg += _r.grade
         avg /= len(user.ratings.all())
-    return avg
+        user.user.avg_rating = avg
+        user.user.save()
 
 def filter_user(queryset, data):
     new_queryset = list()
+    if data['sort_rating']:
+        sort = 'user__avg_rating'
+        if data['sort_rating_asc']:
+            sort = '-user__avg_rating'
+        queryset = models.FullUser.objects.all().order_by(sort)
+    else:
+        queryset = models.FullUser.objects.all()
     user = models.FullUser.objects.get(id=data['created_by'])
 
     for _q in queryset:
@@ -67,6 +75,17 @@ def filter_user(queryset, data):
                     found = True
                     break
             to_add = not found
+
+        if to_add and data['sort_rating'] and len(_q.ratings.all()) == 0:
+            to_add = False
+
+        if to_add and data['rating_limit_up']:
+            if _q.user.avg_rating > data['rating_limit_up']:
+                to_add = False
+
+        if to_add and data['rating_limit_down']:
+            if _q.user.avg_rating < data['rating_limit_down']:
+                to_add = False
 
         # TODO: Add other filter params if needed
 

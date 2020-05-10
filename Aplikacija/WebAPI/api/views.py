@@ -15,9 +15,9 @@ from . import utils
 Endpoints:
 + GET users_info/{id} 				// Returns only basic user data
 + GET users/{id} 					// Returns full user data
-+ GET filtered_users/ 				// Returns users based on filters
-+ GET user_info_filtered            // Returns users info on filters
-+ GET get_cookie/    				// Returns only basic user data
++ POST filtered_users/ 				// Returns users based on filters
++ POST user_info_filtered            // Returns users info on filters
++ GET get_cookie/{id}    			// Returns only basic user data
 
 + GET requests_info/{id} 			// Returns only basic request data
 + GET requests/{id} 				// Returns full request data (including offers and rating)
@@ -81,13 +81,11 @@ class LogIn(ObtainAuthToken):
         }
         return Response(custom_response)
 
-# GET get_cookie/
-class GetCookieViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
+# GET get_cookie/{id}
+class GetCookieViewSet(viewsets.ModelViewSet):
     queryset = models.User.objects.all()
-    authentication_classes = ()
-    permission_classes = ()
-    def list(self, request):
-        user = get_object_or_404(self.queryset, pk=request.data['created_by'])
+    def retrieve(self, request, pk):
+        user = get_object_or_404(self.queryset, pk=pk)
         _s = serializers.UserSerializer(user)
         _s = _s.data
         _s['picture'] = utils.encode_img('users/' + str(user.id))
@@ -156,7 +154,7 @@ class UserUpdate(generics.UpdateAPIView):
         return Response(response)
 
 # GET users_info/{id}
-class UserViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
+class UserViewSet(viewsets.ModelViewSet):
     queryset = models.User.objects.all()
 
     def list(self, request):
@@ -166,7 +164,7 @@ class UserViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
                 new_q.append(_q)
         self.queryset = new_q
 
-        if request.data['paginate']:
+        if request.GET.get('paginate'):
             page = self.paginate_queryset(self.queryset)
         else:
             page = self.queryset
@@ -175,7 +173,7 @@ class UserViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
         for _q, _s in zip(page, serializer.data):
             _s['picture'] = utils.encode_img('users/' + str(_q.id))
 
-        if request.data['paginate']:
+        if request.GET.get('paginate'):
             return self.get_paginated_response(serializer.data)
 
         custom_response = {
@@ -196,7 +194,7 @@ class UserViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
         return Response(response)
 
 # GET users/{id}
-class FullUserViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
+class FullUserViewSet(viewsets.ModelViewSet):
     queryset = models.FullUser.objects.all()
 
     def list(self, request):
@@ -206,7 +204,7 @@ class FullUserViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
                 new_q.append(_q)
         self.queryset = new_q
 
-        if request.data['paginate']:
+        if request.GET.get('paginate'):
             page = self.paginate_queryset(self.queryset)
         else:
             page = self.queryset
@@ -215,7 +213,7 @@ class FullUserViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
         for _q, _s in zip(page, serializer.data):
             _s['user']['picture'] = utils.encode_img('users/' + str(_q.user.id))
 
-        if request.data['paginate']:
+        if request.GET.get('paginate'):
             return self.get_paginated_response(serializer.data)
 
         custom_response = {
@@ -235,34 +233,34 @@ class FullUserViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
 
         return Response(serializer.data)
 
-# GET users_info_filtered/id
-class UserInfoFilteredViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
+# POST users_info_filtered/id
+class UserInfoFilteredViewSet(viewsets.ModelViewSet):
     queryset = models.FullUser.objects.all()
 
-    def list(self, request):
+    def create(self, request):
         fulluser = get_object_or_404(self.queryset, pk=request.data['created_by'])
         serializer = serializers.FullUserSerializer(fulluser)
         response = utils.filter_user_info(serializer.data, request.data)
 
         return Response(response)
 
-# GET filtered_users/
-class FilterUserViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
+# POST filtered_users/
+class FilterUserViewSet(viewsets.ModelViewSet):
     queryset = models.FullUser.objects.all()
+    def create(self, request):
 
-    def list(self, request):
         self.queryset = utils.filter_user(self.queryset, request.data)
 
-        if request.data['paginate']:
+        if request.GET.get('paginate'):
             page = self.paginate_queryset(self.queryset)
         else:
             page = self.queryset
 
-        serializer = serializers.UserSerializer(self.queryset, many=True)
+        serializer = serializers.UserSerializer(page, many=True)
         for _q, _s in zip(page, serializer.data):
             _s['picture'] = utils.encode_img('users/' + str(_q.id))
 
-        if request.data['paginate']:
+        if request.GET.get('paginate'):
             return self.get_paginated_response(serializer.data)
 
         custom_response = {
@@ -328,6 +326,7 @@ class BenefitRemove(generics.RetrieveDestroyAPIView):
             if _b.benefit_user.id == ben_user.id:
                 user.benefitlist.remove(_b)
                 user.save()
+                _b.delete()
                 response = {'success' : True}
                 break
 
@@ -386,6 +385,7 @@ class AddressRemove(generics.RetrieveDestroyAPIView):
         address = models.Address.objects.get(id=aid)
         user.addresses.remove(address)
         user.save()
+        address.delete()
 
         return Response({'success' : True})
 
@@ -440,9 +440,10 @@ class WokringHoursRemove(generics.RetrieveDestroyAPIView):
                 'succes' : False,
                 'description' : 'Working hours are not in the list.'})
 
-        _working_hours = models.WorkingHour.objects.get(id=wid)
-        user.working_hours.remove(_working_hours)
+        working_hour = models.WorkingHour.objects.get(id=wid)
+        user.working_hours.remove(working_hour)
         user.save()
+        working_hour.delete()
 
         return Response({'success' : True})
 
@@ -506,11 +507,12 @@ class UserServiceRemove(generics.RetrieveDestroyAPIView):
         service = models.UserService.objects.get(id=sid)
         user.services.remove(service)
         user.save()
+        service.delete()
 
         return Response({'success' : True})
 
 
-# ================= BENEFIT =================
+# ================= BLOCK =================
 # POST block_add/
 class BlockAdd(generics.ListCreateAPIView):
     def create(self, request):
@@ -553,11 +555,12 @@ class BlockRemove(generics.RetrieveDestroyAPIView):
 class RateUser(generics.ListCreateAPIView):
     def create(self, request):
         rating = parsers.create_rating(request.data)
-        rating.save()
         created_by = request.data['rated_user']
         user = models.FullUser.objects.get(id=created_by)
         user.ratings.add(rating)
         user.save()
+        utils.update_rating(user)
+        #_r = models.Rating.objects.get(id=rating.id)
         serializer = serializers.RatingSerializer(rating)
         return Response(serializer.data)
 
@@ -600,14 +603,56 @@ class RequestCancel(generics.RetrieveDestroyAPIView):
         return Response({'succes' : True})
 
 # GET requests_info/{id}
-class RequestViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
+class RequestViewSet(viewsets.ModelViewSet):
     queryset = models.Request.objects.all()
-    serializer_class = serializers.RequestSerializer
+
+    def list(self, request):
+        if request.GET.get('paginate'):
+            page = self.paginate_queryset(self.queryset)
+        else:
+            page = self.queryset
+
+        serializer = serializers.RequestSerializer(page, many=True)
+
+        if request.GET.get('paginate'):
+            return self.get_paginated_response(serializer.data)
+
+        custom_response = {
+            'count' : len(serializer.data),
+            'results' : serializer.data
+        }
+        return Response(custom_response)
+
+    def retrieve(self, request, pk):
+        service = get_object_or_404(self.queryset, pk=pk)
+        serializer = serializers.RequestSerializer(service)
+        return Response(serializer.data)
 
 # GET requests/{id}
-class FullRequestViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
+class FullRequestViewSet(viewsets.ModelViewSet):
     queryset = models.FullRequest.objects.all()
-    serializer_class = serializers.FullRequestSerializer
+
+    def list(self, request):
+        if request.GET.get('paginate'):
+            page = self.paginate_queryset(self.queryset)
+        else:
+            page = self.queryset
+
+        serializer = serializers.FullRequestSerializer(page, many=True)
+
+        if request.GET.get('paginate'):
+            return self.get_paginated_response(serializer.data)
+
+        custom_response = {
+            'count' : len(serializer.data),
+            'results' : serializer.data
+        }
+        return Response(custom_response)
+
+    def retrieve(self, request, pk):
+        service = get_object_or_404(self.queryset, pk=pk)
+        serializer = serializers.FullRequestSerializer(service)
+        return Response(serializer.data)
 
 # GET achievements/{id}
 class AchievementViewSet(viewsets.ModelViewSet):
@@ -615,7 +660,7 @@ class AchievementViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.AchievementSerializer
 
     def list(self, request):
-        if request.data['paginate']:
+        if request.GET.get('paginate'):
             page = self.paginate_queryset(self.queryset)
         else:
             page = self.queryset
@@ -624,7 +669,7 @@ class AchievementViewSet(viewsets.ModelViewSet):
         for _q, _s in zip(page, serializer.data):
             _s['icon'] = utils.encode_img('achievements/' + str(_q.id))
 
-        if request.data['paginate']:
+        if request.GET.get('paginate'):
             return self.get_paginated_response(serializer.data)
 
         custom_response = {
@@ -645,14 +690,14 @@ class ServiceViewSet(viewsets.ModelViewSet):
     queryset = models.Service.objects.all().order_by('-id')
 
     def list(self, request):
-        if request.data['paginate']:
+        if request.GET.get('paginate'):
             page = self.paginate_queryset(self.queryset)
         else:
             page = self.queryset
-        
+
         serializer = serializers.ServiceSerializer(page, many=True)
 
-        if request.data['paginate']:
+        if request.GET.get('paginate'):
             return self.get_paginated_response(serializer.data)
 
         custom_response = {
@@ -660,7 +705,7 @@ class ServiceViewSet(viewsets.ModelViewSet):
             'results' : serializer.data
         }
         return Response(custom_response)
-    
+
     def retrieve(self, request, pk):
         service = get_object_or_404(self.queryset, pk=pk)
         serializer = serializers.ServiceSerializer(service)

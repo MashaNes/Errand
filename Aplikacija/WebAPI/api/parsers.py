@@ -168,6 +168,7 @@ def create_rating(data):
                            created_by=created_by,
                            rated_user=rated_user,
                            request=request)
+    rating.save()
     return rating
 
 
