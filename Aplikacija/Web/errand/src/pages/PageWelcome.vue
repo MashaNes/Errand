@@ -1,5 +1,6 @@
 <template>
-<div>
+<Spinner v-if="!this.$store.state.isDataLoaded || this.$store.state.logedIn"/>
+<div v-else>
   <!-- Masthead -->
   <header class="masthead text-white text-center">
     <div class="overlay"></div>
@@ -73,7 +74,12 @@
 </template>
 
 <script>
+    import Spinner from "@/components/Spinner"
     export default {
+        components:
+        {
+          Spinner
+        },
         computed:
         {
             isSerbian()

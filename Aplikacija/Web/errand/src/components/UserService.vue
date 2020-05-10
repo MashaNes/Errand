@@ -162,24 +162,29 @@ export default {
         {
             console.log(this.userService)
             this.showModal = false;
-            //izbaciti userServis iz liste userServisa
-            //dodati servis u listu servisa
-            //poslati delete za taj UserService
+            this.$store.state.userServices.forEach((item, index) =>
+            {
+                if(item.id == this.userService.id)
+                    this.$store.state.userServices.splice(index,1)
+            })
+            this.$store.state.services.unshift(this.userService.service)
+            this.$store.dispatch("removeUserService", this.userService.id)
         },
         saveChanges()
         {
             this.userService.max_dist = this.maxDist
             this.userService.min_rating = this.minRating
-            this.userService.payment_amount = this.paymentAmount
+            this.userService.payment_ammount = this.paymentAmount
             this.userService.payment_type = this.paymentType
             this.isEditing = false
-            //posalji update za taj user service
+            console.log(this.userService)
+            this.$store.dispatch("updateUserService", this.userService)
         },
         cancel()
         {
             this.maxDist = this.userService.max_dist
             this.scale = (this.userService.min_rating - 1) * 25
-            this.paymentAmount = this.userService.payment_amount
+            this.paymentAmount = this.userService.payment_ammount
             this.paymentType = this.userService.payment_type
             this.isEditing = false
         }

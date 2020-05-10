@@ -1,5 +1,5 @@
 <template>
-    <Spinner v-if="this.$store.state.userServices == null"/>
+    <Spinner v-if="this.$store.state.userServices == null || this.$store.state.services == null"/>
     <div class = "wrapper" v-else>
         <div class="nova-stavka">
             <NewUserService />
@@ -25,9 +25,6 @@ export default {
     {
         if(this.$store.state.userServices == null)
             this.$store.dispatch("fillUserServices")
-        //pribavljanje user services
-        this.$store.dispatch("fillServices")
-        //pribavljanje servisa, prolazak kroz listu i izbacivanje onih za koje vec postoji userService
     }
 }
 </script>
