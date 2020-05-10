@@ -244,6 +244,7 @@ const router = new Router(
                 path: "/newRequest",
                 name: "PageNewRequest",
                 component: PageNewRequest,
+                props: true,
                 beforeEnter(to,from,next)
                 {
                     if(store.state.logedIn && !store.state.isAdmin)

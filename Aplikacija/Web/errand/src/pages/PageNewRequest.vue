@@ -15,9 +15,11 @@
             <NewRequest2 :address="request.address"
                          @addressChanged="addressChanged"
                          v-if="step == 2"/>
+            <NewRequest4 @moveOn="moveOn"
+                         v-if="step == 4"/>
             <div class="buttonDiv">
-                <button type="button" class="btn btn-secondary" v-if="isSerbian" :disabled="step == 1" @click="step = step - 1">Nazad</button>
-                <button type="button" class="btn btn-secondary" v-else :disabled="step == 1" @click="step = step - 1">Back</button>
+                <button type="button" class="btn btn-secondary" v-if="isSerbian && step < 5" :disabled="step == 1" @click="step = step - 1">Nazad</button>
+                <button type="button" class="btn btn-secondary" v-if="!isSerbian && step < 5" :disabled="step == 1" @click="step = step - 1">Back</button>
                 <button type="button" class="btn btn-primary" v-if="isSerbian && step < 4" :disabled="disabledNextButton" @click="step = step + 1">Dalje</button>
                 <button type="button" class="btn btn-primary"  v-if="!isSerbian && step < 4" :disabled="disabledNextButton" @click="step = step + 1">Next</button>
             </div>
@@ -28,11 +30,20 @@
 <script>
 import NewRequest1 from "@/components/NewRequest1"
 import NewRequest2 from "@/components/NewRequest2"
+import NewRequest4 from "@/components/NewRequest4"
 export default {
+    props:
+    {
+        requestProp:{
+            type: Object,
+            required: false
+        }
+    },
     components:
     {
         NewRequest1,
-        NewRequest2
+        NewRequest2,
+        NewRequest4
     },
     data()
     {
@@ -106,7 +117,7 @@ export default {
         },
         dateChanged(dateCopy)
         {
-            this.request.date = dateCopy
+            this.request.time = dateCopy
         },
         ratingChanged(ratingCopy)
         {
@@ -119,7 +130,20 @@ export default {
         addressChanged(addressCopy)
         {
             this.request.address = addressCopy
+        },
+        moveOn(direct)
+        {
+            this.request.broadcast = !direct
+            if(direct)
+                this.step = 5
+            else
+                this.step = 6
         }
+    },
+    created()
+    {
+        if(this.requestProp != undefined)
+            this.request = this.requestProp
     }
 }
 </script>
