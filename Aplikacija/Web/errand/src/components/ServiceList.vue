@@ -1,6 +1,6 @@
 <template>
     <div class="wrapper-component">
-        <UserService v-for="userService in UserServices" :key="userService.service.serviceType" :editable="editable" :userService="userService"/>
+        <UserService v-for="userService in UserServices" :key="userService.service.id" :editable="editable" :userService="userService"/>
     </div>
 </template>
 
@@ -23,7 +23,10 @@ export default {
     {
         UserServices()
         {
-            return this.$store.state.userServices.UserServices
+            if(this.editable)
+                return this.$store.state.UserServices
+            else
+                return []
         }
     }
 }
