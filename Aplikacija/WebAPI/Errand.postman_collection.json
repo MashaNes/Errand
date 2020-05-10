@@ -340,7 +340,7 @@
 			"response": []
 		},
 		{
-			"name": "UsersInfoFiltered",
+			"name": "UserInfoFiltered",
 			"request": {
 				"method": "POST",
 				"header": [
@@ -1056,6 +1056,90 @@
 						"api",
 						"v1",
 						"requests",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "FilterRequests",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token c59da368fabda9f06c2e9f948eeb6d5437855fcc",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"created_by\" : null,\n\t\"done_by\" : null,\n\t\"created_or_done_by\": 1,\n\t\"statuses\" : [0, 1],\n\t\"unrated\" : true\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "127.0.0.1:8000/api/v1/filtered_requests/?paginate=true",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"v1",
+						"filtered_requests",
+						""
+					],
+					"query": [
+						{
+							"key": "paginate",
+							"value": "true"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "RequestInfoFiltered",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token c59da368fabda9f06c2e9f948eeb6d5437855fcc",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"request\" : 1,\n\t\"offers\" : true,\n\t\"accepted_offer\" : false,\n\t\"rating\" : false\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "127.0.0.1:8000/api/v1/request_info_filtered/",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"v1",
+						"request_info_filtered",
 						""
 					]
 				}

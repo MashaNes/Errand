@@ -17,6 +17,7 @@ def encode_img(img_path):
         base64_string = base64_string[2:-1]
     return base64_string
 
+# =================== USER ===================
 def update_rating(user):
     avg = 0
 
@@ -40,7 +41,7 @@ def filter_user(queryset, data):
 
     for _q in queryset:
         to_add = True
-        if user.id == _q.id or not user.user.is_admin:
+        if user.id == _q.id or _q.user.is_admin:
             to_add = False
 
         found = False
@@ -105,7 +106,7 @@ def filter_user_info(serializer, data):
     response = {}
 
     if data['blocked']:
-        response['bloclked'] = serializer['blocked']
+        response['blocked'] = serializer['blocked']
     if data['working_hours']:
         response['working_hours'] = serializer['working_hours']
     if data['addresses']:
@@ -129,48 +130,43 @@ def filter_user_info(serializer, data):
 
     return response
 
-
-def filter_request(queryset, data):
+# ==================== REQUEST ====================
+def filter_requests(queryset, data):
     new_queryset = list()
-    user = models.FullRequest.objects.get(id=data['request'])
 
     for _q in queryset:
         to_add = True
-        if user.id == _q.id:
-            to_add = False
 
-        found = False
-        if to_add:
-            for _b in user.blocked.all():
-                if _b.id == _q.user.id:
-                    found = True
-                    break
-            to_add = not found
+        if data['created_by']:
+            if _q.request.created_by.id != data['created_by']:
+                to_add = False
 
-        if to_add and data['services']:
-            for _s in data['services']:
-                found = False
-                for _q_s in _q.services.all():
-                    if (_s['id'] == _q_s.service.id and _s['max_dist'] >= _q_s.max_dist):
-                        if data['no_rating'] or _s['min_rating'] <= _q.avg_rating:
-                            found = True
-                            break
-                to_add = found
+        if to_add and data['done_by']:
+            if not _q.accepted_offer:
+                to_add = False
+            elif _q.accepted_offer.created_by.id != data['done_by']:
+                to_add = False
 
-        if to_add and data['name']:
+        if to_add and data['created_or_done_by']:
             found = False
-            name = _q.user.first_name + " " + _q.user.last_name
-            if data['name'] in name:
+            if _q.request.created_by.id == data['created_or_done_by']:
+                found = True
+            if (_q.accepted_offer and
+                    _q.accepted_offer.created_by.id == data['created_or_done_by']):
                 found = True
             to_add = found
 
-        if to_add and data['not_in_benefit']:
+        if to_add and data['statuses']:
             found = False
-            for _b in user.benefitlist.all():
-                if _b.benefit_user.id == _q.user.id:
+            for _s in data['statuses']:
+                if _s == _q.request.status:
                     found = True
                     break
-            to_add = not found
+            to_add = found
+
+        if to_add and data['unrated']:
+            if _q.rating:
+                to_add = False
 
         # TODO: Add other filter params if needed
 
@@ -181,6 +177,18 @@ def filter_request(queryset, data):
     new_queryset = list()
 
     for _q in queryset:
-        new_queryset.append(models.User.objects.get(id=_q.user.id))
+        new_queryset.append(models.Request.objects.get(id=_q.request.id))
 
     return new_queryset
+
+def filter_request_info(serializer, data):
+    response = {}
+
+    if data['offers']:
+        response['offers'] = serializer['offers']
+    if data['accepted_offer']:
+        response['accepted_offer'] = serializer['accepted_offer']
+    if data['rating']:
+        response['rating'] = serializer['rating']
+
+    return response

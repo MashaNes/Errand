@@ -98,7 +98,8 @@ class Banned(models.Model):
     banned_user = models.ForeignKey(User, on_delete=models.CASCADE)
 
 class Request(models.Model):
-    STATUS_TYPES = (('pending', 0), ('active', 1), ('finished', 2)) #TODO: Add types
+    STATUS_TYPES = (('pending', 0), ('active', 1),
+                    ('finished', 2), ('cancelled', 3))
     LOCATION_STATUS_TYPES = () #TODO: Add types
 
     name = models.CharField(max_length=50)
@@ -120,12 +121,22 @@ class RequestEdit(models.Model):
     tasks = models.ManyToManyField(TaskEdit)
     request = models.ManyToManyField(Request)
 
+class Rating(models.Model):
+    grade = models.FloatField()
+    comment = models.CharField(max_length=256)
+    created_by = models.ForeignKey(User, related_name='rating_created_by_id', null=True,
+                                   on_delete=models.SET_NULL)
+    rated_user = models.ForeignKey(User, related_name='rating_rated_user_id', null=True,
+                                   on_delete=models.SET_NULL)
+    request = models.ForeignKey(Request, null=True, on_delete=models.CASCADE)
+
 class Offer(models.Model):
     payment_type = models.CharField(max_length=4)
     payment_ammount = models.FloatField()
     created_by = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
     request = models.ForeignKey(Request, null=True, on_delete=models.SET_NULL)
     edit = models.ForeignKey(RequestEdit, null=True, on_delete=models.SET_NULL)
+    rating = models.ForeignKey(Rating, null=True, on_delete=models.SET_NULL)
 
 class Notification(models.Model):
     NOTIFICATION_TYPES = (('request', 0), ('offer', 1), ('edit_request', 2), 
@@ -136,15 +147,6 @@ class Notification(models.Model):
     notification_type = models.IntegerField(choices=NOTIFICATION_TYPES)
     timestamp = models.DateTimeField(auto_now=True)
     type_id = models.IntegerField()
-
-class Rating(models.Model):
-    grade = models.FloatField()
-    comment = models.CharField(max_length=256)
-    created_by = models.ForeignKey(User, related_name='rating_created_by_id', null=True,
-                                   on_delete=models.SET_NULL)
-    rated_user = models.ForeignKey(User, related_name='rating_rated_user_id', null=True,
-                                   on_delete=models.SET_NULL)
-    request = models.ForeignKey(Request, null=True, on_delete=models.CASCADE)
 
 class FullUser(models.Model):
     user = models.ForeignKey(User, related_name='user_id', on_delete=models.CASCADE)

@@ -4,6 +4,7 @@ from rest_framework import routers
 from api import views as api_views
 
 router = routers.DefaultRouter()
+router.register(r'get_cookie', api_views.GetCookieViewSet)
 router.register(r'users', api_views.FullUserViewSet)
 router.register(r'users_info', api_views.UserViewSet)
 router.register(r'requests', api_views.FullRequestViewSet)
@@ -12,7 +13,8 @@ router.register(r'achievements', api_views.AchievementViewSet)
 router.register(r'services', api_views.ServiceViewSet)
 router.register(r'filtered_users', api_views.FilterUserViewSet)
 router.register(r'user_info_filtered', api_views.UserInfoFilteredViewSet)
-router.register(r'get_cookie', api_views.GetCookieViewSet)
+router.register(r'filtered_requests', api_views.FilterRequestViewSet)
+router.register(r'request_info_filtered', api_views.RequestInfoFilteredViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),

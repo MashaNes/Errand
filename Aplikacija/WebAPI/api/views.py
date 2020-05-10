@@ -16,17 +16,19 @@ Endpoints:
 + GET users_info/{id} 				// Returns only basic user data
 + GET users/{id} 					// Returns full user data
 + POST filtered_users/ 				// Returns users based on filters
-+ POST user_info_filtered            // Returns users info on filters
++ POST user_info_filtered           // Returns users info based on filters
 + GET get_cookie/{id}    			// Returns only basic user data
 
 + GET requests_info/{id} 			// Returns only basic request data
 + GET requests/{id} 				// Returns full request data (including offers and rating)
-- GET requests_unrated              // Returns unrated requests
-- GET offers_unrated                // Returns unrated accepted offers
-- GET filtered_requests/ 			// Returns users based on filters
+//- GET requests_unrated              // Returns unrated requests
+//- GET offers_unrated                // Returns unrated accepted offers
++ POST filtered_requests/ 			// Returns requests based on filters
++ POST requests_info_filtered/      // Returns requests info based on filters
 + GET achievements/{id}				// Returns list of all achievements
 + GET services/{id}                 // Returns list of all types of services
 - GET stats/ (A)		 			// Returns statistics based on filters
+- GET reported_users/ (A)           // Returns list of reported users
 
 + POST login/                       // Login as some user
 + POST user_create/					// Creates new user
@@ -40,8 +42,8 @@ Endpoints:
 + POST rate_user/ 					// Adds new rating for completed request
 - POST report_user/					// Reports user
 - POST ban_user/ (A)	 			// Bans user
-~ POST achievement_create/ (A)	 	// Creates new achievement
-~ POST service_type_create/ (A)		// Creates new service type
++ POST achievement_create/ (A)	 	// Creates new achievement
++ POST service_type_create/ (A)		// Creates new service type
 
 + PUT logout/                       // Logout user
 + PUT user_update/			        // Updates basic user data
@@ -654,6 +656,43 @@ class FullRequestViewSet(viewsets.ModelViewSet):
         serializer = serializers.FullRequestSerializer(service)
         return Response(serializer.data)
 
+# POST requests_info_filtered/
+class RequestInfoFilteredViewSet(viewsets.ModelViewSet):
+    queryset = models.FullRequest.objects.all()
+
+    def create(self, request):
+        fullrequest = get_object_or_404(self.queryset, pk=request.data['request'])
+        serializer = serializers.FullRequestSerializer(fullrequest)
+        response = utils.filter_request_info(serializer.data, request.data)
+
+        return Response(response)
+
+# POST filtered_requests/
+class FilterRequestViewSet(viewsets.ModelViewSet):
+    queryset = models.FullRequest.objects.all()
+
+    def create(self, request):
+        self.queryset = utils.filter_requests(self.queryset, request.data)
+
+        if request.GET.get('paginate'):
+            page = self.paginate_queryset(self.queryset)
+        else:
+            page = self.queryset
+
+        serializer = serializers.RequestSerializer(page, many=True)
+
+        if request.GET.get('paginate'):
+            return self.get_paginated_response(serializer.data)
+
+        custom_response = {
+            'count' : len(serializer.data),
+            'results' : serializer.data
+        }
+
+        return Response(custom_response)
+
+
+# ================= ACHIEVEMENTS =================
 # GET achievements/{id}
 class AchievementViewSet(viewsets.ModelViewSet):
     queryset = models.Achievement.objects.all()
@@ -685,6 +724,8 @@ class AchievementViewSet(viewsets.ModelViewSet):
         response['icon'] = utils.encode_img('achievements/' + str(achievement.id))
         return Response(response)
 
+
+# ================= SERVICES =================
 # GET services/{id}
 class ServiceViewSet(viewsets.ModelViewSet):
     queryset = models.Service.objects.all().order_by('-id')
