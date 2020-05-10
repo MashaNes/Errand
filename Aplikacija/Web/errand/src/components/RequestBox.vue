@@ -7,7 +7,7 @@
                     <img class="rounded-image" :src="userPicture" @click="goToProfile">
                 </p>
             </div>
-            <div class = "request-name">
+            <div class = "request-name" @click="goToRequest">
                 {{myRequest.name}}
             </div>
         </div>
@@ -15,7 +15,7 @@
             <a class = "cancel-request" @click="showModal = true">
                 <img class = "ikonica" src="../assets/remove.svg">
             </a>
-            <div class = "request-name">
+            <div class = "request-name" @click="goToRequest">
                 {{myRequest.name}}
             </div>
         </div>
@@ -114,6 +114,16 @@ export default {
                 params: {
                     id: this.myRequest.user.id, 
                     user: this.myRequest.user
+                }
+            })
+        },
+        goToRequest() 
+        {
+            this.$router.push({
+                name: "PageViewRequest",
+                params: {
+                    id: this.myRequest.id,
+                    request: this.myRequest
                 }
             })
         }
@@ -283,6 +293,12 @@ export default {
         flex-grow: 1;
         margin-left: 10px;
         margin-top:2px;
+    }
+
+    .request-name:hover
+    {
+        color:rgb(7, 133, 175);
+        cursor: pointer;
     }
 
     .request-tag
