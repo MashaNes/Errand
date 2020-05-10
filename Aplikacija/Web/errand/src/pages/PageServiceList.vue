@@ -1,5 +1,6 @@
 <template>
-    <div class = "wrapper">
+    <Spinner v-if="this.$store.state.userServices == null"/>
+    <div class = "wrapper" v-else>
         <div class="nova-stavka">
             <NewUserService />
         </div>
@@ -10,17 +11,20 @@
 </template>
 
 <script>
+import Spinner from "@/components/Spinner"
 import NewUserService from "@/components/NewUserService"
 import ServiceList from "@/components/ServiceList"
 export default {
     components:
     {
         NewUserService,
-        ServiceList
+        ServiceList,
+        Spinner
     },
     created()
     {
-        this.$store.dispatch("fillUserServices")
+        if(this.$store.state.userServices == null)
+            this.$store.dispatch("fillUserServices")
         //pribavljanje user services
         this.$store.dispatch("fillServices")
         //pribavljanje servisa, prolazak kroz listu i izbacivanje onih za koje vec postoji userService

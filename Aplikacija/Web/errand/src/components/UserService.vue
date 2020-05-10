@@ -5,7 +5,8 @@
             <a class="link-editovanje" @click="isEditing = true"> <img src="../assets/edit.svg"> </a>
         </div>
         <div class="telo">
-            <p class="ime">{{userService.service.serviceType}}</p>
+            <p class="ime" v-if="isSerbian">{{userService.service.service_type_sr}}</p>
+            <p class="ime" v-else>{{userService.service.service_type_en}}</p>
             <div class="grid-div">
                 <div class="row-div fix">
                     <div class="left-div"> 
@@ -13,7 +14,7 @@
                         <span v-else> Maximum distance: </span>
                     </div>
                     <div class="right-div"> 
-                        <span v-if="!isEditing">{{userService.maxDist}} </span>
+                        <span v-if="!isEditing">{{userService.max_dist}} </span>
                         <input v-else type="number" class="input-polje" min="0.1" max="1000" step="0.1" v-model="maxDist">
                         km
                     </div>
@@ -43,7 +44,7 @@
                         <span v-else> Payment amount: </span>
                     </div>
                     <div class="right-div"> 
-                        <span v-if="!isEditing">{{userService.paymentAmount}} </span>
+                        <span v-if="!isEditing">{{userService.payment_ammount}} </span>
                         <input v-else type="number" class="input-polje vece" min="0" step="100" v-model="paymentAmount">
                         rsd
                     </div>
@@ -54,7 +55,7 @@
                         <span v-else> Minimum rating: </span>
                     </div>
                     <div class="right-div"> 
-                        <span v-if="!isEditing"> {{userService.minRating}} </span>
+                        <span v-if="!isEditing"> {{userService.min_rating}} </span>
                         <span v-else class="ocena-span"><input type="range" class="form-control-range skala" id="formControlRange" v-model="scale"> {{minRating}} </span>
                     </div>
                 </div>
@@ -104,10 +105,10 @@ export default {
         return{
             showModal: false,
             isEditing: false,
-            maxDist: this.userService.maxDist,
-            paymentType: this.userService.paymentType,
-            paymentAmount: this.userService.paymentAmount,
-            scale: (this.userService.minRating - 1) * 25
+            maxDist: this.userService.max_dist,
+            paymentType: this.userService.payment_type,
+            paymentAmount: this.userService.payment_ammount,
+            scale: (this.userService.min_rating - 1) * 25
         }
     },
     validations:
@@ -125,22 +126,22 @@ export default {
         {
             if(this.isSerbian)
             {
-                if(this.userService.paymentType == 0)
+                if(this.userService.payment_type == 0)
                     return "po satu"
-                else if(this.userService.paymentType == 1)
+                else if(this.userService.payment_type == 1)
                     return "po kilometru"
-                else if(this.userService.paymentType == 1)
+                else if(this.userService.payment_type == 1)
                     return "fiksna"
                 else
                     return "početna"
             }
             else
             {
-                if(this.userService.paymentType == 0)
+                if(this.userService.payment_type == 0)
                     return "per hour"
-                else if(this.userService.paymentType == 1)
+                else if(this.userService.payment_type == 1)
                     return "per kilometer"
-                else if(this.userService.paymentType == 1)
+                else if(this.userService.payment_type == 1)
                     return "fixed"
                 else
                     return "starting"
@@ -167,19 +168,19 @@ export default {
         },
         saveChanges()
         {
-            this.userService.maxDist = this.maxDist
-            this.userService.minRating = this.minRating
-            this.userService.paymentAmount = this.paymentAmount
-            this.userService.paymentType = this.paymentType
+            this.userService.max_dist = this.maxDist
+            this.userService.min_rating = this.minRating
+            this.userService.payment_amount = this.paymentAmount
+            this.userService.payment_type = this.paymentType
             this.isEditing = false
             //posalji update za taj user service
         },
         cancel()
         {
-            this.maxDist = this.userService.maxDist
-            this.scale = (this.userService.minRating - 1) * 25
-            this.paymentAmount = this.userService.paymentAmount
-            this.paymentType = this.userService.paymentType
+            this.maxDist = this.userService.max_dist
+            this.scale = (this.userService.min_rating - 1) * 25
+            this.paymentAmount = this.userService.payment_amount
+            this.paymentType = this.userService.payment_type
             this.isEditing = false
         }
     }  

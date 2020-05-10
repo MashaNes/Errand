@@ -82,10 +82,10 @@ export default new Vuex.Store({
                             this.state.logedIn = true
                             this.state.token = data['token']
                             this.state.isDataLoaded = true
-                            Vue.cookie.set('token',data['token'], 1);
-                            Vue.cookie.set('id',this.state.authUser.id, 1);
-                            Vue.cookie.set('ime',this.state.authUser.first_name, 1);
-                            Vue.cookie.set('prezime',this.state.authUser.last_name, 1);
+                            Vue.cookie.set('token',data['token'], { expires: '1h' });
+                            Vue.cookie.set('id',this.state.authUser.id, { expires: '1h' });
+                            Vue.cookie.set('ime',this.state.authUser.first_name, { expires: '1h' });
+                            Vue.cookie.set('prezime',this.state.authUser.last_name, { expires: '1h' });
                             router.push('/requests')
                         })
                     }
@@ -130,10 +130,10 @@ export default new Vuex.Store({
                             this.state.logedIn = true
                             this.state.token = data['token']
                             this.state.isDataLoaded = true
-                            Vue.cookie.set('token',data['token'], 1);
-                            Vue.cookie.set('id',this.state.authUser.id, 1);
-                            Vue.cookie.set('ime',this.state.authUser.first_name, 1);
-                            Vue.cookie.set('prezime',this.state.authUser.last_name, 1);
+                            Vue.cookie.set('token',data['token'], { expires: '1h' });
+                            Vue.cookie.set('id',this.state.authUser.id, { expires: '1h' });
+                            Vue.cookie.set('ime',this.state.authUser.first_name, { expires: '1h' });
+                            Vue.cookie.set('prezime',this.state.authUser.last_name, { expires: '1h' });
                             router.push('/requests')
                         })
                     }
@@ -242,11 +242,47 @@ export default new Vuex.Store({
         },
         fillUserServices()
         {
-            this.state.userServices = fetchUserServices();
+            fetch("http://127.0.0.1:8000/api/v1/user_info_filtered/",
+            {
+                method: 'GET',
+                headers:
+                {
+                    "Content-type" : "application/json",
+                    "Authorization" : "Token " + this.state.token
+                },
+                body:  JSON.stringify(
+                {
+                    "created_by" : this.state.authUser.id,
+                    "blocked" : false,
+                    "working_hours" : false,
+                    "addresses" : false,
+                    "services" : true,
+                    "offers" : false,
+                    "notifications" : false,
+                    "ratings" : false,
+                    "benefitlist" : false,
+                    "achievements" : false,
+                    "requests" : false
+                })
+            }).then( p => 
+                {
+                    if(p.ok)
+                    {
+                        p.json().then(data =>
+                        {
+                            console.log(data)
+                            this.state.userServices = data["services"]
+                        })
+                    }
+                    else
+                    {
+                        console.log("Error")
+                    }
+                });
         },
         fillServices()
         {
-            this.state.services = fetchServices();
+            this.state.services = fetchServices(); 
         },
         updateUserInfo()
         {
