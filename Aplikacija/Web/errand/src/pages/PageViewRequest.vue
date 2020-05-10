@@ -19,14 +19,38 @@
         </div>
       </b-card-title>
       <b-card-text class="request-note">
-        <b-card-title style="font-size:25px;">
+        <b-card-title>
             <span style="margin-right:5px;" v-text="isSerbian ? 'Napomena' : 'Note'"></span>
         </b-card-title>
-        <!-- <b-collapse id="collapse"> -->
-          <b-card-text>
-            Request.note!!!
-          </b-card-text>
-        <!-- </b-collapse> -->
+        <b-card-text class="inner-text">
+          Request.note!!!
+        </b-card-text>
+      </b-card-text>
+
+      <div v-if="computedRequest.status != 'pending'" class="offer">
+        <b-card-title>
+          <div class="offer-title">
+            <span 
+              v-text="(isSerbian ? 'Prihvaćena ponuda od ' : 'Accepted offer from ') + fullUserName"
+              style="margin-right: 5px"
+            ></span>
+            <div class="media-center">
+              <p class="image">
+                <img class="rounded-image" :src="computedRequest.user.picture">
+              </p>
+            </div>
+          </div>
+        </b-card-title>
+        <div class="payment-info inner-text">
+          <span v-text="isSerbian ? 'Tip naplate: po satu' : 'Payment type: per hour'"> </span>
+          <span v-text="isSerbian ? 'Cena: 200 din' : 'Price: 200din'"></span>
+        </div>      
+      </div>
+
+      <b-card-text>
+        <b-button class="button is-primary">
+          <strong v-text="isSerbian ? 'Pogledajte mapu zadataka' : 'See task-list map'"></strong>
+        </b-button>
       </b-card-text>
 
       <b-card-text v-for="(task, ind) in tasks" :key="ind" class="task-div">
@@ -86,6 +110,9 @@ export default {
     },
     isTaskOpened(ind) {
       return this.taskOpened[ind]
+    },
+    fullUserName() {
+      return this.computedRequest.user.first_name + " " + this.computedRequest.user.last_name
     }
   },
   methods: {
@@ -128,7 +155,16 @@ export default {
     padding-right:3%;
   } 
 
+  .card-title {
+    font-size: 25px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+  }
+
   .main-title {
+    font-size: 40px;
     border-top: lightgray solid 1px;
     border-bottom: lightgray solid 1px;
     padding-top: 10px;
@@ -136,14 +172,6 @@ export default {
     margin-bottom: 20px;
     margin-top: 20px;
     overflow-wrap: break-word;
-  }
-
-  .card-title {
-    font-size: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
   }
 
   .title-start {
@@ -176,9 +204,48 @@ export default {
   }
 
   .request-note {
-    border: 1px solid lightgray;
-    padding: 10px;
+    border: 1px solid black;
+    padding: 15px;
     border-radius: 5px;
+  }
+
+  .inner-text {
+    border: 1px solid lightgray;
+    font-size:18px;
+    padding: 10px;
+  }
+
+  .offer {
+    border: 1px solid black;
+    border-radius: 5px;
+    margin-top: 10px;
+    margin-bottom: 20px;
+    padding: 15px;
+  }
+
+  .offer-title {
+    display: flex;
+    flex-wrap: wrap;
+    align-items:center;
+  }
+
+  .payment-info {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .rounded-image {
+    border-radius: 60px;
+    border: 2px solid grey;
+    height:40px;
+    width:40px;
+    object-fit:cover;
+    cursor:pointer;
+    margin-right: 10px;
+  }
+
+  .button {
+    font-size: 20px;
   }
 
   .task-div {
@@ -194,7 +261,8 @@ export default {
     color: white;
     background-color: grey;
     padding:10px;
-    border-radius:5px;
+    border-radius:4px;
+    border: 1px solid grey;
   }
 
   .open-task-div:hover {
@@ -208,7 +276,8 @@ export default {
     color: white;
     background-color: grey;
     padding:10px;
-    border-radius:5px;
+    border-radius:4px;
+    border:1px solid grey;
   }
 
   .open-task-bottom-border:hover {
