@@ -19,6 +19,7 @@ import PageBrowseUsers from "@/pages/PageBrowseUsers"
 import PageBenefitList from "@/pages/PageBenefitList"
 import PageServiceList from "@/pages/PageServiceList"
 import PageOfferedServices from "@/pages/PageOfferedServices"
+import PageViewRequest from "@/pages/PageViewRequest"
 import PageNotAuthenticated from "@/pages/PageNotAuthenticated"
 import PageNotFound from "@/pages/PageNotFound"
 import PageNewRequest from "@/pages/PageNewRequest"
@@ -218,6 +219,19 @@ const router = new Router(
                 path: "/offeredServices/:id",
                 name: "PageOfferedServices",
                 component: PageOfferedServices,
+                beforeEnter(to,from,next)
+                {
+                    if(store.state.logedIn && !store.state.isAdmin)
+                        next()
+                    else
+                        next({name: 'PageNotAuthenticated'})
+                }
+            },
+            {
+                path: "/viewRequest/:id",
+                name: "PageViewRequest",
+                component: PageViewRequest,
+                params: true,
                 beforeEnter(to,from,next)
                 {
                     if(store.state.logedIn && !store.state.isAdmin)
