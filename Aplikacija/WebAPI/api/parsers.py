@@ -208,6 +208,15 @@ def create_task(data):
     task.save()
     return task
 
+def update_task(data):
+    task = models.Task.get(id=data['task'])
+
+    address = create_address(data['address'])
+    task.address = address
+    task.save()
+
+    return task
+
 def create_request(data):
     created_by = models.User.objects.get(id=data['created_by'])
 
@@ -241,26 +250,38 @@ def create_task_edit(data):
     address = create_address(data['address'])
     task_edit = models.TaskEdit(task=task,
                                 address=address)
+    task_edit.save()
     return task_edit
 
-def create_request_edit(data):
-    # TODO: Create tasks as array
-    tasks = create_task_edit(data['tasks'])
-    request = models.Request.objects.get(id=data['request'])
-    request_edit = models.RequestEdit(time=data['time'],
-                                      tasks=tasks,
-                                      request=request)
+def create_request_edit(data, request):
+    request_edit = models.RequestEdit(time=data['time'])
+    request_edit.save()
+    request_edit.request.add(request)
+    request_edit.save()
+
+    _task_list = data['tasks']
+    for _t in _task_list:
+        _nt = create_task_edit(_t)
+        request_edit.tasks.add(_nt)
+    request_edit.save()
+
     return request_edit
 
 def create_offer(data):
-    created_by = models.User.objects.filter(id=data['created_by'])
-    request = models.Request.objects.filter(id=data['request'])
-    edit = create_task_edit(data['edit'])
+    created_by = models.User.objects.get(id=data['created_by'])
+    request = models.Request.objects.get(id=data['request'])
+    edit = create_request_edit(data['edit'], request)
     offer = models.Offer(payment_type=data['payment_type'],
                          payment_ammount=data['payment_ammount'],
                          created_by=created_by,
                          request=request,
                          edit=edit)
+    offer.save()
+    fullrequest = models.FullRequest.objects.get(id=request.id)
+    fullrequest.offers.add(offer)
+    fullrequest.save()
+
+
     return offer
 
 

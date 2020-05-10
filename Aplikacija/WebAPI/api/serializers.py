@@ -43,7 +43,6 @@ class TaskSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class TaskEditSerializer(serializers.ModelSerializer):
-    task = TaskSerializer()
     address = AddressSerializer()
 
     class Meta:
@@ -103,6 +102,7 @@ class RequestSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class RequestEditSerializer(serializers.ModelSerializer):
+    tasks = TaskEditSerializer(many=True)
     class Meta:
         model = models.RequestEdit
         fields = '__all__'

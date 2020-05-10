@@ -1346,6 +1346,45 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "OfferCreate",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token c59da368fabda9f06c2e9f948eeb6d5437855fcc",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"created_by\" : 1,\n\t\"payment_type\" : 1,\n\t\"payment_ammount\" : 500,\n\t\"request\" : 3,\n\t\"edit\" : {\n\t\t\"time\" : \"2020-05-11 18:00\",\n\t\t\"tasks\" : [\n\t\t\t{\n\t\t\t\t\"task\" : 6,\n\t\t\t\t\"address\" : {\n\t\t\t\t\t\"name\" : \"Dragise Cvetkovica 42\",\n\t\t\t\t\t\"longitude\" : 43.319185,\n\t\t\t\t\t\"latitude\" : 21.913395,\n\t\t\t\t\t\"home\" : true,\n\t\t\t\t\t\"arrived\" : false\n\t\t\t\t}\n\t\t\t\t\n\t\t\t}\n\t\t]\n\t}\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "127.0.0.1:8000/api/v1/offer_create/",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"v1",
+						"offer_create",
+						""
+					]
+				}
+			},
+			"response": []
 		}
 	],
 	"protocolProfileBehavior": {}

@@ -21,8 +21,6 @@ Endpoints:
 
 + GET requests_info/{id} 			// Returns only basic request data
 + GET requests/{id} 				// Returns full request data (including offers and rating)
-//- GET requests_unrated              // Returns unrated requests
-//- GET offers_unrated                // Returns unrated accepted offers
 + POST filtered_requests/ 			// Returns requests based on filters
 + POST requests_info_filtered/      // Returns requests info based on filters
 + GET achievements/{id}				// Returns list of all achievements
@@ -37,7 +35,8 @@ Endpoints:
 + POST working_hours_add/ 			// Adds new working hours for user
 + POST user_service_add/			// Adds new user service for user
 + POST block_add/			        // Adds new user to blocklist
-- POST offer_create/ 				// Creates offer for request
++ POST offer_create/ 				// Creates offer for request
+- POST offer_accept/ 				// Accepts offer for request
 + POST request_create/ 				// Creates request
 + POST rate_user/ 					// Adds new rating for completed request
 - POST report_user/					// Reports user
@@ -691,6 +690,16 @@ class FilterRequestViewSet(viewsets.ModelViewSet):
 
         return Response(custom_response)
 
+# POST offer_create/
+class OfferCreate(generics.ListCreateAPIView):
+    def create(self, request):
+        offer = parsers.create_offer(request.data)
+        created_by = request.data['created_by']
+        user = models.FullUser.objects.get(id=created_by)
+        user.offers.add(offer)
+        user.save()
+        serializer = serializers.OfferSerializer(offer)
+        return Response(serializer.data)
 
 # ================= ACHIEVEMENTS =================
 # GET achievements/{id}

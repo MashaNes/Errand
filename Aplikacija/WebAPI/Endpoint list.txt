@@ -7,17 +7,17 @@ URL = api/v1/{endpoint_name}
 + GET users_info/{id} 				// Returns only basic user data
 + GET users/{id} 					// Returns full user data
 + POST filtered_users/ 				// Returns users based on filters
-+ POST user_info_filtered            // Returns users info on filters
++ POST user_info_filtered           // Returns users info based on filters
 + GET get_cookie/{id}    			// Returns only basic user data
 
 + GET requests_info/{id} 			// Returns only basic request data
 + GET requests/{id} 				// Returns full request data (including offers and rating)
-- GET requests_unrated              // Returns unrated requests
-- GET offers_unrated                // Returns unrated accepted offers
-- GET filtered_requests/ 			// Returns users based on filters
++ POST filtered_requests/ 			// Returns requests based on filters
++ POST requests_info_filtered/      // Returns requests info based on filters
 + GET achievements/{id}				// Returns list of all achievements
 + GET services/{id}                 // Returns list of all types of services
 - GET stats/ (A)		 			// Returns statistics based on filters
+- GET reported_users/ (A)           // Returns list of reported users
 
 + POST login/                       // Login as some user
 + POST user_create/					// Creates new user
@@ -26,13 +26,14 @@ URL = api/v1/{endpoint_name}
 + POST working_hours_add/ 			// Adds new working hours for user
 + POST user_service_add/			// Adds new user service for user
 + POST block_add/			        // Adds new user to blocklist
-- POST offer_create/ 				// Creates offer for request
++ POST offer_create/ 				// Creates offer for request
+- POST offer_accept/ 				// Accepts offer for request
 + POST request_create/ 				// Creates request
 + POST rate_user/ 					// Adds new rating for completed request
 - POST report_user/					// Reports user
 - POST ban_user/ (A)	 			// Bans user
-~ POST achievement_create/ (A)	 	// Creates new achievement
-~ POST service_type_create/ (A)		// Creates new service type
++ POST achievement_create/ (A)	 	// Creates new achievement
++ POST service_type_create/ (A)		// Creates new service type
 
 + PUT logout/                       // Logout user
 + PUT user_update/			        // Updates basic user data
@@ -51,5 +52,4 @@ URL = api/v1/{endpoint_name}
 
 (+ -> Done)
 (- -> Not)
-(~ -> Done without privilages)
 (A -> Admin privileges)

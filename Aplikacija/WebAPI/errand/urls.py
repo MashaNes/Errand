@@ -87,7 +87,9 @@ urlrequest = [
     path('api/v1/request_cancel/', api_views.RequestCancel.as_view(),
          name='request_cancel'),
     path('api/v1/rate_user/', api_views.RateUser.as_view(),
-         name='rate_user')
+         name='rate_user'),
+    path('api/v1/offer_create/', api_views.OfferCreate.as_view(),
+         name='offer_create')
 ]
 urlpatterns += urlrequest
 

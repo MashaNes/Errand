@@ -57,7 +57,7 @@ def filter_user(queryset, data):
                 found = False
                 for _q_s in _q.services.all():
                     if (_s['id'] == _q_s.service.id and _s['max_dist'] >= _q_s.max_dist):
-                        if data['no_rating'] or _s['min_rating'] <= _q.avg_rating:
+                        if data['no_rating'] or _s['min_rating'] <= _q.user.avg_rating:
                             found = True
                             break
                 to_add = found
@@ -78,7 +78,8 @@ def filter_user(queryset, data):
             to_add = not found
 
         if to_add and data['sort_rating'] and len(_q.ratings.all()) == 0:
-            to_add = False
+            if not data['no_rating']:
+                to_add = False
 
         if to_add and data['rating_limit_up']:
             if _q.user.avg_rating > data['rating_limit_up']:
