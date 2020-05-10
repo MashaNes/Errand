@@ -48,9 +48,13 @@
       </div>
 
       <b-card-text>
-        <b-button class="button is-primary">
+        <b-button class="button is-primary" @click="openMap">
           <strong v-text="isSerbian ? 'Pogledajte mapu zadataka' : 'See task-list map'"></strong>
         </b-button>
+      </b-card-text>
+
+      <b-card-text style="margin-top: 20px;">
+        <Map v-if="isMapOpened"/>
       </b-card-text>
 
       <b-card-text v-for="(task, ind) in tasks" :key="ind" class="task-div">
@@ -77,8 +81,12 @@
 </template>
 
 <script>
-export default {
+import Map from "@/components/Map"
 
+export default {
+  components: {
+    Map
+  },
   props: {
     request: {
       required: false
@@ -90,18 +98,31 @@ export default {
       tasks: [
         {
           name: 'Task1',
-          description: 'Ovo je test opis za zadatak Task1'
+          description: 'Ovo je test opis za zadatak Task1',
+          address: {
+            latitude: 43.788696,
+            longitude: 21.818723
+          }
         },
         {
           name: 'Task2',
-          description: 'Ovo je test opis za zadatak Task2'
+          description: 'Ovo je test opis za zadatak Task2',
+          address: {
+            latitude: 43.185616,
+            longitude: 21.412323
+          }
         },
         {
           name: 'Task3',
-          description: 'Ovo je test opis za zadatak Task3'
+          description: 'Ovo je test opis za zadatak Task3',
+          address: {
+            latitude: 43.455496,
+            longitude: 21.122123
+          }
         }
       ],
-      computedRequest: null
+      computedRequest: null,
+      isMapOpened: false
     }
   },
   computed: {
@@ -125,10 +146,23 @@ export default {
         this.computedRequest = this.$store.state.requests[routeId]
       }
       else this.computedRequest = this.request
+      const markerPositions = [];
+      this.tasks.forEach(task => {
+        const newPosition = {
+          lat: task.address.latitude,
+          lng: task.address.longitude
+        }
+        markerPositions.push(newPosition)
+      })
+      this.$store.dispatch('setMarkerPositions', markerPositions)
+    },
+    openMap() {
+      this.isMapOpened = !this.isMapOpened
     }
   },
   created() {
     this.routeChanged()
+    console.log('created')
   },
   watch: {
     $route() {
@@ -207,6 +241,7 @@ export default {
     border: 1px solid black;
     padding: 15px;
     border-radius: 5px;
+    margin-bottom:20px;
   }
 
   .inner-text {
