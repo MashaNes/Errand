@@ -250,7 +250,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "",
+					"raw": "{\n\t\"paginate\" : false\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -292,7 +292,12 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": ""
+					"raw": "{\n\t\"paginate\" : false\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
 				},
 				"url": {
 					"raw": "127.0.0.1:8000/api/v1/users/",
@@ -329,7 +334,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\t\"created_by\" : 3,\n\t\"services\" : [\n\t\t{\n\t\t\t\"id\" : 3,\n\t\t\t\"min_rating\" : 3.5,\n\t\t\t\"max_dist\" : 100\n\t\t}\n\t],\n\t\"name\" : \"\",\n\t\"no_rating\" : true,\n\t\"not_in_benefit\" : false\n}",
+					"raw": "{\n\t\"paginate\" : false,\n\t\"created_by\" : 3,\n\t\"services\" : [\n\t\t{\n\t\t\t\"id\" : 3,\n\t\t\t\"min_rating\" : 3.5,\n\t\t\t\"max_dist\" : 100\n\t\t}\n\t],\n\t\"name\" : \"\",\n\t\"no_rating\" : true,\n\t\"not_in_benefit\" : false\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -1135,8 +1140,13 @@
 					}
 				],
 				"body": {
-					"mode": "formdata",
-					"formdata": []
+					"mode": "raw",
+					"raw": "{\n\t\"paginate\" : false\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
 				},
 				"url": {
 					"raw": "127.0.0.1:8000/api/v1/achievements/",
@@ -1211,8 +1221,13 @@
 					}
 				],
 				"body": {
-					"mode": "formdata",
-					"formdata": []
+					"mode": "raw",
+					"raw": "{\n\t\"paginate\" : false\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
 				},
 				"url": {
 					"raw": "127.0.0.1:8000/api/v1/services/",

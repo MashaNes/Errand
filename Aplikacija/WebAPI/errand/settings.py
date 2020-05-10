@@ -10,17 +10,17 @@ SECRET_KEY = 'ftda2i=o^=_6)c9m&^w-u*lxf-p)b(_4tsa-^he-d^v$uwhxaw'
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    "127.0.0.1",
-    "10.42.0.1",
-    "10.0.2.2",
-    "localhost"
+    '127.0.0.1',
+    '10.42.0.1',
+    '10.0.2.2',
+    'localhost'
 ]
 
 # Application definition
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'DEFAULT_FILTER_bACKENDS': ('django_filters.rest_framework.DjangoFilterBackend'),
     'PAGE_SIZE': 10,
+    'DEFAULT_FILTER_bACKENDS': ('django_filters.rest_framework.DjangoFilterBackend'),
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.TokenAuthentication',
         'rest_framework.authentication.SessionAuthentication',

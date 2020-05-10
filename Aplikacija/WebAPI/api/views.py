@@ -166,18 +166,22 @@ class UserViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
                 new_q.append(_q)
         self.queryset = new_q
 
-        serializer = serializers.UserSerializer(self.queryset, many=True)
-        for _q, _s in zip(self.queryset, serializer.data):
+        if request.data['paginate']:
+            page = self.paginate_queryset(self.queryset)
+        else:
+            page = self.queryset
+
+        serializer = serializers.UserSerializer(page, many=True)
+        for _q, _s in zip(page, serializer.data):
             _s['picture'] = utils.encode_img('users/' + str(_q.id))
 
-        # TODO: Add pagination
+        if request.data['paginate']:
+            return self.get_paginated_response(serializer.data)
+
         custom_response = {
             'count' : len(serializer.data),
-            'next' : None,
-            'prev' : None,
             'results' : serializer.data
         }
-
         return Response(custom_response)
 
     def retrieve(self, request, pk):
@@ -202,15 +206,20 @@ class FullUserViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
                 new_q.append(_q)
         self.queryset = new_q
 
-        serializer = serializers.FullUserSerializer(self.queryset, many=True)
-        for _q, _s in zip(self.queryset, serializer.data):
+        if request.data['paginate']:
+            page = self.paginate_queryset(self.queryset)
+        else:
+            page = self.queryset
+
+        serializer = serializers.FullUserSerializer(page, many=True)
+        for _q, _s in zip(page, serializer.data):
             _s['user']['picture'] = utils.encode_img('users/' + str(_q.user.id))
 
-        # TODO: Add pagination
+        if request.data['paginate']:
+            return self.get_paginated_response(serializer.data)
+
         custom_response = {
             'count' : len(serializer.data),
-            'next' : None,
-            'previous' : None,
             'results' : serializer.data
         }
 
@@ -243,16 +252,21 @@ class FilterUserViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
 
     def list(self, request):
         self.queryset = utils.filter_user(self.queryset, request.data)
-        serializer = serializers.UserSerializer(self.queryset, many=True)
 
-        for _q, _s in zip(self.queryset, serializer.data):
+        if request.data['paginate']:
+            page = self.paginate_queryset(self.queryset)
+        else:
+            page = self.queryset
+
+        serializer = serializers.UserSerializer(self.queryset, many=True)
+        for _q, _s in zip(page, serializer.data):
             _s['picture'] = utils.encode_img('users/' + str(_q.id))
 
-        # TODO: Add pagination
+        if request.data['paginate']:
+            return self.get_paginated_response(serializer.data)
+
         custom_response = {
             'count' : len(serializer.data),
-            'next' : None,
-            'previous' : None,
             'results' : serializer.data
         }
 
@@ -600,10 +614,57 @@ class AchievementViewSet(viewsets.ModelViewSet):
     queryset = models.Achievement.objects.all()
     serializer_class = serializers.AchievementSerializer
 
+    def list(self, request):
+        if request.data['paginate']:
+            page = self.paginate_queryset(self.queryset)
+        else:
+            page = self.queryset
+
+        serializer = serializers.AchievementSerializer(page, many=True)
+        for _q, _s in zip(page, serializer.data):
+            _s['icon'] = utils.encode_img('achievements/' + str(_q.id))
+
+        if request.data['paginate']:
+            return self.get_paginated_response(serializer.data)
+
+        custom_response = {
+            'count' : len(serializer.data),
+            'results' : serializer.data
+        }
+        return Response(custom_response)
+
+    def retrieve(self, request, pk):
+        achievement = get_object_or_404(self.queryset, pk=pk)
+        serializer = serializers.AchievementSerializer(achievement)
+        response = serializer.data
+        response['icon'] = utils.encode_img('achievements/' + str(achievement.id))
+        return Response(response)
+
 # GET services/{id}
 class ServiceViewSet(viewsets.ModelViewSet):
-    queryset = models.Service.objects.all()
-    serializer_class = serializers.ServiceSerializer
+    queryset = models.Service.objects.all().order_by('-id')
+
+    def list(self, request):
+        if request.data['paginate']:
+            page = self.paginate_queryset(self.queryset)
+        else:
+            page = self.queryset
+        
+        serializer = serializers.ServiceSerializer(page, many=True)
+
+        if request.data['paginate']:
+            return self.get_paginated_response(serializer.data)
+
+        custom_response = {
+            'count' : len(serializer.data),
+            'results' : serializer.data
+        }
+        return Response(custom_response)
+    
+    def retrieve(self, request, pk):
+        service = get_object_or_404(self.queryset, pk=pk)
+        serializer = serializers.ServiceSerializer(service)
+        return Response(serializer.data)
 
 
 # ======================== ADMIN ========================

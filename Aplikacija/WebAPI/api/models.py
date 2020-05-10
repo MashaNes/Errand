@@ -13,7 +13,7 @@ class WorkingHour(models.Model):
     work_until = models.DateTimeField()
 
 class Address(models.Model):
-    name = models.CharField(max_length=50)
+    name = models.CharField(max_length=128)
     longitude = models.FloatField()
     latitude = models.FloatField()
     home = models.BooleanField(default=False)
