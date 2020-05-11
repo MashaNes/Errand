@@ -9,10 +9,6 @@ import {fetchRequests} from "@/api/requests.js"
 import {fetchUsers} from "@/api/users.js"
 import {fetchRatings} from "@/api/ratings.js"
 import {fetchAchievements} from "@/api/achievements.js"
-import {fetchBenefitUsers} from "@/api/benefitUsers.js"
-import {fetchEmails} from "@/api/email.js"
-import {fetchServices} from "@/api/services.js"
-import {fetchUserServices} from "@/api/userServices.js"
 
 export default new Vuex.Store({
     state:{
@@ -25,15 +21,16 @@ export default new Vuex.Store({
         allUsers: {},
         logedIn: false,
         usersPortion: {},
-        usersWithBenefit: {},
-        emails: null,
+        usersWithBenefit: null,
         specificRequests: {},
         services: null,
         userServices: null,
+        allServices: null,
         token: null,
         isDataLoaded: true,
         isAdmin: false,
-        mapMarkerPositions: []
+        mapMarkerPositions: [],
+        userAdded:false
     },
     getters:{
         getAuthUserId(state) {
@@ -49,11 +46,43 @@ export default new Vuex.Store({
         },
         fillUsersWithBenefit()
         {
-            this.state.usersWithBenefit = fetchBenefitUsers();
-        },
-        fillEmails()
-        {
-            this.state.emails = fetchEmails();
+            fetch("http://127.0.0.1:8000/api/v1/user_info_filtered/",
+            {
+                method: 'POST',
+                headers:
+                {
+                    "Content-type" : "application/json",
+                    "Authorization" : "Token " + this.state.token
+                },
+                body:  JSON.stringify(
+                {
+                    "created_by" : this.state.authUser.id,
+                    "blocked" : false,
+                    "working_hours" : false,
+                    "addresses" : false,
+                    "services" : false,
+                    "offers" : false,
+                    "notifications" : false,
+                    "ratings" : false,
+                    "benefitlist" : true,
+                    "achievements" : false,
+                    "requests" : false
+                })
+            }).then( p => 
+                {
+                    if(p.ok)
+                    {
+                        p.json().then(data =>
+                        {
+                            console.log(data)
+                            this.state.usersWithBenefit = data["benefitlist"]
+                        })
+                    }
+                    else
+                    {
+                        console.log("Error")
+                    }
+                });
         },
         getUser({commit}, userId) {
             const users = fetchUsers()
@@ -319,16 +348,20 @@ export default new Vuex.Store({
                         {
                             console.log(data)
                             var services = data["results"]
-                            this.state.userServices.forEach((item, index) =>
+                            this.state.allServices = services
+                            if(this.state.userServices != null)
                             {
-                                for(var i = services.length - 1; i >= 0; i--)
+                                this.state.userServices.forEach((item, index) =>
                                 {
-                                    if(item.service.id == services[i].id)
-                                        services.splice(i,1)
-                                }
-                            })
-                            this.state.services = services
-                            console.log(this.state.services)
+                                    for(var i = services.length - 1; i >= 0; i--)
+                                    {
+                                        if(item.service.id == services[i].id || services[i].id == 1)
+                                            services.splice(i,1)
+                                    }
+                                })
+                                this.state.services = services
+                                console.log(this.state.services)
+                            }
                         })
                     }
                     else
@@ -457,7 +490,7 @@ export default new Vuex.Store({
                 },
                 body:  JSON.stringify(
                 {
-                    "created_by" :this.state.authUser.id,
+                    "created_by" : this.state.authUser.id,
                     "user_service" : payload.id,
                     "max_dist": payload.max_dist,
                     "payment_type": payload.payment_type,
@@ -535,6 +568,7 @@ export default new Vuex.Store({
                         p.json().then(data =>
                         {
                             console.log(data)
+                            this.dispatch("fillUserServices")
                         })
                     }
                     else
@@ -564,6 +598,100 @@ export default new Vuex.Store({
                 }
                 else console.log("Error")
             })
+        },
+        removeBenefit({commit}, id)
+        {
+            fetch("http://127.0.0.1:8000/api/v1/benefit_remove/",
+            {
+                method: 'DELETE',
+                headers:
+                {
+                    "Content-type" : "application/json",
+                    "Authorization" : "Token " + this.state.token
+                },
+                body:  JSON.stringify(
+                {
+                    "created_by" :this.state.authUser.id,
+                    "benefit_user" : id
+                })
+            }).then( p => 
+                {
+                    if(p.ok)
+                    {
+                        p.json().then(data =>
+                        {
+                            console.log(data)
+                        })
+                    }
+                    else
+                    {
+                        console.log("Error")
+                    }
+                });
+        },
+        updateBenefit({commit}, payload)
+        {
+            fetch("http://127.0.0.1:8000/api/v1/benefit_update/",
+            {
+                method: 'PUT',
+                headers:
+                {
+                    "Content-type" : "application/json",
+                    "Authorization" : "Token " + this.state.token
+                },
+                body:  JSON.stringify(
+                {
+                    "created_by" : this.state.authUser.id,
+                    "benefit" : payload.id,
+                    "discount" : payload.discount
+                })
+            }).then( p => 
+                {
+                    if(p.ok)
+                    {
+                        p.json().then(data =>
+                        {
+                            console.log(data)
+                        })
+                    }
+                    else
+                    {
+                        console.log("Error")
+                    }
+                });
+        },
+        addBenefit({commit}, payload)
+        {
+            fetch("http://127.0.0.1:8000/api/v1/benefit_add/",
+            {
+                method: 'POST',
+                headers:
+                {
+                    "Content-type" : "application/json",
+                    "Authorization" : "Token " + this.state.token
+                },
+                body:  JSON.stringify(
+                {
+                    "created_by" : this.state.authUser.id,
+                    "benefit_user" : payload.id,
+                    "discount" : payload.discount
+                })
+            }).then( p => 
+                {
+                    if(p.ok)
+                    {
+                        p.json().then(data =>
+                        {
+                            console.log(data)
+                            this.dispatch("fillUsersWithBenefit")
+                            this.state.userAdded = true
+                        })
+                    }
+                    else
+                    {
+                        console.log("Error")
+                    }
+                });
         }
     },
     mutations:{

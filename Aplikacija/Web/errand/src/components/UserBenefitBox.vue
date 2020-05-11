@@ -13,10 +13,10 @@
           <div class="ostatak">
             <div class="media-center">
               <p class="image is-96x96" @click="goToProfile">
-                <img class="rounded-image" :src="user.picture">
+                <img class="rounded-image" :src="userPicture">
               </p>
               <div class="discount">
-                <span v-if="!isEdit">{{userBenefit.benefit}} % </span>
+                <span v-if="!isEdit">{{userBenefit.discount * 100}} % </span>
                 <div class="edit-wrapper" v-else>
                   <div class="edit-element"> 
                     <input class = "benefitEdit" type="number" min="1" max="100" v-model="newBenefit"> % 
@@ -50,7 +50,7 @@
                   width = "20"
                   style = "margin-right: 15px"
                 />
-                <span>{{user.email}}</span>
+                <span>{{Email}}</span>
               </div>
               <div class="info-element grade">
                 <span v-if="isSerbian" class="grade-label">
@@ -60,14 +60,12 @@
                   Average rating:
                 </span>
               
-                <b-progress class="mt-2" max="5.0" height="20px">
-                  <b-progress-bar 
-                    :value="user.rating"
-                    :variant="progressBarVariant"
-                  > 
-                    <span class="rating-grade"> {{user.rating}} </span> 
+                <b-progress class="mt-2" max="5.0" height="20px" v-if="AvgRating != null">
+                  <b-progress-bar :value="userBenefit.benefit_user.avg_rating" :variant="progressBarVariant"> 
+                    <span class="rating-grade"> {{userBenefit.benefit_user.avg_rating}} </span> 
                   </b-progress-bar>
                 </b-progress>
+                <span v-else class="rating-message" v-text="isSerbian ? 'Korisnik do sada nije bio ocenjivan' : 'This user has not been rated yet'"></span>
               </div>
             </div>
           </div>
@@ -102,10 +100,10 @@ export default {
     data()
     {
         return{
-            user: this.userBenefit.user,
+            user: this.userBenefit.benefit_user,
             showModal : false,
             isEdit: false,
-            newBenefit: this.userBenefit.benefit
+            newBenefit: this.userBenefit.discount * 100
         }
     },
     computed: {
@@ -113,11 +111,14 @@ export default {
         return this.$store.state.isSerbian
       },
       progressBarVariant() {
-        return this.user.rating < 2.5 ? 'danger' : 
-               this.user.rating < 4.5 ? 'warning' : 'success'
+        return this.userBenefit == undefined || this.userBenefit.avg_rating == null? 'danger' :
+               this.userBenefit.benefit_user.avg_rating < 2.5 ? 'danger' : 
+               this.userBenefit.benefit_user.avg_rating < 4.5 ? 'warning' : 'success'
       },
       fullUserName() {
-        return this.user.firstName + " " +this.user.lastName
+        if(this.user == undefined)
+          return ""
+        return this.userBenefit.benefit_user.first_name + " " +this.userBenefit.benefit_user.last_name
       },
       popoverEditText()
       {
@@ -137,31 +138,52 @@ export default {
       {
           return this.$v.newBenefit.$invalid
       },
+      userPicture()
+      {
+        if(this.user == undefined || this.user.picture == null)
+          return '../assets/no-picture.png'
+        else
+          return '../../../../WebAPI/' + this.user.picture
+      },
+      Email()
+      {
+        if(this.user == undefined)
+          return ""
+        return this.user.email
+      },
+      AvgRating()
+      {
+        if(this.user == undefined)
+          return null
+        return this.user.avg_rating
+      }
     },
     methods:
     {
       removeUser()
       {
-        console.log(this.user.email)
         this.showModal = false
-        //posalji delete za tog user-a ka bazi
-        //ukloni ga iz liste beneficiranih korisnika
+        this.$store.state.usersWithBenefit.forEach((item, index) =>
+            {
+                if(item.id == this.userBenefit.id)
+                    this.$store.state.usersWithBenefit.splice(index,1)
+            })
+        this.$store.dispatch("removeBenefit", this.userBenefit.benefit_user.id)
       },
       saveBenefit()
       {
-        this.userBenefit.benefit = this.newBenefit
-        //posalji update za taj userBenefit
+        this.userBenefit.discount = this.newBenefit / 100
+        this.$store.dispatch("updateBenefit",this.userBenefit)
         this.discardBenefit()
       },
       discardBenefit()
       {
-        this.newBenefit = this.userBenefit.benefit
+        this.newBenefit = this.userBenefit.discount * 100
         this.isEdit = false
       },
       goToProfile() 
       {
-        //prepraviti da se ruti prosledi ceo user
-        this.$router.push(`/profile/${this.user.id}`)
+        this.$router.push({name: "PageViewProfile", params: {id: this.user.id, user: this.user}})
       }
     }
 }
@@ -207,6 +229,12 @@ export default {
     font-size:15px; 
     font-weight: 700; 
     color:black;
+  }
+  
+  .rating-message {
+    padding-top:5px;
+    font-size:18px;
+    font-weight: bold;
   }
 
   .mt-2 {
