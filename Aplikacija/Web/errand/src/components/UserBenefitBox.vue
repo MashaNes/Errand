@@ -13,7 +13,7 @@
           <div class="ostatak">
             <div class="media-center">
               <p class="image is-96x96" @click="goToProfile">
-                <img class="rounded-image" :src="userPicture">
+                <img class="rounded-image" :src="user.picture ? 'data:;base64,' + user.picture : require('../assets/no-picture.png')">
               </p>
               <div class="discount">
                 <span v-if="!isEdit">{{userBenefit.discount * 100}} % </span>
@@ -111,7 +111,7 @@ export default {
         return this.$store.state.isSerbian
       },
       progressBarVariant() {
-        return this.userBenefit == undefined || this.userBenefit.avg_rating == null? 'danger' :
+        return this.userBenefit == undefined || this.userBenefit.benefit_user.avg_rating == null? 'danger' :
                this.userBenefit.benefit_user.avg_rating < 2.5 ? 'danger' : 
                this.userBenefit.benefit_user.avg_rating < 4.5 ? 'warning' : 'success'
       },
@@ -141,9 +141,9 @@ export default {
       userPicture()
       {
         if(this.user == undefined || this.user.picture == null)
-          return '../assets/no-picture.png'
+          return require('../assets/no-picture.png')
         else
-          return '../../../../WebAPI/' + this.user.picture
+          return 'data:;base64,' + this.user.picture
       },
       Email()
       {
