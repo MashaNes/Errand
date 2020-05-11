@@ -53,8 +53,8 @@
         </b-button>
       </b-card-text>
 
-      <b-card-text style="margin-top: 20px;">
-        <Map v-if="isMapOpened"/>
+      <b-card-text style="margin-top: 20px;" :class="isMapOpened ? 'visible' : 'invisible'">
+        <Map />
       </b-card-text>
 
       <b-card-text v-for="(task, ind) in tasks" :key="ind" class="task-div">
@@ -100,7 +100,7 @@ export default {
           name: 'Task1',
           description: 'Ovo je test opis za zadatak Task1',
           address: {
-            latitude: 43.788696,
+            latitude: 44.788696,
             longitude: 21.818723
           }
         },
@@ -108,8 +108,8 @@ export default {
           name: 'Task2',
           description: 'Ovo je test opis za zadatak Task2',
           address: {
-            latitude: 43.185616,
-            longitude: 21.412323
+            latitude: 49.185616,
+            longitude: 20.412323
           }
         },
         {
@@ -117,7 +117,7 @@ export default {
           description: 'Ovo je test opis za zadatak Task3',
           address: {
             latitude: 43.455496,
-            longitude: 21.122123
+            longitude: 22.122123
           }
         }
       ],
@@ -147,10 +147,14 @@ export default {
       }
       else this.computedRequest = this.request
       const markerPositions = [];
-      this.tasks.forEach(task => {
+      this.tasks.forEach((task, ind) => {
         const newPosition = {
-          lat: task.address.latitude,
-          lng: task.address.longitude
+          pos: {
+            lat: task.address.latitude,
+            lng: task.address.longitude
+          },
+          lab: String(ind + 1),
+          info: task.description
         }
         markerPositions.push(newPosition)
       })
@@ -321,6 +325,15 @@ export default {
 
   .task-desc {
     margin-top: 20px;
+  }
+
+  .visible {
+    visibility: visible;
+  }
+
+  .invisible {
+    visibility: hidden;
+    height:0px;
   }
 
 </style>

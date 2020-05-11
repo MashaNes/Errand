@@ -174,8 +174,8 @@
         </b-list-group>
       </div>
     </div>
-    <div class="map-wrap">
-      <AddAddressMap v-if="showMapView" @close="showMapView=false" />
+    <div class="map-wrap" :class="showMapView ? 'visible' : 'invisible'">
+      <AddAddressMap @close="showMapView=false" />
     </div>
   </div>
 </template>
@@ -475,6 +475,15 @@ export default {
     width:250px;
     font: size 12px;
     text-align:center;
+  }
+
+  .visible {
+    visibility: visible;
+  }
+
+  .invisible {
+    visibility: hidden;
+    height:0px;
   }
 
 @media only screen and (max-width: 750px)
