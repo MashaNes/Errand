@@ -6,7 +6,7 @@
       <b-card-body>
         <div class="media-center">
           <p class="image is-96x96" @click="goToProfile">
-            <img class="rounded-image" :src="user.picture">
+            <img class="rounded-image" :src="user.picture ? 'data:;base64,' + user.picture : require('../assets/no-picture.png')">
           </p>
           <p class = "dodaj-dugme"> 
             <button type="button" class="btn btn-success dugme" v-if="BenefitList && isSerbian" @click="showModal = true"> Dodaj</button> 
@@ -41,7 +41,7 @@
               Average rating:
             </span>
           
-            <b-progress class="mt-2" max="5.0" height="20px">
+            <b-progress class="mt-2" max="5.0" height="20px" v-if="user.avg_rating">
               <b-progress-bar 
                 :value="user.avg_rating"
                 :variant="progressBarVariant"
@@ -49,6 +49,7 @@
                 <span class="rating-grade"> {{user.avg_rating}} </span> 
               </b-progress-bar>
             </b-progress>
+            <span v-else class="rating-message" v-text="isSerbian ? 'Korisnik do sada nije bio ocenjivan' : 'This user has not been rated yet'"></span>
           </div>
         </div>
       </b-card-body>
@@ -162,6 +163,12 @@ export default {
     font-size:15px; 
     font-weight: 700; 
     color:black;
+  }
+
+  .rating-message {
+    padding-top:5px;
+    font-size:18px;
+    font-weight: bold;
   }
 
   .mt-2 {

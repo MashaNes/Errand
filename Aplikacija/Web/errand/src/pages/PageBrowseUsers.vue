@@ -6,9 +6,10 @@
           <div class="filter-rating-wrap">
             <span v-text="isSerbian ? 'Prosečna ocena od:' : 'Average rating from:'"></span>
             <input 
-              v-model="filterRatingLower" 
+              v-model="filterRatingLowerInput" 
               :class="{'filter-rating':true, 'ne-valja':isFilterLowerInvalid}" 
               type="number" 
+              :disabled="showUnratedChk"
               min="1" 
               max="4"
               @blur="resetRatingLower"
@@ -16,8 +17,9 @@
             <div class="filter-rating-wrap">
               <span v-text="isSerbian ? 'do:' : 'to:'"></span>
               <input 
-                v-model="filterRatingHigher" 
+                v-model="filterRatingHigherInput" 
                 :class="{'filter-rating':true, 'ne-valja':isFilterHigherInvalid}" 
+                :disabled="showUnratedChk"
                 type="number" 
                 min="2" 
                 max="5"
@@ -27,12 +29,12 @@
           </div>
         </div>
         <div class="filter-sort-wrap">
-          <span v-text="isSerbian ? 'Sortiraj po prosečnoj oceni' : 'Sort by average rating'"></span>
-          <input type="checkbox" class="filter-sort" v-model="sortByRating">
+          <span v-text="isSerbian ? 'Prikaži neocenjene korisnike' : 'Show users with no rating'"></span>
+          <input type="checkbox" class="filter-sort" v-model="showUnratedChk">
         </div>
         <div class="filter-name-wrap">
           <input 
-            v-model="filterName"
+            v-model="filterNameInput"
             class="filter-name" 
             type="text"
             :placeholder="isSerbian ? 'Tražite po imenu...' : 'Search by name...'"
@@ -56,7 +58,7 @@
           v-text="isSerbian ? 'Vrednost \'do\' mora biti između 2 i 5' : 'The \'to\' value must be between 2 and 5'"
         ></span>
         <span 
-          v-if="!isFilterLowerInvalid && !isFilterHigherInvalid && filterRatingHigher && filterRatingLower && filterRatingLower >= filterRatingHigher"
+          v-if="!isFilterLowerInvalid && !isFilterHigherInvalid && filterRatingHigherInput && filterRatingLowerInput && filterRatingLowerInput >= filterRatingHigherInput"
           class="filter-invalid-span" 
           v-text="isSerbian ? 'Vrednost \'od\' mora biti manja od vrednosti \'do\'' : 'The \'to\' value must be lower than the \'from\' value'"
         ></span>
@@ -65,24 +67,25 @@
 
     <b-pagination 
       v-model="currentPage" 
-      :total-rows="users.totalCount" 
+      :total-rows="usersPortion.count" 
       :per-page="perPage" 
       align="center"
       class="pag-top"
-      @input="getNextPortion"
+      @input="getAnotherPortion"
     ></b-pagination>
-    <div class="users">
+    <Spinner v-if="!this.$store.state.isDataLoaded"/>
+    <div class="users" v-else>
       <UserBox
         :user="user"
-        v-for="user in users.users" 
+        v-for="user in usersPortion.results" 
         :key="user.id"
         :BenefitList="benefitList"
       />
     </div>
     <b-pagination 
-      v-model="currentPage" 
-      :per-page="perPage" 
-      :total-rows="users.totalCount" 
+      v-model="currentPage"
+      :total-rows="usersPortion.count" 
+      :per-page="perPage"
       align="center"
       class="pag-bottom"
     ></b-pagination>
@@ -90,6 +93,7 @@
 </template>
 
 <script>
+import Spinner from "@/components/Spinner"
 import UserBox from "@/components/UserBox"
 import {between} from "vuelidate/lib/validators"
 
@@ -104,91 +108,100 @@ export default {
     }
   },
   components: {
-    UserBox
+    UserBox,
+    Spinner
   },
   data() {
     return {
       currentPage: 1,
-      perPage: 3,
+      perPage: 10,
       lastPage: 1,
+      filterNameInput: "",
       filterName: "",
+      filterRatingLowerInput: 1,
+      filterRatingHigherInput: 5,
       filterRatingLower: 1,
       filterRatingHigher: 5,
-      sortByRating: false
+      showUnratedChk: true,
+      showUnrated: true
     }
   },
   validations: {
-    filterRatingLower: {between: between(1, 4)},
-    filterRatingHigher: {between: between(2, 5)}
+    filterRatingLowerInput: {between: between(1, 4)},
+    filterRatingHigherInput: {between: between(2, 5)}
   },
   computed: {
-    users() {
-      const ret = JSON.parse(JSON.stringify(this.$store.state.usersPortion))
-
-      if(this.sortByRating)
-      {
-        ret.users.sort((userA, userB) => userB.rating - userA.rating)
-      }
+    usersPortion() {
+      const ret = this.$store.state.usersPortion
       return ret
     },
     isSerbian() {
       return this.$store.state.isSerbian
     },
     isFilterLowerInvalid() {
-      return this.$v.filterRatingLower.$invalid
+      return this.$v.filterRatingLowerInput.$invalid
     },
     isFilterHigherInvalid() {
-      return this.$v.filterRatingHigher.$invalid
+      return this.$v.filterRatingHigherInput.$invalid
     }
   },
   methods: {
-    //fetch-ovati listu korisnika filtriranu po prosledjenim parametrima
-    //prosledi se obavezno indeks od koga se pribavlja, broj elemenata ne mora
-    getNextPortion() {
+    getAnotherPortion() {
       if(this.lastPage != this.currentPage)
       {
-        console.log(this.currentPage + " " + this.perPage)
         this.$store.dispatch('fillUsersPortion', {
-          startingIndex: (this.currentPage - 1) * this.perPage,
-          numOfElements: this.perPage,
-          filterName: this.filterName,
-          filterRatingLower: this.filterRatingLower,
-          filterRatingHigher: this.filterRatingHigher
+          endpoint: this.currentPage > this.lastPage ? this.usersPortion.next : this.usersPortion.previous,
+          sort_rating: true,
+          sort_rating_asc: true,
+          rating_limit_up: this.showUnrated ? null : parseInt(String(this.filterRatingHigher)),
+          rating_limit_down: this.showUnrated ? null : parseInt(String(this.filterRatingLower)),
+          services: null,
+          no_rating: this.showUnrated,
+          name: this.filterName,
+          not_in_benefit: this.benefitList
         })
         this.lastPage = this.currentPage
       }
     },
     resetRatingLower() {
-      if(this.filterRatingLower > 4 || this.filterRatingLower < 1 || !this.filterRatingLower || this.filterRatingHigher <= this.filterRatingLower)
-        this.filterRatingLower = 1
+      if(this.filterRatingLowerInput > 4 || this.filterRatingLowerInput < 1 || !this.filterRatingLowerInput || this.filterRatingHigherInput <= this.filterRatingLowerInput)
+        this.filterRatingLowerInput = 1
     },
     resetRatingHigher() {
-      if(this.filterRatingHigher > 4 || this.filterRatingHigher < 1 || !this.filterRatingHigher || this.filterRatingHigher <= this.filterRatingLower)
-        this.filterRatingHigher = 5
+      if(this.filterRatingHigherInput > 4 || this.filterRatingHigherInput < 1 || !this.filterRatingHigherInput || this.filterRatingHigherInput <= this.filterRatingLowerInput)
+        this.filterRatingHigherInput = 5
     },
     searchUsers() {
-      //fetch-ovati listu korisnika filtriranu po prosledjenim parametrima
-    //prosledi se obavezno indeks od koga se pribavlja, broj elemenata ne mora
+      this.showUnrated = this.showUnratedChk
+      this.filterRatingHigher = this.filterRatingHigherInput
+      this.filterRatingLower = this.filterRatingLowerInput
+      this.filterName = this.filterNameInput
       this.currentPage = 1
       this.lastPage = 1
       this.$store.dispatch('fillUsersPortion', {
-        startingIndex: 0,
-        numOfElements: this.perPage,
-        filterName: this.filterName,
-        filterRatingLower: this.filterRatingLower,
-        filterRatingHigher: this.filterRatingHigher
+        endpoint: "http://localhost:8000/api/v1/filtered_users/?paginate=true",
+        sort_rating: true,
+        sort_rating_asc: true,
+        rating_limit_up: this.showUnrated ? null : parseInt(String(this.filterRatingHigher)),
+        rating_limit_down: this.showUnrated ? null : parseInt(String(this.filterRatingLower)),
+        services: null,
+        no_rating: this.showUnrated,
+        name: this.filterName,
+        not_in_benefit: this.benefitList
       })
     }
   },
   created() {
-    //fetch-ovati listu korisnika filtriranu po prosledjenim parametrima
-    //prosledi se obavezno indeks od koga se pribavlja, broj elemenata ne mora
     this.$store.dispatch('fillUsersPortion', {
-      startingIndex: 0, 
-      numOfElements: 3,
-      filterName: this.filterName,
-      filterRatingLower: this.filterRatingLower,
-      filterRatingHigher: this.filterRatingHigher
+      endpoint: "http://localhost:8000/api/v1/filtered_users/?paginate=true",
+      sort_rating: true,
+      sort_rating_asc: true,
+      rating_limit_up: null,
+      rating_limit_down: null,
+      services: null,
+      no_rating: true,
+      name: "",
+      not_in_benefit: this.benefitList
     })
     //ako je benefitList true ide zahtev sa filterom da se prikazu samo korisnici koji nisu beneficirani
     //ako je false ide get zahtev bez filtera
