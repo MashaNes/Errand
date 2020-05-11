@@ -195,26 +195,42 @@ export default new Vuex.Store({
 
             })
         },
-        fillUsersPortion({commit}, {startingIndex, numOfElements, filterName, filterRatingLower, filterRatingHigher}) {
-            
-            const users = fetchUsers();
-            const filteredUsers = Object.values(users).filter((user) => {
-                
-                const fullName = user.first_name + " " + user.last_name
-                const okFilterName = !filterName ? true : fullName.toLowerCase().includes(filterName.toLowerCase())
-                const okFilterRating = user.avg_rating >= filterRatingLower && user.avg_rating <= filterRatingHigher
-                
-                return (okFilterName && okFilterRating)
+        fillUsersPortion({commit}, filters) {
+            this.state.isDataLoaded = false
+            fetch(filters.endpoint, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Token " + this.state.token
+                },
+                body: JSON.stringify({
+                    "created_by": this.state.authUser.id,
+                    "sort_rating": filters.sort_rating,
+                    "sort_rating_asc": filters.sort_rating_asc,
+                    "rating_limit_up": filters.rating_limit_up,
+                    "rating_limit_down": filters.rating_limit_down,
+                    "services": filters.services,
+                    "no_rating": filters.no_rating,
+                    "name": filters.name,
+                    "not_in_benefit": filters.not_in_benefit
+                })
+            }).then(p => {
+
+                if(p.ok) {
+                    p.json().then(data => {
+                        console.log(data)
+                        const toCommit = {
+                            count: data.count,
+                            next: data.next,
+                            previous: data.previous,
+                            results: data.results
+                        }
+                        commit('setUsersPortion', toCommit)
+                    })
+                }
+                else console.log("Error")
             })
 
-            const usersInRange = filteredUsers.filter((user, ind) => ind >= startingIndex && ind < startingIndex + numOfElements)
-
-            const toCommit = {
-                totalCount: Object.values(filteredUsers).length,
-                currentCount: usersInRange.length,
-                users: usersInRange
-            }
-            commit('setUsersPortion', toCommit)
         },
         fillSpecificRequests({commit}, userId) {
             const requests = fetchRequests()
@@ -526,6 +542,28 @@ export default new Vuex.Store({
                         console.log("Error")
                     }
                 });
+        },
+        getUserInfo({commit}, userId) {
+            var vm = this
+            this.state.isDataLoaded = false
+            fetch("http://localhost:8000/api/v1/users_info/" + userId, {
+                method:"GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Token " + this.state.token
+                }
+            }).then(p => {
+                
+                if(p.ok) {
+                    p.json().then(data => {
+                        console.log(data)
+                        commit('setUser', data)
+                        vm.state.isDataLoaded = true
+                        console.log(vm.state.user)
+                    })
+                }
+                else console.log("Error")
+            })
         }
     },
     mutations:{
@@ -546,6 +584,7 @@ export default new Vuex.Store({
         },
         setUsersPortion(state, users) {
             state.usersPortion = users
+            state.isDataLoaded = true
             //console.log(state.usersPortion)
         },
         setAuthUser(state, user) {

@@ -1,24 +1,25 @@
 <template>
-    <div class = "wrapper">
-      <ProfileInfo 
-        v-if="componentToShow == 'Info'"
-        :user="computedUser" 
-        :isMyProfile="isMyProfile"
-        @editProfile="componentToShow = 'Edit'"
-        @rateUser="componentToShow = 'Rate'"
-      />
-      <EditProfileInfo
-        v-if="componentToShow == 'Edit'"
-        :user="computedUser"
-        @saveEditChanges="editSaved"
-        @cancelChanges="componentToShow = 'Info'"
-      />
-      <RateUser
-        v-if="componentToShow == 'Rate'"
-        :user="computedUser"
-        @cancelRate="componentToShow = 'Info'"
-      />
-    </div>
+  <Spinner v-if="!$store.state.isDataLoaded" />
+  <div class = "wrapper" v-else>
+    <ProfileInfo 
+      v-if="componentToShow == 'Info'"
+      :user="computedUser" 
+      :isMyProfile="isMyProfile"
+      @editProfile="componentToShow = 'Edit'"
+      @rateUser="componentToShow = 'Rate'"
+    />
+    <EditProfileInfo
+      v-if="componentToShow == 'Edit'"
+      :user="computedUser"
+      @saveEditChanges="editSaved"
+      @cancelChanges="componentToShow = 'Info'"
+    />
+    <RateUser
+      v-if="componentToShow == 'Rate'"
+      :user="computedUser"
+      @cancelRate="componentToShow = 'Info'"
+    />
+  </div>
 </template>
 
 <script>
@@ -26,6 +27,7 @@
 import ProfileInfo from "@/components/ProfileInfo"
 import EditProfileInfo from "@/components/EditProfileInfo"
 import RateUser from "@/components/RateUser"
+import Spinner from "@/components/Spinner"
 
 export default {
   props: {
@@ -37,6 +39,7 @@ export default {
     ProfileInfo,
     EditProfileInfo,
     RateUser,
+    Spinner
   },
   data() {
     return {
@@ -59,8 +62,13 @@ export default {
     },
     changedRoute() {
       //fetch-ovati sve korisnikove home adrese
-      // eslint-disable-next-line no-debugger
-      //debugger
+      let vm = this
+      function callback() {
+        if(vm.$store.state.isDataLoaded)
+          vm.computedUser = vm.$store.state.user
+        else 
+          setTimeout(callback, 200)
+      }
       if(!this.user)
       {
         const routeId = this.$route.params.id
@@ -69,8 +77,8 @@ export default {
           this.computedUser = this.$store.state.authUser
         }
         else {
-          this.$store.dispatch('getUser', routeId)
-          this.computedUser = this.$store.state.user
+          this.$store.dispatch('getUserInfo', routeId)
+          callback()
         }
         this.componentToShow = 'Info'
       }
