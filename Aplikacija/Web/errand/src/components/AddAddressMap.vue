@@ -69,8 +69,12 @@ export default {
   methods: {
     moveMarker(latLng) {
       const newMarkerPositions = [{
-        lat: latLng.lat(),
-        lng: latLng.lng()
+        pos: {
+          lat: latLng.lat(),
+          lng: latLng.lng(),
+        },
+        label: "",
+        info: ""
       }]
       this.$store.dispatch('setMarkerPositions', newMarkerPositions)
       this.movedMarker = true
@@ -79,7 +83,7 @@ export default {
       if(this.markerMoved || !this.addressChecked) {
 
         fetch('https://maps.googleapis.com/maps/api/geocode/json?latlng='
-              + this.markerPosition.lat + ',' + this.markerPosition.lng + 
+              + this.markerPosition.pos.lat + ',' + this.markerPosition.pos.lng + 
               '&key=AIzaSyBc7vAECB9mQ1RbCrySraxt6ve0VxXO7zs', {
           method:'GET'
         }).then(p => {
@@ -111,8 +115,12 @@ export default {
             p.json().then(data => {
               if(data.status!='ZERO_RESULTS') {
                 const newPositions = [{
-                  lat: data.results[0].geometry.location.lat,
-                  lng: data.results[0].geometry.location.lng
+                  pos: {
+                    lat: data.results[0].geometry.location.lat,
+                    lng: data.results[0].geometry.location.lng,
+                  },
+                  label: "",
+                  info: ""
                 }]
                 vm.$store.dispatch('setMarkerPositions', newPositions)
                 this.markerMoved = false
@@ -145,10 +153,15 @@ export default {
     }
   },
   created() {
-    this.$store.state.mapMarkerPositions[0] = {
-      lat: 43.639696,
-      lng: 21.878703
-    }
+    const newPositions = [{
+      pos: {
+        lat: 43.639696,
+        lng: 21.878703,
+      },
+      lab: "",
+      info: ""
+    }]
+    this.$store.dispatch('setMarkerPositions', newPositions)
   }
   // mounted() {
   //   this.map = new window.google.maps.Map(this.$refs["map"], {
