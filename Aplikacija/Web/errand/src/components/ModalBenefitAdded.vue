@@ -5,39 +5,29 @@
             <div class="modal-container">
 
               <div class="modal-header">
-                <h3 name="header" v-if="isSerbian">
-                  Dodaj korisnika u listu povlašćenih
+                <h3 name="header" v-if="isSerbian" class="uspeh">
+                  Uspešno
                 </h3>
-                <h3 name="header" v-else>
-                  Add the user to your benefit list
+                <h3 name="header" v-else class="uspeh">
+                  Success
                 </h3>
               </div>
 
               <div class="modal-body">
                 <slot name="body">
-                  <div class="kolona">
-                    <div v-if="isSerbian"> Odaberi popust: <input type="number" min="1" max="100" v-model="benefit" class="unos"> %</div>
-                    <div v-if="isSerbian && isInvalid" class="opasnost"> Popust mora da bude između 1 i 100 %</div>
-
-                    <div v-if="!isSerbian"> Select a discount: <input type="number" min="1" max="100" v-model="benefit" class="unos"> %</div>
-                    <div v-if="!isSerbian && isInvalid" class="opasnost"> Discount must be between 1 and 100 %</div>
-                  </div>
+                    <p v-if="isSerbian">
+                        Korisnik uspešno dodat u listu povlašćenih korisnika
+                    </p>
+                    <p v-else>
+                        User successfully added to the benefit list
+                    </p>
                 </slot>
               </div>
 
               <div class="modal-footer">
                 <slot name="footer">
-                  <button type="button" class="btn btn-primary" @click="dodajKorisnika" v-if="isSerbian" :disabled="isInvalid">
-                    Dodaj
-                  </button>
-                  <button type="button" class="btn btn-primary" @click="dodajKorisnika" v-else :disabled="isInvalid">
-                    Add
-                  </button>
-                  <button type="button" class="btn btn-secondary" @click="$emit('close')" v-if="isSerbian">
-                    Odustani
-                  </button>
-                  <button type="button" class="btn btn-secondary" @click="$emit('close')" v-else>
-                    Cancel
+                  <button type="button" class="btn btn-primary" @click="$emit('close')">
+                    OK
                   </button>
                 </slot>
               </div>
@@ -48,51 +38,22 @@
 </template>
 
 <script>
-import {between} from "vuelidate/lib/validators"
 export default {
-    props:
-    {
-        user:
-        {
-            type: Object,
-            required: true
-        }
-    },
-    data()
-    {
-        return{
-            benefit: this.$store.state.authUser.benefit_discount * 100
-        }
-    },
     computed:
     {
         isSerbian()
         {
             return this.$store.state.isSerbian
-        },
-        isInvalid()
-        {
-            return this.$v.benefit.$invalid
-        }
-    },
-    validations:
-    {
-        benefit: { between: between(1,100)}
-    },
-    methods:
-    {
-        dodajKorisnika()
-        {
-            this.$store.dispatch("addBenefit",{id: this.user.id, discount: this.benefit / 100})
-            console.log(this.benefit / 100)
-            console.log(this.user)
-            this.$emit('close')
         }
     }
 }
 </script>
 
 <style scoped>
+    .uspeh
+    {
+        color:green;
+    }
     .modal-mask {
     position: fixed;
     z-index: 9998;

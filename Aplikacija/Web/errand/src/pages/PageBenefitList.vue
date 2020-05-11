@@ -1,5 +1,6 @@
 <template>
-    <div class="wrapper">
+    <Spinner v-if="this.$store.state.usersWithBenefit == null"/>
+    <div class="wrapper" v-else>
         <div class="dodavanje-wrap">
             <div class="dugmici">
                 <button type="button" @click = "dodajKorisnika" class="btn btn-primary dugme" v-if="isSerbian">Dodaj korisnika</button>
@@ -13,18 +14,20 @@
                 <span v-else> List of users with benefits</span>
             </div>
             <div class="users">
-                <UserBenefitBox :userBenefit="user" v-for="user in BenefitedUsers" :key="user.id"/>
+                <UserBenefitBox :userBenefit="benefit" v-for="benefit in BenefitedUsers" :key="benefit.id"/>
             </div>
         </div>
     </div>
 </template>
 
 <script>
+import Spinner from "@/components/Spinner"
 import UserBenefitBox from "@/components/UserBenefitBox"
 export default {
     components:
     {
-        UserBenefitBox
+        UserBenefitBox,
+        Spinner
     },
     computed:
     {
@@ -50,8 +53,8 @@ export default {
     },
     created()
     {
-        this.$store.dispatch("fillUsersWithBenefit")
-        //get beneficirane usere
+        if(this.$store.state.usersWithBenefit == null)
+            this.$store.dispatch("fillUsersWithBenefit")
     }
 }
 </script>
