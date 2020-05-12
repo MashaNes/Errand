@@ -217,6 +217,7 @@ export default {
     display: flex;
     flex-direction: column;
     align-items: stretch;
+    padding-top: 20px;
     padding-left:10px;
     padding-right:10px;
   }
