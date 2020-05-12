@@ -77,6 +77,7 @@
               <b-button 
                 class="button is-primary title-btn"
                 @click="showModal = true"
+                :disabled="isInBenefitList || idHelp > 0 || idHelp == undefined"
               >
                 <img class="slika-dugme" src="../assets/benefit.png">
                 <strong v-if="isSerbian">Dodeli povlastice</strong>
@@ -179,7 +180,8 @@ export default {
       showModal : false,
       showModalReport: false,
       showModalAreYouSure: false,
-      report: {}
+      report: {},
+      idHelp: null
     }
   },
   computed: {
@@ -195,6 +197,28 @@ export default {
     },
     formattedRating() {
       return this.user.avg_rating ? this.user.avg_rating.toFixed(2) : null
+    },
+    isUserBenefitListLoaded()
+    {
+      return this.$store.state.usersWithBenefit != null
+    },
+    isInBenefitList()
+    {
+      if(!this.isUserBenefitListLoaded)
+        return true
+      else
+      {
+        var id = -1
+        // eslint-disable-next-line no-unused-vars
+        this.$store.state.usersWithBenefit.forEach((item, index) =>
+        {
+            if(item.benefit_user.id == this.user.id)
+              this.idHelp = id = item.benefit_user.id
+            if(index == this.$store.state.usersWithBenefit.length - 1 && id == -1)
+              this.idHelp = id = -2
+        })
+        return id > 0
+      }
     }
   },
   methods: {
@@ -233,6 +257,11 @@ export default {
         }
       }
     }
+  },
+  created()
+  {
+    if(this.$store.state.usersWithBenefit == null)
+      this.$store.dispatch("fillUsersWithBenefit")
   }
 }
 </script>

@@ -16,7 +16,7 @@
                 <img class="rounded-image" :src="user.picture ? 'data:;base64,' + user.picture : require('../assets/no-picture.png')">
               </p>
               <div class="discount">
-                <span v-if="!isEdit">{{userBenefit.discount * 100}} % </span>
+                <span v-if="!isEdit">{{(Math.round(userBenefit.discount * 100)).toFixed(0)}} % </span>
                 <div class="edit-wrapper" v-else>
                   <div class="edit-element"> 
                     <input class = "benefitEdit" type="number" min="1" max="100" v-model="newBenefit"> % 
@@ -103,7 +103,7 @@ export default {
             user: this.userBenefit.benefit_user,
             showModal : false,
             isEdit: false,
-            newBenefit: this.userBenefit.discount * 100
+            newBenefit: (Math.round(this.userBenefit.discount * 100)).toFixed(0)
         }
     },
     computed: {
@@ -178,7 +178,7 @@ export default {
       },
       discardBenefit()
       {
-        this.newBenefit = this.userBenefit.discount * 100
+        this.newBenefit = (Math.round(this.userBenefit.discount * 100)).toFixed(0)
         this.isEdit = false
       },
       goToProfile() 
