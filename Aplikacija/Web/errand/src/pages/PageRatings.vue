@@ -1,10 +1,11 @@
 <template>
-  <div>
+  <Spinner v-if="!computedUser || !ratings"/>
+  <div v-else>
     <div>
       <AchAndRatings 
         :tab="'Ratings'" 
-        :user="user"
-        :isMyProfile="isMyProfile"
+        :user="computedUser"
+        :ratings="ratings"
       />
     </div>
   </div>
@@ -12,33 +13,66 @@
 
 <script>
 import AchAndRatings from "@/components/AchAndRatings"
+import Spinner from "@/components/Spinner"
 
 export default {
-  //prebaciti da user bude properti i da ga salje roditelj
-  //izbaciti isMyProfile
+  props: {
+    user: {
+      required: false
+    }
+  },
   data() {
     return {
-      user: {},
-      isMyProfile: true
+      computedUser: null,
+      ratings: null
     }
   },
   components: {
-      AchAndRatings
+    AchAndRatings,
+    Spinner
   },
   methods: {
     changedRoute() {
-      //fetch-ovati sve korisnikove ocene; id izvuci iz user-a
-      const routeId = this.$route.params.id
-      this.$store.dispatch('getUserRatings', routeId)
-      if(routeId == this.$store.getters['getAuthUserId'])
-      {
-        this.user = this.$store.state.authUser
-        this.isMyProfile = true
+      let vm = this
+      this.ratings = null
+      function callBackRatings() {
+        if(vm.$store.state.isDataLoaded)
+        {
+          vm.ratings = vm.$store.state.userRatings
+        }
+        else 
+          setTimeout(callBackRatings, 200)
       }
-      else {
-        this.$store.dispatch('getUser', routeId)
-        this.user = this.$store.state.user
-        this.isMyProfile = false
+      function callbackUser() {
+        if(vm.$store.state.isDataLoaded)
+        {
+          vm.computedUser = vm.$store.state.user
+          vm.$store.dispatch('fillUserRatings', vm.computedUser.id)
+          callBackRatings()
+        }
+        else 
+          setTimeout(callbackUser, 200)
+      }
+
+      if(!this.user)
+      {
+        const routeId = this.$route.params.id
+        if(routeId == this.$store.getters['getAuthUserId'])
+        {
+          this.computedUser = this.$store.state.authUser
+          vm.$store.dispatch('fillUserRatings', vm.computedUser.id)
+          callBackRatings()
+        }
+        else {
+          this.$store.dispatch('getUserInfo', routeId)
+          callbackUser()
+        }
+      }
+      else 
+      {
+        this.computedUser = this.user
+        vm.$store.dispatch('fillUserRatings', vm.computedUser.id)
+        callBackRatings()
       }
     }
   },

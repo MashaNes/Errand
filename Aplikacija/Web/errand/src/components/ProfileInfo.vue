@@ -14,7 +14,7 @@
           <b-button
             size="lg"
             class="ocene-dostignuca button is-primary"
-            :to="'/achievements/' + this.user.id"
+            :to="goToAchievements()"
           >
             <span v-if="isSerbian"> Ocene i dostignuća </span>
             <span v-else> Ratings and achievements </span>
@@ -223,6 +223,15 @@ export default {
     reportUser() {
       this.$store.dispatch('addReport', this.report)
       this.showModalAreYouSure = false
+    },
+    goToAchievements() {
+      return {
+        name: "PageAchievements",
+        props: {
+          id: this.user.id,
+          user: this.user
+        }
+      }
     }
   }
 }

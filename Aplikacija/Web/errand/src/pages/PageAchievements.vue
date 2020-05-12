@@ -1,43 +1,52 @@
 <template>
-    <AchAndRatings 
-      :tab="'Achievements'" 
-      :user="user"
-      
-    />
+  <Spinner v-if="!$store.state.isDataLoaded"/>
+  <AchAndRatings 
+    :tab="'Achievements'" 
+    :user="user"
+    v-else
+  />
     <!-- :isMyProfile="isMyProfile" -->
 </template>
 
 <script>
 import AchAndRatings from "@/components/AchAndRatings"
+import Spinner from "@/components/Spinner"
 
 export default {
   //prebaciti da 'user' bude properti, i da ga salje roditelj;
   //izbaciti isMyProfile, i ne prosledjivati ga uopste
+  // props: {
+  //   user: {
+  //     required: false
+  //   }
+  // },
   data() {
     return {
-      user: {},
-      isMyProfile: true
+      //isMyProfile: true
+      user: null
     }
   },
   components: {
-      AchAndRatings
+    AchAndRatings,
+    Spinner 
   },
   methods: {
     changedRoute() {
       //fetch-ovati sve korisnikove ocene; id se izvlaci iz user-a
-      console.log("changed route")
+      // console.log("changed route")
       const routeId = this.$route.params.id
       this.$store.dispatch('getUserAchievements', routeId)
       if(routeId == this.$store.getters['getAuthUserId'])
       {
         this.user = this.$store.state.authUser
-        this.isMyProfile = true
+        //this.isMyProfile = true
       }
       else {
         this.$store.dispatch('getUser', routeId)
         this.user = this.$store.state.user
-        this.isMyProfile = false
+        //this.isMyProfile = false
       }
+      
     }
   },
   created() {

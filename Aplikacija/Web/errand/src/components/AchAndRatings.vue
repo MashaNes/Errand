@@ -6,7 +6,7 @@
         <router-link
           class="button is-primary " 
           style="width:100%;"
-          :to="tab=='Ratings' ? '/achievements/'+user.id : '/ratings/'+user.id "
+          :to="tab=='Ratings' ? goToAchievements() : goToRatings() "
         >
           <strong v-if="isSerbian && tab=='Ratings'"> Dostignuća </strong>
           <strong v-else-if="tab=='Ratings'"> Achievements </strong>
@@ -67,14 +67,15 @@
           ></span>
         </div>
       </div>
-      <div v-if="tab=='Achievements'" class="ach-wrap"> 
+      <Spinner v-if="!$store.state.isDataLoaded" />
+      <div v-if="tab=='Achievements' && $store.state.isDataLoaded" class="ach-wrap"> 
         <Achievement 
           v-for="achievement in achievements"
           :key="achievement.id"
           :achievement="achievement"
         />
       </div>
-      <div v-if="tab=='Ratings'" class="rating-wrap"> 
+      <div v-if="tab=='Ratings' && $store.state.isDataLoaded" class="rating-wrap"> 
         <Rating 
           v-for="rating in ratings"
           :key="rating.id"
@@ -91,13 +92,15 @@ import Achievement from "@/components/Achievement.vue"
 import Rating from "@/components/Rating.vue"
 import AsideProfileInfo from "@/components/AsideProfileInfo"
 import {between} from "vuelidate/lib/validators"
+import Spinner from "@/components/Spinner"
 
 export default {
 
   components: {
     Achievement,
     Rating,
-    AsideProfileInfo
+    AsideProfileInfo,
+    Spinner
   },
   props: {
     tab: {
@@ -107,6 +110,10 @@ export default {
     user: {
       type: Object, 
       required: true
+    },
+    ratings: {
+      typ: Array,
+      required: false
     }
   },
   data() {
@@ -128,12 +135,6 @@ export default {
     },
     achievements() {
       return this.$store.state.userAchievements
-    },
-    ratings() {
-      const allRatings = this.$store.state.userRatings
-      if(this.isFilterLowerInvalid || this.isFilterHigherInvalid || !this.filterValueLower || !this.filterValueHigher || this.filterValueHigher <= this.filterValueLower)
-        return allRatings
-      return Object.values(allRatings).filter(rat => rat.grade >= this.filterValueLower && rat.grade <= this.filterValueHigher)
     },
     isFilterLowerInvalid() {
       return this.$v.filterValueLower.$invalid
@@ -165,11 +166,49 @@ export default {
           user: this.user
         }
       }
+    },
+    goToAchievements() {
+      return {
+        name: "PageAchievements",
+        params: {
+          id: this.user.id,
+          user: this.user
+        }
+      }
+    },
+    goToRatings() {
+      return {
+        name: "PageRatings",
+        params: {
+          id: this.user.id,
+          user: this.user
+        }
+      }
     }
   },
   created() {
-    //izbaciti
-    this.$store.dispatch('getAllUsers')
+    // eslint-disable-next-line no-debugger
+    //debugger
+    // let vm = this
+    // function callback() {
+    //   if(vm.$store.state.isDataLoaded)
+    //   {
+    //     if(vm.tab == "Ratings")
+    //     {
+    //       vm.ratings = vm.$store.state.userRatings
+    //       }
+    //       // else
+    //       // vm.achievements = vm.$store.state.userAchievements
+    //     }
+    //   else 
+    //     setTimeout(callback, 200)
+    // }
+    
+    // if(this.tab == "Ratings") {
+    //   this.$store.dispatch('fillUserRatings', this.user.id)
+    //   callback()
+    //}
+    
   }
 
 }
