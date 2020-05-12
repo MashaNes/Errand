@@ -3,7 +3,7 @@
     <div class="btns">
       <b-button 
         class="button is-primary upper-btn"
-        @click="$emit('close')"
+        @click="$emit('close', null)"
         v-text="isSerbian ? 'Zatvori mapu' : 'Close map'"
       ></b-button>
       <b-button 
@@ -17,10 +17,10 @@
         class="input is-medium"
         type="text"
         :placeholder="isSerbian ? 'Adresa' : 'Address'"
-        v-model="newAddress"
+        v-model="newAddressName"
       >
       <img 
-        v-if="newAddress && addressChecked && !invalidAddress" 
+        v-if="newAddressName && addressChecked && !invalidAddress" 
         class="btn-img" 
         src="@/assets/check.svg" 
         height="33" 
@@ -28,7 +28,7 @@
         @click="confirmAddress"
       >
       <img 
-        v-if="newAddress && !addressChecked" 
+        v-if="newAddressName && !addressChecked" 
         class="search btn-img" 
         src="@/assets/search.svg" 
         height="35" 
@@ -53,14 +53,9 @@ export default {
   },
   data() {
     return {
-      map: null,
-      marker: null,
-      pos: {
-        lat: 43.639696,
-        lng: 21.878703
-      },
       previousPosition: {},
-      newAddress: "",
+      newAddressName: "",
+      fullNewAddress: null,
       previousInput: "",
       invalidAddress: false,
       markerMoved: true
@@ -77,9 +72,11 @@ export default {
         info: ""
       }]
       this.$store.dispatch('setMarkerPositions', newMarkerPositions)
-      this.movedMarker = true
+      this.markerMoved = true
     },
     convertToAddress() {
+      // eslint-disable-next-line no-debugger
+      debugger
       if(this.markerMoved || !this.addressChecked) {
 
         fetch('https://maps.googleapis.com/maps/api/geocode/json?latlng='
@@ -90,8 +87,14 @@ export default {
           if(p.ok)
           {
             p.json().then(data => {
-              this.newAddress = data.results[0].formatted_address
-              this.previousInput = this.newAddress
+              console.log(data.results[0])
+              this.newAddressName = data.results[0].formatted_address
+              this.fullNewAddress = {
+                name: this.newAddressName,
+                longitude: data.results[0].geometry.location.lng,
+                latitude: data.results[0].geometry.location. lat
+              }
+              this.previousInput = this.newAddressName
               this.invalidAddress = false
               this.markerMoved = false
             })
@@ -100,15 +103,15 @@ export default {
       }
     },
     convertFromAddress() {
-      if(this.newAddress == this.previousInput)
+      if(this.newAddressName == this.previousInput)
       {
         return
       }
       else {
         const vm = this
-        this.previousInput = this.newAddress
+        this.previousInput = this.newAddressName
         fetch('https://maps.googleapis.com/maps/api/geocode/json?address='
-        + this.newAddress +'&key=AIzaSyBc7vAECB9mQ1RbCrySraxt6ve0VxXO7zs', {
+        + this.newAddressName +'&key=AIzaSyBc7vAECB9mQ1RbCrySraxt6ve0VxXO7zs', {
           method: 'GET'
           }).then(p => {
           if(p.ok) {
@@ -125,6 +128,11 @@ export default {
                 vm.$store.dispatch('setMarkerPositions', newPositions)
                 this.markerMoved = false
                 this.invalidAddress = false
+                this.fullNewAddress = {
+                  name: this.newAddressName,
+                  longitude: data.results[0].geometry.location.lng,
+                  latitude: data.results[0].geometry.location. lat
+                }
               }
               else {
                 this.invalidAddress = true
@@ -135,10 +143,25 @@ export default {
       }
     },
     confirmAddress() {
-      console.log(this.newAddress)
-      console.log(this.markerPosition.lat)
-      console.log(this.markerPosition.lng)
-      this.$emit('close')
+      console.log(this.newAddressName)
+      const toAdd = JSON.parse(JSON.stringify(this.fullNewAddress))
+      this.previousPosition = {}
+      this.newAddressName = "",
+      this.fullNewAddress = null,
+      this.previousInput = ""
+      this.invalidAddress = false
+      this.markerMoved = true
+      const newPositions = [{
+        pos: {
+          lat: 43.639696,
+          lng: 21.878703,
+        },
+        lab: "",
+        info: ""
+      }]
+      this.$store.dispatch('setMarkerPositions', newPositions)
+      this.$emit('close', toAdd)
+      
     }
   },
   computed: {
@@ -146,7 +169,7 @@ export default {
       return this.$store.state.isSerbian
     },
     addressChecked() {
-      return this.newAddress == this.previousInput
+      return this.newAddressName == this.previousInput
     },
     markerPosition() {
       return this.$store.state.mapMarkerPositions[0]

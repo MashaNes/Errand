@@ -31,7 +31,10 @@ export default new Vuex.Store({
         isDataLoaded: true,
         isAdmin: false,
         mapMarkerPositions: [],
-        userAdded:false
+        userAdded:false,
+        userAddresses: null,
+        addressDeleteCount: 0,
+        addressAddCount: 0
     },
     getters:{
         getAuthUserId(state) {
@@ -219,6 +222,90 @@ export default new Vuex.Store({
                     })
                 }
                 else console.log("Error")
+            })
+        },
+        fillUserAddresses({commit}, userId) {
+            this.state.isDataLoaded = false
+            fetch("http://localhost:8000/api/v1/user_info_filtered/", {
+                method: "POST",
+                headers:
+                {
+                    "Content-type" : "application/json",
+                    "Authorization" : "Token " + this.state.token
+                },
+                body:  JSON.stringify(
+                {
+                    "created_by" : userId,
+                    "blocked" : false,
+                    "working_hours" : false,
+                    "addresses" : true,
+                    "services" : false,
+                    "offers" : false,
+                    "notifications" : false,
+                    "ratings" : false,
+                    "benefitlist" : false,
+                    "achievements" : false,
+                    "requests" : false
+                })
+            }).then(p => {
+                if(p.ok) {
+                    p.json().then(data => {
+                        console.log(data)
+                        commit('setUserAddresses', data.addresses)
+                        console.log(this.state.userAddresses)
+                        this.state.isDataLoaded = true
+                    })
+                }
+                else console.log("Error")
+            })
+        },
+        addAddress({commit}, address) {
+            fetch("http://localhost:8000/api/v1/address_add/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Token " + this.state.token
+                },
+                body: JSON.stringify({
+                    "created_by": address.created_by,
+                    "name": address.name,
+                    "longitude": address.longitude,
+                    "latitude": address.latitude,
+                    "home": address.home,
+                    "arrived": address.arrived
+                })
+            }).then(p => {
+                    if(p.ok) {
+                        p.json().then(data => {
+                            this.state.userAddresses.push(data)
+                            this.state.addressAddCount++
+                            console.log(this.state.userAddresses)
+                        })
+                    }
+                })
+        },
+        deleteAddress({commit}, addressId) {
+            fetch("http://localhost:8000/api/v1/address_remove/", {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Token " + this.state.token
+                },
+                body: JSON.stringify({
+                    "created_by": this.state.authUser.id,
+                    "address": addressId
+                })
+            }).then(p => {
+                if(p.ok) {
+                    p.json().then(data => {
+                        if(data["success"] == true)
+                        {
+                            const ind = this.state.userAddresses.findIndex(addr => addr.id == addressId)
+                            this.state.userAddresses.splice(ind, 1)
+                            this.state.addressDeleteCount++
+                        }
+                    })
+                }
             })
         },
         editUser({commit}, pictureChanged) {
@@ -775,6 +862,9 @@ export default new Vuex.Store({
         },
         setNotAuthUserServices(state, services) {
             state.notAuthUserServices = services
+        },
+        setUserAddresses(state, addresses) {
+            state.userAddresses = addresses
         },
         setChangedUser(state, newUser) {
             Vue.set(state, 'authUser', newUser)

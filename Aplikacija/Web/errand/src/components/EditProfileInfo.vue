@@ -111,7 +111,7 @@
               <b-button 
                 :disabled="isFormInvalid"
                 class="button is-primary title-btn"
-                @click="saveChanges()"
+                @click="saveChanges"
               >
                 <strong v-if="isSerbian">Sačuvaj izmene</strong>
                 <strong v-else>Save changes</strong>
@@ -149,16 +149,13 @@
               
             />
             <div class="list-value">
-              <!-- <div class="address" v-for="a in firstElements('homeAddress')" :key="a">
-                <img src="@/assets/remove.svg" height="15" width="15" class="acc-or-remove-icon" @click="removeElement('homeAddress', a)">
-                <span >{{ a }}</span>
+              <div class="address over-flow" v-for="(a, ind) in firstAddresses" :key="ind">
+                <img src="@/assets/remove.svg" v-if="addressArrayLength > 1" height="15" width="15" class="acc-or-remove-icon" @click="removeAddress(ind)">
+                <span >{{ a.name }}</span>
               </div>
-              <div v-if="addressArrayLength">
-                <img src="@/assets/remove.svg" height="15" width="15" class="acc-or-remove-icon" @click="removeElement('homeAddress', lastElement('homeAddress'))"> 
-                <span >{{lastElement('homeAddress')}} </span>
-              </div> -->
-              <div class="address">
-                Zmaj Jovina 3, Sokobanja
+              <div v-if="addressArrayLength" class="over-flow">
+                <img src="@/assets/remove.svg" v-if="addressArrayLength > 1"  height="15" width="15" class="acc-or-remove-icon" @click="removeAddress(addressArrayLength-1)"> 
+                <span >{{lastAddress.name}} </span>
               </div>
               <div class="field flex-row-elements">
                 <b-button 
@@ -175,7 +172,7 @@
       </div>
     </div>
     <div class="map-wrap" :class="showMapView ? 'visible' : 'invisible'">
-      <AddAddressMap @close="showMapView=false" />
+      <AddAddressMap @close="handleMapClosing" />
     </div>
   </div>
 </template>
@@ -195,6 +192,10 @@ export default {
     user: {
       required: true,
       type: Object
+    },
+    addresses: {
+      type: Array,
+      required: true
     }
   },
   created() {
@@ -203,6 +204,7 @@ export default {
   data() {
     return {
       changedUser: JSON.parse(JSON.stringify(this.user)),
+      changedAddresses: JSON.parse(JSON.stringify(this.addresses)),
       newPhoneNumber: "",
       newAddress: "",
       newPicture: null,
@@ -236,17 +238,30 @@ export default {
     // phoneArrayLength() {
     //   return this.changedUser['phone'].length
     // },
-    // addressArrayLength() {
-    //   return this.changedUser['homeAddress'].length
-    // },
+    addressArrayLength() {
+      return this.changedAddresses.length
+    },
     isFormInvalid(){
       return this.$v.changedUser.$invalid
     },
+    firstAddresses() {
+      const lastIndex = this.changedAddresses.length;
+      if(lastIndex < 2)
+        return null;
+      const arrayCopy = this.changedAddresses.map(addr => addr);
+      arrayCopy.splice(lastIndex-1, 1);
+      return arrayCopy;
+    },
+    lastAddress() {
+      const length = this.changedAddresses.length;
+      if(length == 0)
+        return null;
+      return this.changedAddresses[length-1];
+    },
   },
   methods: {
-    removeElement(resource, element) {
-      const index = this.changedUser[resource].findIndex(e => e === element);
-      this.changedUser[resource].splice(index, 1);
+    removeAddress(index) {
+      this.changedAddresses.splice(index, 1);
     },
     addElement(resource, element) {
       if(element != "")
@@ -255,29 +270,72 @@ export default {
         this.newAddress = ""
       else this.newPhoneNumber = ""
     },
-    firstElements(resource) {
-      const lastIndex = this.changedUser[resource].length;
-      if(lastIndex < 2)
-        return null;
-      const arrayCopy = [...this.changedUser[resource]];
-      arrayCopy.splice(lastIndex-1, 1);
-      return arrayCopy;
-    },
-    lastElement(resource) {
-      const length = this.changedUser[resource].length;
-      if(length == 0)
-        return null;
-      return this.changedUser[resource][length-1];
+    handleMapClosing(newAddr) {
+      if(newAddr) {
+        if(!this.changedAddresses.find(addr => addr.name === newAddr.name)) {
+          this.changedAddresses.push({
+            "created_by": this.user.id,
+            "name": newAddr.name,
+            "longitude": newAddr.longitude,
+            "latitude": newAddr.latitude,
+            "home": true,
+            "arrived": false
+          })
+        }
+        else {
+          this.$toasted.error(this.isSerbian ? 'Ne možete imati dve identične adrese!' : 'You can not have two identical addresses!', {
+            duration: 3000
+          })
+        }
+      }
+      this.showMapView = false
     },
     saveChanges() {
       this.changedUser.picture = this.picture
-      //poslati 'put' zahtev kojim se menjaju sve korisnikove osnovne informacije
-      //poslati 'delete' za svaku izbrisanu adresu, i 'post' za svaku dodatu adresu (mozda da se update-uje cela lista?)
-      //ako se salju 'delete' i 'post' za svaku adresu, treba uvesti privremene nizove za pamcenje dodtih i obrisanih
-      //nizovi treba da se usklade sa 'MapView' komponentom
+      let deleteCount = 0
+      let addCount = 0
+      this.$store.state.addressAddCount = 0
+      this.$store.state.addressDeleteCount = 0
+
+      this.addresses.forEach(addr => {
+        if(!this.changedAddresses.find(a => a.name === addr.name))
+        {
+          this.$store.dispatch('deleteAddress', addr.id)
+          deleteCount++
+        }
+      })
+
+      this.changedAddresses.forEach(addr => {
+        if(!addr.id)
+        {
+          this.$store.dispatch('addAddress', {
+            "created_by": this.user.id,
+            "name": addr.name,
+            "longitude": addr.longitude,
+            "latitude": addr.latitude,
+            "home": true,
+            "arrived": false
+          })
+          addCount++
+        }
+      })
+
       this.$store.state.authUser = this.changedUser
       this.$store.dispatch('editUser', this.pictureChanged)
-      this.$emit('saveEditChanges')
+
+      let vm = this
+      function callback() {
+        if(vm.$store.state.addressAddCount == addCount && vm.$store.state.addressDeleteCount == deleteCount) {
+          vm.$store.state.addressAddCount = 0
+          vm.$store.state.deleteCount = 0
+          vm.$emit('saveEditChanges')
+        }
+        else {
+          setTimeout(callback, 200);
+        }
+      }
+      
+      callback()
     },
     pictureSelected(e) {
 
@@ -353,7 +411,13 @@ export default {
     font-size: 20px;
     margin-right:1%;
     margin-left:20px;
-    word-break: break-all;
+    width:100%;
+  }
+
+  .over-flow {
+    width:100%;
+    word-break: normal;
+    overflow-wrap:break-word;
   }
 
   .main-container {

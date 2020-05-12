@@ -98,13 +98,11 @@ export default {
           vm.markers.push(newMark)
           bounds.extend(newMark.getPosition())
         }) 
-        console.log('startAdjust')
         vm.map.setCenter(bounds.getCenter())
         vm.map.panToBounds(bounds)
         vm.map.fitBounds(bounds)
         if(vm.map.getZoom() > 17)
           vm.map.setZoom(17)
-        console.log('endAdjust')
       }
       else 
         setTimeout(checkForMap, 200)
@@ -113,8 +111,6 @@ export default {
     this.map.addListener('click', (event) => {
       this.mapClick(event.latLng)
     })
-    console.log('mounted')
-    console.log(this.map.getZoom())
   }
 }
 </script>
