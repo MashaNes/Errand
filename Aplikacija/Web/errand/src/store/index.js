@@ -497,6 +497,10 @@ export default new Vuex.Store({
                         console.log("loged out")
                         this.state.authUser = null
                         this.state.token = null
+                        this.state.isAdmin = false
+                        this.state.userServices = null
+                        this.state.services = null
+                        this.state.usersWithBenefit = null
                         Vue.cookie.delete('id');
                         Vue.cookie.delete('token');
                         Vue.cookie.delete('ime');
