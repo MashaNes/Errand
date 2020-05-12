@@ -54,13 +54,11 @@
         </div>
       </b-card-body>
       <ModalAddBenefit v-if="showModal" @close="showModal = false" :user="user"/>
-      <ModalBenefitAdded v-if="benefitAdded" @close="close"/>
     </b-card>
 </template>
 
 <script>
 import ModalAddBenefit from "@/components/ModalAddBenefit"
-import ModalBenefitAdded from "@/components/ModalBenefitAdded"
 export default {
     props: {
       user: {
@@ -90,26 +88,17 @@ export default {
       },
       fullUserName() {
         return this.user.first_name + " " +this.user.last_name
-      },
-      benefitAdded()
-      {
-        return this.$store.state.userAdded
       }
     },
     methods: {
       goToProfile() {
         //prepraviti da se stranici kao prop prosledi user
         this.$router.push({name: "PageViewProfile", params: {id: this.user.id, user: this.user}})
-      },
-      close()
-      {
-        this.$store.state.userAdded = false
       }
     },
     components:
     {
-      ModalAddBenefit,
-      ModalBenefitAdded
+      ModalAddBenefit
     }
 }
 </script>

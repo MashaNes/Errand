@@ -89,10 +89,12 @@
       align="center"
       class="pag-bottom"
     ></b-pagination>
+    <ModalBenefitAdded v-if="benefitAdded" @close="closeModal"/>
   </div>
 </template>
 
 <script>
+import ModalBenefitAdded from "@/components/ModalBenefitAdded"
 import Spinner from "@/components/Spinner"
 import UserBox from "@/components/UserBox"
 import {between} from "vuelidate/lib/validators"
@@ -109,7 +111,8 @@ export default {
   },
   components: {
     UserBox,
-    Spinner
+    Spinner,
+    ModalBenefitAdded
   },
   data() {
     return {
@@ -143,6 +146,9 @@ export default {
     },
     isFilterHigherInvalid() {
       return this.$v.filterRatingHigherInput.$invalid
+    },
+    benefitAdded(){
+      return this.$store.state.userAdded
     }
   },
   methods: {
@@ -187,6 +193,20 @@ export default {
         services: null,
         no_rating: this.showUnrated,
         name: this.filterName,
+        not_in_benefit: this.benefitList
+      })
+    },
+    closeModal(){
+      this.$store.state.userAdded = false
+      this.$store.dispatch('fillUsersPortion', {
+        endpoint: "http://localhost:8000/api/v1/filtered_users/?paginate=true",
+        sort_rating: true,
+        sort_rating_asc: true,
+        rating_limit_up: null,
+        rating_limit_down: null,
+        services: null,
+        no_rating: true,
+        name: "",
         not_in_benefit: this.benefitList
       })
     }
