@@ -1,16 +1,18 @@
 <template>
-  <Spinner v-if="!$store.state.isDataLoaded" />
+  <Spinner v-if="!computedUser || !addresses" />
   <div class = "wrapper" v-else>
     <ProfileInfo 
       v-if="componentToShow == 'Info'"
       :user="computedUser" 
       :isMyProfile="isMyProfile"
+      :addresses="addresses"
       @editProfile="componentToShow = 'Edit'"
       @rateUser="componentToShow = 'Rate'"
     />
     <EditProfileInfo
       v-if="componentToShow == 'Edit'"
       :user="computedUser"
+      :addresses="addresses"
       @saveEditChanges="editSaved"
       @cancelChanges="componentToShow = 'Info'"
     />
@@ -44,7 +46,8 @@ export default {
   data() {
     return {
       componentToShow: "Info",
-      computedUser: null
+      computedUser: null,
+      addresses: null
     }
   },
   computed: {
@@ -52,37 +55,51 @@ export default {
       return this.$store.state.isSerbian
     },
     isMyProfile() {
-      return this.$route.params.id == this.$store.state.authUser.id
+      return this.$route.params.id == this.$store.getters['getAuthUserId']
     }
   },
   methods: {
     editSaved() {
+      console.log("SAVED")
       this.componentToShow = "Info"
       this.computedUser = this.$store.state.authUser
+      this.addresses = this.$store.state.userAddresses
     },
     changedRoute() {
       //fetch-ovati sve korisnikove home adrese
       let vm = this
-      function callback() {
+      function callbackUser() {
         if(vm.$store.state.isDataLoaded)
           vm.computedUser = vm.$store.state.user
         else 
-          setTimeout(callback, 200)
+          setTimeout(callbackUser, 200)
       }
+      function callbackAddresses() {
+        if(vm.$store.state.userAddresses)
+          vm.addresses = vm.$store.state.userAddresses
+        else
+          setTimeout(callbackAddresses, 200)
+      }
+      
+      const routeId = this.$route.params.id
+
       if(!this.user)
       {
-        const routeId = this.$route.params.id
-        if(routeId == this.$store.getters['getAuthUserId'])
+        if(this.isMyProfile)
         {
           this.computedUser = this.$store.state.authUser
         }
         else {
           this.$store.dispatch('getUserInfo', routeId)
-          callback()
+          callbackUser()
         }
         this.componentToShow = 'Info'
       }
       else this.computedUser = this.user
+      if(this.isMyProfile) {
+        this.$store.dispatch('fillUserAddresses', routeId)
+        callbackAddresses()
+      }
     }
   },
   created() {

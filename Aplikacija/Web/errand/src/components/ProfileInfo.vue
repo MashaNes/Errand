@@ -102,8 +102,6 @@
               style = "margin-right: 15px"
             />
             <div class="list-value">
-              <!-- <div class="phones" v-for="p in firstElements('phone')" :key="p">{{ p }}</div>
-              <div v-text="lastElement('phone')"></div> -->
               <div class="phones">{{user.phone}}</div>
             </div>
           </b-list-group-item>
@@ -115,9 +113,8 @@
               style = "margin-right: 15px"
             />
             <div class="list-value">
-              <!-- <div class="addr-or-phone-item" v-for="a in firstElements('homeAddress')" :key="a">{{ a }}</div>
-              <div v-text="lastElement('homeAddress')"></div> -->
-              <div class="addr-or-phone-item">Zmaj Jovina 3 Sokobanja</div>
+              <div class="addr-or-phone-item" v-for="a in firstAddresses" :key="a">{{ a }}</div>
+              <div v-text="lastAddress"></div>
             </div>
           </b-list-group-item>
         </b-list-group>
@@ -168,6 +165,9 @@ export default {
     isMyProfile: {
       type: Boolean,
       required: true
+    },
+    addresses: {
+      required: false
     }
   },
   components:
@@ -224,21 +224,21 @@ export default {
     },
     benefitAdded(){
       return this.$store.state.userAdded
-    }
+    },
+    firstAddresses() {
+      const lastIndex = this.addresses.length
+      const arrayCopy = this.addresses.map(addr => addr.name)
+      arrayCopy.splice(lastIndex-1, 1)
+      return arrayCopy
+    },
+    lastAddress() {
+      return this.addresses[this.addresses.length-1].name
+    },
   },
   methods: {
     goToProfileEdit() {
       this.$emit("editProfile");
     },
-    // firstElements(resource) {
-    //   const lastIndex = this.user[resource].length;
-    //   const arrayCopy = [...this.user[resource]];
-    //   arrayCopy.splice(lastIndex-1, 1);
-    //   return arrayCopy;
-    // },
-    // lastElement(resource) {
-    //   return this.user[resource][this.user[resource].length-1];
-    // },
     tryReport(rep) {
       this.report.reportType = rep.reportType
       this.report.comment = rep.comment
