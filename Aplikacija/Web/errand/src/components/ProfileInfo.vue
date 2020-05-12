@@ -149,10 +149,12 @@
       @close="dismissReport"
       v-if="showModalAreYouSure" 
     />
+    <ModalBenefitAdded v-if="benefitAdded" @close="closeModal"/>
   </div>
 </template>
 
 <script>
+import ModalBenefitAdded from "@/components/ModalBenefitAdded"
 import ModalAddBenefit from "@/components/ModalAddBenefit"
 import ModalReportUser from "@/components/ModalReportUser"
 import ModalAreYouSure from "@/components/ModalAreYouSure"
@@ -172,7 +174,8 @@ export default {
   {
     ModalAddBenefit,
     ModalReportUser,
-    ModalAreYouSure
+    ModalAreYouSure,
+    ModalBenefitAdded
   },
   data()
   {
@@ -209,7 +212,6 @@ export default {
       else
       {
         var id = -1
-        // eslint-disable-next-line no-unused-vars
         this.$store.state.usersWithBenefit.forEach((item, index) =>
         {
             if(item.benefit_user.id == this.user.id)
@@ -219,6 +221,9 @@ export default {
         })
         return id > 0
       }
+    },
+    benefitAdded(){
+      return this.$store.state.userAdded
     }
   },
   methods: {
@@ -256,6 +261,9 @@ export default {
           user: this.user
         }
       }
+    },
+    closeModal(){
+      this.$store.state.userAdded = false  
     }
   },
   created()
