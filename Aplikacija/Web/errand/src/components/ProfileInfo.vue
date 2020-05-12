@@ -14,7 +14,7 @@
           <b-button
             size="lg"
             class="ocene-dostignuca button is-primary"
-            :to="goToAchievements()"
+            @click="goToAchievements"
           >
             <span v-if="isSerbian"> Ocene i dostignuća </span>
             <span v-else> Ratings and achievements </span>
@@ -199,6 +199,8 @@ export default {
   },
   methods: {
     goToProfileEdit() {
+      // eslint-disable-next-line no-debugger
+      debugger
       this.$emit("editProfile");
     },
     // firstElements(resource) {
@@ -225,13 +227,13 @@ export default {
       this.showModalAreYouSure = false
     },
     goToAchievements() {
-      return {
+      this.$router.push({
         name: "PageAchievements",
-        props: {
+        params: {
           id: this.user.id,
           user: this.user
         }
-      }
+      })
     }
   }
 }

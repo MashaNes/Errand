@@ -1,15 +1,16 @@
 <template>
-  <div class="main-wrapper">
+  <Spinner v-if="!computedUser || !fetchedServices"/>
+  <div class="main-wrapper" v-else>
     <div class="side-info">
-      <AsideProfileInfo :user="user" :forWideScreen="true" />
+      <AsideProfileInfo :user="computedUser" :forWideScreen="true" />
       <div class="btns">
-        <router-link :to = "'/profile/' + user.id" class="button is-primary" style="width:100%;">
+        <router-link :to="goToProfile()" class="button is-primary" style="width:100%;">
           <strong v-if="isSerbian">Detalji profila</strong>
           <strong v-else>Profile details</strong>
         </router-link>
       </div>
     </div>
-    <div>
+    <div class="services-div">
       <ServiceList :editable="false" />
     </div>
   </div>
@@ -18,15 +19,23 @@
 <script>
 import AsideProfileInfo from "@/components/AsideProfileInfo"
 import ServiceList from "@/components/ServiceList"
+import Spinner from "@/components/Spinner"
 
 export default {
+  props: {
+    user: {
+      required: false
+    }
+  },
   components: {
     AsideProfileInfo,
-    ServiceList
+    ServiceList,
+    Spinner
   },
   data() {
     return {
-      user: {}
+      computedUser: null,
+      fetchedServices: false
     }
   },
   computed: {
@@ -34,13 +43,66 @@ export default {
       return this.$store.state.isSerbian
     }
   },
+  methods: {
+    onCreate() {
+      let vm = this
+      function callBackServices() {
+        if(!vm.$store.state.isDataLoaded)
+          setTimeout(callBackServices, 200)
+        else
+        {
+          // eslint-disable-next-line no-debugger
+          debugger
+          vm.fetchedServices = true
+        }
+      }
+      function callbackUser() {
+        if(vm.$store.state.isDataLoaded)
+        {
+          // eslint-disable-next-line no-debugger
+          debugger
+          vm.computedUser = vm.$store.state.user
+          vm.$store.dispatch('fillNotAuthUserServices', vm.computedUser.id)
+          callBackServices()
+        }
+        else 
+          setTimeout(callbackUser, 200)
+      }
+
+      if(!this.user)
+      {
+        // eslint-disable-next-line no-debugger
+        debugger
+        const routeId = this.$route.params.id
+        this.$store.dispatch('getUserInfo', routeId)
+        callbackUser()
+      }
+      else 
+      {
+        // eslint-disable-next-line no-debugger
+        debugger
+        this.computedUser = this.user
+        this.$store.dispatch('fillNotAuthUserServices', this.computedUser.id)
+        callBackServices()
+      }
+    },
+    goToProfile() {
+      return {
+        name: "PageViewProfile",
+        params: {
+          id: this.computedUser.id,
+          user: this.computedUser
+        }
+      }
+    }
+  },
   created() {
-    const routeId = this.$route.params.id
-    this.$store.dispatch('getUser', routeId)
-    this.user = this.$store.state.user
-    this.isMyProfile = false
-    this.$store.dispatch('fillUserServices')
-    //get userServices za tekućeg user-a
+    this.onCreate()
+  },
+  watch: {
+    $route() {
+      this.onCreate()
+    }
   }
 }
 </script>
@@ -76,6 +138,10 @@ export default {
   .button {
     width:100%;
     margin: 10px 5px 10px 5px;
+  }
+
+  .services-div {
+    width:100%;
   }
 
   @media only screen and (max-width: 599px)

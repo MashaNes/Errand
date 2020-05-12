@@ -112,7 +112,11 @@ export default {
       required: true
     },
     ratings: {
-      typ: Array,
+      type: Array,
+      required: false
+    },
+    achievements: {
+      type: Array,
       required: false
     }
   },
@@ -132,9 +136,6 @@ export default {
     },
     isSerbian() {
       return this.$store.state.isSerbian
-    },
-    achievements() {
-      return this.$store.state.userAchievements
     },
     isFilterLowerInvalid() {
       return this.$v.filterValueLower.$invalid
@@ -185,30 +186,6 @@ export default {
         }
       }
     }
-  },
-  created() {
-    // eslint-disable-next-line no-debugger
-    //debugger
-    // let vm = this
-    // function callback() {
-    //   if(vm.$store.state.isDataLoaded)
-    //   {
-    //     if(vm.tab == "Ratings")
-    //     {
-    //       vm.ratings = vm.$store.state.userRatings
-    //       }
-    //       // else
-    //       // vm.achievements = vm.$store.state.userAchievements
-    //     }
-    //   else 
-    //     setTimeout(callback, 200)
-    // }
-    
-    // if(this.tab == "Ratings") {
-    //   this.$store.dispatch('fillUserRatings', this.user.id)
-    //   callback()
-    //}
-    
   }
 
 }

@@ -26,7 +26,7 @@ export default {
             if(this.editable)
                 return this.$store.state.userServices
             else
-                return []
+                return this.$store.state.notAuthUserServices
         }
     }
 }

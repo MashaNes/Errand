@@ -24,6 +24,7 @@ export default new Vuex.Store({
         usersWithBenefit: null,
         specificRequests: {},
         services: null,
+        notAuthUserServices: null,
         userServices: null,
         allServices: null,
         token: null,
@@ -360,6 +361,40 @@ export default new Vuex.Store({
                     }
                 });
         },
+        fillNotAuthUserServices({commit}, userId) {
+            this.state.isDataLoaded = false
+            fetch("http://127.0.0.1:8000/api/v1/user_info_filtered/", {
+                method: 'POST',
+                headers: {
+                    "Content-type" : "application/json",
+                    "Authorization" : "Token " + this.state.token
+                },
+                body:  JSON.stringify({
+                    "created_by" : userId,
+                    "blocked" : false,
+                    "working_hours" : false,
+                    "addresses" : false,
+                    "services" : true,
+                    "offers" : false,
+                    "notifications" : false,
+                    "ratings" : false,
+                    "benefitlist" : false,
+                    "achievements" : false,
+                    "requests" : false
+                })
+            }).then( p => {
+                    if(p.ok) {
+                        p.json().then(data => {
+                            console.log(data)
+                            commit('setNotAuthUserServices', data.services)
+                            this.state.isDataLoaded = true
+                        })
+                    }
+                    else {
+                        console.log("Error")
+                    }
+                });
+        }, 
         fillServices()
         {
             fetch("http://127.0.0.1:8000/api/v1/services/",
@@ -737,6 +772,9 @@ export default new Vuex.Store({
         },
         setUserRatings(state, ratings) {
             state.userRatings = ratings
+        },
+        setNotAuthUserServices(state, services) {
+            state.notAuthUserServices = services
         },
         setChangedUser(state, newUser) {
             Vue.set(state, 'authUser', newUser)
