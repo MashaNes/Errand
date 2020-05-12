@@ -1,8 +1,9 @@
 <template>
-  <Spinner v-if="!$store.state.isDataLoaded"/>
+  <Spinner v-if="!computedUser || !achievements"/>
   <AchAndRatings 
     :tab="'Achievements'" 
-    :user="user"
+    :user="computedUser"
+    :achievements="achievements"
     v-else
   />
     <!-- :isMyProfile="isMyProfile" -->
@@ -15,15 +16,16 @@ import Spinner from "@/components/Spinner"
 export default {
   //prebaciti da 'user' bude properti, i da ga salje roditelj;
   //izbaciti isMyProfile, i ne prosledjivati ga uopste
-  // props: {
-  //   user: {
-  //     required: false
-  //   }
-  // },
+  props: {
+    user: {
+      required: false
+    }
+  },
   data() {
     return {
       //isMyProfile: true
-      user: null
+      computedUser: null,
+      achievements: null
     }
   },
   components: {
@@ -33,20 +35,47 @@ export default {
   methods: {
     changedRoute() {
       //fetch-ovati sve korisnikove ocene; id se izvlaci iz user-a
-      // console.log("changed route")
-      const routeId = this.$route.params.id
-      this.$store.dispatch('getUserAchievements', routeId)
-      if(routeId == this.$store.getters['getAuthUserId'])
+      let vm = this
+      this.achievements = null
+      function callBackAchievements() {
+        if(vm.$store.state.isDataLoaded)
+        {
+          vm.achievements = vm.$store.state.userAchievements
+        }
+        else 
+          setTimeout(callBackAchievements, 200)
+      }
+      function callbackUser() {
+        if(vm.$store.state.isDataLoaded)
+        {
+          vm.computedUser = vm.$store.state.user
+          vm.$store.dispatch('getUserAchievements', vm.computedUser.id)
+          callBackAchievements()
+        }
+        else 
+          setTimeout(callbackUser, 200)
+      }
+
+      if(!this.user)
       {
-        this.user = this.$store.state.authUser
-        //this.isMyProfile = true
+        const routeId = this.$route.params.id
+        if(routeId == this.$store.getters['getAuthUserId'])
+        {
+          this.computedUser = this.$store.state.authUser
+          vm.$store.dispatch('getUserAchievements', vm.computedUser.id)
+          callBackAchievements()
+        }
+        else {
+          this.$store.dispatch('getUserInfo', routeId)
+          callbackUser()
+        }
       }
-      else {
-        this.$store.dispatch('getUser', routeId)
-        this.user = this.$store.state.user
-        //this.isMyProfile = false
+      else 
+      {
+        this.computedUser = this.user
+        vm.$store.dispatch('getUserAchievements', vm.computedUser.id)
+        callBackAchievements()
       }
-      
     }
   },
   created() {
