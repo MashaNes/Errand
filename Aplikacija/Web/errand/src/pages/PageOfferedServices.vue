@@ -51,16 +51,12 @@ export default {
           setTimeout(callBackServices, 200)
         else
         {
-          // eslint-disable-next-line no-debugger
-          debugger
           vm.fetchedServices = true
         }
       }
       function callbackUser() {
         if(vm.$store.state.isDataLoaded)
         {
-          // eslint-disable-next-line no-debugger
-          debugger
           vm.computedUser = vm.$store.state.user
           vm.$store.dispatch('fillNotAuthUserServices', vm.computedUser.id)
           callBackServices()
@@ -71,16 +67,12 @@ export default {
 
       if(!this.user)
       {
-        // eslint-disable-next-line no-debugger
-        debugger
         const routeId = this.$route.params.id
         this.$store.dispatch('getUserInfo', routeId)
         callbackUser()
       }
       else 
       {
-        // eslint-disable-next-line no-debugger
-        debugger
         this.computedUser = this.user
         this.$store.dispatch('fillNotAuthUserServices', this.computedUser.id)
         callBackServices()
