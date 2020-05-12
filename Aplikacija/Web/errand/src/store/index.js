@@ -185,10 +185,40 @@ export default new Vuex.Store({
             const filteredAch = Object.values(allAch).filter(a => a.user == userId)
             commit('setUserAchievements', filteredAch)
         },
-        getUserRatings({commit}, userId) {
-            const allRatings = fetchRatings();
-            const filteredRatings = Object.values(allRatings).filter(r => r.ratedUser == userId)
-            commit('setUserRatings', filteredRatings)
+        fillUserRatings({commit}, userId) {
+            this.state.isDataLoaded = false
+            fetch("http://localhost:8000/api/v1/user_info_filtered/", {
+                method: "POST",
+                headers:
+                {
+                    "Content-type" : "application/json",
+                    "Authorization" : "Token " + this.state.token
+                },
+                body:  JSON.stringify(
+                {
+                    "created_by" : userId,
+                    "blocked" : false,
+                    "working_hours" : false,
+                    "addresses" : false,
+                    "services" : false,
+                    "offers" : false,
+                    "notifications" : false,
+                    "ratings" : true,
+                    "benefitlist" : false,
+                    "achievements" : false,
+                    "requests" : false
+                })
+            }).then(p => {
+                if(p.ok) {
+                    p.json().then(data => {
+                        console.log(data)
+                        commit('setUserRatings', data.ratings)
+                        console.log(this.state.userRatings)
+                        this.state.isDataLoaded = true
+                    })
+                }
+                else console.log("Error")
+            })
         },
         editUser({commit}, pictureChanged) {
             fetch('http://localhost:8000/api/v1/user_update/', {

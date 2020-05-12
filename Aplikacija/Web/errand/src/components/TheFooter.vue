@@ -12,11 +12,11 @@
               <li class="stavka-navigacije" v-if="isSerbian"> Profil </li>
               <li class="stavka-navigacije" v-else> Profile </li>
             </router-link>
-            <router-link :to="'/achievements/' + authUserId">
+            <router-link :to="goToAchievements()">
               <li class="stavka-navigacije" v-if="isSerbian">Dostignuća </li>
               <li class="stavka-navigacije" v-else> Achievements </li>
             </router-link>
-            <router-link :to="'/ratings/' + authUserId">
+            <router-link :to="goToRatings()">
               <li class="stavka-navigacije" v-if="isSerbian"> Ocene </li>
               <li class="stavka-navigacije" v-else> Ratings </li>
             </router-link>
@@ -127,6 +127,26 @@
                 id: this.$store.state.authUser.id, 
                 user: this.$store.state.authUser
             }
+        }
+      },
+      goToAchievements() 
+      {
+        return {
+          name: "PageAchievements", 
+          params: {
+            id: this.$store.state.authUser.id, 
+            user: this.$store.state.authUser
+          }
+        }
+      },
+      goToRatings() 
+      {
+        return {
+          name: "PageRatings", 
+          params: {
+            id: this.$store.state.authUser.id, 
+            user: this.$store.state.authUser
+          }
         }
       }
     }

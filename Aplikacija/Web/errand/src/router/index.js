@@ -106,6 +106,7 @@ const router = new Router(
                 path: "/achievements/:id",
                 name: "PageAchievements",
                 component: PageAchievements,
+                props: true,
                 beforeEnter(to,from,next)
                 {
                     if(store.state.logedIn && !store.state.isAdmin)
@@ -118,6 +119,7 @@ const router = new Router(
                 path: "/ratings/:id",
                 name: "PageRatings",
                 component: PageRatings,
+                props: true,
                 beforeEnter(to,from,next)
                 {
                     if(store.state.logedIn && !store.state.isAdmin)

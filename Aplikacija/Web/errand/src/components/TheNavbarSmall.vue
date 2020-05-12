@@ -26,12 +26,12 @@
                                 <span v-if="isSerbian" class = "ikonica"> Profil </span>
                                 <span v-else class = "ikonica"> Profile </span>
                             </router-link>
-                            <router-link :to="'/achievements/' + authUserId" class="dropdown-item">
+                            <router-link :to="goToAchievements()" class="dropdown-item">
                                 <img src = "../assets/achievements.svg" class="ikonica-uvucena">
                                 <span v-if="isSerbian" class = "ikonica"> Dostignuća </span>
                                 <span v-else class = "ikonica"> Achievements </span>
                             </router-link>
-                            <router-link :to="'/ratings/' + authUserId" class="dropdown-item">
+                            <router-link :to="goToRatings()" class="dropdown-item">
                                 <img src = "../assets/ratings.svg" class="ikonica-uvucena">
                                 <span v-if="isSerbian" class = "ikonica"> Ocene </span>
                                 <span v-else class = "ikonica"> Ratings </span>
@@ -129,6 +129,26 @@ export default {
       {
         return {
             name: "PageViewProfile", 
+            params: {
+                id: this.$store.state.authUser.id, 
+                user: this.$store.state.authUser
+            }
+        }
+      },
+      goToAchievements() 
+      {
+        return {
+            name: "PageAchievements", 
+            params: {
+                id: this.$store.state.authUser.id, 
+                user: this.$store.state.authUser
+            }
+        }
+      },
+      goToRatings() 
+      {
+        return {
+            name: "PageRatings", 
             params: {
                 id: this.$store.state.authUser.id, 
                 user: this.$store.state.authUser
