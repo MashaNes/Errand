@@ -1,5 +1,5 @@
 <template>
-  <Spinner v-if="!computedUser || !addresses" />
+  <Spinner v-if="!computedUser || (isMyProfile && !addresses)" />
   <div class = "wrapper" v-else>
     <ProfileInfo 
       v-if="componentToShow == 'Info'"
