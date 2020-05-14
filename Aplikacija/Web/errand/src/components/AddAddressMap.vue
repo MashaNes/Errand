@@ -19,8 +19,9 @@
         :placeholder="isSerbian ? 'Adresa' : 'Address'"
         v-model="newAddressName"
       >
+       <!-- && addressChecked && !invalidAddress -->
       <img 
-        v-if="newAddressName && addressChecked && !invalidAddress" 
+        v-if="newAddressName" 
         class="btn-img" 
         src="@/assets/check.svg" 
         height="33" 
@@ -73,6 +74,10 @@ export default {
       }]
       this.$store.dispatch('setMarkerPositions', newMarkerPositions)
       this.markerMoved = true
+      // eslint-disable-next-line no-debugger
+      debugger
+      this.fullNewAddress.longitude = newMarkerPositions[0].pos.lng
+      this.fullNewAddress.latitude = newMarkerPositions[0].pos.lat
     },
     convertToAddress() {
       // eslint-disable-next-line no-debugger
@@ -144,6 +149,7 @@ export default {
     },
     confirmAddress() {
       console.log(this.newAddressName)
+      this.fullNewAddress.name = this.newAddressName
       const toAdd = JSON.parse(JSON.stringify(this.fullNewAddress))
       this.previousPosition = {}
       this.newAddressName = "",
@@ -161,7 +167,6 @@ export default {
       }]
       this.$store.dispatch('setMarkerPositions', newPositions)
       this.$emit('close', toAdd)
-      
     }
   },
   computed: {
@@ -176,10 +181,15 @@ export default {
     }
   },
   created() {
+    this.fullNewAddress = {
+      name: "Sokogradska 9, Sokobanja",
+      longitude: 21.878703,
+      latitude: 43.639696
+    }
     const newPositions = [{
       pos: {
         lat: 43.639696,
-        lng: 21.878703,
+        lng: 21.878703
       },
       lab: "",
       info: ""

@@ -271,6 +271,7 @@ export default {
       else this.newPhoneNumber = ""
     },
     handleMapClosing(newAddr) {
+      console.log(newAddr)
       if(newAddr) {
         if(!this.changedAddresses.find(addr => addr.name === newAddr.name)) {
           this.changedAddresses.push({
@@ -320,6 +321,8 @@ export default {
         }
       })
 
+
+
       this.$store.state.authUser = this.changedUser
       this.$store.dispatch('editUser', this.pictureChanged)
 
@@ -328,6 +331,7 @@ export default {
         if(vm.$store.state.addressAddCount == addCount && vm.$store.state.addressDeleteCount == deleteCount) {
           vm.$store.state.addressAddCount = 0
           vm.$store.state.deleteCount = 0
+          console.log(vm.$store.state.userAddresses)
           vm.$emit('saveEditChanges')
         }
         else {
