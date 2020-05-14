@@ -2,22 +2,113 @@ import base64
 import os.path
 from . import models
 
-PIC_PATH = 'db/images/'
+# =================== IMAGES ===================
+# ==============================================
+def load_img(img_path):
+    base64_string = ""
 
-def encode_img(img_path):
-    ext = ".png"
-    path = PIC_PATH + img_path + ext
-    base64_string = None
-
-    if not os.path.exists(path):
+    if not os.path.exists(img_path):
         return None
 
-    with open(path, 'rb') as img_file:
+    with open(img_path, 'rb') as img_file:
         base64_string = str(base64.b64encode(img_file.read()))
         base64_string = base64_string[2:-1]
     return base64_string
 
+def load_pictures_multiple_users(data):
+    for _d in data:
+        _d = load_pictures_user(_d)
+    return data
+
+def load_pictures_user(data):
+    if data['user']:
+        data['user']['picture'] = load_img(data['user']['picture'])
+
+    if data['blocked']:
+        for _d in data['blocked']:
+            _d['picture'] = load_img(_d['picture'])
+
+    if data['offers']:
+        for _d in data['offers']:
+            _d['created_by']['picture'] = load_img(_d['created_by']['picture'])
+
+    if data['ratings']:
+        for _d in data['ratings']:
+            _d['created_by']['picture'] = load_img(_d['created_by']['picture'])
+            _d['rated_user'] = _d['rated_user']['id']
+
+    if data['benefitlist']:
+        for _d in data['benefitlist']:
+            _d['benefit_user']['picture'] = load_img(_d['benefit_user']['picture'])
+
+    if data['achievements']:
+        for _d in data['achievements']:
+            _d['icon'] = load_img(_d['icon'])
+
+    if data['requests']:
+        data['requests'] = load_pictures_multiple_requests_info(data['requests'])
+
+    return data
+
+def load_pictures_multiple_requests_info(data):
+    for _d in data:
+        _d = load_pictures_request_info(_d)
+    return data
+
+def load_pictures_request_info(data):
+    if data['created_by']:
+        data['created_by']['picture'] = load_img(data['created_by']['picture'])
+
+    if data['working_with']:
+        data['working_with']['picture'] = load_img(data['working_with']['picture'])
+
+    if data['direct_user']:
+        data['direct_user']['picture'] = load_img(data['direct_user']['picture'])
+
+    if data['pictures']:
+        for _d in data['pictures']:
+            _d = load_img(_d)
+
+    if data['tasklist']:
+        for _d in data['tasklist']:
+            for _p in _d['pictures']:
+                _p = load_img(_p)
+
+    return data
+
+def load_pictures_multiple_requests(data):
+    for _d in data:
+        _d = load_pictures_request(_d)
+    return data
+
+def load_pictures_request(data):
+    if data['request']:
+        data['request'] = load_pictures_request_info(data['request'])
+
+    if data['offers']:
+        for _d in data['offers']:
+            _d['created_by']['picture'] = load_img(_d['created_by']['picture'])
+
+    if data['accepted_offer']:
+        data['accepted_offer']['created_by']['picture'] = \
+            load_img(data['accepted_offer']['created_by']['picture'])
+
+    if data['rating_created_by']:
+        data['rating_created_by']['created_by']['picture'] = \
+            load_img(data['rating_created_by']['created_by']['picture'])
+        data['rating_created_by']['rated_user']['picture'] = \
+            load_img(data['rating_created_by']['rated_user']['picture'])
+
+    if data['rating_working_with']:
+        data['rating_working_with']['created_by']['picture'] = \
+            load_img(data['rating_working_with']['created_by']['picture'])
+        data['rating_working_with']['rated_user']['picture'] = \
+            load_img(data['rating_working_with']['rated_user']['picture'])
+
+    return data
+
 # =================== USER ===================
+# ============================================
 def update_rating(user):
     avg = 0
 
@@ -102,12 +193,13 @@ def filter_user(queryset, data):
 
     return new_queryset
 
-
 def filter_user_info(serializer, data):
     response = {}
 
     if data['blocked']:
         response['blocked'] = serializer['blocked']
+        for _r in response['blocked']:
+            _r['picture'] = load_img(_r['picture'])
     if data['working_hours']:
         response['working_hours'] = serializer['working_hours']
     if data['addresses']:
@@ -120,18 +212,25 @@ def filter_user_info(serializer, data):
         response['notifications'] = serializer['notifications']
     if data['ratings']:
         response['ratings'] = serializer['ratings']
+        for _r in response['ratings']:
+            _r['created_by']['picture'] = load_img(_r['created_by']['picture'])
+            _r['rated_user']['picture'] = load_img(_r['rated_user']['picture'])
+
     if data['benefitlist']:
         response['benefitlist'] = serializer['benefitlist']
+        for _r in response['benefitlist']:
+            _r['benefit_user']['picture'] = load_img(_r['benefit_user']['picture'])
     if data['achievements']:
         response['achievements'] = serializer['achievements']
-        for _r, _a in zip(response['achievements'], serializer['achievements']):
-            _r['picture'] = encode_img('achievements/' + str(_a.name))
+        for _r in response['achievements']:
+            _r['icon'] = load_img(_r['icon'])
     if data['requests']:
         response['requests'] = serializer['requests']
 
     return response
 
 # ==================== REQUEST ====================
+# =================================================
 def filter_requests(queryset, data):
     new_queryset = list()
 
@@ -141,20 +240,32 @@ def filter_requests(queryset, data):
         if data['created_by']:
             if _q.request.created_by.id != data['created_by']:
                 to_add = False
+            if data['unrated'] and _q.request.rated_working_with:
+                to_add = False
 
         if to_add and data['done_by']:
-            if not _q.accepted_offer:
+            if (_q.request.working_with and
+                    _q.request.working_with.id != data['done_by']):
                 to_add = False
-            elif _q.accepted_offer.created_by.id != data['done_by']:
+            if data['unrated'] and _q.request.rated_created_by:
                 to_add = False
 
         if to_add and data['created_or_done_by']:
             found = False
+
             if _q.request.created_by.id == data['created_or_done_by']:
-                found = True
-            if (_q.accepted_offer and
-                    _q.accepted_offer.created_by.id == data['created_or_done_by']):
-                found = True
+                if not data['unrated']:
+                    found = True
+                if data['unrated'] and not _q.request.rated_working_with:
+                    found = True
+
+            if (_q.request.working_with and
+                    _q.request.working_with.id == data['created_or_done_by']):
+                if not data['unrated']:
+                    found = True
+                if data['unrated'] and not _q.request.rated_created_by:
+                    found = True
+
             to_add = found
 
         if to_add and data['statuses']:
@@ -164,10 +275,6 @@ def filter_requests(queryset, data):
                     found = True
                     break
             to_add = found
-
-        if to_add and data['unrated']:
-            if _q.rating:
-                to_add = False
 
         # TODO: Add other filter params if needed
 
@@ -187,9 +294,31 @@ def filter_request_info(serializer, data):
 
     if data['offers']:
         response['offers'] = serializer['offers']
+        for _d in response['offers']:
+            _d['created_by']['picture'] = load_img(_d['created_by']['picture'])
+
     if data['accepted_offer']:
         response['accepted_offer'] = serializer['accepted_offer']
-    if data['rating']:
-        response['rating'] = serializer['rating']
+        response['accepted_offer']['created_by']['picture'] = \
+            load_img(response['accepted_offer']['created_by']['picture'])
+
+    if data['rating_created_by']:
+        response['rating_created_by'] = serializer['rating_created_by']
+    if data['rating_working_with']:
+        response['rating_working_with'] = serializer['rating_working_with']
+
+    if data['rating_created_by']:
+        response['rating_created_by'] = serializer['rating_created_by']
+        response['rating_created_by']['created_by']['picture'] = \
+            load_img(response['rating_created_by']['created_by']['picture'])
+        response['rating_created_by']['rated_user']['picture'] = \
+            load_img(response['rating_created_by']['rated_user']['picture'])
+
+    if data['rating_working_with']:
+        response['rating_working_with'] = serializer['rating_working_with']
+        response['rating_working_with']['created_by']['picture'] = \
+            load_img(response['rating_working_with']['created_by']['picture'])
+        response['rating_working_with']['rated_user']['picture'] = \
+            load_img(response['rating_working_with']['rated_user']['picture'])
 
     return response

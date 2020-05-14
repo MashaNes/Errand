@@ -14,6 +14,8 @@ URL = api/v1/{endpoint_name}
 + GET requests/{id} 				// Returns full request data (including offers and rating)
 + POST filtered_requests/ 			// Returns requests based on filters
 + POST requests_info_filtered/      // Returns requests info based on filters
+- POST requests_search/             // Returns avaliable requests based on your filters
+
 + GET achievements/{id}				// Returns list of all achievements
 + GET services/{id}                 // Returns list of all types of services
 - GET stats/ (A)		 			// Returns statistics based on filters
@@ -27,8 +29,9 @@ URL = api/v1/{endpoint_name}
 + POST user_service_add/			// Adds new user service for user
 + POST block_add/			        // Adds new user to blocklist
 + POST offer_create/ 				// Creates offer for request
-- POST offer_accept/ 				// Accepts offer for request
++ POST offer_accept/ 				// Accepts offer for request
 + POST request_create/ 				// Creates request
+- POST request_pic_upload/          // Uploads picture to request or task
 + POST rate_user/ 					// Adds new rating for completed request
 - POST report_user/					// Reports user
 - POST ban_user/ (A)	 			// Bans user
@@ -37,6 +40,8 @@ URL = api/v1/{endpoint_name}
 
 + PUT logout/                       // Logout user
 + PUT user_update/			        // Updates basic user data
++ PUT user_benefit_update/          // Updates user's benefit settings
++ PUT user_status_update/           // Updates user's status
 + PUT benefit_update/			    // Updates benefit to benefit list
 + PUT address_update/			    // Updates address to addresses
 + PUT working_hours_update/ 		// Updates working hours for user
@@ -48,7 +53,7 @@ URL = api/v1/{endpoint_name}
 + DELETE user_service_remove/ 		// Removes user service from user
 + DELETE block_remove/ 			    // Removes user from blocklist
 + DELETE request_cancel/ 			// Cancels request (when pending)
-- DELETE offer_cancel/ 			    // Cancels offer (when not accepted)
++ DELETE offer_cancel/ 			    // Cancels offer (when not accepted)
 
 (+ -> Done)
 (- -> Not)

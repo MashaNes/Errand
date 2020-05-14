@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from . import models
+from . import utils
 
 class PictureSerializer(serializers.ModelSerializer):
     class Meta:
@@ -95,6 +96,9 @@ class BannedSerializer(serializers.ModelSerializer):
 
 class RequestSerializer(serializers.ModelSerializer):
     created_by = UserSerializer()
+    working_with = UserSerializer()
+    direct_user = UserSerializer()
+    destination = AddressSerializer()
     tasklist = TaskSerializer(many=True)
 
     class Meta:
@@ -109,7 +113,7 @@ class RequestEditSerializer(serializers.ModelSerializer):
 
 class OfferSerializer(serializers.ModelSerializer):
     created_by = UserSerializer()
-    request = RequestSerializer()
+    # request = RequestSerializer()
     edit = RequestEditSerializer()
 
     class Meta:
@@ -124,7 +128,6 @@ class NotificationSerializer(serializers.ModelSerializer):
 class RatingSerializer(serializers.ModelSerializer):
     created_by = UserSerializer()
     rated_user = UserSerializer()
-    request = RequestSerializer()
 
     class Meta:
         model = models.Rating
@@ -151,7 +154,8 @@ class FullRequestSerializer(serializers.ModelSerializer):
     request = RequestSerializer()
     offers = OfferSerializer(many=True)
     accepted_offer = OfferSerializer()
-    rating = RatingSerializer()
+    rating_created_by = RatingSerializer()
+    rating_working_with = RatingSerializer()
 
     class Meta:
         model = models.FullRequest

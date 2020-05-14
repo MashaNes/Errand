@@ -29,7 +29,11 @@ urluser = [
     path('api/v1/user_create/', api_views.UserCreate.as_view(),
          name='user_create'),
     path('api/v1/user_update/', api_views.UserUpdate.as_view(),
-         name='user_update')
+         name='user_update'),
+    path('api/v1/user_status_update/', api_views.UserStatusUpdate.as_view(),
+         name='user_status_update'),
+    path('api/v1/user_benefit_update/', api_views.UserBenefitUpdate.as_view(),
+         name='user_benefit_update')
 ]
 urlpatterns += urluser
 
@@ -89,7 +93,11 @@ urlrequest = [
     path('api/v1/rate_user/', api_views.RateUser.as_view(),
          name='rate_user'),
     path('api/v1/offer_create/', api_views.OfferCreate.as_view(),
-         name='offer_create')
+         name='offer_create'),
+    path('api/v1/offer_accept/', api_views.OfferAccept.as_view(),
+         name='offer_accept'),
+    path('api/v1/offer_cancel/', api_views.OfferCancel.as_view(),
+         name='offer_cancel')
 ]
 urlpatterns += urlrequest
 

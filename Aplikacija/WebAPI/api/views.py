@@ -1,11 +1,11 @@
 from rest_framework import viewsets, generics
-from rest_framework.views import APIView
 from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.response import Response
-from rest_framework_extensions.mixins import NestedViewSetMixin
+
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse
+
 from . import models
 from . import serializers
 from . import parsers
@@ -23,6 +23,8 @@ Endpoints:
 + GET requests/{id} 				// Returns full request data (including offers and rating)
 + POST filtered_requests/ 			// Returns requests based on filters
 + POST requests_info_filtered/      // Returns requests info based on filters
+- POST requests_search/             // Returns avaliable requests based on your filters
+
 + GET achievements/{id}				// Returns list of all achievements
 + GET services/{id}                 // Returns list of all types of services
 - GET stats/ (A)		 			// Returns statistics based on filters
@@ -36,8 +38,9 @@ Endpoints:
 + POST user_service_add/			// Adds new user service for user
 + POST block_add/			        // Adds new user to blocklist
 + POST offer_create/ 				// Creates offer for request
-- POST offer_accept/ 				// Accepts offer for request
++ POST offer_accept/ 				// Accepts offer for request
 + POST request_create/ 				// Creates request
+- POST request_pic_upload/          // Uploads picture to request or task
 + POST rate_user/ 					// Adds new rating for completed request
 - POST report_user/					// Reports user
 - POST ban_user/ (A)	 			// Bans user
@@ -46,6 +49,8 @@ Endpoints:
 
 + PUT logout/                       // Logout user
 + PUT user_update/			        // Updates basic user data
++ PUT user_benefit_update/          // Updates user's benefit settings
++ PUT user_status_update/           // Updates user's status
 + PUT benefit_update/			    // Updates benefit to benefit list
 + PUT address_update/			    // Updates address to addresses
 + PUT working_hours_update/ 		// Updates working hours for user
@@ -57,7 +62,7 @@ Endpoints:
 + DELETE user_service_remove/ 		// Removes user service from user
 + DELETE block_remove/ 			    // Removes user from blocklist
 + DELETE request_cancel/ 			// Cancels request (when pending)
-- DELETE offer_cancel/ 			    // Cancels offer (when not accepted)
++ DELETE offer_cancel/ 			    // Cancels offer (when not accepted)
 '''
 
 
@@ -70,11 +75,9 @@ class LogIn(ObtainAuthToken):
                                            context={'request':request})
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data['user']
-        user.status = 1
-        user.save()
         _s = serializers.UserSerializer(user)
         _s = _s.data
-        _s['picture'] = utils.encode_img('users/' + str(user.id))
+        _s['picture'] = utils.load_img(_s['picture'])
         token, _ = Token.objects.get_or_create(user=user)
         custom_response = {
             'token': token.key,
@@ -89,7 +92,7 @@ class GetCookieViewSet(viewsets.ModelViewSet):
         user = get_object_or_404(self.queryset, pk=pk)
         _s = serializers.UserSerializer(user)
         _s = _s.data
-        _s['picture'] = utils.encode_img('users/' + str(user.id))
+        _s['picture'] = utils.load_img(_s['picture'])
         token, _ = Token.objects.get_or_create(user=user)
         response = HttpResponse()
         response.set_cookie('token', token)
@@ -114,13 +117,14 @@ class LogOut(generics.UpdateAPIView):
     def update(self, request):
         created_by = request.data['created_by']
         user = models.User.objects.get(id=created_by)
-        if user.status == 0:
-            response = {'success' : 'Not logged in.'}
-        else:
+        token, _ = Token.objects.get_or_create(user=user)
+        if token:
             user.auth_token.delete()
             user.status = 0
             user.save()
             response = {'success' : 'Logged out.'}
+        else:
+            response = {'success' : 'Not logged in.'}
         return Response(response)
 
 # POST user_create/
@@ -131,16 +135,18 @@ class UserCreate(generics.ListCreateAPIView):
 
     def create(self, request):
         user = parsers.create_user(request.data)
-        Token.objects.create(user=user)
-        token, _ = Token.objects.get_or_create(user=user)
-        _s = serializers.UserSerializer(user)
-        _s = _s.data
-        _s['picture'] = utils.encode_img('users/' + str(user.id))
-        custom_response = {
-            'token': token.key,
-            'user': _s
-        }
-        return Response(custom_response)
+        if user:
+            Token.objects.create(user=user)
+            token, _ = Token.objects.get_or_create(user=user)
+            _s = serializers.UserSerializer(user)
+            _s = _s.data
+            _s['picture'] = utils.load_img(_s['picture'])
+            custom_response = {
+                'token': token.key,
+                'user': _s
+            }
+            return Response(custom_response)
+        return Response({"success" : False})
 
 # PUT user_update/
 class UserUpdate(generics.UpdateAPIView):
@@ -150,9 +156,30 @@ class UserUpdate(generics.UpdateAPIView):
         user = parsers.update_user(user, request.data)
         serializer = serializers.UserSerializer(user)
         response = serializer.data
-        response['picture'] = utils.encode_img('users/' + str(user.id))
+        response['picture'] = utils.load_img(response['picture'])
 
         return Response(response)
+
+# PUT user_status_update/
+class UserStatusUpdate(generics.UpdateAPIView):
+    def update(self, request):
+        created_by = request.data['created_by']
+        user = models.User.objects.get(id=created_by)
+        user.status = request.data['status']
+        user.save()
+
+        return Response({'detail' : 'success'})
+
+# PUT user_benefit_update/
+class UserBenefitUpdate(generics.UpdateAPIView):
+    def update(self, request):
+        created_by = request.data['created_by']
+        user = models.User.objects.get(id=created_by)
+        user.benefit_discount = request.data['benefit_discount']
+        user.benefit_requirement = request.data['benefit_requirement']
+        user.save()
+        
+        return Response({'detail' : 'success'})
 
 # GET users_info/{id}
 class UserViewSet(viewsets.ModelViewSet):
@@ -171,8 +198,8 @@ class UserViewSet(viewsets.ModelViewSet):
             page = self.queryset
 
         serializer = serializers.UserSerializer(page, many=True)
-        for _q, _s in zip(page, serializer.data):
-            _s['picture'] = utils.encode_img('users/' + str(_q.id))
+        for _s in serializer.data:
+            _s['picture'] = utils.load_img(_s['picture'])
 
         if request.GET.get('paginate'):
             return self.get_paginated_response(serializer.data)
@@ -190,7 +217,7 @@ class UserViewSet(viewsets.ModelViewSet):
                              'description' : 'Cannot return admin user.'})
         serializer = serializers.UserSerializer(user)
         response = serializer.data
-        response['picture'] = utils.encode_img('users/' + str(user.id))
+        response['picture'] = utils.load_img(response['picture'])
 
         return Response(response)
 
@@ -211,15 +238,16 @@ class FullUserViewSet(viewsets.ModelViewSet):
             page = self.queryset
 
         serializer = serializers.FullUserSerializer(page, many=True)
-        for _q, _s in zip(page, serializer.data):
-            _s['user']['picture'] = utils.encode_img('users/' + str(_q.user.id))
+
+        _r = serializer.data
+        _r = utils.load_pictures_multiple_users(_r)
 
         if request.GET.get('paginate'):
-            return self.get_paginated_response(serializer.data)
+            return self.get_paginated_response(_r)
 
         custom_response = {
-            'count' : len(serializer.data),
-            'results' : serializer.data
+            'count' : len(_r),
+            'results' : _r
         }
 
         return Response(custom_response)
@@ -230,9 +258,10 @@ class FullUserViewSet(viewsets.ModelViewSet):
             return Response({'success' : False,
                              'description' : 'Cannot return admin user.'})
         serializer = serializers.FullUserSerializer(fulluser)
-        serializer.data['user']['picture'] = utils.encode_img('users/' + str(fulluser.user.id))
+        _r = serializer.data
+        _r = utils.load_pictures_user(_r)
 
-        return Response(serializer.data)
+        return Response(_r)
 
 # POST users_info_filtered/id
 class UserInfoFilteredViewSet(viewsets.ModelViewSet):
@@ -258,15 +287,16 @@ class FilterUserViewSet(viewsets.ModelViewSet):
             page = self.queryset
 
         serializer = serializers.UserSerializer(page, many=True)
-        for _q, _s in zip(page, serializer.data):
-            _s['picture'] = utils.encode_img('users/' + str(_q.id))
+
+        _r = serializer.data
+        _r = utils.load_pictures_multiple_users(_r)
 
         if request.GET.get('paginate'):
-            return self.get_paginated_response(serializer.data)
+            return self.get_paginated_response(_r)
 
         custom_response = {
-            'count' : len(serializer.data),
-            'results' : serializer.data
+            'count' : len(_r),
+            'results' : _r
         }
 
         return Response(custom_response)
@@ -290,8 +320,8 @@ class BenefitAdd(generics.ListCreateAPIView):
         user.benefitlist.add(benefit)
         user.save()
         serializer = serializers.BenefitSerializer(benefit)
-        serializer.data['benefit_user']['picture'] = utils.encode_img('users/' + \
-                                                        str(benefit.benefit_user.id))
+        serializer.data['benefit_user']['picture'] = \
+            utils.load_img(serializer.data['benefit_user']['picture'])
         return Response(serializer.data)
 
 # PUT benefit_update/
@@ -305,8 +335,8 @@ class BenefitUpdate(generics.UpdateAPIView):
             if _b.id == request.data['benefit']:
                 _b = parsers.update_benefit(_b, request.data)
                 serializer = serializers.BenefitSerializer(_b)
-                serializer.data['benefit_user']['picture'] = utils.encode_img('users/' + \
-                                                        str(_b.benefit_user.id))
+                serializer.data['benefit_user']['picture'] = \
+                    utils.load_img(serializer.data['benefit_user']['picture'])
 
                 response = serializer.data
                 break
@@ -530,7 +560,11 @@ class BlockAdd(generics.ListCreateAPIView):
         user.blocked.add(blocked)
         user.save()
         serializer = serializers.FullUserSerializer(user)
-        return Response(serializer.data['blocked'])
+        _r = serializer.data
+        for _b in _r['blocked']:
+            _b['picture'] = utils.load_img(_b['picture'])
+
+        return Response(_r['blocked'])
 
 
 # DELETE block_remove/
@@ -556,13 +590,41 @@ class BlockRemove(generics.RetrieveDestroyAPIView):
 class RateUser(generics.ListCreateAPIView):
     def create(self, request):
         rating = parsers.create_rating(request.data)
-        created_by = request.data['rated_user']
-        user = models.FullUser.objects.get(id=created_by)
+        user = models.FullUser.objects.get(id=request.data['rated_user'])
+        req = models.FullRequest.objects.get(id=request.data['request'])
+
+        if req.request.status != 2:
+            return Response({'success' : False,
+                             'detail' : 'Request is not finished'})
+
+        if req.request.created_by.id == request.data['rated_user'] and \
+                    req.request.rated_created_by:
+            return Response({'success' : False,
+                             'detail' : 'User is already rated for this request'})
+
+        if req.request.working_with.id == request.data['working_with'] and \
+                    req.request.rated_working_with:
+            return Response({'success' : False,
+                             'detail' : 'User is already rated for this request'})
+
         user.ratings.add(rating)
         user.save()
         utils.update_rating(user)
-        #_r = models.Rating.objects.get(id=rating.id)
+
+        if req.request.created_by.id == request.data['rated_user']:
+            req.rating_created_by = rating
+            req.request.rated_created_by = True
+        else:
+            req.rating_working_with = rating
+            req.request.rated_working_with = True
+        req.request.save()
+        req.save()
+
+        rating.refresh_from_db()
         serializer = serializers.RatingSerializer(rating)
+        _r = serializer.data
+        _r['created_by']['picture'] = utils.load_img(_r['created_by']['picture'])
+        _r['rated_user']['picture'] = utils.load_img(_r['rated_user']['picture'])
         return Response(serializer.data)
 
 
@@ -577,9 +639,11 @@ class RequestCreate(generics.ListCreateAPIView):
         user.requests.add(req)
         user.save()
         serializer = serializers.RequestSerializer(req)
+        _s = serializer.data
+        _s = utils.load_pictures_request_info(_s)
         return Response(serializer.data)
 
-# DELETE request/
+# DELETE request_cancel/
 class RequestCancel(generics.RetrieveDestroyAPIView):
     def destroy(self, request):
         created_by = request.data['created_by']
@@ -600,6 +664,7 @@ class RequestCancel(generics.RetrieveDestroyAPIView):
         req = models.Request.objects.get(id=rid)
         user.requests.remove(req)
         user.save()
+        req.delete()
 
         return Response({'succes' : True})
 
@@ -618,16 +683,21 @@ class RequestViewSet(viewsets.ModelViewSet):
         if request.GET.get('paginate'):
             return self.get_paginated_response(serializer.data)
 
+        _s = serializer.data
+        _s = utils.load_pictures_multiple_requests_info(_s)
+
         custom_response = {
-            'count' : len(serializer.data),
-            'results' : serializer.data
+            'count' : len(_s),
+            'results' : _s
         }
         return Response(custom_response)
 
     def retrieve(self, request, pk):
         service = get_object_or_404(self.queryset, pk=pk)
         serializer = serializers.RequestSerializer(service)
-        return Response(serializer.data)
+        _s = serializer.data
+        _s = utils.load_pictures_request_info(_s)
+        return Response(_s)
 
 # GET requests/{id}
 class FullRequestViewSet(viewsets.ModelViewSet):
@@ -644,16 +714,21 @@ class FullRequestViewSet(viewsets.ModelViewSet):
         if request.GET.get('paginate'):
             return self.get_paginated_response(serializer.data)
 
+        _s = serializer.data
+        _s = utils.load_pictures_multiple_requests(_s)
+
         custom_response = {
-            'count' : len(serializer.data),
-            'results' : serializer.data
+            'count' : len(_s),
+            'results' : _s
         }
         return Response(custom_response)
 
     def retrieve(self, request, pk):
         service = get_object_or_404(self.queryset, pk=pk)
         serializer = serializers.FullRequestSerializer(service)
-        return Response(serializer.data)
+        _s = serializer.data
+        _s = utils.load_pictures_request(_s)
+        return Response(_s)
 
 # POST requests_info_filtered/
 class RequestInfoFilteredViewSet(viewsets.ModelViewSet):
@@ -680,12 +755,15 @@ class FilterRequestViewSet(viewsets.ModelViewSet):
 
         serializer = serializers.RequestSerializer(page, many=True)
 
+        _r = serializer.data
+        _r = utils.load_pictures_multiple_requests_info(_r)
+
         if request.GET.get('paginate'):
-            return self.get_paginated_response(serializer.data)
+            return self.get_paginated_response(_r)
 
         custom_response = {
-            'count' : len(serializer.data),
-            'results' : serializer.data
+            'count' : len(_r),
+            'results' : _r
         }
 
         return Response(custom_response)
@@ -699,7 +777,55 @@ class OfferCreate(generics.ListCreateAPIView):
         user.offers.add(offer)
         user.save()
         serializer = serializers.OfferSerializer(offer)
+        serializer.data['created_by']['picture'] = \
+            utils.load_img(serializer.data['created_by']['picture'])
+
         return Response(serializer.data)
+
+# POST offer_accept/
+class OfferAccept(generics.ListCreateAPIView):
+    def create(self, request):
+        created_by = models.User.objects.get(id=request.data['created_by'])
+        req = models.FullRequest.objects.get(id=request.data['request'])
+
+        if created_by.id != req.request.created_by.id or req.request.status > 0:
+            return Response({'detail' : 'Offer cannot be accepted.'})
+
+        req = parsers.accept_offer(request.data)
+
+        if not req:
+            return Response({'detail' : 'Offer cannot be accepted.'})
+
+        serializer = serializers.FullRequestSerializer(req)
+        _s = serializer.data
+        _s = utils.load_pictures_request(_s)
+
+        return Response(_s)
+
+# DELETE offer_cancel/
+class OfferCancel(generics.RetrieveDestroyAPIView):
+    def destroy(self, request):
+        created_by = request.data['created_by']
+        user = models.FullUser.objects.get(id=created_by)
+        rid = request.data['offer']
+
+        found = False
+        for _r in user.offers.all():
+            if _r.id == rid:
+                found = True
+                break
+
+        if not found:
+            return Response({
+                'succes' : False,
+                'description' : 'Offer is not in the list.'})
+
+        off = models.Offer.objects.get(id=rid)
+        user.offers.remove(off)
+        user.save()
+        off.delete()
+
+        return Response({'succes' : True})
 
 # ================= ACHIEVEMENTS =================
 # GET achievements/{id}
@@ -715,7 +841,7 @@ class AchievementViewSet(viewsets.ModelViewSet):
 
         serializer = serializers.AchievementSerializer(page, many=True)
         for _q, _s in zip(page, serializer.data):
-            _s['icon'] = utils.encode_img('achievements/' + str(_q.id))
+            _s['icon'] = utils.load_img(_s['icon'])
 
         if request.GET.get('paginate'):
             return self.get_paginated_response(serializer.data)
@@ -730,7 +856,7 @@ class AchievementViewSet(viewsets.ModelViewSet):
         achievement = get_object_or_404(self.queryset, pk=pk)
         serializer = serializers.AchievementSerializer(achievement)
         response = serializer.data
-        response['icon'] = utils.encode_img('achievements/' + str(achievement.id))
+        response['icon'] = utils.load_img(response['icon'])
         return Response(response)
 
 
@@ -774,7 +900,7 @@ class AchievementCreate(generics.ListCreateAPIView):
             achievement = parsers.create_achievement(request.data)
             serializer = serializers.AchievementSerializer(achievement)
             response = serializer.data
-            response['icon'] = utils.encode_img('achievements/' + str(achievement.id))
+            response['icon'] = utils.load_img(response['icon'])
             return Response(response)
         else:
             return Response({"success" : False,

@@ -25,8 +25,8 @@ def create_user(data):
                            first_name=data['first_name'],
                            last_name=data['last_name'],
                            picture=None,
-                           status=1)
-    else:
+                           status=0)
+    elif not data['is_admin']:
         _bd = 0.1
         _br = 5
         if data['benefit_discount']:
@@ -42,7 +42,10 @@ def create_user(data):
                            picture=None,
                            benefit_discount=_bd,
                            benefit_requirement=_br,
-                           status=1)
+                           status=0)
+    else:
+        return None
+
     user.save()
 
     fulluser = models.FullUser(user=user)
@@ -123,13 +126,14 @@ def update_address(address, data):
 
 # ================== WORKING HOURS ==================
 def create_working_hour(data):
-    _wf = datetime.datetime.strptime(data['work_from'], '%Y-%m-%d %H:%M')
-    _wu = datetime.datetime.strptime(data['work_until'], '%Y-%m-%d %H:%M')
-    working_hour = models.WorkingHour(work_from=_wf,
-                                      work_until=_wu)
+    working_hour = models.WorkingHour(day=data['day'],
+                                      work_from=data['work_from'],
+                                      work_until=data['work_until'])
+    working_hour.save()
     return working_hour
 
 def update_working_hour(working_hour, data):
+    working_hour.day = data['day']
     working_hour.work_from = data['work_from']
     working_hour.work_until = data['work_until']
     working_hour.save()
@@ -159,7 +163,6 @@ def update_user_service(user_service, data):
 
 # ================== RATING ==================
 def create_rating(data):
-    # TODO: Check if rating is valid (request.status = 3)
     created_by = models.User.objects.get(id=data['created_by'])
     rated_user = models.User.objects.get(id=data['rated_user'])
     request = models.Request.objects.get(id=data['request'])
@@ -210,7 +213,6 @@ def create_task(data):
 
 def update_task(data):
     task = models.Task.get(id=data['task'])
-
     address = create_address(data['address'])
     task.address = address
     task.save()
@@ -219,10 +221,16 @@ def update_task(data):
 
 def create_request(data):
     created_by = models.User.objects.get(id=data['created_by'])
+    direct_user = None
+    if data['direct_user']:
+        direct_user = models.User.objects.get(id=data['direct_user'])
 
     time = None
     if data['time']:
         time = data['time']
+
+    if data['destination']:
+        destination = create_address(data['destination'])
 
     request = models.Request(name=data['name'],
                              time=time,
@@ -230,6 +238,9 @@ def create_request(data):
                              note=data['note'],
                              max_dist=data['max_dist'],
                              min_rating=data['min_rating'],
+                             destination=destination,
+                             broadcast=data['broadcast'],
+                             direct_user=direct_user,
                              created_by=created_by)
     request.save()
     _task_list = data['tasklist']
@@ -254,9 +265,8 @@ def create_task_edit(data):
     return task_edit
 
 def create_request_edit(data, request):
-    request_edit = models.RequestEdit(time=data['time'])
-    request_edit.save()
-    request_edit.request.add(request)
+    request_edit = models.RequestEdit(time=data['time'],
+                                      request=request)
     request_edit.save()
 
     _task_list = data['tasks']
@@ -281,8 +291,43 @@ def create_offer(data):
     fullrequest.offers.add(offer)
     fullrequest.save()
 
-
     return offer
+
+def accept_offer(data):
+    request = models.FullRequest.objects.get(id=data['request'])
+    offer = models.Offer.objects.get(id=data['offer'])
+    found = False
+
+    if request.offers:
+        for _f in request.offers.all():
+            if _f.id == offer.id:
+                found = True
+            # TODO: Uncomment.
+            # else:
+            #     _f.delete()
+            request.offers.remove(_f)
+
+    if found:
+        if offer.edit:
+            if offer.edit.time:
+                request.request.time = offer.edit.time
+                request.request.time.save()
+
+            for _t in offer.edit.tasks.all():
+                for _ot in request.request.tasklist.all():
+                    if _t.task.id == _ot.id:
+                        _ot.address = _t.address
+                        _ot.save()
+
+        request.request.working_with = offer.created_by
+        request.accepted_offer = offer
+        request.request.status = 1 # active
+
+        request.request.save()
+        request.save()
+        return request
+
+    return None
 
 
 # ================== ADMIN ==================
