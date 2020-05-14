@@ -16,6 +16,29 @@
             <img v-if="computedRequest.status == 'failed'" src="@/assets/failed.svg" height="25" width="25" class="title-pic">
             <span>{{computedRequest.status}}</span>
           </div>
+          <b-button 
+            variant="secondary"
+            v-b-popover.hover.top="isSerbian ? 'Imate 10 ponuda' : 'You have 10 offers'"
+            v-if="computedRequest.status == 'pending' && computedRequest.created_by == null"
+          >
+            <strong 
+              class="notification-span" 
+              v-text="isSerbian ? 'Ponude' : 'Offers'"
+            ></strong>
+          </b-button>
+          <b-badge variant="danger" class="notification-badge" v-if="computedRequest.status == 'pending' && computedRequest.created_by == null">1</b-badge>
+          
+          <b-button 
+            variant="secondary"
+            v-b-popover.hover.top="isSerbian ? 'Imate zahtev za izmenom' : 'You have an edit request'"
+            v-if="computedRequest.status == 'running' && computedRequest.created_by == null"
+          >
+            <strong 
+              class="notification-span" 
+              v-text="isSerbian ? 'Zahtev za izmenom' : 'Edit request'"
+            ></strong>
+          </b-button>
+          <b-badge variant="danger" class="notification-badge" v-if="computedRequest.status == 'running' && computedRequest.created_by == null">!</b-badge>
         </div>
       </b-card-title>
       <b-card-text class="request-note">
@@ -23,11 +46,11 @@
             <span style="margin-right:5px;" v-text="isSerbian ? 'Napomena' : 'Note'"></span>
         </b-card-title>
         <b-card-text class="inner-text">
-          Request.note!!!
+          {{computedRequest.note}}
         </b-card-text>
       </b-card-text>
 
-      <div v-if="computedRequest.status != 'pending'" class="offer">
+      <div v-if="computedRequest.status != 'pending' && computedRequest.created_by == null" class="offer">
         <b-card-title>
           <div class="offer-title">
             <span 
@@ -41,7 +64,7 @@
             </div>
           </div>
         </b-card-title>
-        <div class="payment-info inner-text">
+        <div class="inner-text">
           <span v-text="isSerbian ? 'Tip naplate: po satu' : 'Payment type: per hour'"> </span>
           <span v-text="isSerbian ? 'Cena: 200 din' : 'Price: 200din'"></span>
         </div>      
@@ -49,7 +72,8 @@
 
       <b-card-text>
         <b-button class="button is-primary" @click="openMap">
-          <strong v-text="isSerbian ? 'Pogledajte mapu zadataka' : 'See task-list map'"></strong>
+          <strong v-if="!isMapOpened" v-text="isSerbian ? 'Pogledajte mapu zadataka' : 'See task-list map'"></strong>
+          <strong v-if="isMapOpened" v-text="isSerbian ? 'Zatvori mapu zadataka' : 'Close task-list map'"></strong>
         </b-button>
       </b-card-text>
 
@@ -57,7 +81,7 @@
         <Map />
       </b-card-text>
 
-      <b-card-text v-for="(task, ind) in tasks" :key="ind" class="task-div">
+      <b-card-text v-for="(task, ind) in computedRequest.tasklist" :key="task.id" class="task-div">
         <b-card-title 
           :class="taskOpened[ind].value ? 'open-task-bottom-border' : 'open-task-div'" 
           v-b-toggle="'collapse' + ind" 
@@ -69,9 +93,20 @@
 
         </b-card-title>
         <b-collapse :id="'collapse' + ind">
-          <b-card-text class="task-desc">
-            {{task.description}}
-          </b-card-text>
+          <div style="padding:15px">
+            <div v-if="task.address">
+              <span v-text="isSerbian ? 'Adresa' : 'Address'"></span>
+              <b-card-text class="inner-text">
+                <span>{{task.address.name}}</span>
+                <span v-text="isSerbian ? 'Obiđena: ' + (task.address.arrived ? 'da' : 'ne') : 'Arrived: ' + (task.address.arrived ? 'yes' : 'no')"></span>
+              </b-card-text>
+              
+            </div>
+            <span v-text="isSerbian ? 'Opis':'Description'"></span>
+            <b-card-text class="inner-text">
+              {{task.description}}
+            </b-card-text>
+          </div>
         </b-collapse>
       </b-card-text>
       
@@ -94,7 +129,7 @@ export default {
   },
   data() {
     return {
-      taskOpened: [{value: false}, {value: false}, {value:false}],
+      taskOpened: [],
       tasks: [
         {
           name: 'Task1',
@@ -146,17 +181,25 @@ export default {
         this.computedRequest = this.$store.state.requests[routeId]
       }
       else this.computedRequest = this.request
+      for(let i=0; i<this.computedRequest.tasklist.length; i++) {
+        this.taskOpened.push({
+          value: false
+        })
+      }
       const markerPositions = [];
-      this.tasks.forEach((task, ind) => {
-        const newPosition = {
-          pos: {
-            lat: task.address.latitude,
-            lng: task.address.longitude
-          },
-          lab: String(ind + 1),
-          info: task.description
+      this.computedRequest.tasklist.forEach((task, ind) => {
+        if(task.address)
+        {
+          const newPosition = {
+            pos: {
+              lat: task.address.latitude,
+              lng: task.address.longitude
+            },
+            lab: String(ind + 1),
+            info: task.description
+          }
+          markerPositions.push(newPosition)
         }
-        markerPositions.push(newPosition)
       })
       this.$store.dispatch('setMarkerPositions', markerPositions)
     },
@@ -215,6 +258,7 @@ export default {
   .title-start {
     flex-grow:1;  
     width:100%;
+    margin-bottom: 10px;
   }
 
   .title-end {
@@ -228,17 +272,29 @@ export default {
   }
 
   .pic-and-span {
-    margin: 10px 0 10px 0;
+    margin: 10px 20px 10px 0;
     display:flex;
     align-items: center;
   }
 
-  .clock {
+  /* .clock {
     margin-right: 20px;
-  }
+  } */
 
   .title-pic {
     margin: 0px 10px 0px 0px;
+  }
+
+  .notification-span {
+    margin-right: 5px;
+    color:white;
+    font-size: 20px;
+  }
+
+  .notification-badge {
+    font-size: 85%;
+    margin-left: -12px;
+    margin-bottom: 35px;
   }
 
   .request-note {
@@ -252,6 +308,8 @@ export default {
     border: 1px solid lightgray;
     font-size:18px;
     padding: 10px;
+    display: flex;
+    flex-direction: column;
   }
 
   .offer {

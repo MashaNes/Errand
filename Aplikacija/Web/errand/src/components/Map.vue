@@ -109,6 +109,7 @@ export default {
     }
     // checkForMap()
     this.map.addListener('click', (event) => {
+      console.log(event.latLng.lat() + " " + event.latLng.lng())
       this.mapClick(event.latLng)
     })
   }
