@@ -20,7 +20,57 @@ export const fetchRequests = () =>
                 achievements: ["1", "3", "4", "5", "6"],
                 homeAddress: ["4 Privet Drive, Little Whinging, Surrey England, Great Britain", "Zmaj Jovina 3, Sokobanja"],
                 ratings: ["1", "2", "3"]
-            }
+            },
+            created_by: null,
+            tasklist: [
+                {
+                    id: 1,
+                    address: {
+                        "id": 1,
+                        "name": "Sokobanja, Zmaj Jovina 3",
+                        "latitude": 43.642689,
+                        "longitude": 21.862980,
+                        "home": false,
+                        "arrived": false
+                    },
+                    "service_type": {
+                        "id": 1,
+                        "service_type_sr": "Nabavka",
+                        "service_type_en": "Grocery shopping",
+                        "description_sr": "Nabavka namirnica u supermarketu",
+                        "description_en": "Shop for groceries in a nearby supermarket",
+                        "picture_required": true
+                    },
+                    "checklist": [
+                        {
+                            "id": 1,
+                            "check_list": ["krompir 20kg", "jaja 10 kom", "mleko 1l"]
+                        }
+                    ],
+                    "name": "task1",
+                    "description": "Nabavi mi sve ovo i slikaj racun.",
+                    "picture_required": true,
+                    "pictures": []
+                },
+                {
+                    "id": 2,
+                    "address": null,
+                    "service_type": {
+                        "id": 1,
+                        "service_type_sr": "Ostalo",
+                        "service_type_en": "Other",
+                        "description_sr": "Nedefinisane usluge",
+                        "description_en": "Undefined services",
+                        "picture_required": false
+                    },
+                    "checklist": [],
+                    "name": "task2",
+                    "description": "Ovde nesto pise.",
+                    "picture_required": false,
+                    "pictures": []
+                }
+            ],
+            "note": "Budi brz"
         },
         "2":{
             id: 2,
