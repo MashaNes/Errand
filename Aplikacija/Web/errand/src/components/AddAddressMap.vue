@@ -20,21 +20,22 @@
         v-model="newAddressName"
       >
        <!-- && addressChecked && !invalidAddress -->
-      <img 
-        v-if="newAddressName" 
-        class="btn-img" 
-        src="@/assets/check.svg" 
-        height="33" 
-        width="33"
-        @click="confirmAddress"
-      >
-      <img 
+       <img 
         v-if="newAddressName && !addressChecked" 
         class="search btn-img" 
         src="@/assets/search.svg" 
         height="35" 
         width="35"
         @click="convertFromAddress"
+        v-b-popover.hover.top="isSerbian ? 'Kliknite za prikaz unete adrese na mapi':'Click to find the specified address on the map'"
+      >
+      <img 
+        v-if="newAddressName" 
+        class="btn-img" 
+        src="@/assets/check.svg" 
+        height="33" 
+        width="33"
+        @click="showModal = true"
       >
     </div>
     <span  class="span-danger" v-if="invalidAddress" v-text="isSerbian ? 
@@ -43,14 +44,26 @@
     <div class="map">
       <Map @mapClick="moveMarker" />
     </div>
+    <ModalAreYouSure 
+      :naslovS="'Da li ste sigurni?'"
+      :naslovE="'Are you sure?'"
+      :tekstS='"Dodajete adresu \"" + newAddressName + "\". Da li potvrđujete da se adresa koju ste uneli poklapa sa pozicijom pina na mapi?"'
+      :tekstE='"You are about to add the address \"" + newAddressName + "\". Are you sure that the specified address matches the location of the pin on the map?"'
+      @yes="confirmAddress"
+      @close="showModal = false"
+      v-if="showModal"
+    />
   </div>
 </template>
 
 <script>
 import Map from "@/components/Map"
+import ModalAreYouSure from "@/components/ModalAreYouSure"
+
 export default {
   components: {
-    Map
+    Map,
+    ModalAreYouSure
   },
   data() {
     return {
@@ -59,7 +72,8 @@ export default {
       fullNewAddress: null,
       previousInput: "",
       invalidAddress: false,
-      markerMoved: true
+      markerMoved: true,
+      showModal: false
     }
   },
   methods: {
@@ -74,14 +88,10 @@ export default {
       }]
       this.$store.dispatch('setMarkerPositions', newMarkerPositions)
       this.markerMoved = true
-      // eslint-disable-next-line no-debugger
-      debugger
       this.fullNewAddress.longitude = newMarkerPositions[0].pos.lng
       this.fullNewAddress.latitude = newMarkerPositions[0].pos.lat
     },
     convertToAddress() {
-      // eslint-disable-next-line no-debugger
-      debugger
       if(this.markerMoved || !this.addressChecked) {
 
         fetch('https://maps.googleapis.com/maps/api/geocode/json?latlng='
@@ -148,7 +158,7 @@ export default {
       }
     },
     confirmAddress() {
-      console.log(this.newAddressName)
+      console.log(this.newAddressName)  
       this.fullNewAddress.name = this.newAddressName
       const toAdd = JSON.parse(JSON.stringify(this.fullNewAddress))
       this.previousPosition = {}
@@ -196,29 +206,6 @@ export default {
     }]
     this.$store.dispatch('setMarkerPositions', newPositions)
   }
-  // mounted() {
-  //   this.map = new window.google.maps.Map(this.$refs["map"], {
-  //     center: {
-  //       lat: 43.639696,
-  //       lng: 21.878703
-  //     },
-  //     zoom: 10
-  //   })
-  //   const vm = this
-  //   function checkForMap() {
-  //     if(vm.map) 
-  //       vm.marker = new window.google.maps.Marker({
-  //         position: vm.pos,
-  //         map: vm.map
-  //       })
-  //     else 
-  //       setTimeout(checkForMap, 200)
-  //   }
-  //   checkForMap()
-  //   this.map.addListener('click', (event) => {
-  //     vm.moveMarker(event.latLng)
-  //   })
-  // }
 }
 </script>
 

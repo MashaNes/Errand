@@ -163,7 +163,7 @@
                   style="margin-top: 20px; font-weight: bold;"
                   v-text="isSerbian ? 'Dodaj adresu' : 'Add an address'"
                   v-if="!showMapView"
-                  @click="showMapView = true"
+                  @click="showAddrMap"
                 ></b-button>
               </div>
             </div>
@@ -172,7 +172,7 @@
       </div>
     </div>
     <div class="map-wrap" :class="showMapView ? 'visible' : 'invisible'">
-      <AddAddressMap @close="handleMapClosing" />
+      <AddAddressMap   @close="handleMapClosing" />
     </div>
   </div>
 </template>
@@ -260,6 +260,13 @@ export default {
     },
   },
   methods: {
+    showAddrMap() {
+      this.showMapView = true
+      window.scroll({
+        top: 700,
+        behavior: 'smooth'
+      })
+    },
     removeAddress(index) {
       this.changedAddresses.splice(index, 1);
     },
@@ -272,6 +279,11 @@ export default {
     },
     handleMapClosing(newAddr) {
       console.log(newAddr)
+      window.scroll({
+        top: 0,
+        left: 0,
+        behavior: 'smooth'
+      })
       if(newAddr) {
         if(!this.changedAddresses.find(addr => addr.name === newAddr.name)) {
           this.changedAddresses.push({
@@ -552,6 +564,8 @@ export default {
   .invisible {
     visibility: hidden;
     height:0px;
+    position: absolute;
+    top: 0px;
   }
 
 @media only screen and (max-width: 750px)
