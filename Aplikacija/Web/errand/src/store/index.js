@@ -359,7 +359,8 @@ export default new Vuex.Store({
                     "services": filters.services,
                     "no_rating": filters.no_rating,
                     "name": filters.name,
-                    "not_in_benefit": filters.not_in_benefit
+                    "not_in_benefit": filters.not_in_benefit,
+                    "active": filters.active
                 })
             }).then(p => {
 

@@ -30,7 +30,7 @@
                             <span v-if="isSerbian" class = "ikonica"> Zahtevi </span>
                             <span v-else class = "ikonica"> Requests </span>
                         </router-link>
-                        <router-link :to = "'/users'" class="dropdown-item">
+                        <router-link :to = "goToUsers()" class="dropdown-item">
                             <img src = "../assets/search.svg">
                             <span v-if="isSerbian" class = "ikonica"> Pretraži korisnike </span>
                             <span v-else class = "ikonica"> Search for users </span>
@@ -165,6 +165,15 @@ export default {
                 user: this.$store.state.authUser
             }
         }
+      },
+      goToUsers() 
+      {
+          return {
+              name: "PageBrowseUsers",
+              params: {
+                  benefitList: "noBenefit"
+              }
+          }
       }
     }
 }

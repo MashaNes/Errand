@@ -48,7 +48,7 @@ export default {
     {
         dodajKorisnika()
         {
-            this.$router.push({ name: 'PageBrowseUsers', params: {benefitList: true }})
+            this.$router.push({ name: 'PageBrowseUsers', params: {benefitList: "benefit"}})
         }
     },
     created()

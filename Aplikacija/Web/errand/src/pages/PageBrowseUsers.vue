@@ -79,7 +79,7 @@
         :user="user"
         v-for="user in usersPortion.results" 
         :key="user.id"
-        :BenefitList="benefitList"
+        :BenefitList="$route.params.benefitList == 'benefit'"
       />
     </div>
     <b-pagination 
@@ -102,12 +102,12 @@ import {between} from "vuelidate/lib/validators"
 export default {
   props:
   {
-    benefitList:
-    {
-      type: Boolean,
-      required: false,
-      default: false
-    }
+    // benefitList:
+    // {
+    //   type: Boolean,
+    //   required: false,
+    //   default: false
+    // }
   },
   components: {
     UserBox,
@@ -164,7 +164,8 @@ export default {
           services: null,
           no_rating: this.showUnrated,
           name: this.filterName,
-          not_in_benefit: this.benefitList
+          not_in_benefit: this.$route.params.benefitList == "benefit",
+          active: false
         })
         this.lastPage = this.currentPage
       }
@@ -193,7 +194,8 @@ export default {
         services: null,
         no_rating: this.showUnrated,
         name: this.filterName,
-        not_in_benefit: this.benefitList
+        not_in_benefit: this.$route.params.benefitList == "benefit",
+        active: false
       })
     },
     closeModal(){
@@ -207,24 +209,46 @@ export default {
         services: null,
         no_rating: true,
         name: "",
-        not_in_benefit: this.benefitList
+        not_in_benefit: this.$route.params.benefitList == "benefit",
+        active: false
+      })
+    },
+    onCreate() {
+        this.$store.dispatch('fillUsersPortion', {
+        endpoint: "http://localhost:8000/api/v1/filtered_users/?paginate=true",
+        sort_rating: true,
+        sort_rating_asc: true,
+        rating_limit_up: null,
+        rating_limit_down: null,
+        services: null,
+        no_rating: true,
+        name: "",
+        not_in_benefit: this.$route.params.benefitList == "benefit",
+        active: false
       })
     }
   },
   created() {
-    this.$store.dispatch('fillUsersPortion', {
-      endpoint: "http://localhost:8000/api/v1/filtered_users/?paginate=true",
-      sort_rating: true,
-      sort_rating_asc: true,
-      rating_limit_up: null,
-      rating_limit_down: null,
-      services: null,
-      no_rating: true,
-      name: "",
-      not_in_benefit: this.benefitList
-    })
+    // this.$store.dispatch('fillUsersPortion', {
+    //   endpoint: "http://localhost:8000/api/v1/filtered_users/?paginate=true",
+    //   sort_rating: true,
+    //   sort_rating_asc: true,
+    //   rating_limit_up: null,
+    //   rating_limit_down: null,
+    //   services: null,
+    //   no_rating: true,
+    //   name: "",
+    //   not_in_benefit: this.benefitList,
+    //   active: false
+    // })
+    this.onCreate()
     //ako je benefitList true ide zahtev sa filterom da se prikazu samo korisnici koji nisu beneficirani
     //ako je false ide get zahtev bez filtera
+  },
+  watch: {
+    $route() {
+      this.onCreate()
+    }
   }
 }
 </script>
