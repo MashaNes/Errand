@@ -324,7 +324,7 @@
 					}
 				],
 				"url": {
-					"raw": "127.0.0.1:8000/api/v1/users_info/5",
+					"raw": "127.0.0.1:8000/api/v1/users_info/",
 					"host": [
 						"127",
 						"0",
@@ -336,7 +336,7 @@
 						"api",
 						"v1",
 						"users_info",
-						"5"
+						""
 					]
 				}
 			},
@@ -385,13 +385,13 @@
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "Token c59da368fabda9f06c2e9f948eeb6d5437855fcc",
+						"value": "Token cfd6e5d73c5ae3403b2769b4287cc993e6569165",
 						"type": "text"
 					}
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\t\"created_by\" : 3,\n\t\"sort_rating\" : true,\n\t\"sort_rating_asc\" : false,\n\t\"rating_limit_up\" : 4.9,\n\t\"rating_limit_down\" : 3.9,\n\t\"services\" : [\n\t\t{\n\t\t\t\"id\" : 3,\n\t\t\t\"min_rating\" : 3.5,\n\t\t\t\"max_dist\" : 100\n\t\t}\n\t],\n\t\"no_rating\" : true,\n\t\"name\" : \"\",\n\t\"not_in_benefit\" : false\n}",
+					"raw": "{\n\t\"created_by\" : 3,\n\t\"sort_rating\" : true,\n\t\"sort_rating_asc\" : false,\n\t\"rating_limit_up\" : 4.9,\n\t\"rating_limit_down\" : 3.9,\n\t\"services\" : [\n\t\t{\n\t\t\t\"id\" : 1,\n\t\t\t\"min_rating\" : 3.5,\n\t\t\t\"max_dist\" : 100\n\t\t}\n\t],\n\t\"no_rating\" : true,\n\t\"name\" : \"\",\n\t\"not_in_benefit\" : false,\n\t\"active\" : true\n}",
 					"options": {
 						"raw": {
 							"language": "json"

@@ -288,15 +288,15 @@ class FilterUserViewSet(viewsets.ModelViewSet):
 
         serializer = serializers.UserSerializer(page, many=True)
 
-        _r = serializer.data
-        _r = utils.load_pictures_multiple_users(_r)
+        for _s in serializer.data:
+            _s['picture'] = utils.load_img(_s['picture'])
 
         if request.GET.get('paginate'):
-            return self.get_paginated_response(_r)
+            return self.get_paginated_response(serializer.data)
 
         custom_response = {
-            'count' : len(_r),
-            'results' : _r
+            'count' : len(serializer.data),
+            'results' : serializer.data
         }
 
         return Response(custom_response)
