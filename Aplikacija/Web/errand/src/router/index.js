@@ -181,7 +181,7 @@ const router = new Router(
                 }
             },
             {
-                path: "/users",
+                path: "/users/:benefitList",
                 name: "PageBrowseUsers",
                 component: PageBrowseUsers,
                 props: true,
@@ -233,7 +233,7 @@ const router = new Router(
                 path: "/viewRequest/:id",
                 name: "PageViewRequest",
                 component: PageViewRequest,
-                params: true,
+                props: true,
                 beforeEnter(to,from,next)
                 {
                     if(store.state.logedIn && !store.state.isAdmin)

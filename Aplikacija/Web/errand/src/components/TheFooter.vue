@@ -28,7 +28,7 @@
               <li class="stavka-navigacije" v-if="isSerbian"> Zahtevi </li>
               <li class="stavka-navigacije" v-else> Requests </li>
             </router-link>
-            <router-link :to="'/users'" >
+            <router-link :to="goToUsers()" >
               <li class="stavka-navigacije" v-if="isSerbian"> Pretraži korisnike </li>
               <li class="stavka-navigacije" v-else> Search for users </li>
             </router-link>
@@ -148,6 +148,15 @@
             user: this.$store.state.authUser
           }
         }
+      },
+      goToUsers() 
+      {
+          return {
+              name: "PageBrowseUsers",
+              params: {
+                  benefitList: "noBenefit"
+              }
+          }
       }
     }
   }
