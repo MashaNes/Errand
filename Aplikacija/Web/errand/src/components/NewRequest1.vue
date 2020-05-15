@@ -1,8 +1,8 @@
 <template>
     <div class="wrapper-step1">
         <div class="labelDiv">
-            <span v-if="isSerbian"> Naziv: </span>
-            <span v-else> Name: </span>
+            <span v-if="isSerbian"> <span class="zvezdica">*</span> Naziv: </span>
+            <span v-else> <span class="zvezdica">*</span>  Name: </span>
         </div>
         <input type="text" v-model="myName" @input="NameChanged" class="name">
         <div class="labelDiv">
@@ -11,8 +11,8 @@
         </div>
         <textarea type="text" v-model="myNote" @input="NoteChanged" class="name" />
         <div class="labelDiv">
-            <span v-if="isSerbian"> Datum i vreme: </span>
-            <span v-else> Date and time: </span>
+            <span v-if="isSerbian">  <span class="zvezdica">*</span> Datum i vreme: </span>
+            <span v-else>  <span class="zvezdica">*</span> Date and time: </span>
         </div>
         <VueCtkDateTimePicker v-model="myTime" 
                               :no-label="true" 
@@ -43,8 +43,8 @@
         <div class="numberDiv">
             <div class="rowDiv">
                 <img class = "info" src="../assets/info.svg" v-b-popover.hover.left="popoverDistanceText">
-                <span class="labelSpan" v-if="isSerbian">Maksimalno rastojanje</span>
-                <span class="labelSpan" v-else> Maximum distance</span>
+                <span class="labelSpan" v-if="isSerbian"> <span class="zvezdica">*</span> Maksimalno rastojanje</span>
+                <span class="labelSpan" v-else> <span class="zvezdica">*</span>  Maximum distance</span>
             </div>
             <div class="rowDiv">
                 <input type="number" class="distanca" v-model="MyMaxDistance" min="0.1" max="1000" step="0.1" @input="distanceChanged">
@@ -227,6 +227,11 @@ export default {
     {
         width:100px;
         margin-right:7px;
+    }
+
+    .zvezdica
+    {
+        color:red;
     }
 
     @media only screen and (max-width: 550px)

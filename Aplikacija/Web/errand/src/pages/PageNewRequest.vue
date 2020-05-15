@@ -15,6 +15,9 @@
             <NewRequest2 :address="request.address"
                          @addressChanged="addressChanged"
                          v-if="step == 2"/>
+            <NewRequest3 :tasklist="request.tasklist"
+                         @tasklistChanged="tasklistChanged"
+                         v-if="step == 3" />
             <NewRequest4 @moveOn="moveOn"
                          v-if="step == 4"/>
             <div class="buttonDiv">
@@ -30,6 +33,7 @@
 <script>
 import NewRequest1 from "@/components/NewRequest1"
 import NewRequest2 from "@/components/NewRequest2"
+import NewRequest3 from "@/components/NewRequest3"
 import NewRequest4 from "@/components/NewRequest4"
 export default {
     props:
@@ -43,6 +47,7 @@ export default {
     {
         NewRequest1,
         NewRequest2,
+        NewRequest3,
         NewRequest4
     },
     data()
@@ -80,6 +85,8 @@ export default {
             {
                 return true
             }
+            else if(this.step == 3 && this.request.tasklist.length == 0)
+                return true
             return false
         }
     },
@@ -131,6 +138,10 @@ export default {
         {
             this.request.address = addressCopy
         },
+        tasklistChanged(newTasklist)
+        {
+            this.request.tasklist = newTasklist
+        },
         moveOn(direct)
         {
             this.request.broadcast = !direct
@@ -138,7 +149,7 @@ export default {
                 this.step = 5
             else
                 this.step = 6
-        }
+        },
     },
     created()
     {
