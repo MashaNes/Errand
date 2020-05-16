@@ -79,23 +79,27 @@ export default {
         userName()
         {
             if(this.myRequest.status != "pending")
-                return this.myRequest.user.first_name + " " + this.myRequest.user.last_name
+                return this.user.first_name + " " + this.user.last_name
             else
                 return ""
         },
         userPicture()
         {
             if(this.myRequest.status != "pending")
-                return this.myRequest.user.picture;
+                return this.user.picture;
             else
                 return ""
         },
         userId() 
         {
             if(this.myRequest.status != "pending")
-                return this.myRequest.user.id
+                return this.user.id
             else
                 return ""
+        },
+        user() 
+        {
+            return this.myRequest.runner ? this.myRequest.created_by : this.myRequest.working_with
         }
     },
     methods:
@@ -112,8 +116,8 @@ export default {
             this.$router.push({
                 name: "PageViewProfile", 
                 params: {
-                    id: this.myRequest.user.id, 
-                    user: this.myRequest.user
+                    id: this.user.id, 
+                    user: this.user
                 }
             })
         },
