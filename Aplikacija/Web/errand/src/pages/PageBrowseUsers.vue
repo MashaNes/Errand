@@ -73,6 +73,11 @@
       class="pag-top"
       @input="getAnotherPortion"
     ></b-pagination>
+    <div class="activeUsers" v-if="services != null"> 
+      <input type="checkbox" v-model="active" class="cekiranje" @input="PromenaCekiranosi"/>
+      <span v-if="isSerbian"> Prikaži samo aktivne korisnike</span>
+      <span v-else> Show only active users</span>
+    </div>
     <Spinner v-if="!this.$store.state.isDataLoaded"/>
     <div class="users" v-else>
       <UserBox
@@ -80,6 +85,7 @@
         v-for="user in usersPortion.results" 
         :key="user.id"
         :BenefitList="$route.params.benefitList == 'benefit'"
+        :RequestSelect="services != null"
       />
     </div>
     <b-pagination 
@@ -108,6 +114,11 @@ export default {
     //   required: false,
     //   default: false
     // }
+    servicesList:
+    {
+      type:Array,
+      required: false
+    }
   },
   components: {
     UserBox,
@@ -126,7 +137,8 @@ export default {
       filterRatingLower: 1,
       filterRatingHigher: 5,
       showUnratedChk: true,
-      showUnrated: true
+      showUnrated: true,
+      active: false
     }
   },
   validations: {
@@ -149,6 +161,13 @@ export default {
     },
     benefitAdded(){
       return this.$store.state.userAdded
+    },
+    services()
+    {
+      if(this.servicesList == undefined)
+        return null
+      else
+        return this.servicesList
     }
   },
   methods: {
@@ -161,7 +180,7 @@ export default {
           sort_rating_asc: true,
           rating_limit_up: this.showUnrated ? null : parseInt(String(this.filterRatingHigher)),
           rating_limit_down: this.showUnrated ? null : parseInt(String(this.filterRatingLower)),
-          services: null,
+          services: this.services,
           no_rating: this.showUnrated,
           name: this.filterName,
           not_in_benefit: this.$route.params.benefitList == "benefit",
@@ -191,7 +210,7 @@ export default {
         sort_rating_asc: true,
         rating_limit_up: this.showUnrated ? null : parseInt(String(this.filterRatingHigher)),
         rating_limit_down: this.showUnrated ? null : parseInt(String(this.filterRatingLower)),
-        services: null,
+        services: this.services,
         no_rating: this.showUnrated,
         name: this.filterName,
         not_in_benefit: this.$route.params.benefitList == "benefit",
@@ -206,7 +225,7 @@ export default {
         sort_rating_asc: true,
         rating_limit_up: null,
         rating_limit_down: null,
-        services: null,
+        services: this.services,
         no_rating: true,
         name: "",
         not_in_benefit: this.$route.params.benefitList == "benefit",
@@ -220,11 +239,26 @@ export default {
         sort_rating_asc: true,
         rating_limit_up: null,
         rating_limit_down: null,
-        services: null,
+        services: this.services,
         no_rating: true,
         name: "",
         not_in_benefit: this.$route.params.benefitList == "benefit",
         active: false
+      })
+    },
+    PromenaCekiranosi()
+    {
+      this.$store.dispatch('fillUsersPortion', {
+        endpoint: "http://localhost:8000/api/v1/filtered_users/?paginate=true",
+        sort_rating: true,
+        sort_rating_asc: true,
+        rating_limit_up: null,
+        rating_limit_down: null,
+        services: this.services,
+        no_rating: true,
+        name: "",
+        not_in_benefit: this.$route.params.benefitList == "benefit",
+        active: !this.active
       })
     }
   },
@@ -386,6 +420,23 @@ export default {
   .ne-valja
   {
     background-color: rgb(255, 212, 212);
+  }
+
+  .activeUsers
+  {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    margin:5px;
+  }
+
+  .cekiranje
+  {
+    margin-left: 15px;
+    margin-right: 15px;
+    height:20px;
+    width:20px;
   }
 
   @media only screen and (max-width:650px)

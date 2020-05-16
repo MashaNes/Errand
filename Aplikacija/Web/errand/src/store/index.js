@@ -34,7 +34,9 @@ export default new Vuex.Store({
         userAdded:false,
         userAddresses: null,
         addressDeleteCount: 0,
-        addressAddCount: 0
+        addressAddCount: 0,
+        requestInCreation: null,
+        servicesRequired: []
     },
     getters:{
         getAuthUserId(state) {
@@ -623,6 +625,7 @@ export default new Vuex.Store({
                         this.state.isAdmin = false
                         this.state.userServices = null
                         this.state.services = null
+                        this.state.allServices = null
                         this.state.usersWithBenefit = null
                         Vue.cookie.delete('id');
                         Vue.cookie.delete('token');
@@ -842,6 +845,47 @@ export default new Vuex.Store({
                             console.log(data)
                             this.dispatch("fillUsersWithBenefit")
                             this.state.userAdded = true
+                        })
+                    }
+                    else
+                    {
+                        console.log("Error")
+                    }
+                });
+        },
+        createRequest({commit}, payload)
+        {
+            fetch("http://127.0.0.1:8000/api/v1/request_create/",
+            {
+                method: 'POST',
+                headers:
+                {
+                    "Content-type" : "application/json",
+                    "Authorization" : "Token " + this.state.token
+                },
+                body:  JSON.stringify(
+                {
+                    "created_by" : this.state.authUser.id,
+                    "name" : payload.name,
+                    "time" : payload.time,
+                    "picture_required" : payload.picture_required,
+                    "note" : payload.note,
+                    "max_dist" : payload.max_dist,
+                    "min_rating" : payload.min_rating,
+                    "destination" : payload.address,
+                    "broadcast" : payload.broadcast,
+                    "direct_user" : payload.direct_user,
+                    "tasklist" : payload.tasklist
+                })
+            }).then( p => 
+                {
+                    if(p.ok)
+                    {
+                        p.json().then(data =>
+                        {
+                            this.state.userAdded = true
+                            console.log(data)
+                            //this.dispatch("pribavljanje skupa zahteva (makar ove prve "strane")")
                         })
                     }
                     else

@@ -6,6 +6,7 @@
         </div>
         <div class="mapDiv">
             Map goes here
+            <!-- Kad god se menja adresa pozovi addressChanged-->
         </div>
     </div>
 </template>

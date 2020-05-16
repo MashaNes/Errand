@@ -118,6 +118,12 @@ export default {
     achievements: {
       type: Array,
       required: false
+    },
+    RequestSelect:
+    {
+      type: Boolean,
+      required: false,
+      default: false
     }
   },
   data() {
@@ -164,7 +170,8 @@ export default {
         name: "PageViewProfile", 
         params: {
           id: this.user.id,
-          user: this.user
+          user: this.user,
+          RequestSelect: this.RequestSelect
         }
       }
     },
@@ -173,7 +180,8 @@ export default {
         name: "PageAchievements",
         params: {
           id: this.user.id,
-          user: this.user
+          user: this.user,
+          RequestSelect: this.RequestSelect
         }
       }
     },
@@ -182,7 +190,8 @@ export default {
         name: "PageRatings",
         params: {
           id: this.user.id,
-          user: this.user
+          user: this.user,
+          RequestSelect: this.RequestSelect
         }
       }
     }

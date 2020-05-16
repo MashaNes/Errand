@@ -5,6 +5,7 @@
       v-if="componentToShow == 'Info'"
       :user="computedUser" 
       :isMyProfile="isMyProfile"
+      :RequestSelect="RequestSelect"
       :addresses="addresses"
       @editProfile="componentToShow = 'Edit'"
       @rateUser="componentToShow = 'Rate'"
@@ -35,6 +36,12 @@ export default {
   props: {
     user: {
       required: false
+    },
+    RequestSelect:
+    {
+      type: Boolean,
+      required: false,
+      default: false
     }
   },
   components: {
@@ -104,9 +111,6 @@ export default {
   },
   created() {
     this.changedRoute()
-
-    // ako nije moj profil proveri da li je popunjena moja beneficirana lista, ako nije posalji get da se popuni
-    //(onda se dodaje jedan computed isBenefited koji je true ako je ovaj user u listi beneficiranih, ako nije onda je false i na osnovu njega je dugme za dodavanje disabled ili ne)
   },
   watch: {
     $route() {

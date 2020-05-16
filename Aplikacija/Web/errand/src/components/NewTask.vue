@@ -49,7 +49,9 @@
                 </div>
             </div>
             <div class="mapDiv">
-                Map goes here
+                Map goes here <!-- skloniti tekst -->
+                <!-- adresa je v-model="myTask.address" vidi oko pravljenja kopije jer treba da moze da se odbaci izmena pri edit-u -->
+                <!-- u sustini treba samo da znaci ta myTask.address ne bude ista po referenci kao  task.address i da ona uvek sadrzi one azurne vrednosti-->
             </div>
         </div>
         <div class="button-div-newTask">
@@ -143,7 +145,7 @@ export default {
             {
                 var element = {id: this.stringIdGenerator, item : this.inputElement}
                 this.myTask.checklist.push(element)
-                this.stringIdGenerator = this.stringIdGenerator - 1
+                this.stringIdGenerator = this.stringIdGenerator + 1
                 this.inputElement = ""
             }
         },
@@ -170,6 +172,16 @@ export default {
         this.task.checklist.forEach(element =>
         {
             this.myTask.checklist.push(element)
+        })
+
+        var maxId = 0
+        this.stringIdGenerator = maxId + 1
+        this.task.checklist.forEach((element, index) =>
+        {
+            if(element.id > maxId)
+                maxId = element.id
+            if(index == this.task.checklist.length - 1)
+                this.stringIdGenerator = maxId + 1
         })
     }
 }
@@ -327,8 +339,8 @@ export default {
     .mapDiv
     {
         width: 100%;
-        height:75vh;
-        border: 1px solid red;
+        height:40vh; /* lupljena visina */
+        border: 1px solid red; /*skloniti border */
     }
 
     .levo-dugme

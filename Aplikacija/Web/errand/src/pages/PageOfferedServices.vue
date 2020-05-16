@@ -25,6 +25,12 @@ export default {
   props: {
     user: {
       required: false
+    },
+    RequestSelect:
+    {
+      type: Boolean,
+      required: false,
+      default: false
     }
   },
   components: {
@@ -83,7 +89,8 @@ export default {
         name: "PageViewProfile",
         params: {
           id: this.computedUser.id,
-          user: this.computedUser
+          user: this.computedUser,
+          RequestSelect:this.RequestSelect
         }
       }
     }

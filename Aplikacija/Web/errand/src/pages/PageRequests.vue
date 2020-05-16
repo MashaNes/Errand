@@ -29,15 +29,21 @@
         <div class="request-div">
             <RequestBox v-for="request in requests" :key="request.id" :identifikator="request.id"/>
         </div>
+        <ModalSuccess v-if="showModal"
+                      :textS="'Zahtev uspešno kreiran.'"
+                      :textE="'Request successfully created.'"
+                      @close="closeModal" />
     </div>
 </template>
 
 <script>
+    import ModalSuccess from "@/components/ModalSuccess"
     import RequestBox from "@/components/RequestBox"
     export default {
         components:
         {
-            RequestBox
+            RequestBox,
+            ModalSuccess
         },
         computed:
         {
@@ -74,7 +80,8 @@
         data()
         {
             return{
-                tab:"Requested"
+                tab:"Requested",
+                showModal: this.$store.state.userAdded
             }
         },
         methods:{
@@ -91,6 +98,10 @@
             {
                 this.tab = "Finished"
                 //ako nisu popunjeni get za zavrsene zahteve (morace da budu posebna stavka u store-i, a mozda i ovde)
+            },
+            closeModal()
+            {
+                this.$store.state.userAdded = false
             }
         },
         created()

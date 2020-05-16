@@ -4,6 +4,7 @@
     :tab="'Achievements'" 
     :user="computedUser"
     :achievements="achievements"
+    :RequestSelect="RequestSelect"
     v-else
   />
     <!-- :isMyProfile="isMyProfile" -->
@@ -19,6 +20,12 @@ export default {
   props: {
     user: {
       required: false
+    },
+    RequestSelect:
+    {
+      type: Boolean,
+      required: false,
+      default: false
     }
   },
   data() {

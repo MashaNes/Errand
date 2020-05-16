@@ -1,5 +1,9 @@
 <template>
     <div class="wrapper-step3">
+        <div class="labelDiv" v-if="!isAdding && !isEmpty">
+            <span v-if="isSerbian"> Zadaci: </span>
+            <span v-else> Tasks: </span>
+        </div>
         <NewTask v-if="isEmpty || isAdding" :task="taskToShow" 
                  :showCancelButton="isAdding"
                  @sacuvaj="sacuvajTask"
@@ -94,7 +98,7 @@ export default {
             if(task.id == 0)
             {
                 task.id = this.idGenerator
-                this.idGenerator = this.idGenerator - 1
+                this.idGenerator = this.idGenerator + 1
                 this.myTaskList.push(task)
             }
             else
@@ -155,6 +159,18 @@ export default {
             this.taskToShow = resultTask
             this.isAdding = true
         }
+    },
+    created()
+    {
+        var maxId = 0
+        this.idGenerator = maxId + 1
+        this.tasklist.forEach((element,index) =>
+        {
+            if(element.id > maxId)
+                maxId = element.id
+            if(index == this.tasklist.length - 1)
+                this.idGenerator = maxId + 1
+        })
     }
 }
 </script>
@@ -176,5 +192,17 @@ export default {
         justify-content: center;
         align-items: center;
         padding: 5px;
+    }
+
+    .labelDiv
+    {
+        width:100%;
+        padding-left:10px;
+        display:flex;
+        flex-direction: row;
+        justify-content: flex-start;
+        align-items:center;
+        font-size: 18px;
+        font-weight: 600;
     }
 </style>
