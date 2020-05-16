@@ -18,8 +18,10 @@
             <NewRequest3 :tasklist="request.tasklist"
                          @tasklistChanged="tasklistChanged"
                          v-if="step == 3" />
-            <NewRequest4 @moveOn="moveOn"
+            <NewRequest4 @broadcastChanged="broadcastChanged"
                          v-if="step == 4"/>
+            <NewRequest5 @directChanged="directChanged"
+                         v-if="step == 5"/>
             <div class="buttonDiv">
                 <button type="button" class="btn btn-secondary" v-if="isSerbian && step < 5" :disabled="step == 1" @click="step = step - 1">Nazad</button>
                 <button type="button" class="btn btn-secondary" v-if="!isSerbian && step < 5" :disabled="step == 1" @click="step = step - 1">Back</button>
@@ -35,6 +37,7 @@ import NewRequest1 from "@/components/NewRequest1"
 import NewRequest2 from "@/components/NewRequest2"
 import NewRequest3 from "@/components/NewRequest3"
 import NewRequest4 from "@/components/NewRequest4"
+import NewRequest5 from "@/components/NewRequest5"
 export default {
     props:
     {
@@ -48,7 +51,8 @@ export default {
         NewRequest1,
         NewRequest2,
         NewRequest3,
-        NewRequest4
+        NewRequest4,
+        NewRequest5
     },
     data()
     {
@@ -68,9 +72,9 @@ export default {
                     longitude: null,
                     latitude: null,
                 },
-                tasklist:[]
-            },
-            userDirect: null
+                tasklist:[],
+                direct_user: null
+            }
         }
     },
     computed:
@@ -142,19 +146,27 @@ export default {
         {
             this.request.tasklist = newTasklist
         },
-        moveOn(direct)
+        broadcastChanged(broadcastCopy)
         {
-            this.request.broadcast = !direct
-            if(direct)
+            this.request.broadcast = broadcastCopy
+            if(broadcastCopy)
                 this.step = 5
             else
                 this.step = 6
         },
+        directChanged(directCopy)
+        {
+            if(directCopy)
+                this.step = 6
+            else
+                this.step = 7
+        }
     },
     created()
     {
         if(this.requestProp != undefined)
             this.request = this.requestProp
+        this.request.direct_user = null
     }
 }
 </script>
