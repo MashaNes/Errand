@@ -49,6 +49,12 @@
                 </tr>
             </tbody>
         </table>
+        <div class="mapDiv">
+            map goes here.
+            Trebalo bi da sadrzi po pin za adrese iz svakog taska i da odgovarajuci pin nosi redni broj odgovarajuceg taska u tabeli (redni broj u tabeli odgovara redosledu u kome se nalaze u taklistu)
+            I pin za destination adresu iz zahteva koji bi trebalo da nosi oznaku F (finalna, final).
+            (Moozda, tj. ako to moze to da se izvede, da se na hover ili klik na pin prikaze popup/popover sa tekstulanim ispisom selektovane adrese)
+        </div>
     </div>
 </template>
 
@@ -141,5 +147,12 @@ export default {
     {
         width:40px;
         height:40px;
+    }
+
+    .mapDiv
+    {
+        width: 100%;
+        height:40vh; /* lupljena visina */
+        border: 1px solid red; /*skloniti border */
     }
 </style>

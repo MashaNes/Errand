@@ -29,8 +29,32 @@
                 <button type="button" class="btn btn-secondary" v-if="!isSerbian && step < 5" :disabled="step == 1" @click="step = step - 1">Back</button>
                 <button type="button" class="btn btn-primary" v-if="isSerbian && step < 4" :disabled="disabledNextButton" @click="step = step + 1">Dalje</button>
                 <button type="button" class="btn btn-primary"  v-if="!isSerbian && step < 4" :disabled="disabledNextButton" @click="step = step + 1">Next</button>
+                
+                <button type="button" class="btn btn-danger" v-if="isSerbian && step == 7" @click="odustaniOdKreiranja">
+                    <img src="../assets/failed.svg" class="slika">
+                    Odustani
+                </button>
+                <button type="button" class="btn btn-danger"  v-if="!isSerbian && step == 7" @click="odustaniOdKreiranja">
+                    <img src="../assets/failed.svg" class="slika">
+                    Cancel
+                </button>
+                <button type="button" class="btn btn-success" v-if="isSerbian && step == 7" @click="kreirajZahtev">
+                    <img src="../assets/finished.svg" class="slika">
+                    Kreiraj zahtev
+                </button>
+                <button type="button" class="btn btn-success" v-if="!isSerbian && step == 7" @click="kreirajZahtev">
+                    <img src="../assets/finished.svg" class="slika">
+                    Create request
+                </button>
             </div>
         </div>
+        <ModalAreYouSure v-if="showModal==true"
+                         :naslovS="naslovS"
+                         :naslovE="naslovE"
+                         :tekstS="tekstS"
+                         :tekstE="tekstE"
+                         @yes="yes"
+                         @close="showModal = false"/>
     </div>
 </template>
 
@@ -41,12 +65,17 @@ import NewRequest3 from "@/components/NewRequest3"
 import NewRequest4 from "@/components/NewRequest4"
 import NewRequest5 from "@/components/NewRequest5"
 import NewRequest7 from "@/components/NewRequest7"
+import ModalAreYouSure from "@/components/ModalAreYouSure"
 export default {
     props:
     {
         requestProp:{
             type: Object,
             required: false
+        },
+        stepProp:{
+            type: Number,
+            required:false
         }
     },
     components:
@@ -56,7 +85,8 @@ export default {
         NewRequest3,
         NewRequest4,
         NewRequest5,
-        NewRequest7
+        NewRequest7,
+        ModalAreYouSure
     },
     data()
     {
@@ -78,7 +108,9 @@ export default {
                 },
                 tasklist:[],
                 direct_user: null
-            }
+            },
+            showModal: false,
+            kreiraj: null
         }
     },
     computed:
@@ -96,6 +128,34 @@ export default {
             else if(this.step == 3 && this.request.tasklist.length == 0)
                 return true
             return false
+        },
+        naslovS()
+        {
+            if(this.kreiraj)
+                return "Kreiranje zahteva"
+            else
+                return "Odustajanje od kreiranja zahteva"
+        },
+        naslovE()
+        {
+            if(this.kreiraj)
+                return "Create the request"
+            else
+                return "Cancel request creation process"
+        },
+        tekstS()
+        {
+            if(this.kreiraj)
+                return "Da li ste sigurni da želite da kreirate opisani zahtev?"
+            else
+                return "Da li ste sigurni da želite da odustanete od kreiranja? Svi do sada uneti podaci biće nepovratno odbačeni."
+        },
+        tekstE()
+        {
+            if(this.kreiraj)
+                return "Are you sure you want to create the described request"
+            else
+                return "Are you sure you want to cancel ti request creation process? All data you have entered will be lost."
         }
     },
     methods:
@@ -156,21 +216,61 @@ export default {
             if(broadcastCopy)
                 this.step = 5
             else
-                this.step = 6
+                //this.step = 6
+                this.directUserSelect()
         },
         directChanged(directCopy)
         {
             if(directCopy)
-                this.step = 6
+                //this.step = 6
+                this.directUserSelect()
             else
+            {
                 this.step = 7
+                this.request.direct_user = null
+            }
+        },
+        kreirajZahtev()
+        {
+            this.kreiraj = true
+            this.showModal = true
+        },
+        odustaniOdKreiranja()
+        {
+            this.kreiraj = false
+            this.showModal = true
+        },
+        yes()
+        {
+            if(!this.kreiraj)
+                this.$router.push('/requests')
+            //else
+            //kreiraj zahtev
+        },
+        directUserSelect()
+        {
+            this.$store.servicesRequired = []
+            this.request.tasklist.forEach(element =>
+            {
+                this.$store.servicesRequired.push(
+                    {
+                        id: element.service_type.id,
+                        min_rating: parseFloat(this.request.min_rating),
+                        max_dist: parseFloat(this.request.max_dist)
+                    }
+                )
+            })
+
+            this.$store.state.requestInCreation = this.request
+            this.$router.push({ name: 'PageBrowseUsers', params: {benefitList: "noBenefit", servicesList:this.$store.servicesRequired}})
         }
     },
     created()
     {
         if(this.requestProp != undefined)
             this.request = this.requestProp
-        this.request.direct_user = null
+        if(this.stepProp != undefined)
+            this.step = this.stepProp
     }
 }
 </script>
@@ -210,6 +310,13 @@ export default {
         align-items: center;
         width:100%;
         margin-top:15px;
+    }
+
+    .slika
+    {
+        width: 20px;
+        height:20px;
+        margin-right:7px;
     }
 
      @media only screen and (max-width: 950px)

@@ -6,6 +6,7 @@
         :tab="'Ratings'" 
         :user="computedUser"
         :ratings="ratings"
+        :RequestSelect="RequestSelect"
       />
     </div>
   </div>
@@ -19,6 +20,12 @@ export default {
   props: {
     user: {
       required: false
+    },
+    RequestSelect:
+    {
+      type: Boolean,
+      required: false,
+      default: false
     }
   },
   data() {

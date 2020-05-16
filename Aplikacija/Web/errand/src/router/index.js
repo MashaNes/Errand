@@ -221,6 +221,7 @@ const router = new Router(
                 path: "/offeredServices/:id",
                 name: "PageOfferedServices",
                 component: PageOfferedServices,
+                props: true,
                 beforeEnter(to,from,next)
                 {
                     if(store.state.logedIn && !store.state.isAdmin)

@@ -12,6 +12,10 @@
             <button type="button" class="btn btn-success dugme" v-if="BenefitList && isSerbian" @click="showModal = true"> Dodaj</button> 
             <button type="button" class="btn btn-success dugme" v-if="BenefitList && !isSerbian" @click="showModal = true"> Add </button>
           </p>
+          <p class = "dodaj-dugme" v-if="RequestSelect"> 
+            <button type="button" class="btn btn-success dugme" v-if="isSerbian" @click="showAreYouSure = true"> Izaberi</button> 
+            <button type="button" class="btn btn-success dugme" v-else @click="showAreYouSure = true"> Choose </button>
+          </p>
         </div>
           
         <div class="info">
@@ -54,11 +58,19 @@
         </div>
       </b-card-body>
       <ModalAddBenefit v-if="showModal" @close="showModal = false" :user="user"/>
+      <ModalAreYouSure v-if="showAreYouSure==true"
+                         :naslovS="'Odabir korisnika'"
+                         :naslovE="'Choosing a user'"
+                         :tekstS="'Da li ste sigurni da želite da odabere ovog korisnika?'"
+                         :tekstE="'Are you sure you want to choose this user?'"
+                         @yes="yes"
+                         @close="showAreYouSure = false"/>
     </b-card>
 </template>
 
 <script>
 import ModalAddBenefit from "@/components/ModalAddBenefit"
+import ModalAreYouSure from "@/components/ModalAreYouSure"
 export default {
     props: {
       user: {
@@ -70,12 +82,18 @@ export default {
         type: Boolean,
         required: false,
         default: false
+      },
+      RequestSelect:
+      {
+        type: Boolean,
+        required: true
       }
     },
     data()
     {
       return{
-        showModal:false
+        showModal:false,
+        showAreYouSure: false
       }
     },
     computed: {
@@ -93,12 +111,18 @@ export default {
     methods: {
       goToProfile() {
         //prepraviti da se stranici kao prop prosledi user
-        this.$router.push({name: "PageViewProfile", params: {id: this.user.id, user: this.user}})
+        this.$router.push({name: "PageViewProfile", params: {id: this.user.id, user: this.user, RequestSelect:this.RequestSelect}})
+      },
+      yes()
+      {
+        this.$store.state.requestInCreation.direct_user = this.user
+        this.$router.push({ name: 'PageNewRequest', params: {requestProp: this.$store.state.requestInCreation, stepProp:7}})
       }
     },
     components:
     {
-      ModalAddBenefit
+      ModalAddBenefit,
+      ModalAreYouSure
     }
 }
 </script>

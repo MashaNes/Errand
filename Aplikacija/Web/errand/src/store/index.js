@@ -34,7 +34,9 @@ export default new Vuex.Store({
         userAdded:false,
         userAddresses: null,
         addressDeleteCount: 0,
-        addressAddCount: 0
+        addressAddCount: 0,
+        requestInCreation: null,
+        servicesRequired: []
     },
     getters:{
         getAuthUserId(state) {
@@ -623,6 +625,7 @@ export default new Vuex.Store({
                         this.state.isAdmin = false
                         this.state.userServices = null
                         this.state.services = null
+                        this.state.allServices = null
                         this.state.usersWithBenefit = null
                         Vue.cookie.delete('id');
                         Vue.cookie.delete('token');

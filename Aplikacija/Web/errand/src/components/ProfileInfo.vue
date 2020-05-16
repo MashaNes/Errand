@@ -24,11 +24,18 @@
           <b-button
             size="lg"
             class="services button is-primary"
-            :to="'/offeredServices/' + user.id"
+            @click="goToOfferedServices"
           >
             <span v-if="isSerbian"> Lista ponuđenih usluga </span>
             <span v-else> List of offered services </span>
           </b-button>
+        </div>
+        <div class="nav-buttons" v-if="RequestSelect">
+          <button type="button" class="btn btn-info dugmeRequest" @click="nazadNaPretragu">
+            <img class="slika-dugme" src="../assets/back.png">
+            <span v-if="isSerbian"> Nazad na izbor korisnika </span>
+            <span v-else> Back to choosing a user </span>
+          </button>
         </div>
       </div>
       <div class="personal-info">
@@ -168,6 +175,11 @@ export default {
     },
     addresses: {
       required: false
+    },
+    RequestSelect:
+    {
+      type: Boolean,
+      required: true
     }
   },
   components:
@@ -258,12 +270,27 @@ export default {
         name: "PageAchievements",
         params: {
           id: this.user.id,
-          user: this.user
+          user: this.user,
+          RequestSelect: this.RequestSelect
+        }
+      })
+    },
+    goToOfferedServices()
+    {
+      this.$router.push({
+        name: "PageOfferedServices",
+        params: {
+          id: this.user.id,
+          RequestSelect: this.RequestSelect
         }
       })
     },
     closeModal(){
       this.$store.state.userAdded = false  
+    },
+    nazadNaPretragu()
+    {
+      this.$router.push({ name: 'PageBrowseUsers', params: {benefitList: "noBenefit", servicesList:this.$store.servicesRequired}})
     }
   },
   created()
@@ -417,6 +444,11 @@ export default {
     width: 22px;
     height: 22px;
     margin-right: 5px;
+  }
+
+  .dugmeRequest
+  {
+    margin-top:25px;
   }
 
   @media only screen and (max-width: 750px)
