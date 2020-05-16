@@ -244,8 +244,26 @@ export default {
         {
             if(!this.kreiraj)
                 this.$router.push('/requests')
-            //else
-            //kreiraj zahtev
+            else
+            {
+                this.request.tasklist.forEach((element,index) =>
+                {
+                    element.service_type = element.service_type.id
+                    var pom = 
+                    {
+                        name: element.name,
+                        service_type: element.service_type,
+                        description: element.description,
+                        checklist: element.checklist,
+                        picture_required: element.picture_required,
+                        adress: element.address
+                    }
+                    this.request.tasklist.splice(index,1,pom)
+                })
+                this.request.direct_user = this.request.direct_user.id
+                this.$store.dispatch("createRequest", this.request)
+                this.$router.push('/requests')
+            }
         },
         directUserSelect()
         {
