@@ -5,6 +5,7 @@ from rest_framework.response import Response
 
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse
+from django.db import transaction
 
 from . import models
 from . import serializers
@@ -88,6 +89,7 @@ class LogIn(ObtainAuthToken):
 # GET get_cookie/{id}
 class GetCookieViewSet(viewsets.ModelViewSet):
     queryset = models.User.objects.all()
+
     def retrieve(self, request, pk):
         user = get_object_or_404(self.queryset, pk=pk)
         _s = serializers.UserSerializer(user)
@@ -178,7 +180,7 @@ class UserBenefitUpdate(generics.UpdateAPIView):
         user.benefit_discount = request.data['benefit_discount']
         user.benefit_requirement = request.data['benefit_requirement']
         user.save()
-        
+
         return Response({'detail' : 'success'})
 
 # GET users_info/{id}
@@ -186,6 +188,7 @@ class UserViewSet(viewsets.ModelViewSet):
     queryset = models.User.objects.all()
 
     def list(self, request):
+        self.queryset = models.User.objects.all()
         new_q = []
         for _q in self.queryset:
             if not _q.is_admin:
@@ -226,6 +229,7 @@ class FullUserViewSet(viewsets.ModelViewSet):
     queryset = models.FullUser.objects.all()
 
     def list(self, request):
+        self.queryset = models.FullUser.objects.all()
         new_q = []
         for _q in self.queryset:
             if not _q.user.is_admin:
@@ -268,6 +272,7 @@ class UserInfoFilteredViewSet(viewsets.ModelViewSet):
     queryset = models.FullUser.objects.all()
 
     def create(self, request):
+        self.queryset = models.FullUser.objects.all()
         fulluser = get_object_or_404(self.queryset, pk=request.data['created_by'])
         serializer = serializers.FullUserSerializer(fulluser)
         response = utils.filter_user_info(serializer.data, request.data)
@@ -277,8 +282,9 @@ class UserInfoFilteredViewSet(viewsets.ModelViewSet):
 # POST filtered_users/
 class FilterUserViewSet(viewsets.ModelViewSet):
     queryset = models.FullUser.objects.all()
-    def create(self, request):
 
+    def create(self, request):
+        self.queryset = models.FullUser.objects.all()
         self.queryset = utils.filter_user(self.queryset, request.data)
 
         if request.GET.get('paginate'):
@@ -673,6 +679,7 @@ class RequestViewSet(viewsets.ModelViewSet):
     queryset = models.Request.objects.all()
 
     def list(self, request):
+        self.queryset = models.Request.objects.all()
         if request.GET.get('paginate'):
             page = self.paginate_queryset(self.queryset)
         else:
@@ -704,6 +711,7 @@ class FullRequestViewSet(viewsets.ModelViewSet):
     queryset = models.FullRequest.objects.all()
 
     def list(self, request):
+        self.queryset = models.FullRequest.objects.all()
         if request.GET.get('paginate'):
             page = self.paginate_queryset(self.queryset)
         else:
@@ -735,6 +743,7 @@ class RequestInfoFilteredViewSet(viewsets.ModelViewSet):
     queryset = models.FullRequest.objects.all()
 
     def create(self, request):
+        self.queryset = models.FullRequest.objects.all()
         fullrequest = get_object_or_404(self.queryset, pk=request.data['request'])
         serializer = serializers.FullRequestSerializer(fullrequest)
         response = utils.filter_request_info(serializer.data, request.data)
@@ -746,6 +755,7 @@ class FilterRequestViewSet(viewsets.ModelViewSet):
     queryset = models.FullRequest.objects.all()
 
     def create(self, request):
+        self.queryset = models.FullRequest.objects.all()
         self.queryset = utils.filter_requests(self.queryset, request.data)
 
         if request.GET.get('paginate'):
@@ -834,6 +844,7 @@ class AchievementViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.AchievementSerializer
 
     def list(self, request):
+        self.queryset = models.Achievement.objects.all()
         if request.GET.get('paginate'):
             page = self.paginate_queryset(self.queryset)
         else:
@@ -866,6 +877,7 @@ class ServiceViewSet(viewsets.ModelViewSet):
     queryset = models.Service.objects.all().order_by('-id')
 
     def list(self, request):
+        self.queryset = models.Service.objects.all().order_by('-id')
         if request.GET.get('paginate'):
             page = self.paginate_queryset(self.queryset)
         else:

@@ -142,7 +142,7 @@ def filter_user(queryset, data):
                     found = True
                     break
             to_add = not found
-        
+
         if data['active']:
             if _q.user.status == 0:
                 to_add = False
