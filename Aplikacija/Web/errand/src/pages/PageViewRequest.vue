@@ -25,8 +25,9 @@
               class="notification-span" 
               v-text="isSerbian ? 'Ponude' : 'Offers'"
             ></strong>
+            <b-badge variant="danger" class="notification-badge" v-if="computedRequest.status == 'pending' && computedRequest.created_by == null">1</b-badge>
           </b-button>
-          <b-badge variant="danger" class="notification-badge" v-if="computedRequest.status == 'pending' && computedRequest.created_by == null">1</b-badge>
+          
           
           <b-button 
             variant="secondary"
@@ -37,29 +38,42 @@
               class="notification-span" 
               v-text="isSerbian ? 'Zahtev za izmenom' : 'Edit request'"
             ></strong>
+            <b-badge variant="danger" class="notification-badge" v-if="computedRequest.status == 'running' && computedRequest.created_by == null">!</b-badge>
           </b-button>
-          <b-badge variant="danger" class="notification-badge" v-if="computedRequest.status == 'running' && computedRequest.created_by == null">!</b-badge>
+         
         </div>
       </b-card-title>
       <b-card-text class="request-note">
         <b-card-title>
             <span style="margin-right:5px;" v-text="isSerbian ? 'Napomena' : 'Note'"></span>
         </b-card-title>
-        <b-card-text class="inner-text">
+        <b-card-text class="inner-text" v-if="computedRequest.note">
           {{computedRequest.note}}
+        </b-card-text>
+        <b-card-text 
+          class="inner-text" 
+          v-else 
+          v-text="isSerbian ? 'Nema napomena za ovaj zahtev' : 'There are no notes about this request'"
+        >
         </b-card-text>
       </b-card-text>
 
-      <div v-if="computedRequest.status != 'pending' && computedRequest.created_by == null" class="offer">
+      <div v-if="computedRequest.status != 'pending' && otherUser != null" class="offer">
         <b-card-title>
           <div class="offer-title">
             <span 
               v-text="(isSerbian ? 'Prihvaćena ponuda od ' : 'Accepted offer from ') + fullUserName"
               style="margin-right: 5px"
+              v-if="request.created_by == null || $store.state.authUser.id == request.created_by"
+            ></span>
+            <span 
+              v-text="(isSerbian ? 'Zahtev kreirao/la ' : 'Request created by ') + fullUserName"
+              style="margin-right: 5px"
+              v-if="request.working_with == null || $store.state.authUser.id == request.working_with"
             ></span>
             <div class="media-center">
               <p class="image">
-                <img class="rounded-image" :src="computedRequest.user.picture">
+                <img class="rounded-image" :src="otherUser.picture">
               </p>
             </div>
           </div>
@@ -70,14 +84,14 @@
         </div>      
       </div>
 
-      <b-card-text>
+      <b-card-text v-if="hasAddresses">
         <b-button class="button is-primary" @click="openMap">
           <strong v-if="!isMapOpened" v-text="isSerbian ? 'Pogledajte mapu zadataka' : 'See task-list map'"></strong>
           <strong v-if="isMapOpened" v-text="isSerbian ? 'Zatvori mapu zadataka' : 'Close task-list map'"></strong>
         </b-button>
       </b-card-text>
 
-      <b-card-text style="margin-top: 20px;" :class="isMapOpened ? 'visible' : 'invisible'">
+      <b-card-text style="margin-top: 20px;" v-if="hasAddresses" :class="isMapOpened ? 'visible' : 'invisible'">
         <Map />
       </b-card-text>
 
@@ -87,25 +101,32 @@
           v-b-toggle="'collapse' + ind" 
           @click="taskOpened[ind].value = !taskOpened[ind].value"
         >
-          <span style="margin-right:5px;" v-text=task.name ></span>
+          <span style="margin-right:5px; max-width:90%;" v-text=task.name ></span>
           <img v-if="!taskOpened[ind].value" src="@/assets/down-chevron.svg" height="15" width="15">
           <img v-else src="@/assets/up-chevron.svg" height="15" width="15">
 
         </b-card-title>
         <b-collapse :id="'collapse' + ind">
           <div style="padding:15px">
-            <div v-if="task.address">
-              <span v-text="isSerbian ? 'Adresa' : 'Address'"></span>
+            <div v-if="task.address" style="margin-bottom: 20px;">
+              <span v-text="isSerbian ? 'Adresa' : 'Address'" class="inner-text-title"></span>
               <b-card-text class="inner-text">
                 <span>{{task.address.name}}</span>
                 <span v-text="isSerbian ? 'Obiđena: ' + (task.address.arrived ? 'da' : 'ne') : 'Arrived: ' + (task.address.arrived ? 'yes' : 'no')"></span>
               </b-card-text>
-              
             </div>
-            <span v-text="isSerbian ? 'Opis':'Description'"></span>
-            <b-card-text class="inner-text">
+
+            <span v-text="isSerbian ? 'Opis':'Description'" class="inner-text-title"></span>
+            <b-card-text class="inner-text" style="margin-bottom: 20px;">
               {{task.description}}
             </b-card-text>
+
+            <div v-if="task.checklist && task.checklist.length" style="margin-bottom: 20px;">
+              <span v-text="isSerbian ? 'Spisak' : 'Checklist'" class="inner-text-title"></span>
+              <b-card-text class="inner-text">
+                <span v-for="(item, ind) in task.checklist" :key="item.id" class="chklist-item">{{ind+1}}. {{item.check_list}}</span>
+              </b-card-text>
+            </div>
           </div>
         </b-collapse>
       </b-card-text>
@@ -157,7 +178,8 @@ export default {
         }
       ],
       computedRequest: null,
-      isMapOpened: false
+      isMapOpened: false,
+      hasAddresses: false
     }
   },
   computed: {
@@ -168,7 +190,10 @@ export default {
       return this.taskOpened[ind]
     },
     fullUserName() {
-      return this.computedRequest.user.first_name + " " + this.computedRequest.user.last_name
+      return this.otherUser.first_name + " " + this.otherUser.last_name
+    },
+    otherUser() {
+      return this.computedRequest.runner ? this.computedRequest.created_by : this.computedRequest.working_with
     }
   },
   methods: {
@@ -181,27 +206,31 @@ export default {
         this.computedRequest = this.$store.state.requests[routeId]
       }
       else this.computedRequest = this.request
-      for(let i=0; i<this.computedRequest.tasklist.length; i++) {
-        this.taskOpened.push({
-          value: false
-        })
-      }
-      const markerPositions = [];
-      this.computedRequest.tasklist.forEach((task, ind) => {
-        if(task.address)
-        {
-          const newPosition = {
-            pos: {
-              lat: task.address.latitude,
-              lng: task.address.longitude
-            },
-            lab: String(ind + 1),
-            info: task.description
-          }
-          markerPositions.push(newPosition)
+      if(this.computedRequest.tasklist)
+      {
+        for(let i=0; i<this.computedRequest.tasklist.length; i++) {
+          this.taskOpened.push({
+            value: false
+          })
         }
-      })
-      this.$store.dispatch('setMarkerPositions', markerPositions)
+        const markerPositions = [];
+        this.computedRequest.tasklist.forEach((task, ind) => {
+          if(task.address)
+          {
+            this.hasAddresses = true
+            const newPosition = {
+              pos: {
+                lat: task.address.latitude,
+                lng: task.address.longitude
+              },
+              lab: String(ind + 1),
+              info: task.description
+            }
+            markerPositions.push(newPosition)
+          }
+        })
+        this.$store.dispatch('setMarkerPositions', markerPositions)
+      }
     },
     openMap() {
       this.isMapOpened = !this.isMapOpened
@@ -293,8 +322,9 @@ export default {
 
   .notification-badge {
     font-size: 85%;
-    margin-left: -12px;
-    margin-bottom: 35px;
+    position: relative;
+    top: -15px;
+    left: 20px;
   }
 
   .request-note {
@@ -304,12 +334,18 @@ export default {
     margin-bottom:20px;
   }
 
+  .inner-text-title {
+    font-size: 18px;
+    font-weight: 600;
+  }
+
   .inner-text {
-    border: 1px solid lightgray;
-    font-size:18px;
+    border: 1px solid rgb(139, 136, 136);
+    font-size:16px;
     padding: 10px;
     display: flex;
     flex-direction: column;
+    background-color: rgb(250, 210, 125);
   }
 
   .offer {
@@ -343,6 +379,12 @@ export default {
 
   .button {
     font-size: 20px;
+    background-color:  #6c757d !important;
+    border-color: #6c757d !important;
+  }
+
+  .btn {
+    display: flex;
   }
 
   .task-div {
@@ -355,23 +397,25 @@ export default {
   .open-task-div {
     font-size:25px;
     margin-bottom: 0px;
-    color: white;
-    background-color: grey;
+    color: rgb(71, 71, 71);
+    background-color: rgb(255, 209, 109);
     padding:10px;
     border-radius:4px;
     border: 1px solid grey;
+    flex-wrap: nowrap;
   }
 
   .open-task-div:hover {
     cursor: pointer;
+    flex-wrap: nowrap;
   }
 
   .open-task-bottom-border {
     border-bottom: 1px solid black;
     font-size:25px;
     margin-bottom: 0px;
-    color: white;
-    background-color: grey;
+    color: rgb(71, 71, 71);
+    background-color: rgb(255, 209, 109);
     padding:10px;
     border-radius:4px;
     border:1px solid grey;
@@ -383,6 +427,13 @@ export default {
 
   .task-desc {
     margin-top: 20px;
+  }
+
+  .chklist-item {
+    margin-bottom: 10px;
+    font-style: italic;
+    font-family: cursive;
+    width: fit-content;
   }
 
   .visible {
