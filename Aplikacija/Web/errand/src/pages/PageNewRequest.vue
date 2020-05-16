@@ -22,6 +22,8 @@
                          v-if="step == 4"/>
             <NewRequest5 @directChanged="directChanged"
                          v-if="step == 5"/>
+            <NewRequest7 :request="request"
+                         v-if="step == 7"/>
             <div class="buttonDiv">
                 <button type="button" class="btn btn-secondary" v-if="isSerbian && step < 5" :disabled="step == 1" @click="step = step - 1">Nazad</button>
                 <button type="button" class="btn btn-secondary" v-if="!isSerbian && step < 5" :disabled="step == 1" @click="step = step - 1">Back</button>
@@ -38,6 +40,7 @@ import NewRequest2 from "@/components/NewRequest2"
 import NewRequest3 from "@/components/NewRequest3"
 import NewRequest4 from "@/components/NewRequest4"
 import NewRequest5 from "@/components/NewRequest5"
+import NewRequest7 from "@/components/NewRequest7"
 export default {
     props:
     {
@@ -52,7 +55,8 @@ export default {
         NewRequest2,
         NewRequest3,
         NewRequest4,
-        NewRequest5
+        NewRequest5,
+        NewRequest7
     },
     data()
     {
