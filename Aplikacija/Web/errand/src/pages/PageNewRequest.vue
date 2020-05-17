@@ -258,7 +258,7 @@ export default {
                         description: element.description,
                         checklist: element.checklist,
                         picture_required: element.picture_required,
-                        adress: element.address ? {
+                        address: element.address ? {
                             name: element.address.name,
                             longitude: element.address.longitude,
                             latitude: element.address.latitude,
@@ -272,7 +272,7 @@ export default {
                 if(this.request.address.name != "" && this.request.address.longitude && this.request.address.latitude)
                 {
                     this.request.address.home = false
-                    this.request.address.arrive = false
+                    this.request.address.arrived = false
                 }
                 else this.request.address = null
 
