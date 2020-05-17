@@ -172,7 +172,11 @@
       </div>
     </div>
     <div class="map-wrap" :class="showMapView ? 'visible' : 'invisible'">
-      <AddAddressMap   @close="handleMapClosing" />
+      <AddAddressMap 
+        :HasCloseButton="true" 
+        :StartingAddress="{name: 'Sokogradska 9, Sokobanja', latitude: 43.639696, longitude: 21.878703}"  
+        @close="handleMapClosing" 
+      />
     </div>
   </div>
 </template>
@@ -566,6 +570,10 @@ export default {
     height:0px;
     position: absolute;
     top: 0px;
+  }
+
+  .map-wrap {
+    padding-bottom: 100px;
   }
 
 @media only screen and (max-width: 750px)

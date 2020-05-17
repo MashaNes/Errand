@@ -49,10 +49,29 @@
                 </div>
             </div>
             <div class="mapDiv">
-                Map goes here <!-- skloniti tekst -->
+                <AddAddressMap 
+                    :HasCloseButton="false"
+                    :AskAreYouSure="false"
+                    :StartingAddress="myTask.address"
+                    @close="addressChanged"
+                />
                 <!-- adresa je v-model="myTask.address" vidi oko pravljenja kopije jer treba da moze da se odbaci izmena pri edit-u -->
                 <!-- u sustini treba samo da znaci ta myTask.address ne bude ista po referenci kao  task.address i da ona uvek sadrzi one azurne vrednosti-->
             </div>
+            <div class="chosen-address-div" v-if="myTask.address">
+                <span v-if="isSerbian"> Izabrana adresa: </span>
+                <span v-else> Chosen address: </span>
+                <span class="address-name">{{myTask.address.name}}</span>
+                <img class="remove" src="@/assets/remove.svg" height="20" width="20" @click="removeAddress">
+            </div>
+            <div class="chosen-address-div" v-else>
+                <span v-if="isSerbian"> Nije izabrana nijedna adresa </span>
+                <span v-else> There is no chosen address </span>
+            </div>
+            <!-- ova dva div-a iznad ovog komentara slobodno menjaj što se stilova tiče;
+            važno je da ostane ovaj @click i u <script> da ostane funkcija removeAddress;
+            dodata je i funkcija addressChanged, i ona treba da ostane -->
+
         </div>
         <div class="button-div-newTask">
              <button type="button" class="btn btn-secondary levo-dugme" v-if="showCancelButton" @click="odustani">
@@ -73,6 +92,8 @@
 import vSelect from "vue-select";
 import "vue-select/dist/vue-select.css";
 import Spinner from "@/components/Spinner"
+import AddAddressMap from "@/components/AddAddressMap"
+
 export default {
     props:
     {
@@ -90,7 +111,8 @@ export default {
     components:
     {
         vSelect,
-        Spinner
+        Spinner,
+        AddAddressMap
     },
     data()
     {
@@ -103,7 +125,7 @@ export default {
                 description: this.task.description,
                 checklist: [],
                 picture_required: this.task.picture_required,
-                adress: this.task.address
+                address: this.task.address ? {...this.task.address} : null
             },
             oldService: this.task.service_type,
             stringIdGenerator: -1,
@@ -155,6 +177,14 @@ export default {
                 if(item.id == element.id)
                     this.myTask.checklist.splice(index,1)
             });
+        },
+        addressChanged(address) 
+        {
+            this.myTask.address = address
+        },
+        removeAddress()
+        {
+            this.myTask.address = null
         },
         sacuvaj()
         {
@@ -339,12 +369,36 @@ export default {
     .mapDiv
     {
         width: 100%;
-        height:40vh; /* lupljena visina */
-        border: 1px solid red; /*skloniti border */
     }
 
     .levo-dugme
     {
         margin-right:30px;
+    }
+
+    .chosen-address-div
+    {
+        align-self: flex-start;
+        display: flex;
+        font-size: 16px;
+        font-weight: 600;
+        width: fit-content;
+        border: 1px solid black;
+        padding: 5px;
+        border-radius: 5px;
+    }
+
+    .address-name
+    {
+        font-weight: normal;
+        padding-left: 5px;
+        margin-right: 15px;
+    }
+
+    .remove:hover 
+    {
+        width: 22px;
+        height: 22px;
+        cursor: pointer;
     }
 </style>

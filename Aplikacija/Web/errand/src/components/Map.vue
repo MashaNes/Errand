@@ -46,8 +46,8 @@ export default {
       }
       else if(oldVal.length < newVal.length) {
         const newMark = new window.google.maps.Marker({
-          position: newVal[newVal.length - 1],
-          label: newVal[newVal.length - 1],
+          position: newVal[newVal.length - 1].pos,
+          label: newVal[newVal.length - 1].lab,
           map: this.map
         })
         if(newVal[newVal.length - 1].info) {
@@ -60,6 +60,7 @@ export default {
           })
         }
         this.markers.push(newMark)
+        this.map.setCenter(newVal[newVal.length - 1].pos)
       }
       else {
         this.markers[this.markers.length-1].setMap(null)
@@ -80,29 +81,38 @@ export default {
     function checkForMap() {
       if(vm.map) {
         let bounds = new window.google.maps.LatLngBounds(null)
-        vm.mapMarkerPositions.forEach(mark => {
-          const newMark = new window.google.maps.Marker({
-            position: mark.pos,
-            label: mark.lab,
-            map:vm.map
+        if(vm.mapMarkerPositions.length == 0) {
+          vm.map.setCenter({
+            lat:43.639696,
+            lng: 21.878703
           })
-          if(mark.info) {
-            const info = new window.google.maps.InfoWindow({
-            content: mark.info,
-            maxWidth: 200
-            })
-            newMark.addListener('mouseover', function() {
-              info.open(this.map, newMark)
-            })
-          }
-          vm.markers.push(newMark)
-          bounds.extend(newMark.getPosition())
-        }) 
-        vm.map.setCenter(bounds.getCenter())
-        vm.map.panToBounds(bounds)
-        vm.map.fitBounds(bounds)
-        if(vm.map.getZoom() > 17)
           vm.map.setZoom(17)
+        }
+        else {
+          vm.mapMarkerPositions.forEach(mark => {
+            const newMark = new window.google.maps.Marker({
+              position: mark.pos,
+              label: mark.lab,
+              map:vm.map
+            })
+            if(mark.info) {
+              const info = new window.google.maps.InfoWindow({
+              content: mark.info,
+              maxWidth: 200
+              })
+              newMark.addListener('mouseover', function() {
+                info.open(this.map, newMark)
+              })
+            }
+            vm.markers.push(newMark)
+            bounds.extend(newMark.getPosition())
+          }) 
+          vm.map.setCenter(bounds.getCenter())
+          vm.map.panToBounds(bounds)
+          vm.map.fitBounds(bounds)
+          if(vm.map.getZoom() > 17)
+            vm.map.setZoom(17)
+        }
       }
       else 
         setTimeout(checkForMap, 200)

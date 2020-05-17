@@ -2,6 +2,7 @@
   <div class="main-wrapper">
     <div class="btns">
       <b-button 
+        v-if="HasCloseButton"
         class="button is-primary upper-btn"
         @click="$emit('close', null)"
         v-text="isSerbian ? 'Zatvori mapu' : 'Close map'"
@@ -9,6 +10,7 @@
       <b-button 
         class="button is-primary"
         @click="convertToAddress"
+        :disabled="!markerPosition"
         v-text="isSerbian ? 'Preuzmi adresu sa mape' : 'Get address from the map'"
       ></b-button>
     </div>
@@ -30,12 +32,20 @@
         v-b-popover.hover.top="isSerbian ? 'Kliknite za prikaz unete adrese na mapi':'Click to find the specified address on the map'"
       >
       <img 
-        v-if="newAddressName" 
+        v-if="newAddressName && AskAreYouSure" 
         class="btn-img" 
         src="@/assets/check.svg" 
         height="33" 
         width="33"
         @click="showModal = true"
+      >
+      <img 
+        v-else-if="newAddressName"
+        class="btn-img" 
+        src="@/assets/check.svg" 
+        height="33" 
+        width="33"
+        @click="confirmAddress"
       >
     </div>
     <span  class="span-danger" v-if="invalidAddress" v-text="isSerbian ? 
@@ -61,6 +71,22 @@ import Map from "@/components/Map"
 import ModalAreYouSure from "@/components/ModalAreYouSure"
 
 export default {
+  props: {
+    HasCloseButton: {
+      type: Boolean,
+      required: false,
+      default: true
+    },
+    StartingAddress: {
+      required: false,
+      default: null
+    },
+    AskAreYouSure: {
+      type: Boolean,
+      required: false,
+      default: true
+    }
+  },
   components: {
     Map,
     ModalAreYouSure
@@ -88,8 +114,8 @@ export default {
       }]
       this.$store.dispatch('setMarkerPositions', newMarkerPositions)
       this.markerMoved = true
-      this.fullNewAddress.longitude = newMarkerPositions[0].pos.lng
-      this.fullNewAddress.latitude = newMarkerPositions[0].pos.lat
+      //this.fullNewAddress.longitude = newMarkerPositions[0].pos.lng
+      //this.fullNewAddress.latitude = newMarkerPositions[0].pos.lat
     },
     convertToAddress() {
       if(this.markerMoved || !this.addressChecked) {
@@ -104,11 +130,11 @@ export default {
             p.json().then(data => {
               console.log(data.results[0])
               this.newAddressName = data.results[0].formatted_address
-              this.fullNewAddress = {
-                name: this.newAddressName,
-                longitude: data.results[0].geometry.location.lng,
-                latitude: data.results[0].geometry.location. lat
-              }
+              // this.fullNewAddress = {
+              //   name: this.newAddressName,
+              //   longitude: data.results[0].geometry.location.lng,
+              //   latitude: data.results[0].geometry.location. lat
+              // }
               this.previousInput = this.newAddressName
               this.invalidAddress = false
               this.markerMoved = false
@@ -143,11 +169,11 @@ export default {
                 vm.$store.dispatch('setMarkerPositions', newPositions)
                 this.markerMoved = false
                 this.invalidAddress = false
-                this.fullNewAddress = {
-                  name: this.newAddressName,
-                  longitude: data.results[0].geometry.location.lng,
-                  latitude: data.results[0].geometry.location. lat
-                }
+                // this.fullNewAddress = {
+                //   name: this.newAddressName,
+                //   longitude: data.results[0].geometry.location.lng,
+                //   latitude: data.results[0].geometry.location. lat
+                // }
               }
               else {
                 this.invalidAddress = true
@@ -158,8 +184,12 @@ export default {
       }
     },
     confirmAddress() {
-      console.log(this.newAddressName)  
-      this.fullNewAddress.name = this.newAddressName
+      this.fullNewAddress = {
+        name: this.newAddressName,
+        longitude: this.$store.state.mapMarkerPositions[0].pos.lng,
+        latitude: this.$store.state.mapMarkerPositions[0].pos.lat,
+      }
+      console.log(this.fullNewAddress) 
       const toAdd = JSON.parse(JSON.stringify(this.fullNewAddress))
       this.previousPosition = {}
       this.newAddressName = "",
@@ -167,15 +197,17 @@ export default {
       this.previousInput = ""
       this.invalidAddress = false
       this.markerMoved = true
-      const newPositions = [{
-        pos: {
-          lat: 43.639696,
-          lng: 21.878703,
-        },
-        lab: "",
-        info: ""
-      }]
-      this.$store.dispatch('setMarkerPositions', newPositions)
+      if(this.StartingAddress != null) {
+        const newPositions = [{
+          pos: {
+            lat: this.StartingAddress.latitude,
+            lng: this.StartingAddress.longitude
+          },
+          lab: "",
+          info: ""
+        }]
+        this.$store.dispatch('setMarkerPositions', newPositions)
+      }
       this.$emit('close', toAdd)
     }
   },
@@ -191,19 +223,22 @@ export default {
     }
   },
   created() {
-    this.fullNewAddress = {
-      name: "Sokogradska 9, Sokobanja",
-      longitude: 21.878703,
-      latitude: 43.639696
+    let newPositions
+    if(this.StartingAddress != null) {
+      this.fullNewAddress = this.StartingAddress
+      newPositions = [{
+        pos: {
+          lat: this.StartingAddress.latitude,
+          lng: this.StartingAddress.longitude
+        },
+        lab: "",
+        info: ""
+      }]
     }
-    const newPositions = [{
-      pos: {
-        lat: 43.639696,
-        lng: 21.878703
-      },
-      lab: "",
-      info: ""
-    }]
+    else {
+      this.fullNewAddress = {},
+      newPositions = []
+    }
     this.$store.dispatch('setMarkerPositions', newPositions)
   }
 }
@@ -216,7 +251,7 @@ export default {
     flex-direction: column;
     align-items: flex-start;
     height:100%;
-    padding: 10px 5% 100px 5%;
+    padding: 10px 5% 10px 5%;
   }
 
   .map {
