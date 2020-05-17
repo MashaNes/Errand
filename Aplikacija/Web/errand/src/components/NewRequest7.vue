@@ -50,16 +50,23 @@
             </tbody>
         </table>
         <div class="mapDiv">
-            map goes here.
+            <!-- map goes here.
             Trebalo bi da sadrzi po pin za adrese iz svakog taska i da odgovarajuci pin nosi redni broj odgovarajuceg taska u tabeli (redni broj u tabeli odgovara redosledu u kome se nalaze u taklistu)
             I pin za destination adresu iz zahteva koji bi trebalo da nosi oznaku F (finalna, final).
-            (Moozda, tj. ako to moze to da se izvede, da se na hover ili klik na pin prikaze popup/popover sa tekstulanim ispisom selektovane adrese)
+            (Moozda, tj. ako to moze to da se izvede, da se na hover ili klik na pin prikaze popup/popover sa tekstulanim ispisom selektovane adrese) -->
+            <Map />
         </div>
     </div>
 </template>
 
 <script>
+import Map from "@/components/Map"
+
 export default {
+    components:
+    {
+        Map
+    },
     props:
     {
         request:
@@ -107,6 +114,34 @@ export default {
                 }
             })
         }
+    },
+    created()
+    {
+        const markerPositions = [];
+        this.request.tasklist.forEach((task, ind) => {
+          if(task.address)
+          {
+            const newPosition = {
+              pos: {
+                lat: task.address.latitude,
+                lng: task.address.longitude
+              },
+              lab: String(ind + 1),
+              info: task.address.name
+            }
+            markerPositions.push(newPosition)
+          }
+        })
+        const newPosition = {
+            pos: {
+                lat: this.request.address.latitude,
+                lng: this.request.address.longitude
+            },
+            lab: "F",
+            info: this.request.address.name
+        }
+        markerPositions.push(newPosition)
+        this.$store.dispatch('setMarkerPositions', markerPositions)
     }
 }
 </script>
@@ -152,7 +187,5 @@ export default {
     .mapDiv
     {
         width: 100%;
-        height:40vh; /* lupljena visina */
-        border: 1px solid red; /*skloniti border */
     }
 </style>
