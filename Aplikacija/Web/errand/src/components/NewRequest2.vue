@@ -5,8 +5,6 @@
             <span v-else> Final address: </span>
         </div>
         <div class="mapDiv">
-            <!-- Map goes here -->
-            <!-- Kad god se menja adresa pozovi addressChanged-->
             <AddAddressMap 
                 :HasCloseButton="false"
                 :AskAreYouSure="false"
@@ -23,9 +21,13 @@
             <span v-if="isSerbian"> Nije izabrana nijedna adresa </span>
             <span v-else> There is no chosen address </span>
         </div>
-        <!-- isti komentar kao i u 'NewTask', slobodno prestilizuj ove div-ove;
-        važno je da ostane @click i funkcija removeAddress -->
-
+        <div class="row-divovi" v-if="myAddress.name != ''">
+            <input type="checkbox" class="picture-required" v-model="myPictureRequired" @input="pictureRequiredChanged"/>
+            <div class="labelDiv">
+                <span v-if="isSerbian"> Potrebno je dostaviti sliku sa ove lokacije </span>
+                <span v-else> Requires a picture to be taken at this location </span>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -42,12 +44,18 @@ export default {
         {
             type: Object,
             required:true
+        },
+        picture_required:
+        {
+            type: Boolean,
+            required:true
         }
     },
     data()
     {
         return{
-            myAddress: this.address
+            myAddress: this.address,
+            myPictureRequired: this.picture_required
         }
     },
     computed:
@@ -59,6 +67,10 @@ export default {
     },
     methods:
     {
+        pictureRequiredChanged()
+        {
+            this.$emit("pictureRequiredChanged", !this.myPictureRequired)
+        },
         addressChanged(address)
         {
             this.myAddress = address
@@ -66,6 +78,8 @@ export default {
         },
         removeAddress()
         {
+            this.myPictureRequired = false
+            this.$emit("pictureRequiredChanged", false)
             this.myAddress = {
                 name: "",
                 longitude: null,
@@ -95,25 +109,23 @@ export default {
         align-items:center;
         font-size: 18px;
         font-weight: 600;
-        margin-bottom: 5px;
     }
 
     .mapDiv
     {
-        width:100%; /* lupljena visina */
-
+        width:100%;
     }
 
     .chosen-address-div
     {
-        align-self: flex-start;
-        display: flex;
         font-size: 16px;
         font-weight: 600;
         width: fit-content;
-        border: 1px solid black;
-        padding: 5px;
+        border: 0.5px solid black;
+        padding: 10px;
         border-radius: 5px;
+        margin-top: 10px;
+        margin-bottom:10px;
     }
 
     .address-name
@@ -128,5 +140,24 @@ export default {
         width: 22px;
         height: 22px;
         cursor: pointer;
+    }
+
+    .row-divovi
+    {
+        display: flex;
+        flex-direction: row;
+        width: 100%;
+        justify-content: flex-start;
+        align-items: center;
+        margin-bottom: 15px;
+        word-break:break-all;
+    }
+
+    .picture-required
+    {
+        margin-left: 15px;
+        margin-right: 15px;
+        height:20px;
+        width:20px;
     }
 </style>

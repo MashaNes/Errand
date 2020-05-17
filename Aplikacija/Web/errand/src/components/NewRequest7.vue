@@ -49,11 +49,19 @@
                 </tr>
             </tbody>
         </table>
+        <div class="row-divovi" v-if="request.address.name != ''">
+            <img src="../assets/finished.svg" v-if="request.picture_required"/>
+            <img src="../assets/failed.svg" v-else/>
+            <div class="labelDiv" v-if="request.picture_required">
+                <span v-if="isSerbian"> Potrebno je dostaviti sliku sa finalne lokacije </span>
+                <span v-else> A picture must to be taken at the final location </span>
+            </div>
+            <div class="labelDiv" v-else>
+                <span v-if="isSerbian"> Nije potrebno dostaviti sliku sa finalne lokacije </span>
+                <span v-else> Taking a picture at the final location is not required </span>
+            </div>
+        </div>
         <div class="mapDiv">
-            <!-- map goes here.
-            Trebalo bi da sadrzi po pin za adrese iz svakog taska i da odgovarajuci pin nosi redni broj odgovarajuceg taska u tabeli (redni broj u tabeli odgovara redosledu u kome se nalaze u taklistu)
-            I pin za destination adresu iz zahteva koji bi trebalo da nosi oznaku F (finalna, final).
-            (Moozda, tj. ako to moze to da se izvede, da se na hover ili klik na pin prikaze popup/popover sa tekstulanim ispisom selektovane adrese) -->
             <Map />
         </div>
     </div>
@@ -188,5 +196,16 @@ export default {
     .mapDiv
     {
         width: 100%;
+    }
+
+    .row-divovi
+    {
+        display: flex;
+        flex-direction: row;
+        width: 100%;
+        justify-content: flex-start;
+        align-items: center;
+        margin-bottom: 15px;
+        word-break:break-all;
     }
 </style>
