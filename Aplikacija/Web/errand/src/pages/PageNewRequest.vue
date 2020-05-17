@@ -13,7 +13,9 @@
                          @distanceChanged="distanceChanged"
                          v-if="step == 1"/>
             <NewRequest2 :address="request.address"
+                         :picture_required="request.picture_required"
                          @addressChanged="addressChanged"
+                         @pictureRequiredChanged="pictureRequiredChanged"
                          v-if="step == 2"/>
             <NewRequest3 :tasklist="request.tasklist"
                          @tasklistChanged="tasklistChanged"
@@ -106,6 +108,7 @@ export default {
                     longitude: null,
                     latitude: null,
                 },
+                picture_required: false,
                 tasklist:[],
                 direct_user: null
             },
@@ -208,6 +211,10 @@ export default {
         {
             this.request.address = addressCopy
         },
+        pictureRequiredChanged(pictureRequiredCopy)
+        {
+            this.request.picture_required = pictureRequiredCopy
+        },
         tasklistChanged(newTasklist)
         {
             this.request.tasklist = newTasklist
@@ -218,19 +225,15 @@ export default {
             if(broadcastCopy)
                 this.step = 5
             else
-                //this.step = 6
                 this.directUserSelect()
         },
         directChanged(directCopy)
         {
+            this.request.direct_user = null
             if(directCopy)
-                //this.step = 6
                 this.directUserSelect()
             else
-            {
                 this.step = 7
-                this.request.direct_user = null
-            }
         },
         kreirajZahtev()
         {

@@ -29,7 +29,7 @@
         <div class="request-div">
             <RequestBox v-for="request in requests" :key="request.id" :identifikator="request.id"/>
         </div>
-        <ModalSuccess v-if="showModal"
+        <ModalSuccess v-if="requestCreated"
                       :textS="'Zahtev uspešno kreiran.'"
                       :textE="'Request successfully created.'"
                       @close="closeModal" />
@@ -75,13 +75,16 @@
             isSerbian()
             {
                 return this.$store.state.isSerbian
+            },
+            requestCreated()
+            {
+                return this.$store.state.userAdded
             }
         },
         data()
         {
             return{
-                tab:"Requested",
-                showModal: this.$store.state.userAdded
+                tab:"Requested"
             }
         },
         methods:{

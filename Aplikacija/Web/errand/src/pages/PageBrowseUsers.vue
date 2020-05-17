@@ -73,6 +73,12 @@
       class="pag-top"
       @input="getAnotherPortion"
     ></b-pagination>
+    <div class="activeUsers" v-if="services != null && isBroadCast"> 
+      <button type="button" class="btn btn-danger" @click="showModal = true">
+        <span v-if="isSerbian"> Odustani od odabira </span>
+        <span v-else> Abort coosing process </span>
+      </button>
+    </div>
     <div class="activeUsers" v-if="services != null"> 
       <input type="checkbox" v-model="active" class="cekiranje" @input="PromenaCekiranosi"/>
       <span v-if="isSerbian"> Prikaži samo aktivne korisnike</span>
@@ -96,10 +102,18 @@
       class="pag-bottom"
     ></b-pagination>
     <ModalBenefitAdded v-if="benefitAdded" @close="closeModal"/>
+    <ModalAreYouSure v-if="showModal==true"
+                     :naslovS="'Odustajanje od odabira'"
+                     :naslovE="'Abort choosing process'"
+                     :tekstS="'Da li ste sigurni da ne želite da odaberete korisnika? Nećete moći ponovo da se vratite na ovu mogućnost.'"
+                     :tekstE="'Are you sure you don\'t want to select a user? You will not be able to come back to this possibility.'"
+                     @yes="yes"
+                     @close="showModal = false"/>
   </div>
 </template>
 
 <script>
+import ModalAreYouSure from "@/components/ModalAreYouSure"
 import ModalBenefitAdded from "@/components/ModalBenefitAdded"
 import Spinner from "@/components/Spinner"
 import UserBox from "@/components/UserBox"
@@ -123,7 +137,8 @@ export default {
   components: {
     UserBox,
     Spinner,
-    ModalBenefitAdded
+    ModalBenefitAdded,
+    ModalAreYouSure
   },
   data() {
     return {
@@ -138,7 +153,8 @@ export default {
       filterRatingHigher: 5,
       showUnratedChk: true,
       showUnrated: true,
-      active: false
+      active: false,
+      showModal : false
     }
   },
   validations: {
@@ -168,9 +184,18 @@ export default {
         return null
       else
         return this.servicesList
+    },
+    isBroadCast()
+    {
+      return this.$store.state.requestInCreation.broadcast
     }
   },
   methods: {
+    yes()
+    {
+      this.showModal = false
+      this.$router.push({ name: 'PageNewRequest', params: {requestProp: this.$store.state.requestInCreation, stepProp:7}})
+    },
     getAnotherPortion() {
       if(this.lastPage != this.currentPage)
       {
