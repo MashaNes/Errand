@@ -8,6 +8,7 @@
             <AddAddressMap 
                 :HasCloseButton="false"
                 :AskAreYouSure="false"
+                :StartingAddress="startingAddress"
                 @close="addressChanged"
             />
         </div>
@@ -63,6 +64,18 @@ export default {
         isSerbian()
         {
             return this.$store.state.isSerbian
+        },
+        startingAddress() 
+        {
+            if(this.myAddress.name != "" && this.myAddress.longitude && this.myAddress.latitude)
+            {
+                return {
+                    name: this.myAddress.name,
+                    latitude: this.myAddress.latitude,
+                    longitude: this.myAddress.longitude
+                }
+            }
+            else return null
         }
     },
     methods:
@@ -85,6 +98,7 @@ export default {
                 longitude: null,
                 latitude: null
             }
+            this.$emit("addressChanged", this.myAddress)
         }
     }
 }
