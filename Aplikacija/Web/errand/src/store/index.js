@@ -503,7 +503,14 @@ export default new Vuex.Store({
                         {
                             console.log(data)
                             var services = data["results"]
-                            this.state.allServices = services
+                            
+                            var pom = []
+                            services.forEach(element =>
+                                {
+                                    pom.push({...element})
+                                })
+                            this.state.allServices = pom
+                            
                             if(this.state.userServices != null)
                             {
                                 this.state.userServices.forEach((item, index) =>
