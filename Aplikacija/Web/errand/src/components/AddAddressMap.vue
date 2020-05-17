@@ -32,7 +32,7 @@
         v-b-popover.hover.top="isSerbian ? 'Kliknite za prikaz unete adrese na mapi':'Click to find the specified address on the map'"
       >
       <img 
-        v-if="newAddressName && AskAreYouSure" 
+        v-if="newAddressName && $store.state.mapMarkerPositions.length > 0 && AskAreYouSure" 
         class="btn-img" 
         src="@/assets/check.svg" 
         height="33" 
@@ -40,7 +40,7 @@
         @click="showModal = true"
       >
       <img 
-        v-else-if="newAddressName"
+        v-else-if="newAddressName && $store.state.mapMarkerPositions.length > 0"
         class="btn-img" 
         src="@/assets/check.svg" 
         height="33" 
