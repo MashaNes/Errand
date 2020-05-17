@@ -121,7 +121,9 @@ export default {
         },
         disabledNextButton()
         {
-            if(this.step == 1 && (this.request.name == "" || this.request.max_dist == "" || this.request.max_dist < 0.1 || this.request.max_dist > 1000))
+            var mydate = new Date(this.request.time);
+            var now = new Date()
+            if(this.step == 1 && (this.request.name == "" || this.request.max_dist == "" || this.request.max_dist < 0.1 || this.request.max_dist > 1000 || mydate < now))
             {
                 return true
             }

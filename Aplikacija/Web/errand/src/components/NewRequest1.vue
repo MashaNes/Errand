@@ -14,6 +14,12 @@
             <span v-if="isSerbian">  <span class="zvezdica">*</span> Datum i vreme: </span>
             <span v-else>  <span class="zvezdica">*</span> Date and time: </span>
         </div>
+        <div v-if="isSerbian && dateWrong" class="obavestenje">
+            Odabrani datum i vreme ne smeju da budu pre trenutnog
+        </div>
+        <div v-if="!isSerbian && dateWrong" class="obavestenje">
+            The chosen date and time can not be earlier than now
+        </div>
         <VueCtkDateTimePicker v-model="myTime" 
                               :no-label="true" 
                               :button-now-translation="'Sada'" 
@@ -129,6 +135,12 @@ export default {
         myMinRating()
         {
             return (Math.round((this.scale / 25 + 1) * 100) / 100).toFixed(2)
+        },
+        dateWrong()
+        {
+            var mydate = new Date(this.myTime);
+            var now = new Date()
+            return mydate < now
         }
     },
     methods:
@@ -231,6 +243,15 @@ export default {
 
     .zvezdica
     {
+        color:red;
+    }
+
+    .obavestenje
+    {
+        width:100%;
+        margin-left:50px;
+        text-align: justify;
+        font-size: 12px;
         color:red;
     }
 
