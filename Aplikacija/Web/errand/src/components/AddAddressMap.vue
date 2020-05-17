@@ -197,6 +197,7 @@ export default {
       this.previousInput = ""
       this.invalidAddress = false
       this.markerMoved = true
+      this.showModal = false
       if(this.StartingAddress != null) {
         const newPositions = [{
           pos: {
