@@ -130,15 +130,18 @@ export default {
             markerPositions.push(newPosition)
           }
         })
-        const newPosition = {
-            pos: {
-                lat: this.request.address.latitude,
-                lng: this.request.address.longitude
-            },
-            lab: "F",
-            info: this.request.address.name
+        if(this.request.address.name != "" && this.request.address.latitude && this.request.address.longitude)
+        {
+            const newPosition = {
+                pos: {
+                    lat: this.request.address.latitude,
+                    lng: this.request.address.longitude
+                },
+                lab: "F",
+                info: this.request.address.name
+            }
+            markerPositions.push(newPosition)
         }
-        markerPositions.push(newPosition)
         this.$store.dispatch('setMarkerPositions', markerPositions)
     }
 }

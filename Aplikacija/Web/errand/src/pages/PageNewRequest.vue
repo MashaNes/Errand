@@ -256,10 +256,23 @@ export default {
                         description: element.description,
                         checklist: element.checklist,
                         picture_required: element.picture_required,
-                        adress: element.address
+                        adress: element.address ? {
+                            name: element.address.name,
+                            longitude: element.address.longitude,
+                            latitude: element.address.latitude,
+                            home: false,
+                            arrived: false
+                        } : null
                     }
                     this.request.tasklist.splice(index,1,pom)
                 })
+
+                if(this.request.address.name != "" && this.request.address.longitude && this.request.address.latitude)
+                {
+                    this.request.address.home = false
+                    this.request.address.arrive = false
+                }
+                else this.request.address = null
 
                 if(this.request.direct_user != null)
                     this.request.direct_user = this.request.direct_user.id
