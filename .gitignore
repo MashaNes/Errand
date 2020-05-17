@@ -103,3 +103,6 @@ yarn-error.log*
 *.njsproj
 *.sln
 *.sw?
+
+# pictures
+/Aplikacija/WebAPI/db/images/users
