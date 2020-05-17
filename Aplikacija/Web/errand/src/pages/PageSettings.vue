@@ -35,7 +35,18 @@
                         <label v-if="isMaxDistInvalid && !isSerbian" class="danger">Between 0.1 and 1000</label>
                     </div>
                 </div>
-                <div class="settings-element"> 
+                <div class="settings-element" v-if="isEditing || noAutoAdd">
+                    <div v-if="!isEditing && noAutoAdd"> 
+                        <i v-if="isSerbian"> Automatsko dodavanje korisnika u listu povlašćenih je isključeno </i>
+                        <i v-else> Automatic adding of users to the benefit list is turned off </i>
+                    </div>
+                    <div v-if="isEditing">
+                        <input type="checkbox" class="cekiranje" v-model="noAutoAdd" @input="promenaAutoAdd"/>
+                        <span v-if="isSerbian"> Bez automatskog dodavanja u listu povlašćenih </span>
+                        <span v-else> No auto add to benefet list </span>
+                    </div>
+                </div>
+                <div class="settings-element" v-if="!noAutoAdd"> 
                     <div class="settings-row left m3" :class="{'e3':!isSerbian}">
                         <img class = "info" src="../assets/info.svg" v-b-popover.hover.left="popoverDiscountText" >
                         <span v-if="isSerbian"> Popust: </span>
@@ -54,7 +65,7 @@
                         <label v-if="isDiscountInvalid && !isSerbian" class="danger">Between 0 and 100</label>
                     </div>
                 </div>
-                <div class="settings-element"> 
+                <div class="settings-element" v-if="!noAutoAdd"> 
                     <div class="settings-row left m4" :class="{'e4':!isSerbian}">
                         <img class = "info" src="../assets/info.svg" v-b-popover.hover.left="popoverCooperationText">
                         <span v-if="isSerbian"> Broj saradnji za ostvarenje popusta: </span>
@@ -109,7 +120,8 @@ export default {
             IsMaxDistance: true,
             discount: this.$store.state.authUser.benefit_discount * 100,
             brSaradnji: this.$store.state.authUser.benefit_requirement,
-            isEditing: false
+            isEditing: false,
+            noAutoAdd: this.$store.state.authUser.benefit_requirement == -1
         }
     },
     computed:
@@ -188,6 +200,7 @@ export default {
             this.$store.state.authUser.benefit_requirement = this.brSaradnji
             this.$store.dispatch("updateUserInfo")
             this.isEditing = false
+            this.noAutoAdd = this.brSaradnji == -1
         },
         cancel()
         {
@@ -196,6 +209,14 @@ export default {
             this.discount = this.$store.state.authUser.benefit_discount * 100
             this.brSaradnji = this.$store.state.authUser.benefit_requirement
             this.isEditing = false
+            this.noAutoAdd = this.brSaradnji == -1
+        },
+        promenaAutoAdd()
+        {
+            if(!this.noAutoAdd)
+                this.brSaradnji = -1
+            else
+                this.brSaradnji = 5
         }
     }
 }
@@ -389,6 +410,14 @@ export default {
     .fs1
     {
         margin-left: 38px;
+    }
+
+    .cekiranje
+    {
+        margin-left: 15px;
+        margin-right: 15px;
+        height:20px;
+        width:20px;
     }
 
     @media only screen and (max-width: 1160px)
