@@ -104,6 +104,7 @@ export default {
       }
       else this.computedUser = this.user
       if(this.isMyProfile) {
+        vm.$store.state.userAddresses = null
         this.$store.dispatch('fillUserAddresses', routeId)
         callbackAddresses()
       }

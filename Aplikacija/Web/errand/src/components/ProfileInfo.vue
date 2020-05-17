@@ -112,7 +112,7 @@
               <div class="phones">{{user.phone}}</div>
             </div>
           </b-list-group-item>
-          <b-list-group-item v-if="isMyProfile">
+          <b-list-group-item v-if="isMyProfile && addresses && addresses.length > 0">
             <img 
               src="@/assets/address.svg" 
               height = "20" 
@@ -244,6 +244,8 @@ export default {
       return arrayCopy
     },
     lastAddress() {
+      if(!this.addresses || this.addresses.length == 0)
+        return ""
       return this.addresses[this.addresses.length-1].name
     },
   },
