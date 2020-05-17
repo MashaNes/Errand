@@ -260,7 +260,10 @@ export default {
                     }
                     this.request.tasklist.splice(index,1,pom)
                 })
-                this.request.direct_user = this.request.direct_user.id
+
+                if(this.request.direct_user != null)
+                    this.request.direct_user = this.request.direct_user.id
+                
                 this.$store.dispatch("createRequest", this.request)
                 this.$router.push('/requests')
             }

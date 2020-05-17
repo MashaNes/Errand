@@ -32,7 +32,7 @@
             </thead>
             <tbody>
                 <tr v-for="task in request.tasklist" :key="task.id">
-                    <td class="poravnanje">{{numeracija}}</td>
+                    <td class="poravnanje">{{task.id}}</td>
                     <td class="poravnanje">{{task.name}}</td>
                     <td class="poravnanje">
                         <span v-if="isSerbian" v-b-popover.hover.bottom="task.service_type.description_sr">{{task.service_type.service_type_sr}}</span> 
@@ -78,7 +78,6 @@ export default {
     data()
     {
         return{
-            redniBroj: 0,
             lista: ""
         }
     },
@@ -87,12 +86,6 @@ export default {
         isSerbian()
         {
             return this.$store.state.isSerbian
-        },
-        numeracija()
-        {
-            // eslint-disable-next-line vue/no-side-effects-in-computed-properties
-            this.redniBroj = this.redniBroj + 1
-            return this.redniBroj
         }
     },
     methods:
@@ -117,6 +110,11 @@ export default {
     },
     created()
     {
+        this.request.tasklist.forEach((element, index) =>
+        {
+            element.id = index + 1
+        })
+
         const markerPositions = [];
         this.request.tasklist.forEach((task, ind) => {
           if(task.address)
