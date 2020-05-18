@@ -13,6 +13,9 @@ import {fetchAchievements} from "@/api/achievements.js"
 export default new Vuex.Store({
     state:{
         requests: {},
+        createdAuthRequests: null,
+        runnerAuthRequests: null,
+        overAuthRequests: null,
         specificRequest: null,
         user: {},
         authUser: null,
@@ -48,8 +51,28 @@ export default new Vuex.Store({
         setMarkerPositions({commit}, positions) {
             commit('setMarkers', positions)
         },
-        fillRequests(){
-            this.state.requests = fetchRequests();
+        fillRequests({commit}, {filters, objectToFill}) {
+            //this.state.requests = fetchRequests();
+            fetch("http://127.0.0.1:8000/api/v1/filtered_requests/", {
+                method: "POST",
+                headers: {
+                    "Content-type" : "application/json",
+                    "Authorization" : "Token " + this.state.token
+                },
+                body: JSON.stringify({
+                    "created_by" : filters.created_by,
+                    "done_by" : filters.done_by,
+                    "created_or_done_by": filters.created_or_done_by,
+                    "statuses" : filters.statuses,
+                    "unrated" : filters.unrated
+                })
+            }).then(p => {
+                if(p.ok) {
+                    p.json().then(data => {
+                        this.state[objectToFill] = data
+                    })
+                }
+            })
         },
         fillUsersWithBenefit()
         {

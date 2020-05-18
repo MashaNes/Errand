@@ -1,10 +1,11 @@
 <template>
     <div class = "wrapper" :class="color">
-        <div class="request-top" v-if="myRequest.status != 'pending'">
+        <!-- <div class="request-top" v-if="myRequest.status != 'pending'"> -->
+        <div class="request-top" v-if="status != 'pending'">
             <div class="user-div"> 
                 <span class="user-name" @click="goToProfile"> {{userName}} </span>
                 <p class="image is-128x128" >
-                    <img class="rounded-image" :src="userPicture" @click="goToProfile">
+                    <img class="rounded-image" :src="user.picture ? 'data:;base64,' + user.picture : require('../assets/no-picture.png')" @click="goToProfile">
                 </p>
             </div>
             <div class = "request-name" @click="goToRequest">
@@ -21,16 +22,25 @@
         </div>
         <div class="request-bottom">
             <div class="status-div">
-                <img v-if="myRequest.status == 'running'" src = "../assets/running.svg">
+                <!-- <img v-if="myRequest.status == 'running'" src = "../assets/running.svg">
                 <img v-if="myRequest.status == 'pending'" src = "../assets/pending.svg">
                 <img v-if="myRequest.status == 'finished'" src = "../assets/finished.svg">
                 <img v-if="myRequest.status == 'failed'" src = "../assets/failed.svg">
-                <span class = "request-status"> {{myRequest.status}} </span>
+                <span class = "request-status"> {{myRequest.status}} </span> -->
+                <img v-if="status == 'running'" src = "../assets/running.svg">
+                <img v-if="status == 'pending'" src = "../assets/pending.svg">
+                <img v-if="status == 'finished'" src = "../assets/finished.svg">
+                <img v-if="status == 'failed'" src = "../assets/failed.svg">
+                <span class = "request-status"> {{status}} </span>
             </div>
             <div class = "bottom-left">
                 <div class = "request-date"> {{myRequest.date | showTime}} </div>
                 <div class = "tagovi">
-                    <div v-for="tag in myRequest.tags" :key="tag" class = "request-tag">{{tag}}</div>
+                    <!-- <div v-for="tag in myRequest.tags" :key="tag" class = "request-tag">{{tag}}</div> -->
+                    <div v-for="(tag, ind) in tags" :key="ind" class = "request-tag">{{tag}}</div>
+                    <!-- ovde ako se ostavi :key="tag", sve prodje, ali se u konzoli pojavi warning Duplicate Keys
+                    ako zahtev sadrzi vise taks-ova ciji je service_type isti; ako se odradi ovako, preko indeksa,
+                    nema warninga, ali ce da se prikazu dva ista taga, ako ima vise istih service_type-ova -->
                 </div>
             </div>
         </div>
@@ -47,8 +57,12 @@ import ModalAreYouSure from "@/components/ModalAreYouSure"
 export default {
     props:
     {
-        identifikator:{
-            type:Number,
+        // identifikator:{
+        //     type:Number,
+        //     required:true
+        // }
+        myRequest:{
+            type:Object,
             required:true
         }
     },
@@ -59,7 +73,7 @@ export default {
     data()
     {
         return{
-            myRequest: this.$store.state.requests[this.identifikator],
+            //myRequest: this.$store.state.requests[this.identifikator]
             showModal: false
         }
     },
@@ -67,39 +81,85 @@ export default {
     {
         color()
         {
-            if (this.myRequest.status == "finished")
+            // if (this.myRequest.status == "finished")
+            //     return "zeleno"
+            // else if(this.myRequest.status == "failed")
+            //     return "crveno"
+            // else if(this.myRequest.status == "pending")
+            //     return "sivo"
+            // else
+            //     return "zuto"
+            if (this.status == "finished")
                 return "zeleno"
-            else if(this.myRequest.status == "failed")
+            else if(this.status == "failed")
                 return "crveno"
-            else if(this.myRequest.status == "pending")
+            else if(this.status == "pending")
                 return "sivo"
             else
                 return "zuto"
         },
         userName()
         {
-            if(this.myRequest.status != "pending")
+            //if(this.myRequest.status != "pending")
+            if(this.status != "pending")
                 return this.user.first_name + " " + this.user.last_name
             else
                 return ""
         },
         userPicture()
         {
-            if(this.myRequest.status != "pending")
+            //if(this.myRequest.status != "pending")
+            if(this.status != "pending")
                 return this.user.picture;
             else
                 return ""
         },
         userId() 
         {
-            if(this.myRequest.status != "pending")
+            //if(this.myRequest.status != "pending")
+            if(this.status != "pending")
                 return this.user.id
             else
                 return ""
         },
         user() 
         {
-            return this.myRequest.runner ? this.myRequest.created_by : this.myRequest.working_with
+            if(this.myRequest.created_by && this.myRequest.created_by.id == this.$store.state.authUser.id )
+                return this.myRequest.working_with
+            else
+                return this.myRequest.created_by
+        },
+        status()
+        {
+            let returnValue = ""
+            switch(this.myRequest.status)
+            {
+                case 0: returnValue = "pending"
+                        break
+                case 1: returnValue = "running"
+                        break
+                case 2: returnValue = "finished"
+                        break
+                case 3: returnValue = "failed"
+            }
+            return returnValue
+        },
+        tags()
+        {
+            let returnValue = []
+            this.myRequest.tasklist.forEach(task => {
+                if(this.isSerbian)
+                    returnValue.push(task.service_type.service_type_sr)
+                else
+                    returnValue.push(task.service_type.service_type_en)
+            })
+            return returnValue
+            //videti kako ce da se radi sa services; 
+            //za sad se još uvek vraćaju svi podaci za service, pa je moguće ovako da se napravi
+        },
+        isSerbian()
+        {
+            return this.$store.state.isSerbian
         }
     },
     methods:
