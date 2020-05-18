@@ -8,6 +8,7 @@ export const fetchRequests = () =>
             tags:["kupovina", "racuni"],
             status:"running",
             runner: true,
+            time: "2020-05-22T15:30:00Z",
             created_by: {
                 id: 3,
                 first_name: "Dimitrije",
@@ -89,6 +90,7 @@ export const fetchRequests = () =>
             runner: false,
             working_with: null,
             created_by: null,
+            time: "2020-05-22T15:30:00Z",
             tasklist: [
                 {
                     "id": 3,
@@ -202,6 +204,7 @@ export const fetchRequests = () =>
             tags:["pomoc"],
             status:"finished",
             runner: true,
+            time: "2020-05-22T15:30:00Z",
             created_by:{
                 id: 4,
                 first_name: "Srecko",
@@ -224,6 +227,7 @@ export const fetchRequests = () =>
             tags:["deca"],
             status:"failed",
             runner: false,
+            time: "2020-05-22T15:30:00Z",
             working_with:{
                 id: 8,
                 first_name: "Derek",
@@ -247,6 +251,7 @@ export const fetchRequests = () =>
             status:"pending",
             runner: false,
             created_by: null,
+            time: "2020-05-22T15:30:00Z",
             working_with: null
         },
         "6":{
@@ -256,6 +261,7 @@ export const fetchRequests = () =>
             tags:["pomoc"],
             status:"running",
             runner: true,
+            time: "2020-05-22T15:30:00Z",
             created_by:{
                 id: 7,
                 first_name: "Chandler",
@@ -278,6 +284,7 @@ export const fetchRequests = () =>
             tags:["pomoc"],
             status:"finished",
             runner: true,
+            time: "2020-05-22T15:30:00Z",
             created_by:{
                 id: 5,
                 first_name: "Obi Wan",
@@ -300,6 +307,7 @@ export const fetchRequests = () =>
             tags:["deca", "voznja"],
             status:"running",
             runner: false,
+            time: "2020-05-22T15:30:00Z",
             working_with:{
                 id: 6,
                 first_name: "Chewbacca",
