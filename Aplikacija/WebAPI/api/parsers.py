@@ -229,6 +229,7 @@ def create_request(data):
     if data['time']:
         time = data['time']
 
+    destination = None
     if data['destination']:
         destination = create_address(data['destination'])
 
