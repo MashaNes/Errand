@@ -1,14 +1,14 @@
 <template>
-  <div class="wrapper">
+  <Spinner v-if="!computedRequest" />
+  <div class="wrapper" v-else>
     <b-card>
       <b-card-title class="main-title">
         <div class="title-start">{{computedRequest.name}}</div>
         <div class="title-end">
           <div class="clock pic-and-span">
             <img src="@/assets/clock.svg" height="25" width="25" class="title-pic">
-            <span>21:03</span>
+            <span>{{computedRequest.time | showTime}}</span>
           </div>
-
           <div class="pic-and-span">
             <img v-if="computedRequest.status == 'running'" src="@/assets/running.svg" height="25" width="25" class="title-pic">
             <img v-if="computedRequest.status == 'pending'" src="@/assets/pending.svg" height="25" width="25" class="title-pic">
@@ -27,8 +27,6 @@
             ></strong>
             <b-badge variant="danger" class="notification-badge" v-if="computedRequest.status == 'pending' && computedRequest.created_by == null">1</b-badge>
           </b-button>
-          
-          
           <b-button 
             variant="secondary"
             v-b-popover.hover.top="isSerbian ? 'Imate zahtev za izmenom' : 'You have an edit request'"
@@ -40,9 +38,9 @@
             ></strong>
             <b-badge variant="danger" class="notification-badge" v-if="computedRequest.status == 'running' && computedRequest.created_by == null">!</b-badge>
           </b-button>
-         
         </div>
       </b-card-title>
+
       <b-card-text class="request-note">
         <b-card-title>
             <span style="margin-right:5px;" v-text="isSerbian ? 'Napomena' : 'Note'"></span>
@@ -64,25 +62,33 @@
             <span 
               v-text="(isSerbian ? 'Prihvaćena ponuda od ' : 'Accepted offer from ') + fullUserName"
               style="margin-right: 5px"
-              v-if="request.created_by == null || $store.state.authUser.id == request.created_by"
+              v-if="computedRequest.created_by == null || $store.state.authUser.id == computedRequest.created_by.id"
             ></span>
             <span 
               v-text="(isSerbian ? 'Zahtev kreirao/la ' : 'Request created by ') + fullUserName"
               style="margin-right: 5px"
-              v-if="request.working_with == null || $store.state.authUser.id == request.working_with"
+              v-if="computedRequest.working_with == null || $store.state.authUser.id == computedRequest.working_with.id"
             ></span>
             <div class="media-center">
               <p class="image">
-                <img class="rounded-image" :src="otherUser.picture">
+                <img class="rounded-image" :src="otherUser.picture ? 'data:;base64,' + otherUser.picture : require('../assets/no-picture.png')">
               </p>
             </div>
           </div>
         </b-card-title>
-        <div class="inner-text">
+        <div class="inner-text" v-if="otherUser != null && otherUser == computedRequest.working_with">
           <span v-text="isSerbian ? 'Tip naplate: po satu' : 'Payment type: per hour'"> </span>
           <span v-text="isSerbian ? 'Cena: 200 din' : 'Price: 200din'"></span>
-        </div>      
+        </div>
       </div>
+
+      <b-card-text class="request-note">
+        <b-card-title v-text="isSerbian ? 'Finalno odredište' : 'Final destination'"></b-card-title>
+        <div class="inner-text" v-if="computedRequest.destination">
+          <span>{{computedRequest.destination.name}}</span>
+        </div>
+        <div v-else class="inner-text" v-text="isSerbian ? 'Finalno odredište nije navedeno' : 'Final destination was not sepcified'"></div>
+      </b-card-text>
 
       <b-card-text v-if="hasAddresses">
         <b-button class="button is-primary" @click="openMap">
@@ -95,53 +101,21 @@
         <Map />
       </b-card-text>
 
-      <b-card-text v-for="(task, ind) in computedRequest.tasklist" :key="task.id" class="task-div">
-        <b-card-title 
-          :class="taskOpened[ind].value ? 'open-task-bottom-border' : 'open-task-div'" 
-          v-b-toggle="'collapse' + ind" 
-          @click="taskOpened[ind].value = !taskOpened[ind].value"
-        >
-          <span style="margin-right:5px; max-width:90%;" v-text=task.name ></span>
-          <img v-if="!taskOpened[ind].value" src="@/assets/down-chevron.svg" height="15" width="15">
-          <img v-else src="@/assets/up-chevron.svg" height="15" width="15">
-
-        </b-card-title>
-        <b-collapse :id="'collapse' + ind">
-          <div style="padding:15px">
-            <div v-if="task.address" style="margin-bottom: 20px;">
-              <span v-text="isSerbian ? 'Adresa' : 'Address'" class="inner-text-title"></span>
-              <b-card-text class="inner-text">
-                <span>{{task.address.name}}</span>
-                <span v-text="isSerbian ? 'Obiđena: ' + (task.address.arrived ? 'da' : 'ne') : 'Arrived: ' + (task.address.arrived ? 'yes' : 'no')"></span>
-              </b-card-text>
-            </div>
-
-            <span v-text="isSerbian ? 'Opis':'Description'" class="inner-text-title"></span>
-            <b-card-text class="inner-text" style="margin-bottom: 20px;">
-              {{task.description}}
-            </b-card-text>
-
-            <div v-if="task.checklist && task.checklist.length" style="margin-bottom: 20px;">
-              <span v-text="isSerbian ? 'Spisak' : 'Checklist'" class="inner-text-title"></span>
-              <b-card-text class="inner-text">
-                <span v-for="(item, ind) in task.checklist" :key="item.id" class="chklist-item">{{ind+1}}. {{item.check_list}}</span>
-              </b-card-text>
-            </div>
-          </div>
-        </b-collapse>
-      </b-card-text>
-      
+      <Task v-for="task in computedRequest.tasklist" :key="task.id" :task="task" />
     </b-card>
-
   </div>
 </template>
 
 <script>
 import Map from "@/components/Map"
+import Task from "@/components/Task"
+import Spinner from "@/components/Spinner"
 
 export default {
   components: {
-    Map
+    Map,
+    Task,
+    Spinner
   },
   props: {
     request: {
@@ -193,26 +167,47 @@ export default {
       return this.otherUser.first_name + " " + this.otherUser.last_name
     },
     otherUser() {
-      return this.computedRequest.runner ? this.computedRequest.created_by : this.computedRequest.working_with
+      if(this.computedRequest.created_by && this.computedRequest.created_by.id == this.$store.state.authUser.id)
+        return this.computedRequest.working_with
+      else
+        return this.computedRequest.created_by
     }
   },
   methods: {
     routeChanged() {
       //izmeniti da se ode obavi fetch za request sa id-jem iz rute (ukoliko nije prosledjen prop)
+      const vm = this
+      function callback() {
+        if(vm.$store.state.specificRequest != null)
+        {
+          vm.computedRequest = vm.$store.state.specificRequest.request
+          // eslint-disable-next-line no-debugger
+          debugger
+          if(vm.$store.state.specificRequest == -1)
+            vm.$router.push({name: "PageRequests"})
+          else
+            vm.setMapMarkers()
+        }
+        else
+          setTimeout(callback, 200)
+      }
+
       if(!this.request) {
         const routeId = this.$route.params.id
-        if(!Object.values(this.$store.state.requests).length)
-          this.$store.dispatch('fillRequests')
-        this.computedRequest = this.$store.state.requests[routeId]
+        this.$store.dispatch('getRequestById', routeId)
+        callback()
+        // if(!Object.values(this.$store.state.requests).length)
+        //   this.$store.dispatch('fillRequests')
+        // this.computedRequest = this.$store.state.requests[routeId]
       }
-      else this.computedRequest = this.request
+      else {
+         this.computedRequest = this.request
+         this.setMapMarkers()
+      }
+    },
+    setMapMarkers() {
       if(this.computedRequest.tasklist)
       {
-        for(let i=0; i<this.computedRequest.tasklist.length; i++) {
-          this.taskOpened.push({
-            value: false
-          })
-        }
         const markerPositions = [];
         this.computedRequest.tasklist.forEach((task, ind) => {
           if(task.address)

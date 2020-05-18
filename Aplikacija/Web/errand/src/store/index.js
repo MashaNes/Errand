@@ -13,6 +13,7 @@ import {fetchAchievements} from "@/api/achievements.js"
 export default new Vuex.Store({
     state:{
         requests: {},
+        specificRequest: null,
         user: {},
         authUser: null,
         userAchievements: {},
@@ -901,6 +902,35 @@ export default new Vuex.Store({
                         console.log("Error")
                     }
                 });
+        },
+        getRequestById({commit}, requestId) {
+            fetch("http://localhost:8000/api/v1/requests/" + requestId, {
+                method: 'GET',
+                headers: {
+                    "Content-type" : "application/json",
+                    "Authorization" : "Token " + this.state.token
+                }
+            }).then(p => {
+                if(p.ok) {
+                    p.json().then(data => {
+                        // eslint-disable-next-line no-debugger
+                        debugger
+                        console.log(data)
+                        let isParticipant = false
+                        if(data.request.created_by.id == this.state.authUser.id)
+                            isParticipant = true
+                        if(data.request.working_with && data.request.working_with.id == this.state.authUser.id)
+                            isParticipant = true
+                        if(!isParticipant)
+                            this.state.specificRequest = -1
+                        else
+                            this.state.specificRequest = data
+                    })
+                }
+                else {
+                    console.log("Error")
+                }
+            }) 
         }
     },
     mutations:{
