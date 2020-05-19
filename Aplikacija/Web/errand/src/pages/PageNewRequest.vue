@@ -4,15 +4,15 @@
             <NewRequest1 :name="request.name" 
                          :time="request.time" 
                          :note="request.note" 
-                         :minRating="request.min_rating" 
-                         :maxDistance="request.max_dist" 
+                         :minRating="request.min_rating.toString()" 
+                         :maxDistance="request.max_dist.toString()" 
                          @nameChanged="NameChanged"
                          @noteChanged="NoteChanged"
                          @dateChanged="dateChanged"
                          @ratingChanged="ratingChanged"
                          @distanceChanged="distanceChanged"
                          v-if="step == 1"/>
-            <NewRequest2 :address="request.address"
+            <NewRequest2 :address="request.destination"
                          :picture_required="request.picture_required"
                          @addressChanged="addressChanged"
                          @pictureRequiredChanged="pictureRequiredChanged"
@@ -102,7 +102,7 @@ export default {
                 broadcast: false,
                 max_dist: this.$store.state.authUser.max_dist.toString(),
                 min_rating: this.$store.state.authUser.min_rating.toString(),
-                address:
+                destination:
                 {
                     name: "",
                     longitude: null,
@@ -209,7 +209,7 @@ export default {
         },
         addressChanged(addressCopy)
         {
-            this.request.address = addressCopy
+            this.request.destination = addressCopy
         },
         pictureRequiredChanged(pictureRequiredCopy)
         {
@@ -269,15 +269,19 @@ export default {
                             arrived: false
                         } : null
                     }
+                    pom.checklist.forEach(element =>
+                    {
+                        element.item = element.check_list
+                    })
                     this.request.tasklist.splice(index,1,pom)
                 })
 
-                if(this.request.address.name != "" && this.request.address.longitude && this.request.address.latitude)
+                if(this.request.destination.name != "" && this.request.destination.longitude && this.request.destination.latitude)
                 {
-                    this.request.address.home = false
-                    this.request.address.arrived = false
+                    this.request.destination.home = false
+                    this.request.destination.arrived = false
                 }
-                else this.request.address = null
+                else this.request.destination = null
 
                 if(this.request.direct_user != null)
                     this.request.direct_user = this.request.direct_user.id

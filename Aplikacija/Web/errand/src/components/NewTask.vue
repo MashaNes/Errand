@@ -29,7 +29,7 @@
             <div class="checklista">
                 <div class="spisak">
                     <div class="element-spiska" v-for="element in myTask.checklist" :key="element.id">
-                        <div class="string-element-spiska"> {{element.item}} </div>
+                        <div class="string-element-spiska"> {{element.check_list}} </div>
                         <a @click="izbaciIzListe(element)"><img src="../assets/remove.svg" class="ikonica"></a>
                     </div>
                 </div>
@@ -159,7 +159,7 @@ export default {
         {
             if(this.inputElement != "")
             {
-                var element = {id: this.stringIdGenerator, item : this.inputElement}
+                var element = {id: this.stringIdGenerator, check_list : this.inputElement}
                 this.myTask.checklist.push(element)
                 this.stringIdGenerator = this.stringIdGenerator + 1
                 this.inputElement = ""

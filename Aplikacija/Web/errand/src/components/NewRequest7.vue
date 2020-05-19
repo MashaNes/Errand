@@ -16,6 +16,10 @@
             <span v-if="isSerbian"> Zahtev će biti direktno poslat korisniku: <span class="userData"> {{request.direct_user.first_name}} {{request.direct_user.last_name}}</span></span>
             <span v-else> The request is going to be sent directly to a user: <span class="userData"> {{request.direct_user.first_name}} {{request.direct_user.last_name}}</span></span>
         </div>
+        <div v-if="request.note != ''" class="napomena">
+            <i v-if="isSerbian"> Napomena: {{request.note}}</i>
+            <i v-else> Note: {{request.note}}</i>
+        </div>
         <div class="labelDiv">
             <span v-if="isSerbian"> Zadaci: </span>
             <span v-else> Tasks: </span>
@@ -49,7 +53,7 @@
                 </tr>
             </tbody>
         </table>
-        <div class="row-divovi" v-if="request.address.name != ''">
+        <div class="row-divovi" v-if="request.destination.name != ''">
             <img src="../assets/finished.svg" v-if="request.picture_required"/>
             <img src="../assets/failed.svg" v-else/>
             <div class="labelDiv" v-if="request.picture_required">
@@ -107,7 +111,7 @@ export default {
                 {
                     element.checklist.forEach((elementListe,index) =>
                     {
-                        lista = lista + elementListe.item
+                        lista = lista + elementListe.check_list
                         if(index < element.checklist.length - 1)
                             lista = lista  + ", "
                         this.lista = lista
@@ -138,15 +142,15 @@ export default {
             markerPositions.push(newPosition)
           }
         })
-        if(this.request.address.name != "" && this.request.address.latitude && this.request.address.longitude)
+        if(this.request.destination.name != "" && this.request.destination.latitude && this.request.destination.longitude)
         {
             const newPosition = {
                 pos: {
-                    lat: this.request.address.latitude,
-                    lng: this.request.address.longitude
+                    lat: this.request.destination.latitude,
+                    lng: this.request.destination.longitude
                 },
                 lab: "F",
-                info: this.request.address.name
+                info: this.request.destination.name
             }
             markerPositions.push(newPosition)
         }
@@ -207,5 +211,11 @@ export default {
         align-items: center;
         margin-bottom: 15px;
         word-break:break-all;
+    }
+
+    .napomena
+    {
+        font-size: 18px;
+        color:rgb(206, 94, 94);
     }
 </style>

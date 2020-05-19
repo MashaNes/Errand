@@ -28,7 +28,6 @@
         </nav>
         <Spinner v-if="!requests" />
         <div class="request-div" v-else>
-            <!-- <RequestBox v-for="request in requests" :key="request.id" :identifikator="request.id"/> -->
              <RequestBox v-for="request in requests" :key="request.id" :myRequest="request"/>
         </div>
         <ModalSuccess v-if="requestCreated"
@@ -56,10 +55,6 @@
                 var requests_temp = []
                 if(this.tab == "Requested")
                 {
-                    // Object.values(this.$store.state.requests).forEach(request => {
-                    //     if((request.status == "running" || request.status == "pending") && (!request.runner))
-                    //         requests_temp.push(request)
-                    // });
                     if(!this.$store.state.createdAuthRequests)
                         requests_temp = null
                     else
@@ -68,20 +63,12 @@
                 }
                 else if(this.tab == "Running")
                 {
-                    // Object.values(this.$store.state.requests).forEach(request => {
-                    //     if((request.status == "running" || request.status == "pending") && (request.runner))
-                    //         requests_temp.push(request)
-                    // });
                     if(!this.$store.state.runnerAuthRequests)
                         requests_temp = null
                     else
                         requests_temp = this.$store.state.runnerAuthRequests.results
                 }
                 else{
-                    // Object.values(this.$store.state.requests).forEach(request => {
-                    //     if(request.status == "finished" || request.status == "failed")
-                    //         requests_temp.push(request)
-                    // });
                     if(!this.$store.state.overAuthRequests)
                         requests_temp = null
                     else
@@ -112,34 +99,26 @@
             tabRunning()
             {
                 this.tab = "Running"
-                //ako nisu popunjeni requests koje izvrsavam, get za njih (morace da budu posebna stavka u store-i, a mozda i ovde)
-                if(!this.$store.state.runnerAuthRequests)
-                {
-                    const filters = {
-                        created_by : null,
-                        done_by : this.$store.state.authUser.id,
-                        created_or_done_by: null,
-                        statuses : [1],
-                        unrated : null
-                    }
-                    this.$store.dispatch("fillRequests", {filters: filters, objectToFill: "runnerAuthRequests"})
+                const filters = {
+                    created_by : null,
+                    done_by : this.$store.state.authUser.id,
+                    created_or_done_by: null,
+                    statuses : [1],
+                    unrated : null
                 }
+                this.$store.dispatch("fillRequests", {filters: filters, objectToFill: "runnerAuthRequests"})
             },
             tabFinished()
             {
                 this.tab = "Finished"
-                //ako nisu popunjeni get za zavrsene zahteve (morace da budu posebna stavka u store-i, a mozda i ovde)
-                if(!this.$store.state.overAuthRequests)
-                {
-                    const filters = {
-                        created_by : null,
-                        done_by : null,
-                        created_or_done_by: this.$store.state.authUser.id,
-                        statuses : [2, 3],
-                        unrated : null
-                    }
-                    this.$store.dispatch("fillRequests", {filters: filters, objectToFill: "overAuthRequests"})
+                const filters = {
+                    created_by : null,
+                    done_by : null,
+                    created_or_done_by: this.$store.state.authUser.id,
+                    statuses : [2, 3],
+                    unrated : null
                 }
+                this.$store.dispatch("fillRequests", {filters: filters, objectToFill: "overAuthRequests"})
             },
             closeModal()
             {
@@ -148,7 +127,6 @@
         },
         created()
         {
-            //this.$store.dispatch("fillRequests")
             const filters = {
                 created_by : this.$store.state.authUser.id,
                 done_by : null,
@@ -157,13 +135,6 @@
                 unrated : null
             }
             this.$store.dispatch("fillRequests", {filters: filters, objectToFill: "createdAuthRequests"})
-            //get za requests (koje sam ja zahtevao)
-        },
-        destroyed()
-        {
-            this.$store.state.createdAuthRequests = null
-            this.$store.state.runnerAuthRequests = null
-            this.$store.state.overAuthRequests = null
         }
     }
 </script>

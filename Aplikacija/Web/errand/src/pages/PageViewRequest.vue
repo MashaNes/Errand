@@ -102,6 +102,14 @@
       </b-card-text>
 
       <Task v-for="task in computedRequest.tasklist" :key="task.id" :task="task" />
+      
+      <div class="button-div">
+        <button type="button" class="btn btn-info" @click="kreirajZahtev">
+          <span v-if="isSerbian"> Kreiraj novi zahtev na osnovu ovog </span>
+          <span v-else> Create a new request based on this one </span>
+        </button>
+      </div>
+
     </b-card>
   </div>
 </template>
@@ -229,6 +237,10 @@ export default {
     },
     openMap() {
       this.isMapOpened = !this.isMapOpened
+    },
+    kreirajZahtev()
+    {
+      this.$router.push({ name: 'PageNewRequest', params: {requestProp: this.request}})
     }
   },
   created() {
@@ -438,6 +450,16 @@ export default {
   .invisible {
     visibility: hidden;
     height:0px;
+  }
+
+  .button-div
+  {
+    width:100%;
+    display:flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+    margin-top:20px;
   }
 
 </style>

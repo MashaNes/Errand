@@ -899,12 +899,11 @@ export default new Vuex.Store({
                     "created_by" : this.state.authUser.id,
                     "name" : payload.name,
                     "time" : payload.time,
-                    //"picture_required" : payload.picture_required,
-                    "picture_required" : false,
+                    "picture_required" : payload.picture_required,
                     "note" : payload.note,
                     "max_dist" : payload.max_dist,
                     "min_rating" : payload.min_rating,
-                    "destination" : payload.address,
+                    "destination" : payload.destination,
                     "broadcast" : payload.broadcast,
                     "direct_user" : payload.direct_user,
                     "tasklist" : payload.tasklist
@@ -917,7 +916,14 @@ export default new Vuex.Store({
                         {
                             this.state.userAdded = true
                             console.log(data)
-                            //this.dispatch("pribavljanje skupa zahteva (makar ove prve "strane")")
+                            const filters = {
+                                created_by : this.state.authUser.id,
+                                done_by : null,
+                                created_or_done_by: null,
+                                statuses : [0, 1],
+                                unrated : null
+                            }
+                            this.dispatch("fillRequests", {filters: filters, objectToFill: "createdAuthRequests"})
                         })
                     }
                     else
