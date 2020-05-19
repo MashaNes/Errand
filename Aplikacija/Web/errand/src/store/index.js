@@ -960,6 +960,36 @@ export default new Vuex.Store({
                     console.log("Error")
                 }
             }) 
+        },
+        deleteRequest({commit}, requestId)
+        { 
+            fetch("http://127.0.0.1:8000/api/v1/request_cancel/",
+            {
+                method: 'DELETE',
+                headers:
+                {
+                    "Content-type" : "application/json",
+                    "Authorization" : "Token " + this.state.token
+                },
+                body:  JSON.stringify(
+                {
+                    "created_by" :this.state.authUser.id,
+                    "request" : requestId
+                })
+            }).then( p => 
+                {
+                    if(p.ok)
+                    {
+                        p.json().then(data =>
+                        {
+                            console.log(data)
+                        })
+                    }
+                    else
+                    {
+                        console.log("Error")
+                    }
+                });
         }
     },
     mutations:{

@@ -30,6 +30,13 @@
         <div class="request-div" v-else>
              <RequestBox v-for="request in requests" :key="request.id" :myRequest="request"/>
         </div>
+        <div v-if="requests != null && requests.length == 0" class="button-div">
+            <button type="button" class="btn btn-success" @click="newRequest">
+                <img src="../assets/add.svg" class="slika">
+                <span v-if="isSerbian"> Novi zahtev </span>
+                <span v-else> New request </span>
+            </button>
+        </div>
         <ModalSuccess v-if="requestCreated"
                       :textS="'Zahtev uspešno kreiran.'"
                       :textE="'Request successfully created.'"
@@ -123,6 +130,10 @@
             closeModal()
             {
                 this.$store.state.userAdded = false
+            },
+            newRequest()
+            {
+                this.$router.push("/newRequest")
             }
         },
         created()
@@ -185,5 +196,14 @@
     {
         background-color: rgb(233, 233, 233);
         text-decoration: underline;
+    }
+
+    .button-div
+    {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
     }
 </style>

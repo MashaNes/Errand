@@ -2,6 +2,12 @@
     <div class = "wrapper" :class="color">
         <div class="request-top" v-if="myRequest.status != 0">
             <div class="user-div"> 
+                <button v-if="(myRequest.status == 2 || myRequest.status == 3) && canRate" type="button" class="btn btn-success dugme-rate" @click="rateUser">
+                    <!-- proveriti kad bude bilo primera!!!!!!! -->
+                    <img src="../assets/rate.png" class="slika">
+                    <span v-if="isSerbian"> Oceni </span>
+                    <span v-else> Rate </span>
+                </button>
                 <span class="user-name" @click="goToProfile"> {{userName}} </span>
                 <p class="image is-128x128" >
                     <img class="rounded-image" :src="user.picture ? 'data:;base64,' + user.picture : require('../assets/no-picture.png')" @click="goToProfile">
@@ -165,6 +171,13 @@ export default {
         isSerbian()
         {
             return this.$store.state.isSerbian
+        },
+        canRate()
+        {
+            if(this.myRequest.created_by.id == this.$store.state.authUser.id)
+                return !this.myRequest.rated_working_with
+            else
+                return !this.myRequest.rated_created_by
         }
     },
     methods:
@@ -173,8 +186,12 @@ export default {
         {
             console.log(this.myRequest)
             this.showModal = false
-            //ukloniti request iz odgovajace liste iz store-a
-            //poslati delete ka bazi
+            this.$store.state.createdAuthRequests.results.forEach((element,index) =>
+            {
+                if(element.id == this.myRequest.id)
+                    this.$store.state.createdAuthRequests.results.splice(index,1)
+            })
+            this.$store.dispatch("deleteRequest", this.myRequest.id)
         },
         goToProfile()
         {
@@ -195,6 +212,11 @@ export default {
                     request: this.myRequest
                 }
             })
+        },
+        rateUser()
+        {
+            console.log(this.user)
+            //rate the user
         }
     }
 }
@@ -420,5 +442,18 @@ export default {
         width:50px;
         object-fit:cover;
         cursor: pointer;
+    }
+
+    .slika
+    {
+        width:20px;
+        height:20px;
+        margin-right:7px;
+    }
+
+    .dugme-rate
+    {
+        margin-right: 7px;
+        margin-left: 7px;
     }
 </style>
