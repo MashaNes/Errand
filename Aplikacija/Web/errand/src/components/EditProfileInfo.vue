@@ -2,6 +2,10 @@
   <div>
     <div class="main-container">
       <div class="picture-side">
+        <div v-if="newPicture" @click="removePicture" class="remove-pic-div">
+          <img src="@/assets/remove.svg" height="20" width="20" class="remove-pic"/>
+          <span v-text="isSerbian ? 'Ukloni sliku' : 'Remove picture'"></span>
+        </div>
         <div class="media-center">
           <p class="image is-128x128"
             @drop.prevent="onDrop"
@@ -12,7 +16,7 @@
             @mouseleave.prevent="onDragLeave"
             @click="$refs.file.click()"
           >
-            <img class="rounded-image" :src="user.picture ? 'data:;base64,'+picture : require('../assets/no-picture.png')">
+            <img class="rounded-image" :src="newPicture ? 'data:;base64,'+ picture : require('../assets/no-picture.png')">
             <img 
               v-show="isDragged" 
               :class="['rounded-image', 'semi-transparent']" 
@@ -111,17 +115,17 @@
               <b-button 
                 :disabled="isFormInvalid"
                 class="button is-primary title-btn"
-                @click="saveChanges"
+                @click="openModalSave = true"
               >
                 <strong v-if="isSerbian">Sačuvaj izmene</strong>
                 <strong v-else>Save changes</strong>
               </b-button>
               <b-button 
                 class="button is-primary title-btn"
-                @click="$emit('cancelChanges')"
+                @click="openModalCancel = true"
               >
-                <strong v-if="isSerbian">Odustani</strong>
-                <strong v-else>Cancel</strong>
+                <strong v-if="isSerbian">Odbaci izmene</strong>
+                <strong v-else>Dismiss changes</strong>
               </b-button>
             </div>
           </b-list-group-item>
@@ -150,17 +154,17 @@
             />
             <div class="list-value">
               <div class="address over-flow" v-for="(a, ind) in firstAddresses" :key="ind">
-                <img src="@/assets/remove.svg" v-if="addressArrayLength > 1" height="15" width="15" class="acc-or-remove-icon" @click="removeAddress(ind)">
+                <img src="@/assets/remove.svg" height="15" width="15" class="acc-or-remove-icon" @click="removeAddress(ind)">
                 <span >{{ a.name }}</span>
               </div>
-              <div v-if="addressArrayLength" class="over-flow">
-                <img src="@/assets/remove.svg" v-if="addressArrayLength > 1"  height="15" width="15" class="acc-or-remove-icon" @click="removeAddress(addressArrayLength-1)"> 
+              <div v-if="addressArrayLength" class="over-flow" style="margin-bottom: 20px; ">
+                <img src="@/assets/remove.svg" height="15" width="15" class="acc-or-remove-icon" @click="removeAddress(addressArrayLength-1)"> 
                 <span >{{lastAddress.name}} </span>
               </div>
               <div class="field flex-row-elements">
                 <b-button 
                   class="button is-primary"
-                  style="margin-top: 20px; font-weight: bold;"
+                  style="font-weight: bold;"
                   v-text="isSerbian ? 'Dodaj adresu' : 'Add an address'"
                   v-if="!showMapView"
                   @click="showAddrMap"
@@ -178,6 +182,20 @@
         @close="handleMapClosing" 
       />
     </div>
+    <ModalAreYouSure 
+      :naslovS="'Sačuvaj izmene'" 
+      :tekstS="'Da li ste sigurni da želite da sačuvate sve izmene?'" 
+      :naslovE="'Save changes'"
+      :tekstE="'Are you sure you want to save all the changes?'"
+      @close="openModalSave = false" @yes="saveChanges" v-if="openModalSave"
+    />
+    <ModalAreYouSure 
+      :naslovS="'Odbaci izmene'" 
+      :tekstS="'Da li ste sigurni da želite da odbacite izmene?'" 
+      :naslovE="'Dismiss changes'"
+      :tekstE="'Are you sure you want to dismiss all the changes?'"
+      @close="openModalCancel = false" @yes="$emit('cancelChanges')" v-if="openModalCancel"
+    />
   </div>
 </template>
 
@@ -186,11 +204,13 @@ import {required} from "vuelidate/lib/validators"
 import VuePhoneNumberInput from 'vue-phone-number-input';
 import 'vue-phone-number-input/dist/vue-phone-number-input.css';
 import AddAddressMap from "@/components/AddAddressMap"
+import ModalAreYouSure from "@/components/ModalAreYouSure"
 
 export default {
   components: {
     VuePhoneNumberInput,
-    AddAddressMap
+    AddAddressMap,
+    ModalAreYouSure
   },
   props: {
     user: {
@@ -211,11 +231,13 @@ export default {
       changedAddresses: JSON.parse(JSON.stringify(this.addresses)),
       newPhoneNumber: "",
       newAddress: "",
-      newPicture: null,
+      newPicture: this.user.picture,
       isDragged: false,
       dragCounter: 0,
       showMapView: false,
-      pictureChanged: false
+      pictureChanged: false,
+      openModalSave: false,
+      openModalCancel: false
     }
   },
   validations: {
@@ -235,9 +257,9 @@ export default {
         if (splitted.length == 2)
           return splitted[1]
         else 
-          return this.picture
+          return this.newPicture
       }
-      return this.user.picture
+      return null
     },
     // phoneArrayLength() {
     //   return this.changedUser['phone'].length
@@ -399,6 +421,9 @@ export default {
         this.dragCounter --;
       if(!this.dragCounter)
         this.isDragged = false;
+    },
+    removePicture() {
+      this.newPicture = null
     }
   }
 }
@@ -511,6 +536,25 @@ export default {
     align-items:center;
     margin-right:15px;
     margin-bottom:30px;
+  }
+
+  .remove-pic-div {
+    width: fit-content;
+    align-self: flex-start;
+    margin-bottom: 5px;
+    display: flex;
+    align-items: center;
+    font-weight: 600;
+  }
+
+  .remove-pic-div:hover {
+    cursor: pointer;
+    color: blue;
+  }
+
+  .remove-pic {
+    margin-right: 5px;
+    border-radius: 10px;
   }
 
   .flex-row-elements {
