@@ -9,6 +9,7 @@ import {fetchRequests} from "@/api/requests.js"
 import {fetchUsers} from "@/api/users.js"
 import {fetchRatings} from "@/api/ratings.js"
 import {fetchAchievements} from "@/api/achievements.js"
+import {fetchPictures} from "@/api/pictureTest.js"
 
 export default new Vuex.Store({
     state:{
@@ -40,7 +41,13 @@ export default new Vuex.Store({
         addressDeleteCount: 0,
         addressAddCount: 0,
         requestInCreation: null,
-        servicesRequired: []
+        servicesRequired: [],
+        testPictures: null,
+        // offers: null,
+        // //editRequests: null,
+        // acceptedOffer: null,
+        requestFilteredInfo: null,
+        filledInfoForRequest: null
     },
     getters:{
         getAuthUserId(state) {
@@ -942,8 +949,6 @@ export default new Vuex.Store({
             }).then(p => {
                 if(p.ok) {
                     p.json().then(data => {
-                        // eslint-disable-next-line no-debugger
-                        debugger
                         console.log(data)
                         let isParticipant = false
                         if(data.request.created_by.id == this.state.authUser.id)
@@ -953,7 +958,16 @@ export default new Vuex.Store({
                         if(!isParticipant)
                             this.state.specificRequest = -1
                         else
-                            this.state.specificRequest = data
+                        {
+                            this.state.specificRequest = data.request
+                            this.state.requestFilteredInfo = {
+                                offers: data.offers ? data.offers : null,
+                                acceptedOffer: data.accepted_offer ? data.accepted_offer : null,
+                                ratingCreatedBy: data.rating_created_by ? data.rating_created_by : null,
+                                ratingWorkingWith: data.rating_working_with ? data.rating_working_with : null
+                                //editRequests: data.edit_requests ? data.edit_requests : null
+                            }
+                        }
                     })
                 }
                 else {
@@ -990,6 +1004,40 @@ export default new Vuex.Store({
                         console.log("Error")
                     }
                 });
+        },
+        fillFilteredRequestInfo({commit}, {filters, requestId, objectsToFill}) {
+            fetch("http://127.0.0.1:8000/api/v1/request_info_filtered/", {
+                method: "POST",
+                headers: {
+                    "Content-type" : "application/json",
+                    "Authorization" : "Token " + this.state.token
+                },
+                body: JSON.stringify({
+                    "request" : requestId,
+                    "offers" : filters.offers,
+                    "accepted_offer" : filters.accepted_offer,
+                    "rating_created_by" : filters.rating_created_by,
+                    "rating_working_with" : filters.rating_working_with
+                })
+            }).then(p => {
+                if(p.ok) {
+                    p.json().then(data => {
+                        console.log(data)
+                        this.state.filledInfoForRequest = requestId
+                        this.state.requestFilteredInfo = {
+                            offers: data.offers ? data.offers : null,
+                            acceptedOffer: data.accepted_offer ? data.accepted_offer : null,
+                            ratingCreatedBy: data.rating_created_by ? data.rating_created_by : null,
+                            ratingWorkingWith: data.rating_working_with ? data.rating_working_with : null
+                            //editRequests: data.edit_requests ? data.edit_requests : null
+                        }
+                    })
+                }
+                else console.log("Error")
+            })
+        },
+        fillTestPictures() {
+            this.state.testPictures = fetchPictures()
         }
     },
     mutations:{

@@ -31,13 +31,35 @@
             <span v-for="(item, ind) in task.checklist" :key="item.id" class="chklist-item">{{ind+1}}. {{item.check_list}}</span>
           </b-card-text>
         </div>
+
+        <div v-if="task.picture_required">
+          <span v-text="isSerbian ? 'Dostavljene slike' : 'Pictures taken'" class="inner-text-title" v-if="pictures.length > 0"></span>
+          <span v-else v-text="isSerbian ? 'Još uvek nije dostavljena nijedna slika' : 'No pictures have been taken so far'"></span>
+          <b-card-text class="inner-text" v-if="pictures.length > 0">
+            <div class="images-wrapper" >
+              <img 
+                class="expandable-image" 
+                :src="'data:;base64,' + pictures[ind]"
+                @click="expandPicture(picture)"
+                v-for="(picture, ind) in pictures" 
+                :key="ind"
+              />
+            </div>
+          </b-card-text>
+        </div>
       </div>
     </b-collapse>
+    <ModalPicture :picture="clickedPicture" v-if="pictureExpanded" @shrinkPicture="pictureExpanded = false" />
   </b-card-text>
 </template>
 
 <script>
+import ModalPicture from "@/components/ModalPicture"
+
 export default {
+  components: {
+    ModalPicture
+  },
   props: {
     task: {
       type: Object,
@@ -46,12 +68,25 @@ export default {
   },
   data() {
     return {
-      opened: false
+      opened: false,
+      clickedPicture: null,
+      pictureExpanded: false
     }
   },
   computed: {
     isSerbian() {
       return this.$store.state.isSerbian
+    },
+    pictures() {
+      if(this.task.picture_required)
+        return this.$store.state.testPictures //kad bude moguce dodati sliku u task, zameniti sa "return this.task.pictures"
+      else return []
+    }
+  },
+  methods: {
+    expandPicture(picture) {
+      this.clickedPicture = picture
+      this.pictureExpanded = true
     }
   }
 }
@@ -132,4 +167,23 @@ export default {
     justify-content: space-between;
     flex-wrap: wrap;
   }
+
+  .images-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .expandable-image {
+    margin: 5px;
+    width: 100px;
+    height: 100px;
+    border: 1px solid grey;
+    border-radius: 5px;
+  }
+
+  .expandable-image:hover {
+    cursor: pointer;
+    border-color: black;
+  }
+
 </style>
