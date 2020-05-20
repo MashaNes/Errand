@@ -1,5 +1,5 @@
 <template>
-  <Spinner v-if="!computedRequest" />
+  <Spinner v-if="!computedRequest || !filteredInfo" />
   <div class="wrapper" v-else>
     <b-card>
       <b-card-title class="main-title">
@@ -10,33 +10,34 @@
             <span>{{computedRequest.time | showTime}}</span>
           </div>
           <div class="pic-and-span">
-            <img v-if="computedRequest.status == 'running'" src="@/assets/running.svg" height="25" width="25" class="title-pic">
-            <img v-if="computedRequest.status == 'pending'" src="@/assets/pending.svg" height="25" width="25" class="title-pic">
-            <img v-if="computedRequest.status == 'finished'" src="@/assets/finished.svg" height="25" width="25" class="title-pic">
-            <img v-if="computedRequest.status == 'failed'" src="@/assets/failed.svg" height="25" width="25" class="title-pic">
-            <span>{{computedRequest.status}}</span>
+            <img v-if="computedRequest.status == 0" src="@/assets/running.svg" height="25" width="25" class="title-pic">
+            <img v-if="computedRequest.status == 1" src="@/assets/pending.svg" height="25" width="25" class="title-pic">
+            <img v-if="computedRequest.status == 2" src="@/assets/finished.svg" height="25" width="25" class="title-pic">
+            <img v-if="computedRequest.status == 3" src="@/assets/failed.svg" height="25" width="25" class="title-pic">
+            <span>{{status}}</span>
           </div>
           <b-button 
             variant="secondary"
-            v-b-popover.hover.top="isSerbian ? 'Imate 10 ponuda' : 'You have 10 offers'"
-            v-if="computedRequest.status == 'pending' && computedRequest.created_by == null"
+            v-b-popover.hover.top="isSerbian ? 'Imate' + filteredInfo.offers.length + 'ponuda' : 'You have' + filteredInfo.offers.length + 'offers'"
+            v-if="computedRequest.status == 0 && !isRunner"
+            :disabled="filteredInfo.offers.length == 0"
           >
             <strong 
               class="notification-span" 
               v-text="isSerbian ? 'Ponude' : 'Offers'"
             ></strong>
-            <b-badge variant="danger" class="notification-badge" v-if="computedRequest.status == 'pending' && computedRequest.created_by == null">1</b-badge>
+            <b-badge variant="danger" class="notification-badge" >{{filteredInfo.offers.length}}</b-badge>
           </b-button>
           <b-button 
             variant="secondary"
             v-b-popover.hover.top="isSerbian ? 'Imate zahtev za izmenom' : 'You have an edit request'"
-            v-if="computedRequest.status == 'running' && computedRequest.created_by == null"
+            v-if="computedRequest.status == 1 && !isRunner"
           >
             <strong 
               class="notification-span" 
               v-text="isSerbian ? 'Zahtev za izmenom' : 'Edit request'"
             ></strong>
-            <b-badge variant="danger" class="notification-badge" v-if="computedRequest.status == 'running' && computedRequest.created_by == null">!</b-badge>
+            <b-badge variant="danger" class="notification-badge" >1</b-badge>
           </b-button>
         </div>
       </b-card-title>
@@ -56,18 +57,18 @@
         </b-card-text>
       </b-card-text>
 
-      <div v-if="computedRequest.status != 'pending' && otherUser != null" class="offer">
+      <div v-if="computedRequest.status != 0 && otherUser != null" class="offer">
         <b-card-title>
           <div class="offer-title">
             <span 
               v-text="(isSerbian ? 'Prihvaćena ponuda od ' : 'Accepted offer from ') + fullUserName"
               style="margin-right: 5px"
-              v-if="computedRequest.created_by == null || $store.state.authUser.id == computedRequest.created_by.id"
+              v-if="!isRunner"
             ></span>
             <span 
               v-text="(isSerbian ? 'Zahtev kreirao/la ' : 'Request created by ') + fullUserName"
               style="margin-right: 5px"
-              v-if="computedRequest.working_with == null || $store.state.authUser.id == computedRequest.working_with.id"
+              v-if="isRunner"
             ></span>
             <div class="media-center">
               <p class="image">
@@ -76,7 +77,7 @@
             </div>
           </div>
         </b-card-title>
-        <div class="inner-text" v-if="otherUser != null && otherUser == computedRequest.working_with">
+        <div class="inner-text" v-if="otherUser != null && !isRunner">
           <span v-text="isSerbian ? 'Tip naplate: po satu' : 'Payment type: per hour'"> </span>
           <span v-text="isSerbian ? 'Cena: 200 din' : 'Price: 200din'"></span>
         </div>
@@ -88,12 +89,37 @@
           <span>{{computedRequest.destination.name}}</span>
         </div>
         <div v-else class="inner-text" v-text="isSerbian ? 'Finalno odredište nije navedeno' : 'Final destination was not sepcified'"></div>
+      
+        <div v-if="computedRequest.picture_required" style="margin-top: 10px">
+          <span v-text="isSerbian ? 'Dostavljene slike' : 'Pictures taken'" class="inner-text-title" v-if="pictures.length > 0"></span>
+          <span 
+            v-else 
+            v-text="isSerbian ? 'Još uvek nije dostavljena nijedna slika' : 'No pictures have been taken so far'" 
+            class="inner-text-title"
+            style="margin-top: 10px;"
+          ></span>
+          <b-card-text class="inner-text" v-if="pictures.length > 0">
+            <div class="images-wrapper" >
+              <img 
+                class="expandable-image" 
+                :src="'data:;base64,' + pictures[ind]"
+                @click="expandPicture(picture)"
+                v-for="(picture, ind) in pictures" 
+                :key="ind"
+              />
+            </div>
+          </b-card-text>
+        </div>
+
+        <ModalPicture :picture="clickedPicture" v-if="pictureExpanded" @shrinkPicture="pictureExpanded = false" />
       </b-card-text>
 
+
+
       <b-card-text v-if="hasAddresses">
-        <b-button class="button is-primary" @click="openMap">
-          <strong v-if="!isMapOpened" v-text="isSerbian ? 'Pogledajte mapu zadataka' : 'See task-list map'"></strong>
-          <strong v-if="isMapOpened" v-text="isSerbian ? 'Zatvori mapu zadataka' : 'Close task-list map'"></strong>
+        <b-button @click="openMap">
+          <span v-if="!isMapOpened" v-text="isSerbian ? 'Prikaži adrese na mapi' : 'Show addresses on map'"></span>
+          <span v-if="isMapOpened" v-text="isSerbian ? 'Zatvori mapu' : 'Close map'"></span>
         </b-button>
       </b-card-text>
 
@@ -132,39 +158,17 @@ export default {
   },
   data() {
     return {
-      taskOpened: [],
-      tasks: [
-        {
-          name: 'Task1',
-          description: 'Ovo je test opis za zadatak Task1',
-          address: {
-            latitude: 44.788696,
-            longitude: 21.818723
-          }
-        },
-        {
-          name: 'Task2',
-          description: 'Ovo je test opis za zadatak Task2',
-          address: {
-            latitude: 49.185616,
-            longitude: 20.412323
-          }
-        },
-        {
-          name: 'Task3',
-          description: 'Ovo je test opis za zadatak Task3',
-          address: {
-            latitude: 43.455496,
-            longitude: 22.122123
-          }
-        }
-      ],
       computedRequest: null,
       isMapOpened: false,
-      hasAddresses: false
+      hasAddresses: false,
+      clickedPicture: null,
+      pictureExpanded: false
     }
   },
   computed: {
+    filteredInfo() {
+      return this.$store.state.requestFilteredInfo
+    },
     isSerbian() {
       return this.$store.state.isSerbian
     },
@@ -179,7 +183,47 @@ export default {
         return this.computedRequest.working_with
       else
         return this.computedRequest.created_by
-    }
+    },
+    status() {
+      let returnValue = ""
+      switch(this.computedRequest.status)
+      {
+        case 0: 
+          if(this.isSerbian)
+              returnValue = "na čekanju"
+          else
+              returnValue = "pending"
+          break
+        case 1: 
+          if(this.isSerbian)
+              returnValue = "u izvršenju"
+          else
+              returnValue = "running"
+          break
+        case 2: 
+          if(this.isSerbian)
+              returnValue = "završen"
+          else
+              returnValue = "finished"
+          break
+        case 3: 
+          if(this.isSerbian)
+              returnValue = "otkazan"
+          else
+              returnValue = "failed"
+      }
+      return returnValue
+    },
+    pictures() {
+      if(this.computedRequest.picture_required)
+        return this.$store.state.testPictures //kad bude moguce dodati sliku, zameniti sa "return this.computedRequest.pictures"
+      else return []
+    },
+    isRunner() {
+      if(!this.computedRequest.created_by || this.computedRequest.created_by.id == this.$store.state.authUser.id)
+        return false
+      else return true
+    },
   },
   methods: {
     routeChanged() {
@@ -188,9 +232,7 @@ export default {
       function callback() {
         if(vm.$store.state.specificRequest != null)
         {
-          vm.computedRequest = vm.$store.state.specificRequest.request
-          // eslint-disable-next-line no-debugger
-          debugger
+          vm.computedRequest = vm.$store.state.specificRequest
           if(vm.$store.state.specificRequest == -1)
             vm.$router.push({name: "PageRequests"})
           else
@@ -204,19 +246,70 @@ export default {
         const routeId = this.$route.params.id
         this.$store.dispatch('getRequestById', routeId)
         callback()
-        // if(!Object.values(this.$store.state.requests).length)
-        //   this.$store.dispatch('fillRequests')
-        // this.computedRequest = this.$store.state.requests[routeId]
       }
       else {
-         this.computedRequest = this.request
-         this.setMapMarkers()
+        this.computedRequest = this.request
+        let objectsToFill = []
+        let filters = {
+          request: this.computedRequest.id,
+          "offers" : false,
+          "accepted_offer" : false,
+          "rating_created_by" : false,
+          "rating_working_with" : false
+        }
+
+        const filledForThisRequest = this.$store.state.filledInfoForRequest == this.computedRequest.id
+        const status = this.computedRequest.status
+        const filtered = this.$store.state.requestFilteredInfo
+        if(!this.isRunner) {
+          if(!this.computedRequest.working_with && status == 0 && (!filtered || !filtered.offers || !filledForThisRequest)) {  
+            filters["offers"] = true
+            objectsToFill.push("offers")
+          }
+          if(this.computedRequest.working_with && (status > 0) && (!filtered || !filtered.acceptedOffer || !filledForThisRequest)) {
+            filters["accepted_offer"] = true
+            objectsToFill.push("acceptedOffer")
+          }
+          // if(this.computedRequest.working_with && status == 1 && (!this.$store.state.editRequests || !filledForThisRequest)) {
+          //   filters["edit_requests"] = true
+          //   objectsToFill.push("editRequests")
+          // } odkomentarisati kad se ubace i editRequests
+        }
+
+        if(this.computedRequest.rated_created_by && (!filtered || !filtered.ratingCreatedBy || !filledForThisRequest)) {
+          filters["rating_created_by"] = true
+          objectsToFill.push("ratingCreatedBy")
+        }
+        if(this.computedRequest.rated_working_with && (!filtered || !filtered.ratingCreatedBy || !filledForThisRequest)) {
+          filters["rating_working_with"] = true
+          objectsToFill.push("rating_working_with")
+        }
+
+        if(objectsToFill.length > 0)
+        {
+          this.$store.state.requestFilteredInfo = null
+          this.$store.dispatch("fillFilteredRequestInfo", {filters, requestId: filters.request, objectsToFill})
+        }
+        this.setMapMarkers()
       }
     },
     setMapMarkers() {
+      const markerPositions = [];
+      if(this.computedRequest.destination) {
+        this.hasAddresses = true
+        const newPosition = {
+          pos: {
+            lat: this.computedRequest.destination.latitude,
+            lng: this.computedRequest.destination.longitude
+          },
+          lab: "F",
+          info: this.computedRequest.destination.name
+        }
+        markerPositions.push(newPosition)
+      }
+
       if(this.computedRequest.tasklist)
       {
-        const markerPositions = [];
         this.computedRequest.tasklist.forEach((task, ind) => {
           if(task.address)
           {
@@ -227,7 +320,7 @@ export default {
                 lng: task.address.longitude
               },
               lab: String(ind + 1),
-              info: task.description
+              info: task.address.name
             }
             markerPositions.push(newPosition)
           }
@@ -241,11 +334,16 @@ export default {
     kreirajZahtev()
     {
       this.$router.push({ name: 'PageNewRequest', params: {requestProp: this.request}})
+    },
+    expandPicture(picture) {
+      this.clickedPicture = picture
+      this.pictureExpanded = true
     }
   },
   created() {
     this.routeChanged()
-    console.log('created')
+    this.$store.dispatch('fillTestPictures')
+    //izbaciti kad bude moguce dodavanje slike u request i u taskove
   },
   watch: {
     $route() {
@@ -308,7 +406,7 @@ export default {
   }
 
   .pic-and-span {
-    margin: 10px 20px 10px 0;
+    margin: 10px 40px 10px 0;
     display:flex;
     align-items: center;
   }
@@ -460,6 +558,24 @@ export default {
     justify-content: flex-end;
     align-items: center;
     margin-top:20px;
+  }
+
+  .images-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .expandable-image {
+    margin: 5px;
+    width: 100px;
+    height: 100px;
+    border: 1px solid grey;
+    border-radius: 5px;
+  }
+
+  .expandable-image:hover {
+    cursor: pointer;
+    border-color: black;
   }
 
 </style>
