@@ -206,16 +206,22 @@ def filter_user_info(serializer, data):
         response['blocked'] = serializer['blocked']
         for _r in response['blocked']:
             _r['picture'] = load_img(_r['picture'])
+
     if data['working_hours']:
         response['working_hours'] = serializer['working_hours']
+
     if data['addresses']:
         response['addresses'] = serializer['addresses']
+
     if data['services']:
         response['services'] = serializer['services']
+
     if data['offers']:
         response['offers'] = serializer['offers']
+
     if data['notifications']:
         response['notifications'] = serializer['notifications']
+
     if data['ratings']:
         response['ratings'] = serializer['ratings']
         for _r in response['ratings']:
@@ -226,10 +232,12 @@ def filter_user_info(serializer, data):
         response['benefitlist'] = serializer['benefitlist']
         for _r in response['benefitlist']:
             _r['benefit_user']['picture'] = load_img(_r['benefit_user']['picture'])
+
     if data['achievements']:
         response['achievements'] = serializer['achievements']
         for _r in response['achievements']:
             _r['icon'] = load_img(_r['icon'])
+
     if data['requests']:
         response['requests'] = serializer['requests']
 
@@ -326,5 +334,22 @@ def filter_request_info(serializer, data):
             load_img(response['rating_working_with']['created_by']['picture'])
         response['rating_working_with']['rated_user']['picture'] = \
             load_img(response['rating_working_with']['rated_user']['picture'])
+
+    if data['edits']:
+        response['edits'] = serializer['edits']
+
+    if data['tasklist']:
+        response['tasklist'] = serializer['request']['tasklist']
+        for _t in response['tasklist']:
+            for _p in _t['pictures']:
+                _p = load_img(_p)
+
+    if data['destination']:
+        response['destination'] = serializer['request']['destination']
+
+    if data['pictures']:
+        response['pictures'] = serializer['request']['pictures']
+        for _p in response['pictures']:
+            _p = load_img(_p)
 
     return response

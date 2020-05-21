@@ -294,6 +294,21 @@ def create_offer(data):
 
     return offer
 
+def create_edit(data):
+    created_by = models.User.objects.get(id=data['created_by'])
+    request = models.Request.objects.get(id=data['request'])
+    working_with = request.created_by
+    edit_req = create_request_edit(data['edit'], request)
+    edit = models.Edit(created_by=created_by,
+                       working_with=working_with,
+                       request_edit=edit_req)
+    edit.save()
+    fullrequest = models.FullRequest.objects.get(id=request.id)
+    fullrequest.edits.add(edit)
+    fullrequest.save()
+
+    return edit
+
 def accept_offer(data):
     request = models.FullRequest.objects.get(id=data['request'])
     offer = models.Offer.objects.get(id=data['offer'])
@@ -303,16 +318,14 @@ def accept_offer(data):
         for _f in request.offers.all():
             if _f.id == offer.id:
                 found = True
-            # TODO: Uncomment.
-            # else:
-            #     _f.delete()
-            request.offers.remove(_f)
+                request.offers.remove(_f)
+            else:
+                _f.delete()
 
     if found:
         if offer.edit:
             if offer.edit.time:
                 request.request.time = offer.edit.time
-                request.request.time.save()
 
             for _t in offer.edit.tasks.all():
                 for _ot in request.request.tasklist.all():
@@ -325,6 +338,34 @@ def accept_offer(data):
         request.request.status = 1 # active
 
         request.request.save()
+        request.save()
+        return request
+
+    return None
+
+def accept_edit(data):
+    request = models.FullRequest.objects.get(id=data['request'])
+    edit = models.Edit.objects.get(id=data['edit'])
+    found = False
+
+    if request.edits:
+        for _e in request.edits.all():
+            if _e.id == edit.id:
+                found = True
+
+    if found:
+        if edit.request_edit:
+            if edit.request_edit.time:
+                request.request.time = edit.request_edit.time
+
+            for _t in edit.request_edit.tasks.all():
+                for _ot in request.request.tasklist.all():
+                    if _t.task.id == _ot.id:
+                        _ot.address = _t.address
+                        _ot.save()
+
+        edit.request_edit.delete()
+
         request.save()
         return request
 

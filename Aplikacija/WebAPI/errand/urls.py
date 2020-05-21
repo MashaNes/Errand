@@ -97,7 +97,13 @@ urlrequest = [
     path('api/v1/offer_accept/', api_views.OfferAccept.as_view(),
          name='offer_accept'),
     path('api/v1/offer_cancel/', api_views.OfferCancel.as_view(),
-         name='offer_cancel')
+         name='offer_cancel'),
+    path('api/v1/edit_create/', api_views.EditCreate.as_view(),
+         name='edit_create'),
+    path('api/v1/edit_accept/', api_views.EditAccept.as_view(),
+         name='edit_accept'),
+    path('api/v1/edit_cancel/', api_views.EditCancel.as_view(),
+         name='edit_cancel')
 ]
 urlpatterns += urlrequest
 

@@ -87,6 +87,8 @@ class Benefit(models.Model):
 
 class Report(models.Model):
     comment = models.CharField(max_length=256)
+    handled = models.BooleanField(default=False)
+    # Status -> 0, 1(b), 2(ignored), 3(b-reversed)
     reported_user = models.ForeignKey(User, related_name='report_reported_user_id',
                                       on_delete=models.CASCADE)
     created_by = models.ForeignKey(User, related_name='report_created_by_id',
@@ -127,6 +129,13 @@ class RequestEdit(models.Model):
     tasks = models.ManyToManyField(TaskEdit)
     request = models.ForeignKey(Request, on_delete=models.CASCADE)
 
+class Edit(models.Model):
+    created_by = models.ForeignKey(User, related_name='created_by_id',
+                                   on_delete=models.CASCADE)
+    working_with = models.ForeignKey(User, related_name='working_with_id',
+                                     on_delete=models.CASCADE)
+    request_edit = models.ForeignKey(RequestEdit, on_delete=models.CASCADE)
+
 class Rating(models.Model):
     grade = models.FloatField()
     comment = models.CharField(max_length=256)
@@ -165,10 +174,12 @@ class FullUser(models.Model):
     benefitlist = models.ManyToManyField(Benefit)
     achievements = models.ManyToManyField(AchievementLevel)
     requests = models.ManyToManyField(Request)
+    ban = models.ForeignKey(Banned, null=True, blank=True, on_delete=models.SET_NULL)
 
 class FullRequest(models.Model):
     request = models.ForeignKey(Request, related_name='request_id', on_delete=models.CASCADE)
     offers = models.ManyToManyField(Offer, related_name='offers_id')
+    edits = models.ManyToManyField(Edit)
     accepted_offer = models.ForeignKey(Offer, related_name='accepted_offer',
                                        null=True, on_delete=models.SET_NULL)
     rating_created_by = models.ForeignKey(Rating, related_name='rating_created_by',

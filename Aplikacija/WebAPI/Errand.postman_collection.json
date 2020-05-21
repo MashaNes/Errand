@@ -1198,7 +1198,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\t\"request\" : 1,\n\t\"offers\" : true,\n\t\"accepted_offer\" : false,\n\t\"rating_created_by\" : false,\n\t\"rating_working_with\" : false\n}",
+					"raw": "{\n\t\"request\" : 1,\n\t\"offers\" : false,\n\t\"edits\" : true,\n\t\"accepted_offer\" : false,\n\t\"rating_created_by\" : false,\n\t\"rating_working_with\" : false,\n\t\"tasklist\" : true,\n\t\"destination\" : true,\n\t\"pictures\" : true\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -1266,7 +1266,7 @@
 		{
 			"name": "OfferAccept",
 			"request": {
-				"method": "POST",
+				"method": "PUT",
 				"header": [
 					{
 						"key": "Authorization",
@@ -1315,7 +1315,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\t\"created_by\" : 5,\n\t\"offer\" : 3\n}",
+					"raw": "{\n\t\"created_by\" : 5,\n\t\"offer\" : 34\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -1335,6 +1335,123 @@
 						"api",
 						"v1",
 						"offer_cancel",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "EditCreate",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token cfd6e5d73c5ae3403b2769b4287cc993e6569165",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"created_by\" : 5,\n\t\"request\" : 1,\n\t\"edit\" : {\n\t\t\"time\" : \"2020-05-27 18:00\",\n\t\t\"tasks\" : [\n\t\t\t{\n\t\t\t\t\"task\" : 2,\n\t\t\t\t\"address\" : {\n\t\t\t\t\t\"name\" : \"Dragise Cvetkovica 32\",\n\t\t\t\t\t\"longitude\" : 43.319100,\n\t\t\t\t\t\"latitude\" : 21.913395,\n\t\t\t\t\t\"home\" : true,\n\t\t\t\t\t\"arrived\" : false\n\t\t\t\t}\n\t\t\t\t\n\t\t\t}\n\t\t]\n\t}\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "127.0.0.1:8000/api/v1/edit_create/",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"v1",
+						"edit_create",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "EditAccept",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token cfd6e5d73c5ae3403b2769b4287cc993e6569165",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"created_by\" : 4,\n\t\"request\" : 1,\n\t\"edit\" : 15\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "127.0.0.1:8000/api/v1/edit_accept/",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"v1",
+						"edit_accept",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "EditCancel",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token cfd6e5d73c5ae3403b2769b4287cc993e6569165",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"created_by\" : 5,\n\t\"edit\" : 14\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "127.0.0.1:8000/api/v1/edit_cancel/",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"v1",
+						"edit_cancel",
 						""
 					]
 				}

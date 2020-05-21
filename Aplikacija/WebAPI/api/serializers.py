@@ -111,6 +111,12 @@ class RequestEditSerializer(serializers.ModelSerializer):
         model = models.RequestEdit
         fields = '__all__'
 
+class EditSerializer(serializers.ModelSerializer):
+    request_edit = RequestEditSerializer()
+    class Meta:
+        model = models.Edit
+        fields = '__all__'
+
 class OfferSerializer(serializers.ModelSerializer):
     created_by = UserSerializer()
     # request = RequestSerializer()
@@ -153,6 +159,7 @@ class FullUserSerializer(serializers.ModelSerializer):
 class FullRequestSerializer(serializers.ModelSerializer):
     request = RequestSerializer()
     offers = OfferSerializer(many=True)
+    edits = EditSerializer(many=True)
     accepted_offer = OfferSerializer()
     rating_created_by = RatingSerializer()
     rating_working_with = RatingSerializer()

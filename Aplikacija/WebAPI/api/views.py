@@ -39,12 +39,14 @@ Endpoints:
 + POST user_service_add/			// Adds new user service for user
 + POST block_add/			        // Adds new user to blocklist
 + POST offer_create/ 				// Creates offer for request
-+ POST offer_accept/ 				// Accepts offer for request
++ POST edit_create/                 // Creates edit request
 + POST request_create/ 				// Creates request
 - POST request_pic_upload/          // Uploads picture to request or task
 + POST rate_user/ 					// Adds new rating for completed request
-- POST report_user/					// Reports user
-- POST ban_user/ (A)	 			// Bans user
+- POST report_create/				// Reports user
+- POST report_filtered              // Returns filtered reports
+- POST ban_create/ (A)	 			// Bans reported user
+- POST ban_remove/ (A)	 			// Remove user from banned list
 + POST achievement_create/ (A)	 	// Creates new achievement
 + POST service_type_create/ (A)		// Creates new service type
 
@@ -56,6 +58,10 @@ Endpoints:
 + PUT address_update/			    // Updates address to addresses
 + PUT working_hours_update/ 		// Updates working hours for user
 + PUT user_service_update/		    // Updates user service for user
+- PUT report_handle/ (A)            // Handles reported user
+- PUT service_edit/ (A)             // Edits service
++ PUT offer_accept/ 				// Accepts offer for request
++ PUT edit_accept/                  // Accpets edit request
 
 + DELETE benefit_remove/ 			// Removes user from benefit list
 + DELETE address_remove/ 			// Removes address from user
@@ -64,6 +70,7 @@ Endpoints:
 + DELETE block_remove/ 			    // Removes user from blocklist
 + DELETE request_cancel/ 			// Cancels request (when pending)
 + DELETE offer_cancel/ 			    // Cancels offer (when not accepted)
++ DELETE edit_cancel/               // Cancels edit request
 '''
 
 
@@ -124,9 +131,9 @@ class LogOut(generics.UpdateAPIView):
             user.auth_token.delete()
             user.status = 0
             user.save()
-            response = {'success' : 'Logged out.'}
+            response = {'detail' : 'Logged out.'}
         else:
-            response = {'success' : 'Not logged in.'}
+            response = {'detail' : 'Not logged in.'}
         return Response(response)
 
 # POST user_create/
@@ -148,7 +155,7 @@ class UserCreate(generics.ListCreateAPIView):
                 'user': _s
             }
             return Response(custom_response)
-        return Response({"success" : False})
+        return Response({'detail' : 'failed'})
 
 # PUT user_update/
 class UserUpdate(generics.UpdateAPIView):
@@ -215,9 +222,6 @@ class UserViewSet(viewsets.ModelViewSet):
 
     def retrieve(self, request, pk):
         user = get_object_or_404(self.queryset, pk=pk)
-        if user.is_admin:
-            return Response({'success' : False,
-                             'description' : 'Cannot return admin user.'})
         serializer = serializers.UserSerializer(user)
         response = serializer.data
         response['picture'] = utils.load_img(response['picture'])
@@ -259,8 +263,7 @@ class FullUserViewSet(viewsets.ModelViewSet):
     def retrieve(self, request, pk):
         fulluser = get_object_or_404(self.queryset, pk=pk)
         if fulluser.user.is_admin:
-            return Response({'success' : False,
-                             'description' : 'Cannot return admin user.'})
+            return Response({'detail' : 'Cannot return admin user.'})
         serializer = serializers.FullUserSerializer(fulluser)
         _r = serializer.data
         _r = utils.load_pictures_user(_r)
@@ -317,9 +320,7 @@ class BenefitAdd(generics.ListCreateAPIView):
 
         for _b in user.benefitlist.all():
             if _b.benefit_user.id == request.data['benefit_user']:
-                return Response({
-                    'success' : False,
-                    'description' : 'User is in the list.'})
+                return Response({'detail' : 'User is in the list.'})
 
         benefit = parsers.create_benefit(request.data)
         benefit.save()
@@ -336,7 +337,7 @@ class BenefitUpdate(generics.UpdateAPIView):
         created_by = request.data['created_by']
         user = models.FullUser.objects.get(id=created_by)
 
-        response = {'success' : False, 'description' : 'User is not in the list.'}
+        response = {'detail' : 'User is not in the list.'}
         for _b in user.benefitlist.all():
             if _b.id == request.data['benefit']:
                 _b = parsers.update_benefit(_b, request.data)
@@ -358,13 +359,13 @@ class BenefitRemove(generics.RetrieveDestroyAPIView):
         ben_user = models.User.objects.get(id=benefit_user)
 
         benefits = user.benefitlist.all()
-        response = {'success' : False, 'description' : 'User is not in the list.'}
+        response = {'detail' : 'User is not in the list.'}
         for _b in benefits:
             if _b.benefit_user.id == ben_user.id:
                 user.benefitlist.remove(_b)
                 user.save()
                 _b.delete()
-                response = {'success' : True}
+                response = {'detail' : 'success'}
                 break
 
         return Response(response)
@@ -389,8 +390,7 @@ class AddressUpdate(generics.UpdateAPIView):
         user = models.FullUser.objects.get(id=created_by)
         aid = request.data['address']
 
-        response = {'success' : False,
-                    'description' : 'Address is not in the list.'}
+        response = {'detail' : 'Address is not in the list.'}
 
         for _a in user.addresses.all():
             if _a.id == aid:
@@ -416,15 +416,14 @@ class AddressRemove(generics.RetrieveDestroyAPIView):
 
         if not found:
             return Response({
-                'success' : False,
-                'description' : 'Address is not in the list.'})
+                'detail' : 'Address is not in the list.'})
 
         address = models.Address.objects.get(id=aid)
         user.addresses.remove(address)
         user.save()
         address.delete()
 
-        return Response({'success' : True})
+        return Response({'detail' : 'success'})
 
 
 # ======================= WORKING HOURS =======================
@@ -447,8 +446,7 @@ class WorkingHoursUpdate(generics.UpdateAPIView):
         user = models.FullUser.objects.get(id=created_by)
         wid = request.data['working_hours']
 
-        response = {'success' : False,
-                    'description' : 'Working hours are not in the list.'}
+        response = {'detail' : 'Working hours are not in the list.'}
 
         for _w in user.working_hours.all():
             if _w.id == wid:
@@ -474,15 +472,14 @@ class WokringHoursRemove(generics.RetrieveDestroyAPIView):
 
         if not found:
             return Response({
-                'succes' : False,
-                'description' : 'Working hours are not in the list.'})
+                'detail' : 'Working hours are not in the list.'})
 
         working_hour = models.WorkingHour.objects.get(id=wid)
         user.working_hours.remove(working_hour)
         user.save()
         working_hour.delete()
 
-        return Response({'success' : True})
+        return Response({'detail' : 'success'})
 
 
 # ====================== USER SERVICE ======================
@@ -496,8 +493,7 @@ class UserServiceAdd(generics.ListCreateAPIView):
         for _s in user.services.all():
             if _s.service.id == request.data['service']:
                 return Response({
-                    'success' : False,
-                    'description' : 'Service is in the list.'})
+                    'detail' : 'Service is in the list.'})
 
         user.services.add(user_service)
         user.save()
@@ -511,8 +507,7 @@ class UserServiceUpdate(generics.UpdateAPIView):
         user = models.FullUser.objects.get(id=created_by)
         sid = request.data['user_service']
 
-        response = {'success' : False,
-                    'description' : 'User service is not in the list.'}
+        response = {'detail' : 'User service is not in the list.'}
 
         for _s in user.services.all():
             if _s.id == sid:
@@ -538,15 +533,14 @@ class UserServiceRemove(generics.RetrieveDestroyAPIView):
 
         if not found:
             return Response({
-                'success' : False,
-                'description' : 'Service is not in the list.'})
+                'detail' : 'Service is not in the list.'})
 
         service = models.UserService.objects.get(id=sid)
         user.services.remove(service)
         user.save()
         service.delete()
 
-        return Response({'success' : True})
+        return Response({'detail' : 'success'})
 
 
 # ================= BLOCK =================
@@ -560,8 +554,7 @@ class BlockAdd(generics.ListCreateAPIView):
         for _b in user.blocked.all():
             if _b.id == blocked.id:
                 return Response({
-                    'success' : False,
-                    'description' : 'User is blocked.'})
+                    'detail' : 'User is blocked.'})
 
         user.blocked.add(blocked)
         user.save()
@@ -579,13 +572,12 @@ class BlockRemove(generics.RetrieveDestroyAPIView):
         created_by = request.data['created_by']
         user = models.FullUser.objects.get(id=created_by)
 
-        response = {'success' : False,
-                    'description' : 'User is not in the list.'}
+        response = {'detail' : 'User is not in the list.'}
         for _b in user.blocked.all():
             if _b.id == request.data['blocked']:
                 user.blocked.remove(_b)
                 user.save()
-                response = {'success' : True}
+                response = {'detail' : 'success'}
                 break
 
         return Response(response)
@@ -600,18 +592,15 @@ class RateUser(generics.ListCreateAPIView):
         req = models.FullRequest.objects.get(id=request.data['request'])
 
         if req.request.status != 2:
-            return Response({'success' : False,
-                             'detail' : 'Request is not finished'})
+            return Response({'detail' : 'Request is not finished'})
 
         if req.request.created_by.id == request.data['rated_user'] and \
                     req.request.rated_created_by:
-            return Response({'success' : False,
-                             'detail' : 'User is already rated for this request'})
+            return Response({'detail' : 'User is already rated for this request'})
 
         if req.request.working_with.id == request.data['working_with'] and \
                     req.request.rated_working_with:
-            return Response({'success' : False,
-                             'detail' : 'User is already rated for this request'})
+            return Response({'detail' : 'User is already rated for this request'})
 
         user.ratings.add(rating)
         user.save()
@@ -664,15 +653,14 @@ class RequestCancel(generics.RetrieveDestroyAPIView):
 
         if not found:
             return Response({
-                'succes' : False,
-                'description' : 'Request is not in the list.'})
+                'detail' : 'Request is not in the list.'})
 
         req = models.Request.objects.get(id=rid)
         user.requests.remove(req)
         user.save()
         req.delete()
 
-        return Response({'succes' : True})
+        return Response({'detail' : 'success'})
 
 # GET requests_info/{id}
 class RequestViewSet(viewsets.ModelViewSet):
@@ -792,9 +780,9 @@ class OfferCreate(generics.ListCreateAPIView):
 
         return Response(serializer.data)
 
-# POST offer_accept/
-class OfferAccept(generics.ListCreateAPIView):
-    def create(self, request):
+# PUT offer_accept/
+class OfferAccept(generics.UpdateAPIView):
+    def update(self, request):
         created_by = models.User.objects.get(id=request.data['created_by'])
         req = models.FullRequest.objects.get(id=request.data['request'])
 
@@ -815,27 +803,80 @@ class OfferAccept(generics.ListCreateAPIView):
 # DELETE offer_cancel/
 class OfferCancel(generics.RetrieveDestroyAPIView):
     def destroy(self, request):
-        created_by = request.data['created_by']
-        user = models.FullUser.objects.get(id=created_by)
         rid = request.data['offer']
-
-        found = False
-        for _r in user.offers.all():
-            if _r.id == rid:
-                found = True
-                break
-
-        if not found:
+        if models.Offer.objects.filter(pk=rid).exists():
+            offer = models.Offer.objects.get(id=rid)
+            if offer.created_by != request.data['created_by']:
+                notification = None
+                #TODO: Send notification OFFER_REJECTED
+            offer.edit.delete()
+            offer.delete()
+            return Response({'detail' : 'success'})
+        else:
             return Response({
-                'succes' : False,
-                'description' : 'Offer is not in the list.'})
+                'detail' : 'Offer does not exist.'})
 
-        off = models.Offer.objects.get(id=rid)
-        user.offers.remove(off)
-        user.save()
-        off.delete()
+# POST edit_create/
+class EditCreate(generics.ListCreateAPIView):
+    def create(self, request):
+        edit = parsers.create_edit(request.data)
+        created_by = request.data['created_by']
+        serializer = serializers.EditSerializer(edit)
 
-        return Response({'succes' : True})
+        return Response(serializer.data)
+
+# PUT edit_accept/
+class EditAccept(generics.UpdateAPIView):
+    def update(self, request):
+        created_by = models.User.objects.get(id=request.data['created_by'])
+        req = models.FullRequest.objects.get(id=request.data['request'])
+
+        if created_by.id != req.request.created_by.id or req.request.status != 1:
+            return Response({'detail' : 'Edit cannot be accepted.'})
+
+        req = parsers.accept_edit(request.data)
+
+        if not req:
+            return Response({'detail' : 'Edit cannot be accepted.'})
+
+        serializer = serializers.FullRequestSerializer(req)
+        _s = serializer.data
+        _s = utils.load_pictures_request(_s)
+
+        return Response(_s)
+
+# DELETE edit_cancel/
+class EditCancel(generics.RetrieveDestroyAPIView):
+    def destroy(self, request):
+        rid = request.data['edit']
+        if models.Edit.objects.filter(pk=rid).exists():
+            edit = models.Edit.objects.get(id=rid)
+            if edit.created_by != request.data['created_by']:
+                notification = None
+                # TODO: Send notification (EDIT REJECTED)
+            else:
+                notification = None
+                # TODO: Send notification (EDIT CANCELED)
+
+            edit.request_edit.delete()
+            return Response({'detail' : 'success'})
+        else:
+            return Response({
+                'detail' : 'Edit does not exist.'})
+
+# # POST picture_upload/
+# class OfferCreate(generics.ListCreateAPIView):
+#     def create(self, request):
+#         offer = parsers.create_offer(request.data)
+#         created_by = request.data['created_by']
+#         user = models.FullUser.objects.get(id=created_by)
+#         user.offers.add(offer)
+#         user.save()
+#         serializer = serializers.OfferSerializer(offer)
+#         serializer.data['created_by']['picture'] = \
+#             utils.load_img(serializer.data['created_by']['picture'])
+
+#         return Response(serializer.data)
 
 # ================= ACHIEVEMENTS =================
 # GET achievements/{id}
@@ -915,8 +956,7 @@ class AchievementCreate(generics.ListCreateAPIView):
             response['icon'] = utils.load_img(response['icon'])
             return Response(response)
         else:
-            return Response({"success" : False,
-                             "description" : "User is not admin."})
+            return Response({"detail" : "User is not admin."})
 
 # POST service_type_create/
 class ServiceCreate(generics.ListCreateAPIView):
@@ -929,5 +969,4 @@ class ServiceCreate(generics.ListCreateAPIView):
             serializer = serializers.ServiceSerializer(service)
             return Response(serializer.data)
         else:
-            return Response({"success" : False,
-                             "description" : "User is not admin."})
+            return Response({"detail" : "User is not admin."})
