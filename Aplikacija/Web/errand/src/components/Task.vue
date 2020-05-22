@@ -32,7 +32,7 @@
           </b-card-text>
         </div>
 
-        <div v-if="task.picture_required">
+        <div v-if="task.picture_required && myRequestStatus > 0">
           <span v-text="isSerbian ? 'Dostavljene slike' : 'Pictures taken'" class="inner-text-title" v-if="pictures.length > 0"></span>
           <span v-else v-text="isSerbian ? 'Još uvek nije dostavljena nijedna slika' : 'No pictures have been taken so far'"></span>
           <b-card-text class="inner-text" v-if="pictures.length > 0">
@@ -46,6 +46,13 @@
               />
             </div>
           </b-card-text>
+        </div>
+        <div v-else-if="myRequestStatus == 0 && task.picture_required">
+          <span 
+            v-text="isSerbian ? 'Potrebno je dostaviti slike za ovaj zadatak' : 'Pictures are required for this task'"
+            v-if="task.picture_required"
+            class="inner-text-title"
+          ></span>
         </div>
       </div>
     </b-collapse>
@@ -63,6 +70,10 @@ export default {
   props: {
     task: {
       type: Object,
+      required: true
+    },
+    myRequestStatus: {
+      type: Number,
       required: true
     }
   },

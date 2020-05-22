@@ -962,10 +962,13 @@ export default new Vuex.Store({
                             this.state.specificRequest = data.request
                             this.state.requestFilteredInfo = {
                                 offers: data.offers ? data.offers : null,
+                                edits: data.edits ? data.edits : null,
                                 acceptedOffer: data.accepted_offer ? data.accepted_offer : null,
                                 ratingCreatedBy: data.rating_created_by ? data.rating_created_by : null,
-                                ratingWorkingWith: data.rating_working_with ? data.rating_working_with : null
-                                //editRequests: data.edit_requests ? data.edit_requests : null
+                                ratingWorkingWith: data.rating_working_with ? data.rating_working_with : null,
+                                tasklist: data.tasklist ? data.tasklist : null,
+                                destination: data.destination ? data.destination : null,
+                                pictures: data.pictures ? data.pictures : null
                             }
                         }
                     })
@@ -1015,9 +1018,13 @@ export default new Vuex.Store({
                 body: JSON.stringify({
                     "request" : requestId,
                     "offers" : filters.offers,
+                    "edits" : filters.edits,
                     "accepted_offer" : filters.accepted_offer,
                     "rating_created_by" : filters.rating_created_by,
-                    "rating_working_with" : filters.rating_working_with
+                    "rating_working_with" : filters.rating_working_with,
+                    "tasklist" : filters.tasklist,
+                    "destination" : filters.destination,
+                    "pictures" : filters.pictures
                 })
             }).then(p => {
                 if(p.ok) {
@@ -1026,10 +1033,13 @@ export default new Vuex.Store({
                         this.state.filledInfoForRequest = requestId
                         this.state.requestFilteredInfo = {
                             offers: data.offers ? data.offers : null,
+                            edits: data.edits ? data.edits : null,
                             acceptedOffer: data.accepted_offer ? data.accepted_offer : null,
                             ratingCreatedBy: data.rating_created_by ? data.rating_created_by : null,
-                            ratingWorkingWith: data.rating_working_with ? data.rating_working_with : null
-                            //editRequests: data.edit_requests ? data.edit_requests : null
+                            ratingWorkingWith: data.rating_working_with ? data.rating_working_with : null,
+                            tasklist: data.tasklist ? data.tasklist : null,
+                            destination: data.destination ? data.destination : null,
+                            pictures: data.pictures ? data.pictures : null
                         }
                     })
                 }
