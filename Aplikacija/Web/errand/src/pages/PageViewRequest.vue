@@ -18,9 +18,10 @@
           </div>
           <b-button 
             variant="secondary"
-            v-b-popover.hover.top="isSerbian ? 'Imate' + filteredInfo.offers.length + 'ponuda' : 'You have' + filteredInfo.offers.length + 'offers'"
-            v-if="computedRequest.status == 0 && !isRunner"
+            v-b-popover.hover.top="isSerbian ? 'Imate ' + filteredInfo.offers.length + ' ponuda' : 'You have ' + filteredInfo.offers.length + ' offers'"
+            v-if="computedRequest.status == 0 && !isRunner && showView == 'Details'"
             :disabled="filteredInfo.offers.length == 0"
+            @click="showView = 'Offers'"
           >
             <strong 
               class="notification-span" 
@@ -31,8 +32,9 @@
           <b-button 
             variant="secondary"
             v-b-popover.hover.top="isSerbian ? 'Imate ' + filteredInfo.edits.length + ' zahteva za izmenama' : 'You have ' + filteredInfo.edits.length + ' edit requests'"
-            v-if="computedRequest.status == 1 && !isRunner"
+            v-if="computedRequest.status == 1 && !isRunner && showView == 'Edits'"
             :disabled="filteredInfo.edits.length == 0"
+            @click="showView = 'Edits'"
           >
             <strong 
               class="notification-span" 
@@ -40,108 +42,127 @@
             ></strong>
             <b-badge variant="danger" class="notification-badge" >{{filteredInfo.edits.length}}</b-badge>
           </b-button>
+          <b-button 
+            variant="secondary"
+            v-if="showView != 'Details'"
+            @click="showView = 'Details'"
+          >
+            <strong 
+              class="notification-span" 
+              v-text="isSerbian ? 'Detalji zahteva' : 'Request details'"
+            ></strong>
+          </b-button>
         </div>
       </b-card-title>
 
-      <b-card-text class="request-note">
-        <b-card-title>
-            <span style="margin-right:5px;" v-text="isSerbian ? 'Napomena' : 'Note'"></span>
-        </b-card-title>
-        <b-card-text class="inner-text" v-if="computedRequest.note">
-          {{computedRequest.note}}
-        </b-card-text>
-        <b-card-text 
-          class="inner-text" 
-          v-else 
-          v-text="isSerbian ? 'Nema napomena za ovaj zahtev' : 'There are no notes about this request'"
-        >
-        </b-card-text>
-      </b-card-text>
-
-      <div v-if="computedRequest.status != 0 && otherUser != null" class="offer">
-        <b-card-title>
-          <div class="offer-title">
-            <span 
-              v-text="(isSerbian ? 'Prihvaćena ponuda od ' : 'Accepted offer from ') + fullUserName"
-              style="margin-right: 5px"
-              v-if="!isRunner"
-            ></span>
-            <span 
-              v-text="(isSerbian ? 'Zahtev kreirao/la ' : 'Request created by ') + fullUserName"
-              style="margin-right: 5px"
-              v-if="isRunner"
-            ></span>
-            <div class="media-center">
-              <p class="image">
-                <img class="rounded-image" :src="otherUser.picture ? 'data:;base64,' + otherUser.picture : require('../assets/no-picture.png')">
-              </p>
-            </div>
-          </div>
-        </b-card-title>
-        <div class="inner-text" v-if="otherUser != null && !isRunner">
-          <span v-text="(isSerbian ? 'Tip naplate: ' : 'Payment type: ') + paymentType"> </span>
-          <span v-text="(isSerbian ? 'Cena: ' : 'Price: ') + filteredInfo.acceptedOffer.payment_ammount + ' din'"></span>
-        </div>
+      <div style="display: flex; flex-direction: column" v-if="computedRequest.status == 0 && !isRunner && showView == 'Offers'" >
+        <OfferBox 
+          v-for="offer in filteredInfo.offers" :key="offer.id" :offer="offer" 
+          @acceptOffer="acceptOffer" @rejectOffer="rejectOffer"
+        />
       </div>
 
-      <b-card-text class="request-note">
-        <b-card-title v-text="isSerbian ? 'Finalno odredište' : 'Final destination'"></b-card-title>
-        <div class="inner-text" v-if="computedRequest.destination">
-          <span>{{computedRequest.destination.name}}</span>
-        </div>
-        <div v-else class="inner-text" v-text="isSerbian ? 'Finalno odredište nije navedeno' : 'Final destination was not sepcified'"></div>
-      
-        <div v-if="computedRequest.picture_required && status > 0" style="margin-top: 10px">
-          <span v-text="isSerbian ? 'Dostavljene slike' : 'Pictures taken'" class="inner-text-title" v-if="pictures.length > 0"></span>
-          <span 
-            v-else 
-            v-text="isSerbian ? 'Još uvek nije dostavljena nijedna slika' : 'No pictures have been taken so far'" 
-            class="inner-text-title"
-            style="margin-top: 10px;"
-          ></span>
-          <b-card-text class="inner-text" v-if="pictures.length > 0">
-            <div class="images-wrapper" >
-              <img 
-                class="expandable-image" 
-                :src="'data:;base64,' + pictures[ind]"
-                @click="expandPicture(picture)"
-                v-for="(picture, ind) in pictures" 
-                :key="ind"
-              />
-            </div>
+
+      <div v-if="showView == 'Details'">
+        <b-card-text class="request-note">
+          <b-card-title>
+              <span style="margin-right:5px;" v-text="isSerbian ? 'Napomena' : 'Note'"></span>
+          </b-card-title>
+          <b-card-text class="inner-text" v-if="computedRequest.note">
+            {{computedRequest.note}}
           </b-card-text>
+          <b-card-text 
+            class="inner-text" 
+            v-else 
+            v-text="isSerbian ? 'Nema napomena za ovaj zahtev' : 'There are no notes about this request'"
+          >
+          </b-card-text>
+        </b-card-text>
+
+        <div v-if="computedRequest.status != 0 && otherUser != null" class="offer">
+          <b-card-title>
+            <div class="offer-title">
+              <span 
+                v-text="(isSerbian ? 'Prihvaćena ponuda od ' : 'Accepted offer from ') + fullUserName"
+                style="margin-right: 5px"
+                v-if="!isRunner"
+              ></span>
+              <span 
+                v-text="(isSerbian ? 'Zahtev kreirao/la ' : 'Request created by ') + fullUserName"
+                style="margin-right: 5px"
+                v-if="isRunner"
+              ></span>
+              <div class="media-center">
+                <p class="image">
+                  <img class="rounded-image" :src="otherUser.picture ? 'data:;base64,' + otherUser.picture : require('../assets/no-picture.png')">
+                </p>
+              </div>
+            </div>
+          </b-card-title>
+          <div class="inner-text" v-if="otherUser != null && !isRunner">
+            <span v-text="(isSerbian ? 'Tip naplate: ' : 'Payment type: ') + paymentType"> </span>
+            <span v-text="(isSerbian ? 'Cena: ' : 'Price: ') + filteredInfo.acceptedOffer.payment_ammount + ' din'"></span>
+          </div>
         </div>
 
-        <ModalPicture :picture="clickedPicture" v-if="pictureExpanded" @shrinkPicture="pictureExpanded = false" />
-      </b-card-text>
+        <b-card-text class="request-note">
+          <b-card-title v-text="isSerbian ? 'Finalno odredište' : 'Final destination'"></b-card-title>
+          <div class="inner-text" v-if="computedRequest.destination">
+            <span>{{computedRequest.destination.name}}</span>
+          </div>
+          <div v-else class="inner-text" v-text="isSerbian ? 'Finalno odredište nije navedeno' : 'Final destination was not sepcified'"></div>
+        
+          <div v-if="computedRequest.picture_required && status > 0" style="margin-top: 10px">
+            <span v-text="isSerbian ? 'Dostavljene slike' : 'Pictures taken'" class="inner-text-title" v-if="pictures.length > 0"></span>
+            <span 
+              v-else 
+              v-text="isSerbian ? 'Još uvek nije dostavljena nijedna slika' : 'No pictures have been taken so far'" 
+              class="inner-text-title"
+              style="margin-top: 10px;"
+            ></span>
+            <b-card-text class="inner-text" v-if="pictures.length > 0">
+              <div class="images-wrapper" >
+                <img 
+                  class="expandable-image" 
+                  :src="'data:;base64,' + pictures[ind]"
+                  @click="expandPicture(picture)"
+                  v-for="(picture, ind) in pictures" 
+                  :key="ind"
+                />
+              </div>
+            </b-card-text>
+          </div>
+
+          <ModalPicture :picture="clickedPicture" v-if="pictureExpanded" @shrinkPicture="pictureExpanded = false" />
+        </b-card-text>
 
 
 
-      <b-card-text v-if="hasAddresses">
-        <b-button @click="toggleMap">
-          <span v-if="!isMapOpened" v-text="isSerbian ? 'Prikaži adrese na mapi' : 'Show addresses on map'"></span>
-          <span v-if="isMapOpened" v-text="isSerbian ? 'Zatvori mapu' : 'Close map'"></span>
-        </b-button>
-      </b-card-text>
+        <b-card-text v-if="hasAddresses">
+          <b-button @click="toggleMap">
+            <span v-if="!isMapOpened" v-text="isSerbian ? 'Prikaži adrese na mapi' : 'Show addresses on map'"></span>
+            <span v-if="isMapOpened" v-text="isSerbian ? 'Zatvori mapu' : 'Close map'"></span>
+          </b-button>
+        </b-card-text>
 
-      <b-card-text style="margin-top: 20px;" v-if="hasAddresses" :class="isMapOpened ? 'visible' : 'invisible'">
-        <Map />
-      </b-card-text>
+        <b-card-text style="margin-top: 20px;" v-if="hasAddresses" :class="isMapOpened ? 'visible' : 'invisible'">
+          <Map />
+        </b-card-text>
 
-      <Task 
-        v-for="task in computedRequest.tasklist" 
-        :key="task.id" 
-        :task="task" 
-        :myRequestStatus="computedRequest.status" 
-      />
-      
-      <div class="button-div">
-        <button type="button" class="btn btn-info" @click="kreirajZahtev">
-          <span v-if="isSerbian"> Kreiraj novi zahtev na osnovu ovog </span>
-          <span v-else> Create a new request based on this one </span>
-        </button>
+        <Task 
+          v-for="task in computedRequest.tasklist" 
+          :key="task.id" 
+          :task="task" 
+          :myRequestStatus="computedRequest.status" 
+        />
+        
+        <div class="button-div">
+          <button type="button" class="btn btn-info" @click="kreirajZahtev">
+            <span v-if="isSerbian"> Kreiraj novi zahtev na osnovu ovog </span>
+            <span v-else> Create a new request based on this one </span>
+          </button>
+        </div>
       </div>
-
     </b-card>
   </div>
 </template>
@@ -150,12 +171,14 @@
 import Map from "@/components/Map"
 import Task from "@/components/Task"
 import Spinner from "@/components/Spinner"
+import OfferBox from "@/components/OfferBox"
 
 export default {
   components: {
     Map,
     Task,
-    Spinner
+    Spinner,
+    OfferBox
   },
   props: {
     request: {
@@ -168,7 +191,8 @@ export default {
       isMapOpened: false,
       hasAddresses: false,
       clickedPicture: null,
-      pictureExpanded: false
+      pictureExpanded: false,
+      showView: "Details"
     }
   },
   computed: {
@@ -370,6 +394,24 @@ export default {
     expandPicture(picture) {
       this.clickedPicture = picture
       this.pictureExpanded = true
+    },
+    acceptOffer(offer) {
+      console.log('accepted')
+      console.log(offer)
+      this.showView = 'Details'
+      this.filteredInfo.acceptedOffer = offer
+      this.computedRequest.working_with = offer.created_by
+      this.computedRequest.status = 1
+      const index = this.$store.state.createdAuthRequests.results.findIndex(req => req.id == this.computedRequest.id)
+      this.$store.state.createdAuthRequests.results[index].status = 1
+      this.$store.dispatch('acceptOffer', {offerId: offer.id, requestId: this.computedRequest.id})
+    },
+    rejectOffer(offer) {
+      console.log('reject')
+      console.log(offer)
+      const index = this.filteredInfo.offers.findIndex(off => off.id == offer.id)
+      this.filteredInfo.offers.splice(index, 1)
+      this.$store.dispatch('rejectOffer', offer.id)
     }
   },
   created() {
