@@ -30,14 +30,15 @@
           </b-button>
           <b-button 
             variant="secondary"
-            v-b-popover.hover.top="isSerbian ? 'Imate zahtev za izmenom' : 'You have an edit request'"
+            v-b-popover.hover.top="isSerbian ? 'Imate ' + filteredInfo.edits.length + ' zahteva za izmenama' : 'You have ' + filteredInfo.edits.length + ' edit requests'"
             v-if="computedRequest.status == 1 && !isRunner"
+            :disabled="filteredInfo.edits.length == 0"
           >
             <strong 
               class="notification-span" 
-              v-text="isSerbian ? 'Zahtev za izmenom' : 'Edit request'"
+              v-text="isSerbian ? 'Zahtevi za izmenama' : 'Edit requests'"
             ></strong>
-            <b-badge variant="danger" class="notification-badge" >1</b-badge>
+            <b-badge variant="danger" class="notification-badge" >{{filteredInfo.edits.length}}</b-badge>
           </b-button>
         </div>
       </b-card-title>
@@ -78,8 +79,8 @@
           </div>
         </b-card-title>
         <div class="inner-text" v-if="otherUser != null && !isRunner">
-          <span v-text="isSerbian ? 'Tip naplate: po satu' : 'Payment type: per hour'"> </span>
-          <span v-text="isSerbian ? 'Cena: 200 din' : 'Price: 200din'"></span>
+          <span v-text="(isSerbian ? 'Tip naplate: ' : 'Payment type: ') + paymentType"> </span>
+          <span v-text="(isSerbian ? 'Cena: ' : 'Price: ') + filteredInfo.acceptedOffer.payment_ammount + ' din'"></span>
         </div>
       </div>
 
@@ -90,7 +91,7 @@
         </div>
         <div v-else class="inner-text" v-text="isSerbian ? 'Finalno odredište nije navedeno' : 'Final destination was not sepcified'"></div>
       
-        <div v-if="computedRequest.picture_required" style="margin-top: 10px">
+        <div v-if="computedRequest.picture_required && status > 0" style="margin-top: 10px">
           <span v-text="isSerbian ? 'Dostavljene slike' : 'Pictures taken'" class="inner-text-title" v-if="pictures.length > 0"></span>
           <span 
             v-else 
@@ -117,7 +118,7 @@
 
 
       <b-card-text v-if="hasAddresses">
-        <b-button @click="openMap">
+        <b-button @click="toggleMap">
           <span v-if="!isMapOpened" v-text="isSerbian ? 'Prikaži adrese na mapi' : 'Show addresses on map'"></span>
           <span v-if="isMapOpened" v-text="isSerbian ? 'Zatvori mapu' : 'Close map'"></span>
         </b-button>
@@ -127,7 +128,12 @@
         <Map />
       </b-card-text>
 
-      <Task v-for="task in computedRequest.tasklist" :key="task.id" :task="task" />
+      <Task 
+        v-for="task in computedRequest.tasklist" 
+        :key="task.id" 
+        :task="task" 
+        :myRequestStatus="computedRequest.status" 
+      />
       
       <div class="button-div">
         <button type="button" class="btn btn-info" @click="kreirajZahtev">
@@ -224,10 +230,42 @@ export default {
         return false
       else return true
     },
+    paymentType() {
+      let returnValue = ""
+      if(this.filteredInfo.acceptedOffer) {
+        switch(this.filteredInfo.acceptedOffer.payment_type) {
+          case "0":
+            if(this.isSerbian)
+              returnValue = "po satu"
+            else 
+              returnValue = "per hour"
+            break
+          case "1":
+            if(this.isSerbian)
+              returnValue = "po kilometru"
+            else
+              returnValue = "per kilometer"
+            break
+          case "2":
+            if(this.isSerbian)
+              returnValue = "fiksno"
+            else
+              returnValue = "fixed"
+            break
+          case "3":
+            if(this.isSerbia)
+              returnValue = "početna cena"
+            else
+              returnValue = "starting price"
+        }
+      }
+      return returnValue
+    }
   },
   methods: {
     routeChanged() {
       //izmeniti da se ode obavi fetch za request sa id-jem iz rute (ukoliko nije prosledjen prop)
+      this.$store.state.requestFilteredInfo = null
       const vm = this
       function callback() {
         if(vm.$store.state.specificRequest != null)
@@ -249,47 +287,41 @@ export default {
       }
       else {
         this.computedRequest = this.request
-        let objectsToFill = []
         let filters = {
           request: this.computedRequest.id,
           "offers" : false,
+          "edits" : false, 
           "accepted_offer" : false,
           "rating_created_by" : false,
-          "rating_working_with" : false
+          "rating_working_with" : false,
+          "tasklist" : true,
+          "destination" : true,
+          "pictures" : true
         }
 
-        const filledForThisRequest = this.$store.state.filledInfoForRequest == this.computedRequest.id
         const status = this.computedRequest.status
-        const filtered = this.$store.state.requestFilteredInfo
+
         if(!this.isRunner) {
-          if(!this.computedRequest.working_with && status == 0 && (!filtered || !filtered.offers || !filledForThisRequest)) {  
+          if(status == 0) {
             filters["offers"] = true
-            objectsToFill.push("offers")
           }
-          if(this.computedRequest.working_with && (status > 0) && (!filtered || !filtered.acceptedOffer || !filledForThisRequest)) {
+          else if(status == 1) {
+            filters["edits"] = true
+          }
+          if(status > 0) {
             filters["accepted_offer"] = true
-            objectsToFill.push("acceptedOffer")
           }
-          // if(this.computedRequest.working_with && status == 1 && (!this.$store.state.editRequests || !filledForThisRequest)) {
-          //   filters["edit_requests"] = true
-          //   objectsToFill.push("editRequests")
-          // } odkomentarisati kad se ubace i editRequests
+        }
+        if(status > 2) {
+          if(this.request.rated_created_by)
+            filters["rating_created_by"] = true
+          if(this.request.rated_working_with)
+            filters["rating_working_with"] = true
         }
 
-        if(this.computedRequest.rated_created_by && (!filtered || !filtered.ratingCreatedBy || !filledForThisRequest)) {
-          filters["rating_created_by"] = true
-          objectsToFill.push("ratingCreatedBy")
-        }
-        if(this.computedRequest.rated_working_with && (!filtered || !filtered.ratingCreatedBy || !filledForThisRequest)) {
-          filters["rating_working_with"] = true
-          objectsToFill.push("rating_working_with")
-        }
-
-        if(objectsToFill.length > 0)
-        {
-          this.$store.state.requestFilteredInfo = null
-          this.$store.dispatch("fillFilteredRequestInfo", {filters, requestId: filters.request, objectsToFill})
-        }
+        this.$store.state.requestFilteredInfo = null
+        this.$store.dispatch("fillFilteredRequestInfo", {filters, requestId: filters.request})
+        
         this.setMapMarkers()
       }
     },
@@ -328,7 +360,7 @@ export default {
         this.$store.dispatch('setMarkerPositions', markerPositions)
       }
     },
-    openMap() {
+    toggleMap() {
       this.isMapOpened = !this.isMapOpened
     },
     kreirajZahtev()
@@ -341,8 +373,8 @@ export default {
     }
   },
   created() {
-    this.routeChanged()
     this.$store.dispatch('fillTestPictures')
+    this.routeChanged()
     //izbaciti kad bude moguce dodavanje slike u request i u taskove
   },
   watch: {
