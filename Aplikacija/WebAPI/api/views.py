@@ -41,7 +41,7 @@ Endpoints:
 + POST offer_create/ 				// Creates offer for request
 + POST edit_create/                 // Creates edit request
 + POST request_create/ 				// Creates request
-- POST request_pic_upload/          // Uploads picture to request or task
++ POST picture_upload/              // Uploads picture to request or task
 + POST rate_user/ 					// Adds new rating for completed request
 - POST report_create/				// Reports user
 - POST report_filtered              // Returns filtered reports
@@ -71,6 +71,7 @@ Endpoints:
 + DELETE request_cancel/ 			// Cancels request (when pending)
 + DELETE offer_cancel/ 			    // Cancels offer (when not accepted)
 + DELETE edit_cancel/               // Cancels edit request
++ DELETE picture_remove/            // Removes picture
 '''
 
 
@@ -864,19 +865,59 @@ class EditCancel(generics.RetrieveDestroyAPIView):
             return Response({
                 'detail' : 'Edit does not exist.'})
 
-# # POST picture_upload/
-# class OfferCreate(generics.ListCreateAPIView):
-#     def create(self, request):
-#         offer = parsers.create_offer(request.data)
-#         created_by = request.data['created_by']
-#         user = models.FullUser.objects.get(id=created_by)
-#         user.offers.add(offer)
-#         user.save()
-#         serializer = serializers.OfferSerializer(offer)
-#         serializer.data['created_by']['picture'] = \
-#             utils.load_img(serializer.data['created_by']['picture'])
+# POST picture_upload/
+class PictureUpload(generics.ListCreateAPIView):
+    def create(self, request):
+        rid = request.data['request_id']
+        tid = request.data['task_id']
+        pic = request.data['picture']
 
-#         return Response(serializer.data)
+        if rid and models.Request.objects.filter(pk=rid).exists():
+            req = models.Request.objects.get(id=rid)
+
+            picture = models.Picture(picture=None)
+            picture.save()
+            pic = parsers.create_picture(pic, 'pictures/' + str(picture.id))
+            picture.picture = pic
+            picture.save()
+
+            req.pictures.add(picture)
+            req.save()
+            serializer = serializers.RequestSerializer(req)
+            response = utils.load_pictures_request_info(serializer.data)
+            return Response(response)
+
+        if tid and models.Task.objects.filter(pk=tid).exists():
+            task = models.Task.objects.get(id=tid)
+
+            picture = models.Picture(picture=None)
+            picture.save()
+            pic = parsers.create_picture(pic, 'pictures/' + str(picture.id))
+            picture.picture = pic
+            picture.save()
+
+            task.pictures.add(picture)
+            task.save()
+            serializer = serializers.TaskSerializer(task)
+            response = serializer.data
+            for _r in response['pictures']:
+                _r['picture'] = utils.load_img(_r['picture'])
+            return Response(response)
+
+        return Response({'detail' : 'request_id or task_id not valid.'})
+
+# DELETE picture_remove/
+class PictureRemove(generics.RetrieveDestroyAPIView):
+    def destroy(self, request):
+        pid = request.data['picture']
+        if models.Picture.objects.filter(pk=pid).exists():
+            pic = models.Picture.objects.get(id=pid)
+            utils.remove_img(str(pic.picture))
+            pic.delete()
+            return Response({'detail' : 'success'})
+        else:
+            return Response({
+                'detail' : 'Picture does not exist.'})
 
 # ================= ACHIEVEMENTS =================
 # GET achievements/{id}

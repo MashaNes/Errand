@@ -32,7 +32,7 @@ Endpoints:
 + POST offer_create/ 				// Creates offer for request
 + POST edit_create/                 // Creates edit request
 + POST request_create/ 				// Creates request
-- POST request_pic_upload/          // Uploads picture to request or task
++ POST picture_upload/              // Uploads picture to request or task
 + POST rate_user/ 					// Adds new rating for completed request
 - POST report_create/				// Reports user
 - POST report_filtered              // Returns filtered reports
@@ -62,6 +62,7 @@ Endpoints:
 + DELETE request_cancel/ 			// Cancels request (when pending)
 + DELETE offer_cancel/ 			    // Cancels offer (when not accepted)
 + DELETE edit_cancel/               // Cancels edit request
++ DELETE picture_remove/            // Removes picture
 
 (+ -> Done)
 (- -> Not)

@@ -15,6 +15,10 @@ def load_img(img_path):
         base64_string = base64_string[2:-1]
     return base64_string
 
+def remove_img(img_path):
+    if os.path.exists(img_path):
+        os.remove(img_path)
+
 def load_pictures_multiple_users(data):
     for _d in data:
         _d = load_pictures_user(_d)
@@ -67,12 +71,12 @@ def load_pictures_request_info(data):
 
     if data['pictures']:
         for _d in data['pictures']:
-            _d = load_img(_d)
+            _d['picture'] = load_img(_d['picture'])
 
     if data['tasklist']:
         for _d in data['tasklist']:
             for _p in _d['pictures']:
-                _p = load_img(_p)
+                _p['picture'] = load_img(_p['picture'])
 
     return data
 
@@ -342,7 +346,7 @@ def filter_request_info(serializer, data):
         response['tasklist'] = serializer['request']['tasklist']
         for _t in response['tasklist']:
             for _p in _t['pictures']:
-                _p = load_img(_p)
+                _p['picture'] = load_img(_p['picture'])
 
     if data['destination']:
         response['destination'] = serializer['request']['destination']
@@ -350,6 +354,6 @@ def filter_request_info(serializer, data):
     if data['pictures']:
         response['pictures'] = serializer['request']['pictures']
         for _p in response['pictures']:
-            _p = load_img(_p)
+            _p['picture'] = load_img(_p['picture'])
 
     return response

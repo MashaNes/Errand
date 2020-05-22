@@ -3,6 +3,7 @@ from . import models
 from . import utils
 
 class PictureSerializer(serializers.ModelSerializer):
+    picture = serializers.CharField()
     class Meta:
         model = models.Picture
         fields = '__all__'
@@ -38,6 +39,7 @@ class TaskSerializer(serializers.ModelSerializer):
     address = AddressSerializer()
     service_type = ServiceSerializer()
     checklist = CheckListSerializer(many=True)
+    pictures = PictureSerializer(many=True)
 
     class Meta:
         model = models.Task
@@ -100,6 +102,7 @@ class RequestSerializer(serializers.ModelSerializer):
     direct_user = UserSerializer()
     destination = AddressSerializer()
     tasklist = TaskSerializer(many=True)
+    pictures = PictureSerializer(many=True)
 
     class Meta:
         model = models.Request

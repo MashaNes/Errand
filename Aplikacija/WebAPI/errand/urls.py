@@ -103,7 +103,11 @@ urlrequest = [
     path('api/v1/edit_accept/', api_views.EditAccept.as_view(),
          name='edit_accept'),
     path('api/v1/edit_cancel/', api_views.EditCancel.as_view(),
-         name='edit_cancel')
+         name='edit_cancel'),
+    path('api/v1/picture_upload/', api_views.PictureUpload.as_view(),
+         name='picture_upload'),
+    path('api/v1/picture_remove/', api_views.PictureRemove.as_view(),
+         name='picture_remove')
 ]
 urlpatterns += urlrequest
 
