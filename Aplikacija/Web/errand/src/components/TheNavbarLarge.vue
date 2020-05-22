@@ -65,11 +65,11 @@
                             <span v-if="isSerbian" class = "ikonica"> Nekategorizovani zadaci </span>
                             <span v-else class = "ikonica"> Uncategorized tasks </span>
                         </a>
-                        <a class="dropdown-item">
+                        <router-link :to = "'/addService'" class="dropdown-item">
                             <img src = "../assets/add-service.svg" class="slichka">
                             <span v-if="isSerbian" class = "ikonica"> Nova usluga </span>
                             <span v-else class = "ikonica"> New service </span>
-                        </a>
+                        </router-link>
                         <a class="dropdown-item">
                             <img src = "../assets/achievement-add.svg" class="slichka">
                             <span v-if="isSerbian" class = "ikonica"> Novo dostignuće </span>

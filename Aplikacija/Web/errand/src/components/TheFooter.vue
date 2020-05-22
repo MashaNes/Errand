@@ -56,10 +56,10 @@
               <li class="stavka-navigacije" v-if="isSerbian"> Nekategorizovani zadaci </li>
               <li class="stavka-navigacije" v-else> Uncategorized tasks </li>
             <!--</router-link>-->
-            <!--<router-link>-->
+            <router-link :to = "'/addService'">
               <li class="stavka-navigacije" v-if="isSerbian"> Nova usluga </li>
               <li class="stavka-navigacije" v-else> New service </li>
-            <!--</router-link>-->
+            </router-link>
             <!--<router-link>-->
               <li class="stavka-navigacije" v-if="isSerbian"> Novo dostignuće </li>
               <li class="stavka-navigacije" v-else> New achievement </li>
