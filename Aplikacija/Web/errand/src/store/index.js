@@ -205,11 +205,68 @@ export default new Vuex.Store({
                             this.state.logedIn = true
                             this.state.token = data['token']
                             this.state.isDataLoaded = true
+                            this.state.isAdmin = false
                             Vue.cookie.set('token',data['token'], { expires: '1h' });
                             Vue.cookie.set('id',this.state.authUser.id, { expires: '1h' });
                             Vue.cookie.set('ime',this.state.authUser.first_name, { expires: '1h' });
                             Vue.cookie.set('prezime',this.state.authUser.last_name, { expires: '1h' });
+                            Vue.cookie.set('admin',this.state.isAdmin, { expires: '1h' });
                             router.push('/requests')
+                        })
+                    }
+                    else
+                    {
+                        console.log("Error")
+                        this.state.isDataLoaded = true
+                    }
+                });
+        },
+        createAdminUser({commit}, payload)
+        {
+            this.state.isDataLoaded = false
+            fetch("http://127.0.0.1:8000/api/v1/user_create/",
+            {
+                method: 'POST',
+                headers:
+                {
+                    "Content-type" : "application/json"
+                },
+                body:  JSON.stringify(
+                {
+                    "is_admin" : true,
+                    "email" : payload.email,
+                    "password" : payload.password,
+                    "first_name" : payload.name,
+                    "last_name" : payload.lastName,
+                    "phone" : null,
+                    "picture" : null,
+                    "benefit_discount" : null,
+                    "benefit_requirement" : null,
+                    "admin_key" : payload.superpassword
+                })
+            }).then( p => 
+                {
+                    if(p.ok)
+                    {
+                        p.json().then(data =>
+                        {
+                            console.log(data)
+                            if(data['detail'] == "failed")
+                            {
+                                this.state.isDataLoaded = true
+                                return
+                            }
+                            this.state.authUser = data['user']
+                            this.state.logedIn = true
+                            this.state.token = data['token']
+                            this.state.isDataLoaded = true
+                            this.state.isAdmin = true
+                            Vue.cookie.set('token',data['token'], { expires: '1h' });
+                            Vue.cookie.set('id',this.state.authUser.id, { expires: '1h' });
+                            Vue.cookie.set('ime',this.state.authUser.first_name, { expires: '1h' });
+                            Vue.cookie.set('prezime',this.state.authUser.last_name, { expires: '1h' });
+                            Vue.cookie.set('admin',this.state.isAdmin, { expires: '1h' });
+                            router.push('/statistics')
                         })
                     }
                     else

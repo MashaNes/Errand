@@ -5,7 +5,10 @@
                 <router-link :to = "'/'" class="navbar-item" v-if="!isLogedIn">
                     <h1 class="title is-4">Errand</h1>
                 </router-link>
-                <router-link :to = "'/requests'" class="navbar-item" v-else>
+                <router-link :to = "'/requests'" class="navbar-item" v-if="isLogedIn && !isAdmin">
+                    <h1 class="title is-4">Errand</h1>
+                </router-link>
+                <router-link :to = "'/statistics'" class="navbar-item" v-if="isLogedIn && isAdmin">
                     <h1 class="title is-4">Errand</h1>
                 </router-link>
                 <div class="navbar-start" v-if="isLogedIn">
@@ -69,28 +72,28 @@
                             </a>
                         </div>
                         <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink" v-else>
-                            <a class="dropdown-item">
+                            <router-link :to = "'/statistics'" class="dropdown-item">
                                 <img src = "../assets/statistics.svg">
                                 <span v-if="isSerbian" class = "ikonica"> Pregled statistike </span>
                                 <span v-else class = "ikonica"> View statistics </span>
-                            </a>
+                            </router-link>
                             <a class="dropdown-item">
                                 <img src = "../assets/reports.svg">
                                 <span v-if="isSerbian" class = "ikonica"> Upravljanje prijavama </span>
                                 <span v-else class = "ikonica"> Handle reports </span>
                             </a>
                             <a class="dropdown-item">
-                                <img src = "../assets/other.svg">
+                                <img src = "../assets/other.svg" class="slichka">
                                 <span v-if="isSerbian" class = "ikonica"> Nekategorizovani zadaci </span>
                                 <span v-else class = "ikonica"> Uncategorized tasks </span>
                             </a>
                             <a class="dropdown-item">
-                                <img src = "../assets/add-service.svg">
+                                <img src = "../assets/add-service.svg" class="slichka">
                                 <span v-if="isSerbian" class = "ikonica"> Nova usluga </span>
                                 <span v-else class = "ikonica"> New service </span>
                             </a>
                             <a class="dropdown-item">
-                                <img src = "../assets/achievement-add.svg">
+                                <img src = "../assets/achievement-add.svg" class="slichka">
                                 <span v-if="isSerbian" class = "ikonica"> Novo dostignuće </span>
                                 <span v-else class = "ikonica"> New achievement </span>
                             </a>
@@ -289,5 +292,11 @@ export default {
     .crtka
     {
         margin-top:5px
+    }
+
+    .slichka
+    {
+        width:24px;
+        height:24px;
     }
 </style>

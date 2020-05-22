@@ -3,7 +3,7 @@
     <div class="futer-top">
       <div class = "footer-main">
         <div class="divLista deo" v-if="isLogedIn">
-          <ul class="lista">
+          <ul class="lista" v-if="!isAdmin">
             <!--<router-link>-->
               <li class="stavka-navigacije" v-if="isSerbian"> Obaveštenja </li>
               <li class="stavka-navigacije" v-else> Notifications </li>
@@ -36,10 +36,34 @@
               <li class="stavka-navigacije" v-if="isSerbian"> Podešavanja </li>
               <li class="stavka-navigacije" v-else> Settings </li>
             </router-link>
-            <router-link :to="'/help'" >
+            <router-link :to="'/help'">
               <li class="stavka-navigacije" v-if="isSerbian"> Pomoć </li>
               <li class="stavka-navigacije" v-else> Help </li>
             </router-link>
+            <li class="stavka-navigacije" v-if="isSerbian" @click="odjaviSe"> Odjavi se </li>
+            <li class="stavka-navigacije" v-else @click="odjaviSe"> Log out </li>
+          </ul>
+          <ul class="lista" v-else>
+            <router-link :to="'/statistics'">
+              <li class="stavka-navigacije" v-if="isSerbian"> Pregled statistike </li>
+              <li class="stavka-navigacije" v-else> View statistics </li>
+            </router-link>
+            <!--<router-link>-->
+              <li class="stavka-navigacije" v-if="isSerbian"> Upravljanje prijavama </li>
+              <li class="stavka-navigacije" v-else> Handle reports </li>
+            <!--</router-link>-->
+            <!--<router-link>-->
+              <li class="stavka-navigacije" v-if="isSerbian"> Nekategorizovani zadaci </li>
+              <li class="stavka-navigacije" v-else> Uncategorized tasks </li>
+            <!--</router-link>-->
+            <!--<router-link>-->
+              <li class="stavka-navigacije" v-if="isSerbian"> Nova usluga </li>
+              <li class="stavka-navigacije" v-else> New service </li>
+            <!--</router-link>-->
+            <!--<router-link>-->
+              <li class="stavka-navigacije" v-if="isSerbian"> Novo dostignuće </li>
+              <li class="stavka-navigacije" v-else> New achievement </li>
+            <!--</router-link>-->
             <li class="stavka-navigacije" v-if="isSerbian" @click="odjaviSe"> Odjavi se </li>
             <li class="stavka-navigacije" v-else @click="odjaviSe"> Log out </li>
           </ul>
@@ -85,15 +109,21 @@
   export default {
     computed:
     {
-      isSerbian(){
+      isSerbian()
+      {
         return this.$store.state.isSerbian
       },
       isLogedIn()
       {
           return this.$store.state.logedIn
       },
-      authUserId() {
+      authUserId() 
+      {
         return this.$store.getters['getAuthUserId']
+      },
+      isAdmin()
+      {
+          return this.$store.state.isAdmin
       }
     },
     methods:

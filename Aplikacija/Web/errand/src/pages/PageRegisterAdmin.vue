@@ -183,6 +183,12 @@
                         <span v-else>Register</span>
                       </button>
             </form>
+            <p class = "text-danger upozorenje" v-if="tryRegister && isDataLoaded && isSerbian">
+              Već postoji nalog sa tom email adresom ili ste pogrešili master lozinku
+            </p>
+            <p class = "text-danger upozorenje" v-if="tryRegister && isDataLoaded && !isSerbian">
+              An account with that email address already exists or you entered an invalid master password
+            </p>
             <p class = "text-danger upozorenje" v-if="isSerbian">
               Stavke označene sa * su obavezne
             </p>
@@ -222,7 +228,8 @@
                     password: null,
                     passwordConformation: null,
                     superpassword: null
-                }
+                },
+                tryRegister: false
             }
         },
         components:
@@ -237,6 +244,10 @@
             isSerbian()
             {
                 return this.$store.state.isSerbian
+            },
+            isDataLoaded()
+            {
+              return this.$store.state.isDataLoaded
             }
         },
         validations:
@@ -256,7 +267,8 @@
             register()
             {
               this.$v.form.$touch()
-              console.log(this.form)
+              this.$store.dispatch("createAdminUser", this.form)
+              this.tryRegister = true
             }
         }
     } 
