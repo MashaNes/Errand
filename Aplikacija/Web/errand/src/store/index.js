@@ -152,11 +152,16 @@ export default new Vuex.Store({
                             this.state.logedIn = true
                             this.state.token = data['token']
                             this.state.isDataLoaded = true
+                            this.state.isAdmin = data['user']['is_admin']
                             Vue.cookie.set('token',data['token'], { expires: '1h' });
                             Vue.cookie.set('id',this.state.authUser.id, { expires: '1h' });
                             Vue.cookie.set('ime',this.state.authUser.first_name, { expires: '1h' });
                             Vue.cookie.set('prezime',this.state.authUser.last_name, { expires: '1h' });
-                            router.push('/requests')
+                            Vue.cookie.set('admin',this.state.isAdmin, { expires: '1h' });
+                            if(!this.state.isAdmin)
+                                router.push('/requests')
+                            else
+                                router.push("/statistics");
                         })
                     }
                     else
@@ -627,8 +632,15 @@ export default new Vuex.Store({
                             this.state.isAdmin = data["is_admin"]
                             if(router.currentRoute["path"] == "/401")
                                 router.back();
-                            if(router.currentRoute["path"] == "/")
-                                router.push("/requests");
+                            if(router.currentRoute["path"] == "/" || router.currentRoute["path"] == "/login" ||
+                            router.currentRoute["path"] == "/loginAdmin" || router.currentRoute["path"] == "/register" ||
+                            router.currentRoute["path"] == "/registerAdmin")
+                            {
+                                if(!this.state.isAdmin)
+                                    router.push("/requests");
+                                else
+                                    router.push("/statistics");
+                            }
                             this.state.isDataLoaded = true
                         })
                     }
@@ -665,10 +677,14 @@ export default new Vuex.Store({
                         this.state.services = null
                         this.state.allServices = null
                         this.state.usersWithBenefit = null
+                        this.state.createdAuthRequests = null
+                        this.state.runnerAuthRequests = null
+                        this.state.overAuthRequests = null
                         Vue.cookie.delete('id');
                         Vue.cookie.delete('token');
                         Vue.cookie.delete('ime');
                         Vue.cookie.delete('prezime');
+                        Vue.cookie.delete('admin');
                     }
                     else
                     {
@@ -962,10 +978,13 @@ export default new Vuex.Store({
                             this.state.specificRequest = data.request
                             this.state.requestFilteredInfo = {
                                 offers: data.offers ? data.offers : null,
+                                edits: data.edits ? data.edits : null,
                                 acceptedOffer: data.accepted_offer ? data.accepted_offer : null,
                                 ratingCreatedBy: data.rating_created_by ? data.rating_created_by : null,
-                                ratingWorkingWith: data.rating_working_with ? data.rating_working_with : null
-                                //editRequests: data.edit_requests ? data.edit_requests : null
+                                ratingWorkingWith: data.rating_working_with ? data.rating_working_with : null,
+                                tasklist: data.tasklist ? data.tasklist : null,
+                                destination: data.destination ? data.destination : null,
+                                pictures: data.pictures ? data.pictures : null
                             }
                         }
                     })
@@ -1015,9 +1034,13 @@ export default new Vuex.Store({
                 body: JSON.stringify({
                     "request" : requestId,
                     "offers" : filters.offers,
+                    "edits" : filters.edits,
                     "accepted_offer" : filters.accepted_offer,
                     "rating_created_by" : filters.rating_created_by,
-                    "rating_working_with" : filters.rating_working_with
+                    "rating_working_with" : filters.rating_working_with,
+                    "tasklist" : filters.tasklist,
+                    "destination" : filters.destination,
+                    "pictures" : filters.pictures
                 })
             }).then(p => {
                 if(p.ok) {
@@ -1026,10 +1049,13 @@ export default new Vuex.Store({
                         this.state.filledInfoForRequest = requestId
                         this.state.requestFilteredInfo = {
                             offers: data.offers ? data.offers : null,
+                            edits: data.edits ? data.edits : null,
                             acceptedOffer: data.accepted_offer ? data.accepted_offer : null,
                             ratingCreatedBy: data.rating_created_by ? data.rating_created_by : null,
-                            ratingWorkingWith: data.rating_working_with ? data.rating_working_with : null
-                            //editRequests: data.edit_requests ? data.edit_requests : null
+                            ratingWorkingWith: data.rating_working_with ? data.rating_working_with : null,
+                            tasklist: data.tasklist ? data.tasklist : null,
+                            destination: data.destination ? data.destination : null,
+                            pictures: data.pictures ? data.pictures : null
                         }
                     })
                 }

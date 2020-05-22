@@ -37,6 +37,7 @@ export default {
     {
       this.$store.state.authUser = this.user
       this.$store.state.logedIn = true
+      this.$store.state.isAdmin = this.$cookie.get('admin')
       this.user.token = this.$cookie.get('token');
       this.user.id = this.$cookie.get('id');
       this.$store.dispatch("getUserById", this.user)
