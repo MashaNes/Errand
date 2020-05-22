@@ -1,5 +1,6 @@
 <template>
-  <section class="hero is-success is-fullheight">
+  <Spinner v-if="!this.$store.state.isDataLoaded || this.$store.state.logedIn"/>
+  <section class="hero is-success is-fullheight" v-else>
     <div class="hero-body">
       <div class="container has-text-centered">
         <div class="column is-4 is-offset-4">
@@ -209,7 +210,7 @@
 
 <script>
     import {required, minLength, sameAs, email} from "vuelidate/lib/validators"
-
+    import Spinner from "@/components/Spinner"
     export default {
         data(){
             return{
@@ -223,6 +224,10 @@
                     superpassword: null
                 }
             }
+        },
+        components:
+        {
+          Spinner
         },
         computed:
         {

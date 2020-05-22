@@ -1,5 +1,6 @@
 <template>
-  <section class="hero is-success is-fullheight">
+  <Spinner v-if="!this.$store.state.isDataLoaded || this.$store.state.logedIn"/>
+  <section class="hero is-success is-fullheight" v-else>
     <div class="hero-body" v-if="!tryRegister || !isDataLoaded || !isLogedIn">
       <div class="container has-text-centered">
         <div class="column is-4 is-offset-4">
@@ -194,8 +195,6 @@
         </div>
       </div>
     </div>
-    <!--<div v-else @mouseover="navigateTo" class="ceoEkran">
-    </div>-->
   </section>
 </template>
 
@@ -203,11 +202,12 @@
     import {required, email, minLength, sameAs} from "vuelidate/lib/validators"
     import VuePhoneNumberInput from 'vue-phone-number-input';
     import 'vue-phone-number-input/dist/vue-phone-number-input.css';
-
+    import Spinner from "@/components/Spinner"
     export default {
         components:
         {
-          VuePhoneNumberInput
+          VuePhoneNumberInput,
+          Spinner
         },
         data(){
             return{
@@ -258,12 +258,7 @@
             register()
             {
               this.$v.form.$touch()
-              //this.$router.push('/profile')
               this.$store.dispatch("createUser", this.form)
-                /*.then(() => {
-                  if(this.$store.state.authUser != null)
-                    this.$router.push('/requests')
-                })*/
               this.tryRegister = true
             },
             navigateTo()

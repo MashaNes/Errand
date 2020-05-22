@@ -1,5 +1,6 @@
 <template>
-  <section class="hero is-success is-fullheight">
+  <Spinner v-if="!this.$store.state.isDataLoaded || this.$store.state.logedIn"/>
+  <section class="hero is-success is-fullheight" v-else>
     <div class="hero-body">
       <div class="container has-text-centered">
         <div class="column is-4 is-offset-4">
@@ -67,6 +68,12 @@
                       <span v-else>Login</span>
                       </button>
             </form>
+            <p class = "text-danger upozorenje" v-if="TryLogIn && isDataLoaded && isSerbian">
+              Pogrešan email ili lozinka
+            </p>
+            <p class = "text-danger upozorenje" v-if="TryLogIn && isDataLoaded && !isSerbian">
+              Incorrect email or password
+            </p>
             <p class = "text-danger upozorenje" v-if="isSerbian">
               Stavke označene sa * su obavezne
             </p>
@@ -91,6 +98,7 @@
 
 <script>
     import {required, email} from "vuelidate/lib/validators"
+    import Spinner from "@/components/Spinner"
     export default {
         data(){
             return {
@@ -98,8 +106,13 @@
                 {
                     email: null,
                     password: null
-                }
+                },
+                TryLogIn: false
             }
+        },
+        components:
+        {
+          Spinner
         },
         validations:
         {
@@ -124,7 +137,8 @@
             login()
             {
                 this.$v.form.$touch()
-                console.log(this.form)
+                this.$store.dispatch("fillAuthUser", this.form)
+                this.TryLogIn = true
             }
         }
     }

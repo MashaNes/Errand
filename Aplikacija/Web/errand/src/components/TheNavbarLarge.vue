@@ -12,7 +12,7 @@
                     <a class="nav-link svetli" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <img  class = "slika" src = "../assets/menu.svg">
                     </a>
-                    <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink" v-if="!isAdmin">
                         <a class="dropdown-item">
                             <div>
                                 <img src = "../assets/notifications.svg">
@@ -46,6 +46,33 @@
                             <span v-else class = "ikonica"> Help </span>
                         </router-link>
                     </div>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink" v-else>
+                        <a class="dropdown-item">
+                            <img src = "../assets/statistics.svg">
+                            <span v-if="isSerbian" class = "ikonica"> Pregled statistike </span>
+                            <span v-else class = "ikonica"> View statistics </span>
+                        </a>
+                        <a class="dropdown-item">
+                            <img src = "../assets/reports.svg">
+                            <span v-if="isSerbian" class = "ikonica"> Upravljanje prijavama </span>
+                            <span v-else class = "ikonica"> Handle reports </span>
+                        </a>
+                        <a class="dropdown-item">
+                            <img src = "../assets/other.svg">
+                            <span v-if="isSerbian" class = "ikonica"> Nekategorizovani zadaci </span>
+                            <span v-else class = "ikonica"> Uncategorized tasks </span>
+                        </a>
+                        <a class="dropdown-item">
+                            <img src = "../assets/add-service.svg">
+                            <span v-if="isSerbian" class = "ikonica"> Nova usluga </span>
+                            <span v-else class = "ikonica"> New service </span>
+                        </a>
+                        <a class="dropdown-item">
+                            <img src = "../assets/achievement-add.svg">
+                            <span v-if="isSerbian" class = "ikonica"> Novo dostignuće </span>
+                            <span v-else class = "ikonica"> New achievement </span>
+                        </a>
+                    </div>
                 </li>
             </div>
         </div>
@@ -71,7 +98,7 @@
                         <button class="nav-link dropdown-toggle title is-6 btn btn-link ime svetli" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             {{authUserFullName}}
                         </button>
-                        <div class="dropdown-menu profil-meni" aria-labelledby="navbarDropdownMenuLink">
+                        <div class="dropdown-menu profil-meni" aria-labelledby="navbarDropdownMenuLink"  v-if="!isAdmin">
                             <router-link :to = "goToProfile()" class="dropdown-item">
                                 <img src = "../assets/profile.svg">
                                 <span v-if="isSerbian" class = "ikonica"> Profil </span>
@@ -88,6 +115,13 @@
                                 <span v-else class = "ikonica"> Ratings </span>
                             </router-link>
                             <div class="dropdown-divider"></div>
+                            <a @click="odjaviSe" class="dropdown-item">
+                                <img src = "../assets/logout.svg">
+                                <span v-if="isSerbian" class = "ikonica"> Odjavi se </span>
+                                <span v-else class = "ikonica"> Log out </span>
+                            </a>
+                        </div>
+                        <div class="dropdown-menu profil-meni" aria-labelledby="navbarDropdownMenuLink"  v-else>
                             <a @click="odjaviSe" class="dropdown-item">
                                 <img src = "../assets/logout.svg">
                                 <span v-if="isSerbian" class = "ikonica"> Odjavi se </span>
@@ -118,6 +152,10 @@ export default {
       authUserFullName()
       {
           return this.$store.state.authUser.first_name + " " + this.$store.state.authUser.last_name
+      },
+      isAdmin()
+      {
+          return this.$store.state.isAdmin
       }
     },
     methods:
