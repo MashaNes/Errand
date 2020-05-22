@@ -82,8 +82,8 @@ export default {
         },
         createService()
         {
-            //posalji add ka bazi koji ce kad se okonca da posalje ponovno pribavljanje servisa
             this.$store.state.allServices.unshift(this.newService)
+            this.$store.dispatch("createService", this.newService)
             this.$emit('zatvori')
         }
     }

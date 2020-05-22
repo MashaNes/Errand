@@ -184,10 +184,12 @@
                       </button>
             </form>
             <p class = "text-danger upozorenje" v-if="tryRegister && isDataLoaded && isSerbian">
-              Već postoji nalog sa tom email adresom ili ste pogrešili master lozinku
+              <span v-if="messageToShow == 'password'"> Pogrešna glavna admin lozinka </span>
+              <span v-if="messageToShow == 'error'"> Već postoji nalog sa tom email adresom </span>
             </p>
             <p class = "text-danger upozorenje" v-if="tryRegister && isDataLoaded && !isSerbian">
-              An account with that email address already exists or you entered an invalid master password
+              <span v-if="messageToShow == 'password'"> Whong master admin password </span>
+              <span v-if="messageToShow == 'error'">  An account with that email address already exists </span>
             </p>
             <p class = "text-danger upozorenje" v-if="isSerbian">
               Stavke označene sa * su obavezne
@@ -248,6 +250,10 @@
             isDataLoaded()
             {
               return this.$store.state.isDataLoaded
+            },
+            messageToShow()
+            {
+              return this.$store.state.messageToShow
             }
         },
         validations:

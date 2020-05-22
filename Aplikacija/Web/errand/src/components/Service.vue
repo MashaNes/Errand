@@ -40,7 +40,9 @@
                 <button type="button" class="btn btn-danger" @click="odbaciIzmenu">
                     <img src="../assets/failed.svg" class="slika">
                 </button>
-                <button type="button" class="btn btn-success" @click="sacuvajIzmenu">
+                <button type="button" class="btn btn-success" @click="sacuvajIzmenu"
+                        :disabled="myService.service_type_sr == '' || myService.service_type_en == '' ||
+                                   myService.description_sr == '' || myService.description_en == ''" >
                     <img src="../assets/finished.svg" class="slika">
                 </button>
             </div>

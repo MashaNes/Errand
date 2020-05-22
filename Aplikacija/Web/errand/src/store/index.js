@@ -47,7 +47,8 @@ export default new Vuex.Store({
         // //editRequests: null,
         // acceptedOffer: null,
         requestFilteredInfo: null,
-        filledInfoForRequest: null
+        filledInfoForRequest: null,
+        messageToShow: ""
     },
     getters:{
         getAuthUserId(state) {
@@ -254,6 +255,7 @@ export default new Vuex.Store({
                             if(data['detail'] == "failed")
                             {
                                 this.state.isDataLoaded = true
+                                this.state.messageToShow = "password"
                                 return
                             }
                             this.state.authUser = data['user']
@@ -272,6 +274,7 @@ export default new Vuex.Store({
                     else
                     {
                         console.log("Error")
+                        this.state.messageToShow = "error"
                         this.state.isDataLoaded = true
                     }
                 });
@@ -1159,6 +1162,41 @@ export default new Vuex.Store({
                 }
                 else console.log("Error")
             })
+        },
+        createService({commit}, payload)
+        {
+            fetch("http://127.0.0.1:8000/api/v1/service_create/",
+            {
+                method: 'POST',
+                headers:
+                {
+                    "Content-type" : "application/json",
+                    "Authorization" : "Token " + this.state.token
+                },
+                body:  JSON.stringify(
+                {
+                    "created_by" : this.state.authUser.id,
+                    "service_type_sr" : payload.service_type_sr,
+                    "service_type_en" : payload.service_type_en,
+                    "description_sr" : payload.description_sr,
+                    "description_en" : payload.description_en,
+                    "picture_required" : false
+                })
+            }).then( p => 
+                {
+                    if(p.ok)
+                    {
+                        p.json().then(data =>
+                        {
+                            console.log(data)
+                            this.dispatch("fillServices")
+                        })
+                    }
+                    else
+                    {
+                        console.log("Error")
+                    }
+                });
         },
         fillTestPictures() {
             this.state.testPictures = fetchPictures()
