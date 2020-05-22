@@ -330,6 +330,7 @@ export default {
       this.showMapView = false
     },
     saveChanges() {
+      this.openModalSave = false
       this.changedUser.picture = this.picture
       let deleteCount = 0
       let addCount = 0
