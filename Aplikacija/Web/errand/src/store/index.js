@@ -1119,6 +1119,47 @@ export default new Vuex.Store({
                 else console.log("Error")
             })
         },
+        rejectOffer({commit}, offerId) {
+            fetch("http://127.0.0.1:8000/api/v1/offer_cancel/", {
+                method: "DELETE",
+                headers: {
+                    "Content-type" : "application/json",
+                    "Authorization" : "Token " + this.state.token
+                },
+                body: JSON.stringify({
+                    "created_by" : this.state.authUser.id,
+                    "offer" : offerId
+                })
+            }).then(p => {
+                if(p.ok) {
+                    p.json().then(data => {
+                        console.log(data)
+                    })
+                }
+                else console.log("Error")
+            })
+        },
+        acceptOffer({commit}, {offerId, requestId}) {
+            fetch("http://127.0.0.1:8000/api/v1/offer_accept/", {
+                method: "PUT",
+                headers: {
+                    "Content-type" : "application/json",
+                    "Authorization" : "Token " + this.state.token
+                },
+                body: JSON.stringify({
+                    "created_by" : this.state.authUser.id,
+                    "request" : requestId,
+                    "offer" : offerId
+                })
+            }).then(p => {
+                if(p.ok) {
+                    p.json().then(data => {
+                        console.log(data)
+                    })
+                }
+                else console.log("Error")
+            })
+        },
         fillTestPictures() {
             this.state.testPictures = fetchPictures()
         }
