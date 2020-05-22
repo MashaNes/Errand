@@ -691,7 +691,7 @@ export default new Vuex.Store({
                                 router.back();
                             if(router.currentRoute["path"] == "/" || router.currentRoute["path"] == "/login" ||
                             router.currentRoute["path"] == "/loginAdmin" || router.currentRoute["path"] == "/register" ||
-                            router.currentRoute["path"] == "/registerAdmin")
+                            router.currentRoute["path"] == "/registerAdmin" || router.currentRoute["path"] == "/401")
                             {
                                 if(!this.state.isAdmin)
                                     router.push("/requests");
