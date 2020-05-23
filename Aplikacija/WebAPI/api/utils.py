@@ -190,8 +190,6 @@ def filter_user(queryset, data):
                 if _q.user.avg_rating < data['rating_limit_down']:
                     to_add = False
 
-        # TODO: Add other filter params if needed
-
         if to_add:
             new_queryset.append(_q)
 
@@ -293,8 +291,6 @@ def filter_requests(queryset, data):
                     found = True
                     break
             to_add = found
-
-        # TODO: Add other filter params if needed
 
         if to_add:
             new_queryset.append(_q)

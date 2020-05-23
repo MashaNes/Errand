@@ -46,7 +46,6 @@ Endpoints:
 - POST report_create/				// Reports user
 - POST report_filtered              // Returns filtered reports
 - POST ban_create/ (A)	 			// Bans reported user
-- POST ban_remove/ (A)	 			// Remove user from banned list
 + POST achievement_create/ (A)	 	// Creates new achievement
 + POST service_type_create/ (A)		// Creates new service type
 
@@ -68,6 +67,7 @@ Endpoints:
 + DELETE working_hours_remove/ 		// Removes working hours from user
 + DELETE user_service_remove/ 		// Removes user service from user
 + DELETE block_remove/ 			    // Removes user from blocklist
+- DELETE ban_remove/ (A)	 		// Remove user from banned list
 + DELETE request_cancel/ 			// Cancels request (when pending)
 + DELETE offer_cancel/ 			    // Cancels offer (when not accepted)
 + DELETE edit_cancel/               // Cancels edit request

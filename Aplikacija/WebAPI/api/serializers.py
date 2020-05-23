@@ -1,6 +1,5 @@
 from rest_framework import serializers
 from . import models
-from . import utils
 
 class PictureSerializer(serializers.ModelSerializer):
     picture = serializers.CharField()

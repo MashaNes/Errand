@@ -1,6 +1,5 @@
 import os
 import base64
-import datetime
 from django.core.files.base import ContentFile
 from . import models
 
@@ -266,22 +265,30 @@ def create_task_edit(data):
     return task_edit
 
 def create_request_edit(data, request):
-    request_edit = models.RequestEdit(time=data['time'],
+    time = None
+    if data['time']:
+        time = data['time']
+    request_edit = models.RequestEdit(time=time,
                                       request=request)
     request_edit.save()
 
-    _task_list = data['tasks']
-    for _t in _task_list:
-        _nt = create_task_edit(_t)
-        request_edit.tasks.add(_nt)
-    request_edit.save()
+    if data['tasks']:
+        _task_list = data['tasks']
+        for _t in _task_list:
+            _nt = create_task_edit(_t)
+            request_edit.tasks.add(_nt)
+        request_edit.save()
 
     return request_edit
 
 def create_offer(data):
     created_by = models.User.objects.get(id=data['created_by'])
     request = models.Request.objects.get(id=data['request'])
-    edit = create_request_edit(data['edit'], request)
+
+    edit = None
+    if data['edit']:
+        edit = create_request_edit(data['edit'], request)
+
     offer = models.Offer(payment_type=data['payment_type'],
                          payment_ammount=data['payment_ammount'],
                          created_by=created_by,
@@ -326,12 +333,12 @@ def accept_offer(data):
         if offer.edit:
             if offer.edit.time:
                 request.request.time = offer.edit.time
-
-            for _t in offer.edit.tasks.all():
-                for _ot in request.request.tasklist.all():
-                    if _t.task.id == _ot.id:
-                        _ot.address = _t.address
-                        _ot.save()
+            if offer.edit.tasks:
+                for _t in offer.edit.tasks.all():
+                    for _ot in request.request.tasklist.all():
+                        if _t.task.id == _ot.id:
+                            _ot.address = _t.address
+                            _ot.save()
 
         request.request.working_with = offer.created_by
         request.accepted_offer = offer
