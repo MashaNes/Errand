@@ -56,7 +56,8 @@ export default {
     {
         return{
             myAddress: this.address,
-            myPictureRequired: this.picture_required
+            myPictureRequired: this.picture_required,
+            startingAddressCopy: {...this.address}
         }
     },
     computed:
@@ -67,12 +68,12 @@ export default {
         },
         startingAddress() 
         {
-            if(this.myAddress.name != "" && this.myAddress.longitude && this.myAddress.latitude)
+            if(this.startingAddressCopy.name != "" && this.startingAddressCopy.longitude && this.startingAddressCopy.latitude)
             {
                 return {
-                    name: this.myAddress.name,
-                    latitude: this.myAddress.latitude,
-                    longitude: this.myAddress.longitude
+                    name: this.startingAddressCopy.name,
+                    latitude: this.startingAddressCopy.latitude,
+                    longitude: this.startingAddressCopy.longitude
                 }
             }
             else return null

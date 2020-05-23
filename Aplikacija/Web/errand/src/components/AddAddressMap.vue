@@ -198,7 +198,7 @@ export default {
       this.invalidAddress = false
       this.markerMoved = true
       this.showModal = false
-      if(this.StartingAddress != null) {
+      if(this.StartingAddress != null && this.HasCloseButton) {
         const newPositions = [{
           pos: {
             lat: this.StartingAddress.latitude,
