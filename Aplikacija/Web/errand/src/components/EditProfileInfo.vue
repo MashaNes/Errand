@@ -1,5 +1,6 @@
 <template>
-  <div>
+  <Spinner v-if="savingChanges" />
+  <div v-else>
     <div class="main-container">
       <div class="picture-side">
         <div v-if="newPicture" @click="removePicture" class="remove-pic-div">
@@ -205,12 +206,14 @@ import VuePhoneNumberInput from 'vue-phone-number-input';
 import 'vue-phone-number-input/dist/vue-phone-number-input.css';
 import AddAddressMap from "@/components/AddAddressMap"
 import ModalAreYouSure from "@/components/ModalAreYouSure"
+import Spinner from "@/components/Spinner"
 
 export default {
   components: {
     VuePhoneNumberInput,
     AddAddressMap,
-    ModalAreYouSure
+    ModalAreYouSure,
+    Spinner
   },
   props: {
     user: {
@@ -237,7 +240,8 @@ export default {
       showMapView: false,
       pictureChanged: false,
       openModalSave: false,
-      openModalCancel: false
+      openModalCancel: false,
+      savingChanges: false
     }
   },
   validations: {
@@ -330,6 +334,7 @@ export default {
       this.showMapView = false
     },
     saveChanges() {
+      this.savingChanges = true
       this.openModalSave = false
       this.changedUser.picture = this.picture
       let deleteCount = 0
@@ -369,7 +374,7 @@ export default {
       function callback() {
         if(vm.$store.state.addressAddCount == addCount && vm.$store.state.addressDeleteCount == deleteCount) {
           vm.$store.state.addressAddCount = 0
-          vm.$store.state.deleteCount = 0
+          vm.$store.state.addressDeleteCount = 0
           console.log(vm.$store.state.userAddresses)
           vm.$emit('saveEditChanges')
         }

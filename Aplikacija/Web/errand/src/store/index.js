@@ -396,7 +396,7 @@ export default new Vuex.Store({
             }).then(p => {
                 if(p.ok) {
                     p.json().then(data => {
-                        if(data["success"] == true)
+                        if(data["detail"] == "success")
                         {
                             const ind = this.state.userAddresses.findIndex(addr => addr.id == addressId)
                             this.state.userAddresses.splice(ind, 1)
