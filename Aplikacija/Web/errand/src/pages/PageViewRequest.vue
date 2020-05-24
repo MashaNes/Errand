@@ -1,5 +1,5 @@
 <template>
-  <Spinner v-if="!computedRequest || !filteredInfo" />
+  <Spinner v-if="!computedRequest || !this.$store.state.isRequestInfoLoaded" />
   <div class="wrapper" v-else>
     <b-card>
       <b-card-title class="main-title">
@@ -68,35 +68,32 @@
           <b-card-title>
               <span style="margin-right:5px;" v-text="isSerbian ? 'Napomena' : 'Note'"></span>
           </b-card-title>
-          <b-card-text class="inner-text" v-if="computedRequest.note">
-            {{computedRequest.note}}
-          </b-card-text>
-          <b-card-text 
-            class="inner-text" 
-            v-else 
-            v-text="isSerbian ? 'Nema napomena za ovaj zahtev' : 'There are no notes about this request'"
-          >
+          <b-card-text :class="computedRequest.note ? 'inner-text' : 'no-info'">
+            <span v-if="computedRequest.note">{{computedRequest.note}}</span>
+            <span v-else v-text="isSerbian ? 'Nema napomena za ovaj zahtev' : 'There are no notes about this request'"></span>
           </b-card-text>
         </b-card-text>
 
         <div v-if="computedRequest.status != 0 && otherUser != null" class="offer">
-          <b-card-title>
+          <b-card-title :style="isRunner ? 'margin-bottom: 0px !important' : ''">
             <div class="offer-title">
-              <span 
-                v-text="(isSerbian ? 'Prihvaćena ponuda od ' : 'Accepted offer from ') + fullUserName"
-                style="margin-right: 5px"
-                v-if="!isRunner"
-              ></span>
-              <span 
-                v-text="(isSerbian ? 'Zahtev kreirao/la ' : 'Request created by ') + fullUserName"
-                style="margin-right: 5px"
-                v-if="isRunner"
-              ></span>
-              <div class="media-center">
-                <p class="image">
-                  <img class="rounded-image" :src="otherUser.picture ? 'data:;base64,' + otherUser.picture : require('../assets/no-picture.png')">
-                </p>
-              </div>
+              <span class="smaller-title-pic-span" style="flex-wrap: wrap;">
+                <div class="media-center">
+                  <p class="image">
+                    <img class="rounded-image" :src="otherUser.picture ? 'data:;base64,' + otherUser.picture : require('../assets/no-picture.png')">
+                  </p>
+                </div>
+                <span 
+                  v-text="(isSerbian ? 'Prihvaćena ponuda od ' : 'Accepted offer from ') + fullUserName"
+                  style="margin-right: 5px"
+                  v-if="!isRunner"
+                ></span>
+                <span 
+                  v-text="(isSerbian ? 'Zahtev kreirao/la ' : 'Request created by ') + fullUserName"
+                  style="margin-right: 5px"
+                  v-if="isRunner"
+                ></span>
+              </span>
             </div>
           </b-card-title>
           <div class="inner-text" v-if="otherUser != null && !isRunner">
@@ -106,30 +103,33 @@
         </div>
 
         <b-card-text class="request-note">
-          <b-card-title v-text="isSerbian ? 'Finalno odredište' : 'Final destination'"></b-card-title>
-          <div class="inner-text" v-if="computedRequest.destination">
-            <span>{{computedRequest.destination.name}}</span>
+          <b-card-title>
+            <span class="smaller-title-pic-span">
+              <img src="@/assets/address.svg" height="25" width="25" class="title-pic" />
+              <span v-text="isSerbian ? 'Finalno odredište' : 'Final destination'"></span>
+            </span>
+          </b-card-title>
+          <div :class="computedRequest.destination ? 'inner-text' : 'no-info'">
+            <span v-if="computedRequest.destination">{{computedRequest.destination.name}}</span>
+            <span v-else v-text="isSerbian ? 'Finalno odredište nije navedeno' : 'Final destination was not sepcified'"></span>
           </div>
-          <div v-else class="inner-text" v-text="isSerbian ? 'Finalno odredište nije navedeno' : 'Final destination was not sepcified'"></div>
         
-          <div v-if="computedRequest.picture_required && status > 0" style="margin-top: 10px">
-            <span v-text="isSerbian ? 'Dostavljene slike' : 'Pictures taken'" class="inner-text-title" v-if="pictures.length > 0"></span>
-            <span 
-              v-else 
-              v-text="isSerbian ? 'Još uvek nije dostavljena nijedna slika' : 'No pictures have been taken so far'" 
-              class="inner-text-title"
-              style="margin-top: 10px;"
-            ></span>
-            <b-card-text class="inner-text" v-if="pictures.length > 0">
-              <div class="images-wrapper" >
+          <div v-if="computedRequest.picture_required && computedRequest.status > 0" style="margin-top: 10px">
+            <span class="smaller-title-pic-span">
+              <img src="@/assets/photos.svg" height="25" width="25" class="title-pic" />
+              <span v-text="isSerbian ? 'Dostavljene slike sa odredišta' : 'Pictures taken at the destination'" class="inner-text-title"></span>
+            </span>
+            <b-card-text :class="pictures.length > 0 ? 'inner-text' : 'no-info'">
+              <div v-if="pictures.length > 0" class="images-wrapper" >
                 <img 
                   class="expandable-image" 
-                  :src="'data:;base64,' + pictures[ind]"
-                  @click="expandPicture(picture)"
-                  v-for="(picture, ind) in pictures" 
-                  :key="ind"
+                  :src="'data:;base64,' + picture.picture"
+                  @click="expandPicture(picture.picture)"
+                  v-for="picture in pictures" 
+                  :key="picture.id"
                 />
               </div>
+              <span v-else v-text="isSerbian ? 'Još uvek nije dostavljena nijedna slika' : 'No pictures have been taken so far'"></span>
             </b-card-text>
           </div>
 
@@ -148,6 +148,10 @@
         <b-card-text style="margin-top: 20px;" v-if="hasAddresses" :class="isMapOpened ? 'visible' : 'invisible'">
           <Map />
         </b-card-text>
+
+        <span class='task-title'>
+          <span v-text="isSerbian ? 'Zadaci' : 'Tasks'"></span>
+        </span>
 
         <Task 
           v-for="task in computedRequest.tasklist" 
@@ -172,13 +176,15 @@ import Map from "@/components/Map"
 import Task from "@/components/Task"
 import Spinner from "@/components/Spinner"
 import OfferBox from "@/components/OfferBox"
+import ModalPicture from "@/components/ModalPicture"
 
 export default {
   components: {
     Map,
     Task,
     Spinner,
-    OfferBox
+    OfferBox,
+    ModalPicture
   },
   props: {
     request: {
@@ -246,7 +252,7 @@ export default {
     },
     pictures() {
       if(this.computedRequest.picture_required)
-        return this.$store.state.testPictures //kad bude moguce dodati sliku, zameniti sa "return this.computedRequest.pictures"
+        return this.filteredInfo.pictures
       else return []
     },
     isRunner() {
@@ -288,43 +294,63 @@ export default {
   },
   methods: {
     routeChanged() {
-      //izmeniti da se ode obavi fetch za request sa id-jem iz rute (ukoliko nije prosledjen prop)
-      this.$store.state.requestFilteredInfo = null
+      let fetchedById = false
+      this.$store.state.requestFilteredInfo = {}
+      this.$store.state.isRequestInfoLoaded = false
+      const routeId = this.$route.params.id
+
       const vm = this
-      function callback() {
+      function callbackFetchedById() {
         if(vm.$store.state.specificRequest != null)
         {
           vm.computedRequest = vm.$store.state.specificRequest
           if(vm.$store.state.specificRequest == -1)
             vm.$router.push({name: "PageRequests"})
-          else
-            vm.setMapMarkers()
         }
         else
-          setTimeout(callback, 200)
+          setTimeout(callbackFetchedById, 200)
+      }
+
+      function callbackMarkers() {
+        if(vm.$store.state.requestFilteredInfo.destination && vm.$store.state.requestFilteredInfo.tasklist) {
+          vm.setMapMarkers()
+        }
+        else
+          setTimeout(callbackMarkers, 200)
+      }
+
+      let filters = {
+        request: routeId,
+        "offers" : false,
+        "edits" : false, 
+        "accepted_offer" : false,
+        "rating_created_by" : false,
+        "rating_working_with" : false,
+        "tasklist" : true,
+        "destination" : true,
+        "pictures" : true
       }
 
       if(!this.request) {
-        const routeId = this.$route.params.id
-        this.$store.dispatch('getRequestById', routeId)
-        callback()
+        if(this.$store.state.createdAuthRequests)
+          this.computedRequest = this.$store.state.createdAuthRequests.results.find(req => req.id == routeId)
+        if(!this.computedRequest && this.$store.state.runnerAuthRequests)
+          this.computedRequest = this.$store.state.runnerAuthRequests.results.find(req => req.id == routeId)
+        if(!this.computedRequest && this.$store.state.overAuthRequests)
+          this.computedRequest = this.$store.state.overAuthRequests.results.find(req => req.id == routeId)
+        if(!this.computedRequest)
+        {
+          this.$store.dispatch('getRequestById', routeId)
+          fetchedById = true
+          callbackFetchedById()
+        }
       }
       else {
         this.computedRequest = this.request
-        let filters = {
-          request: this.computedRequest.id,
-          "offers" : false,
-          "edits" : false, 
-          "accepted_offer" : false,
-          "rating_created_by" : false,
-          "rating_working_with" : false,
-          "tasklist" : true,
-          "destination" : true,
-          "pictures" : true
-        }
-
+      }
+      
+      if(!fetchedById) {
         const status = this.computedRequest.status
-
         if(!this.isRunner) {
           if(status == 0) {
             filters["offers"] = true
@@ -342,31 +368,29 @@ export default {
           if(this.request.rated_working_with)
             filters["rating_working_with"] = true
         }
-
-        this.$store.state.requestFilteredInfo = null
-        this.$store.dispatch("fillFilteredRequestInfo", {filters, requestId: filters.request})
-        
-        this.setMapMarkers()
       }
+
+      this.$store.dispatch("fillFilteredRequestInfo", {filters, requestId: filters.request})
+      callbackMarkers()
     },
     setMapMarkers() {
       const markerPositions = [];
-      if(this.computedRequest.destination) {
+      if(this.filteredInfo.destination) {
         this.hasAddresses = true
         const newPosition = {
           pos: {
-            lat: this.computedRequest.destination.latitude,
-            lng: this.computedRequest.destination.longitude
+            lat: this.filteredInfo.destination.latitude,
+            lng: this.filteredInfo.destination.longitude
           },
           lab: "F",
-          info: this.computedRequest.destination.name
+          info: this.filteredInfo.destination.name
         }
         markerPositions.push(newPosition)
       }
 
-      if(this.computedRequest.tasklist)
+      if(this.filteredInfo.tasklist)
       {
-        this.computedRequest.tasklist.forEach((task, ind) => {
+        this.filteredInfo.tasklist.forEach((task, ind) => {
           if(task.address)
           {
             this.hasAddresses = true
@@ -513,12 +537,31 @@ export default {
     margin-bottom:20px;
   }
 
+  .smaller-title-pic-span {
+    height: fit-content;
+    margin-bottom: 5px;
+    display: flex;
+    align-items: center;
+    word-break: break-word;
+  }
+
   .inner-text-title {
     font-size: 18px;
     font-weight: 600;
   }
 
   .inner-text {
+    border: 1px solid rgb(139, 136, 136);
+    font-size:16px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    background-color: rgb(250, 210, 125);
+  }
+
+  .no-info {
+    font-weight: 600;
+    color: rgb(175, 4, 4);
     border: 1px solid rgb(139, 136, 136);
     font-size:16px;
     padding: 10px;
@@ -539,11 +582,18 @@ export default {
     display: flex;
     flex-wrap: wrap;
     align-items:center;
+
   }
 
   .payment-info {
     display: flex;
     flex-direction: column;
+  }
+
+  .image {
+    width: 40px;
+    height: 40px;
+    margin-right: 5px;
   }
 
   .rounded-image {
@@ -650,6 +700,13 @@ export default {
   .expandable-image:hover {
     cursor: pointer;
     border-color: black;
+  }
+
+  .task-title {
+    margin-top: 30px;
+    display: flex;
+    font-size: 35px;
+    font-weight: 600;
   }
 
 </style>

@@ -34,6 +34,7 @@ export default new Vuex.Store({
         allServices: null,
         token: null,
         isDataLoaded: true,
+        isRequestInfoLoaded: false,
         isAdmin: false,
         mapMarkerPositions: [],
         userAdded:false,
@@ -46,7 +47,7 @@ export default new Vuex.Store({
         // offers: null,
         // //editRequests: null,
         // acceptedOffer: null,
-        requestFilteredInfo: null,
+        requestFilteredInfo: {},
         filledInfoForRequest: null,
         messageToShow: ""
     },
@@ -1035,17 +1036,12 @@ export default new Vuex.Store({
                             this.state.specificRequest = -1
                         else
                         {
+                            this.state.requestFilteredInfo.offers = data.offers
+                            this.state.requestFilteredInfo.edits = data.edits
+                            this.state.requestFilteredInfo.acceptedOffer = data.accepted_offer
+                            this.state.requestFilteredInfo.ratingCreatedBy = data.rating_created_by
+                            this.state.requestFilteredInfo.ratingWorkingWith = data.rating_working_with
                             this.state.specificRequest = data.request
-                            this.state.requestFilteredInfo = {
-                                offers: data.offers ? data.offers : null,
-                                edits: data.edits ? data.edits : null,
-                                acceptedOffer: data.accepted_offer ? data.accepted_offer : null,
-                                ratingCreatedBy: data.rating_created_by ? data.rating_created_by : null,
-                                ratingWorkingWith: data.rating_working_with ? data.rating_working_with : null,
-                                tasklist: data.tasklist ? data.tasklist : null,
-                                destination: data.destination ? data.destination : null,
-                                pictures: data.pictures ? data.pictures : null
-                            }
                         }
                     })
                 }
@@ -1084,7 +1080,8 @@ export default new Vuex.Store({
                     }
                 });
         },
-        fillFilteredRequestInfo({commit}, {filters, requestId, objectsToFill}) {
+        fillFilteredRequestInfo({commit}, {filters, requestId}) {
+            this.state.isRequestInfoLoaded = false
             fetch("http://127.0.0.1:8000/api/v1/request_info_filtered/", {
                 method: "POST",
                 headers: {
@@ -1107,16 +1104,23 @@ export default new Vuex.Store({
                     p.json().then(data => {
                         console.log(data)
                         this.state.filledInfoForRequest = requestId
-                        this.state.requestFilteredInfo = {
-                            offers: data.offers ? data.offers : null,
-                            edits: data.edits ? data.edits : null,
-                            acceptedOffer: data.accepted_offer ? data.accepted_offer : null,
-                            ratingCreatedBy: data.rating_created_by ? data.rating_created_by : null,
-                            ratingWorkingWith: data.rating_working_with ? data.rating_working_with : null,
-                            tasklist: data.tasklist ? data.tasklist : null,
-                            destination: data.destination ? data.destination : null,
-                            pictures: data.pictures ? data.pictures : null
-                        }
+                        if(filters.offers)
+                            this.state.requestFilteredInfo.offers = data.offers
+                        if(filters.edits)
+                            this.state.requestFilteredInfo.edits = data.edits
+                        if(filters.accepted_offer)
+                            this.state.requestFilteredInfo.acceptedOffer = data.accepted_offer
+                        if(filters.rating_created_by)
+                            this.state.requestFilteredInfo.rating_created_by = data.rating_created_by
+                        if(filters.rating_working_with)
+                            this.state.requestFilteredInfo.rating_working_with = data.rating_working_with
+                        if(filters.tasklist)
+                            this.state.requestFilteredInfo.tasklist = data.tasklist
+                        if(filters.destination)
+                            this.state.requestFilteredInfo.destination = data.destination
+                        if(filters.pictures)
+                            this.state.requestFilteredInfo.pictures = data.pictures
+                        this.state.isRequestInfoLoaded = true
                     })
                 }
                 else console.log("Error")
