@@ -12,39 +12,54 @@
     </b-card-title>
     <b-collapse :id="String(task.id)">
       <div style="padding:15px">
-        <div v-if="task.address" style="margin-bottom: 20px;">
-          <span v-text="isSerbian ? 'Adresa' : 'Address'" class="inner-text-title"></span>
-          <b-card-text class="inner-text">
-            <span>{{task.address.name}}</span>
-            <span v-text="isSerbian ? 'Obiđena: ' + (task.address.arrived ? 'da' : 'ne') : 'Arrived: ' + (task.address.arrived ? 'yes' : 'no')"></span>
+        <div style="margin-bottom: 20px;">
+          <span class="title-pic-span">
+            <img src="@/assets/location.svg" height="25" width="25" class="title-pic" />
+            <span v-text="isSerbian ? 'Adresa' : 'Address'" class="inner-text-title"></span>
+          </span>
+          <b-card-text :class="task.address ? 'inner-text' : 'no-info'">
+            <span v-if="task.address">{{task.address.name}}</span>
+            <span v-if="task.address" v-text="isSerbian ? 'Obiđena: ' + (task.address.arrived ? 'da' : 'ne') : 'Arrived: ' + (task.address.arrived ? 'yes' : 'no')"></span>
+            <span v-else v-text="isSerbian ? 'Nije navedena adresa za ovaj zadatak.' : 'No address was specified for this task.'"></span>
           </b-card-text>
         </div>
 
-        <span v-text="isSerbian ? 'Opis':'Description'" class="inner-text-title"></span>
-        <b-card-text class="inner-text" style="margin-bottom: 20px;">
-          {{task.description}}
+
+        <span class="title-pic-span">
+          <img src="@/assets/contract.svg" height="25" width="25" class="title-pic" />
+          <span v-text="isSerbian ? 'Opis':'Description'" class="inner-text-title"></span>
+        </span>
+        <b-card-text :class="task.description && task.description != '' ? 'inner-text' : 'no-info'" style="margin-bottom: 20px;">
+          <span v-if="task.description && task.description != ''">{{task.description}}</span>
+          <span v-else v-text="isSerbian ? 'Ne postoji opis za ovaj zadatak.' : 'No description was provided for this task.'"></span>
         </b-card-text>
 
         <div v-if="task.checklist && task.checklist.length" style="margin-bottom: 20px;">
-          <span v-text="isSerbian ? 'Spisak' : 'Checklist'" class="inner-text-title"></span>
+          <span class="title-pic-span">
+            <img src="@/assets/to-do-list.svg" height="25" width="25" class="title-pic" />
+            <span v-text="isSerbian ? 'Spisak' : 'Checklist'" class="inner-text-title"></span>
+          </span>
           <b-card-text class="inner-text">
             <span v-for="(item, ind) in task.checklist" :key="item.id" class="chklist-item">{{ind+1}}. {{item.check_list}}</span>
           </b-card-text>
         </div>
 
         <div v-if="task.picture_required && myRequestStatus > 0">
-          <span v-text="isSerbian ? 'Dostavljene slike' : 'Pictures taken'" class="inner-text-title" v-if="pictures.length > 0"></span>
-          <span v-else v-text="isSerbian ? 'Još uvek nije dostavljena nijedna slika' : 'No pictures have been taken so far'"></span>
-          <b-card-text class="inner-text" v-if="pictures.length > 0">
-            <div class="images-wrapper" >
+          <span class="title-pic-span">
+            <img src="@/assets/photos.svg" height="25" width="25" class="title-pic" />
+            <span v-text="isSerbian ? 'Dostavljene slike' : 'Pictures taken'" class="inner-text-title"></span>
+          </span>
+          <b-card-text :class="pictures.length > 0 ? 'inner-text' : 'no-info'">
+            <div  v-if="pictures.length > 0" class="images-wrapper" >
               <img 
                 class="expandable-image" 
-                :src="'data:;base64,' + pictures[ind]"
-                @click="expandPicture(picture)"
-                v-for="(picture, ind) in pictures" 
-                :key="ind"
+                :src="'data:;base64,' + picture.picture"
+                @click="expandPicture(picture.picture)"
+                v-for="picture in pictures" 
+                :key="picture.id"
               />
             </div>
+            <span v-else v-text="isSerbian ? 'Još uvek nije dostavljena nijedna slika' : 'No pictures have been taken so far'"></span>
           </b-card-text>
         </div>
         <div v-else-if="myRequestStatus == 0 && task.picture_required">
@@ -90,7 +105,7 @@ export default {
     },
     pictures() {
       if(this.task.picture_required)
-        return this.$store.state.testPictures //kad bude moguce dodati sliku u task, zameniti sa "return this.task.pictures"
+        return this.task.pictures
       else return []
     }
   },
@@ -149,12 +164,35 @@ export default {
     width: fit-content;
   }
 
+  .title-pic {
+    margin: 0px 10px 0px 0px;
+  }
+
+  .title-pic-span {
+    height: fit-content;
+    margin-bottom: 5px;
+    display: flex;
+    align-items: center;
+    word-break: break-word;
+  }
+
   .inner-text-title {
     font-size: 18px;
     font-weight: 600;
   }
 
   .inner-text {
+    border: 1px solid rgb(139, 136, 136);
+    font-size:16px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    background-color: rgb(250, 210, 125);
+  }
+
+  .no-info {
+    font-weight: 600;
+    color: rgb(175, 4, 4);
     border: 1px solid rgb(139, 136, 136);
     font-size:16px;
     padding: 10px;
