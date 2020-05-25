@@ -109,7 +109,7 @@ export default {
           lat: latLng.lat(),
           lng: latLng.lng(),
         },
-        label: "",
+        lab: "",
         info: ""
       }]
       this.$store.dispatch('setMarkerPositions', newMarkerPositions)
@@ -163,7 +163,7 @@ export default {
                     lat: data.results[0].geometry.location.lat,
                     lng: data.results[0].geometry.location.lng,
                   },
-                  label: "",
+                  lab: "",
                   info: ""
                 }]
                 vm.$store.dispatch('setMarkerPositions', newPositions)

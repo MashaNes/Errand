@@ -45,7 +45,7 @@
           <b-button 
             variant="secondary"
             v-if="showView != 'Details'"
-            @click="showView = 'Details'"
+            @click="showDetails"
           >
             <strong 
               class="notification-span" 
@@ -58,6 +58,8 @@
       <div style="display: flex; flex-direction: column" v-if="computedRequest.status == 0 && !isRunner && showView == 'Offers'" >
         <OfferBox 
           v-for="offer in filteredInfo.offers" :key="offer.id" :offer="offer" 
+          :oldTasklist="(offer.edit && offer.edit.tasks.length > 0) ? computedRequest.tasklist : null"
+          :oldDateAndTime="(offer.edit && offer.edit.time) ? computedRequest.time : null"
           @acceptOffer="acceptOffer" @rejectOffer="rejectOffer"
         />
       </div>
@@ -154,7 +156,7 @@
         </span>
 
         <Task 
-          v-for="task in computedRequest.tasklist" 
+          v-for="task in filteredInfo.tasklist" 
           :key="task.id" 
           :task="task" 
           :myRequestStatus="computedRequest.status" 
@@ -283,7 +285,7 @@ export default {
               returnValue = "fixed"
             break
           case "3":
-            if(this.isSerbia)
+            if(this.isSerbian)
               returnValue = "početna cena"
             else
               returnValue = "starting price"
@@ -312,7 +314,7 @@ export default {
       }
 
       function callbackMarkers() {
-        if(vm.$store.state.requestFilteredInfo.destination && vm.$store.state.requestFilteredInfo.tasklist) {
+        if(vm.$store.state.requestFilteredInfo.destination || vm.$store.state.requestFilteredInfo.tasklist) {
           vm.setMapMarkers()
         }
         else
@@ -420,6 +422,8 @@ export default {
       this.pictureExpanded = true
     },
     acceptOffer(offer) {
+      // eslint-disable-next-line no-debugger
+      debugger
       console.log('accepted')
       console.log(offer)
       this.showView = 'Details'
@@ -427,7 +431,25 @@ export default {
       this.computedRequest.working_with = offer.created_by
       this.computedRequest.status = 1
       const index = this.$store.state.createdAuthRequests.results.findIndex(req => req.id == this.computedRequest.id)
-      this.$store.state.createdAuthRequests.results[index].status = 1
+      
+      if(this.$store.state.createdAuthRequests) {
+        this.$store.state.createdAuthRequests.results[index].status = 1
+      }
+      if(offer.edit) {
+        if(offer.edit.time) {
+          if(this.$store.state.createdAuthRequests)
+            this.$store.state.createdAuthRequests.results[index].time = offer.edit.time
+          this.computedRequest.time = offer.edit.time
+        }
+        if(offer.edit.tasks && offer.edit.tasks.length > 0) {
+          offer.edit.tasks.forEach(newTask => {
+            console.log(this.filteredInfo)
+            const oldTask = this.filteredInfo.tasklist.find(task => task.id == newTask.id)
+            if(oldTask)
+              oldTask.address = newTask.address
+          })
+        }
+      }
       this.$store.dispatch('acceptOffer', {offerId: offer.id, requestId: this.computedRequest.id})
     },
     rejectOffer(offer) {
@@ -436,6 +458,10 @@ export default {
       const index = this.filteredInfo.offers.findIndex(off => off.id == offer.id)
       this.filteredInfo.offers.splice(index, 1)
       this.$store.dispatch('rejectOffer', offer.id)
+    },
+    showDetails() {
+      this.setMapMarkers()
+      this.showView = 'Details'
     }
   },
   created() {
@@ -445,7 +471,7 @@ export default {
   },
   watch: {
     $route() {
-      this.changedRoute()
+      this.routeChanged()
     }
   }
 }
