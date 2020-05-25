@@ -3,6 +3,7 @@
       :border-variant="progressBarVariant"
       no-body
     >
+  
       <b-card-body>
         <div class="user-info">
           <div class="media-center">
@@ -47,6 +48,39 @@
           <div class="offer-details">
             <span v-text="(isSerbian ? 'Tip naplate: ' : 'Payment type: ') + paymentType" class="bold-message"></span>
             <span v-text="(isSerbian ? 'Cena: ' : 'Price: ') + offer.payment_ammount + ' din'" class="bold-message"></span>
+            <div v-if="offer.edit" class="edit">
+              <span v-text="isSerbian ? 'Zahtevane izmene' : 'Required edits'" class="edit-title"></span>
+              <div class="edit-details">
+                <div v-if="offer.edit.time">
+                  <span v-text="isSerbian ? 'Datum i vreme' : 'Date and time'" style="font-size: 20px;"></span>
+                  <div class="left-padding">
+                    <div v-if="isSerbian" class="red-color"> Trenutni datum i vreme: {{oldDateAndTime | showTime}}</div>
+                    <div v-else class="red-color"> Current date and time: {{oldDateAndTime | showTime}}</div>
+                    <div v-if="isSerbian" class="green-color"> Novi datum i vreme: {{offer.edit.time | showTime}}</div>
+                    <div v-else class="green-color"> New date and time: {{offer.edit.time | showTime}}</div>
+                  </div>
+                </div>
+                <div v-if="offer.edit && offer.edit.tasks.length > 0" :style="offer.edit.time ? 'margin-top:15px;' : ''">
+                  <span v-text="isSerbian ? 'Nove adrese' : 'New addresses'" style="font-size: 20px;"></span>
+                  <div v-for="item in offer.edit.tasks" :key="item.task" class="left-padding">
+                    <div v-text='(isSerbian ? "Zadatak " : "Task ") + "\"" + getOldTask(item.task).name + "\":"'></div>
+                    <div class="left-padding" style="margin-top: 5px !important;">
+                      <div v-text='(isSerbian ? "Trenutna adresa: " : "Current address: ") + getOldTask(item.task).address.name' class="red-color"></div>
+                      <div v-text='(isSerbian ? "Nova adresa: " : "New address: ") + item.address.name' class="green-color"></div>
+                    </div>
+                  </div>
+                </div>
+                <b-button style="margin-top: 10px;" v-if="offer.edit && offer.edit.tasks.length > 0" @click="toggleMap">
+                  <span v-if="!isMapOpened" v-text="isSerbian ? 'Prikaži izmene na mapi' : 'Show changes on map'"></span>
+                  <span v-if="isMapOpened" v-text="isSerbian ? 'Zatvori mapu' : 'Close map'"></span>
+                </b-button>
+
+               <b-card-text style="margin-top: 20px;" v-if="offer.edit && offer.edit.tasks.length > 0" :class="isMapOpened ? 'visible' : 'invisible'">
+                  <Map />
+                </b-card-text>
+
+              </div>
+            </div>
           </div>
           <div class="offer-buttons">
             <button 
@@ -78,15 +112,25 @@
 
 <script>
 import ModalAreYouSure from "@/components/ModalAreYouSure"
+import Map from "@/components/Map"
 
 export default {
   components: {
-    ModalAreYouSure
+    ModalAreYouSure,
+    Map
   },
   props: {
     offer: {
       required: true, 
       type: Object
+    },
+    oldTasklist: {
+      required: false,
+      type: Array
+    },
+    oldDateAndTime: {
+      required: false,
+      type: String
     }
   },
   data()
@@ -94,7 +138,8 @@ export default {
     return{
       showModal:false,
       showAreYouSure: false,
-      accept: false
+      accept: false,
+      isMapOpened: false
     }
   },
   computed: {
@@ -164,7 +209,50 @@ export default {
     },
     dismissDecission() {
       this.showAreYouSure = false
+    },
+    getOldTask(taskId) {
+      return this.oldTasklist.find(task => task.id == taskId)
+    },
+    setMapMarkers() {
+      const markerPositions = [];
+      this.offer.edit.tasks.forEach((newTask, ind) => {
+        const oldTask = this.oldTasklist.find(task => task.id == newTask.task)
+        const oldPosition = {
+          showEditsOnMap: (ind==0) ? true : false,
+          pos: {
+            lat: oldTask.address.latitude,
+            lng: oldTask.address.longitude
+          },
+          lab: String(ind + 1),
+          info: oldTask.address.name
+        }
+
+        const newPosition = {
+          pos: {
+            lat: newTask.address.latitude,
+            lng: newTask.address.longitude
+          },
+          lab: String(ind + 1),
+          info: newTask.address.name,
+          icon: "https://www.iconsdb.com/icons/preview/color/29D10F/map-marker-2-xxl.png"
+        }
+        markerPositions.push(oldPosition)
+        markerPositions.push(newPosition)
+      })
+      this.$store.dispatch('setMarkerPositions', markerPositions)
+    },
+    toggleMap() {
+      if(!this.isMapOpened) {
+        this.setMapMarkers()
+        this.isMapOpened = true
+      }
+      else
+        this.isMapOpened = false
     }
+  },
+  created() {
+    //if(this.offer.edit && this.offer.edit.tasks.length > 0)
+      //this.setMapMarkers()
   }
 }
 </script>
@@ -193,6 +281,7 @@ export default {
 
   .offer {
     display: flex;
+    flex-direction: column;
     justify-content: space-between;
     border-top: 1px dashed lightgray;
   }
@@ -205,6 +294,8 @@ export default {
   .offer-buttons {
     display:flex;
     align-items: flex-end;
+    margin-top: 10px;
+    align-self: flex-end;
   }
 
   .rounded-image {
@@ -214,6 +305,11 @@ export default {
     width:60px;
     object-fit:cover;
     cursor:pointer;
+  }
+
+  .image {
+    height:60px;
+    width:60px;
   }
 
   .card-body {
@@ -256,6 +352,22 @@ export default {
     font-weight: bold;
   }
 
+  .edit {
+    margin-top: 10px;
+  }
+
+  .edit-title {
+    font-size: 22px;
+    font-weight: 600;
+  }
+
+  .edit-details {
+    padding: 5px;
+    border: 1px solid black;
+    border-radius: 5px;
+    font-weight: 600;
+  }
+
   .mt-2 {
     width:60%; 
     min-width:70px;
@@ -288,6 +400,15 @@ export default {
     cursor: pointer !important;
     text-decoration: underline;
     color:lightseagreen;
+  }
+
+  .visible {
+    visibility: visible;
+  }
+
+  .invisible {
+    visibility: hidden;
+    height:0px;
   }
 
   @media only screen and (max-width:650px)
@@ -350,12 +471,17 @@ export default {
 
   }
 
-  /* @media only screen and (max-width:500px)
-  {
-    .card {
-      margin: 40px 10px 40px 10px;
-    }
+  .green-color {
+    color: rgb(2, 97, 2);
+  }
 
-  } */
+  .red-color {
+    color: rgb(235, 16, 16);
+  }
+
+  .left-padding {
+    padding-left: 5px;
+    margin-top: 10px;
+  }
 
 </style>

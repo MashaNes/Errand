@@ -34,7 +34,7 @@
                 <span class = "request-status"> {{status}} </span>
             </div>
             <div class = "bottom-left">
-                <div class = "request-date"> {{myRequest.date | showTime}} </div>
+                <div class = "request-date"> {{myRequest.time | showTime}} </div>
                 <div class = "tagovi" v-if="isSerbian">
                     <div v-for="tag in tags" :key="tag.id" class = "request-tag" v-b-popover.hover.bottom="tag.description_sr">
                         {{tag.service_type_sr}}
