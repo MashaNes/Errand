@@ -48,10 +48,10 @@
               <li class="stavka-navigacije" v-if="isSerbian"> Pregled statistike </li>
               <li class="stavka-navigacije" v-else> View statistics </li>
             </router-link>
-            <!--<router-link>-->
+            <router-link :to="'/reports'">
               <li class="stavka-navigacije" v-if="isSerbian"> Upravljanje prijavama </li>
               <li class="stavka-navigacije" v-else> Handle reports </li>
-            <!--</router-link>-->
+            </router-link>
             <!--<router-link>-->
               <li class="stavka-navigacije" v-if="isSerbian"> Nekategorizovani zadaci </li>
               <li class="stavka-navigacije" v-else> Uncategorized tasks </li>
