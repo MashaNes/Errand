@@ -77,11 +77,11 @@
                                 <span v-if="isSerbian" class = "ikonica"> Pregled statistike </span>
                                 <span v-else class = "ikonica"> View statistics </span>
                             </router-link>
-                            <a class="dropdown-item">
+                            <router-link :to = "'/reports'" class="dropdown-item">
                                 <img src = "../assets/reports.svg">
                                 <span v-if="isSerbian" class = "ikonica"> Upravljanje prijavama </span>
                                 <span v-else class = "ikonica"> Handle reports </span>
-                            </a>
+                            </router-link>
                             <a class="dropdown-item">
                                 <img src = "../assets/other.svg" class="slichka">
                                 <span v-if="isSerbian" class = "ikonica"> Nekategorizovani zadaci </span>

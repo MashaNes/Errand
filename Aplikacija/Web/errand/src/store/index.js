@@ -10,6 +10,7 @@ import {fetchUsers} from "@/api/users.js"
 import {fetchRatings} from "@/api/ratings.js"
 import {fetchAchievements} from "@/api/achievements.js"
 import {fetchPictures} from "@/api/pictureTest.js"
+import {fetchActiveReports} from "@/api/activeReports.js"
 
 export default new Vuex.Store({
     state:{
@@ -49,7 +50,9 @@ export default new Vuex.Store({
         // acceptedOffer: null,
         requestFilteredInfo: {},
         filledInfoForRequest: null,
-        messageToShow: ""
+        messageToShow: "",
+        activeReports: null,
+        handeledReports: null
     },
     getters:{
         getAuthUserId(state) {
@@ -1204,6 +1207,9 @@ export default new Vuex.Store({
         },
         fillTestPictures() {
             this.state.testPictures = fetchPictures()
+        },
+        fillActiveReports(){
+            this.state.activeReports = fetchActiveReports()
         }
     },
     mutations:{

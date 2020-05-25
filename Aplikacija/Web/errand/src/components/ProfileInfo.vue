@@ -47,7 +47,7 @@
             <span v-else
               class="info-title" 
             > Personal info </span>
-            <div class="l-group-btns" v-if="isMyProfile">
+            <div class="l-group-btns" v-if="isMyProfile && !isAdminLoggedIn">
               <b-button 
                 class="button is-primary title-btn"
                 @click="goToProfileEdit()"
@@ -64,7 +64,7 @@
                 <strong v-else>Settings</strong>
               </router-link>
             </div>
-            <div class="l-group-btns" v-else>
+            <div class="l-group-btns" v-if="!isMyProfile && !isAdminLoggedIn">
               <b-button 
                 class="button is-primary title-btn"
                 @click="$emit('rateUser')"
@@ -248,6 +248,10 @@ export default {
         return ""
       return this.addresses[this.addresses.length-1].name
     },
+    isAdminLoggedIn()
+    {
+      return this.$store.state.isAdmin
+    }
   },
   methods: {
     goToProfileEdit() {
