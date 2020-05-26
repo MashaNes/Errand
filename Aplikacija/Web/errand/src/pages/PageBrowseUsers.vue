@@ -200,7 +200,7 @@ export default {
       if(this.lastPage != this.currentPage)
       {
         this.$store.dispatch('fillUsersPortion', {
-          endpoint: this.currentPage > this.lastPage ? this.usersPortion.next : this.usersPortion.previous,
+          endpoint: "http://localhost:8000/api/v1/filtered_users/?paginate=true&page=" + this.currentPage,
           sort_rating: true,
           sort_rating_asc: true,
           rating_limit_up: this.showUnrated ? null : parseInt(String(this.filterRatingHigher)),

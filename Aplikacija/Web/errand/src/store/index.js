@@ -11,6 +11,7 @@ import {fetchRatings} from "@/api/ratings.js"
 import {fetchAchievements} from "@/api/achievements.js"
 import {fetchPictures} from "@/api/pictureTest.js"
 import {fetchActiveReports} from "@/api/activeReports.js"
+import {fetchHandeledReports} from "@/api/handeledReports.js"
 
 export default new Vuex.Store({
     state:{
@@ -1210,6 +1211,9 @@ export default new Vuex.Store({
         },
         fillActiveReports(){
             this.state.activeReports = fetchActiveReports()
+        },
+        fillHandeledReports(){
+            this.state.handeledReports = fetchHandeledReports()
         }
     },
     mutations:{
