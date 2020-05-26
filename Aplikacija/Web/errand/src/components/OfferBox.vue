@@ -43,58 +43,72 @@
               <span v-else class="bold-message" v-text="isSerbian ? 'Korisnik do sada nije bio ocenjivan' : 'This user has not been rated yet'"></span>
             </div>
           </div>
+
+          <img 
+            v-if="!opened" src="@/assets/down-chevron.svg" height="22" width="22" 
+            v-b-toggle="String(offer.id)" class="toggle-image" @click="opened = !opened"
+          >
+          <img 
+            v-else src="@/assets/up-chevron.svg" height="22" width="22"  
+            v-b-toggle="String(offer.id)" class="toggle-image" @click="opened = !opened"
+          > 
         </div>
-        <div class="offer">
-          <div class="offer-details">
-            <span v-text="(isSerbian ? 'Tip naplate: ' : 'Payment type: ') + paymentType" class="bold-message"></span>
-            <span v-text="(isSerbian ? 'Cena: ' : 'Price: ') + offer.payment_ammount + ' din'" class="bold-message"></span>
-            <div v-if="offer.edit" class="edit">
-              <span v-text="isSerbian ? 'Zahtevane izmene' : 'Required edits'" class="edit-title"></span>
-              <div class="edit-details">
-                <div v-if="offer.edit.time">
-                  <span v-text="isSerbian ? 'Datum i vreme' : 'Date and time'" style="font-size: 20px;"></span>
-                  <div class="left-padding">
-                    <div v-if="isSerbian" class="red-color"> Trenutni datum i vreme: {{oldDateAndTime | showTime}}</div>
-                    <div v-else class="red-color"> Current date and time: {{oldDateAndTime | showTime}}</div>
-                    <div v-if="isSerbian" class="green-color"> Novi datum i vreme: {{offer.edit.time | showTime}}</div>
-                    <div v-else class="green-color"> New date and time: {{offer.edit.time | showTime}}</div>
-                  </div>
-                </div>
-                <div v-if="offer.edit && offer.edit.tasks.length > 0" :style="offer.edit.time ? 'margin-top:15px;' : ''">
-                  <span v-text="isSerbian ? 'Nove adrese' : 'New addresses'" style="font-size: 20px;"></span>
-                  <div v-for="item in offer.edit.tasks" :key="item.task" class="left-padding">
-                    <div v-text='(isSerbian ? "Zadatak " : "Task ") + "\"" + getOldTask(item.task).name + "\":"'></div>
-                    <div class="left-padding" style="margin-top: 5px !important;">
-                      <div v-text='(isSerbian ? "Trenutna adresa: " : "Current address: ") + getOldTask(item.task).address.name' class="red-color"></div>
-                      <div v-text='(isSerbian ? "Nova adresa: " : "New address: ") + item.address.name' class="green-color"></div>
+        <b-collapse :id="String(offer.id)">
+          <div :class="offer.edit ? 'offer' : 'offer-no-edits'">
+            <div class="offer-details">
+              <span v-text="(isSerbian ? 'Tip naplate: ' : 'Payment type: ') + paymentType" class="bold-message"></span>
+              <span v-text="(isSerbian ? 'Cena: ' : 'Price: ') + offer.payment_ammount + ' din'" class="bold-message"></span>
+              <div v-if="offer.edit" class="edit">
+                <span v-text="isSerbian ? 'Zahtevane izmene' : 'Required edits'" class="edit-title"></span>
+                <div class="edit-details">
+                  <div v-if="offer.edit.time">
+                    <span v-text="isSerbian ? 'Datum i vreme' : 'Date and time'" style="font-size: 20px;"></span>
+                    <div class="left-padding">
+                      <div v-if="isSerbian" class="red-color"> Trenutni datum i vreme: {{oldDateAndTime | showTime}}</div>
+                      <div v-else class="red-color"> Current date and time: {{oldDateAndTime | showTime}}</div>
+                      <div v-if="isSerbian" class="green-color"> Novi datum i vreme: {{offer.edit.time | showTime}}</div>
+                      <div v-else class="green-color"> New date and time: {{offer.edit.time | showTime}}</div>
                     </div>
                   </div>
+                  <div v-if="offer.edit && offer.edit.tasks.length > 0" :style="offer.edit.time ? 'margin-top:15px;' : ''">
+                    <span v-text="isSerbian ? 'Nove adrese' : 'New addresses'" style="font-size: 20px;"></span>
+                    <div v-for="item in offer.edit.tasks" :key="item.task" class="left-padding">
+                      <div v-text='(isSerbian ? "Zadatak " : "Task ") + "\"" + getOldTask(item.task).name + "\":"'></div>
+                      <div class="left-padding" style="margin-top: 5px !important;">
+                        <div v-text='(isSerbian ? "Trenutna adresa: " : "Current address: ") + getOldTask(item.task).address.name' class="red-color"></div>
+                        <div v-text='(isSerbian ? "Nova adresa: " : "New address: ") + item.address.name' class="green-color"></div>
+                      </div>
+                    </div>
+                  </div>
+                  <b-button style="margin-top: 10px;" v-if="offer.edit && offer.edit.tasks.length > 0" @click="toggleMap">
+                    <span v-if="!isMapOpened" v-text="isSerbian ? 'Prikaži izmene na mapi' : 'Show changes on map'"></span>
+                    <span v-if="isMapOpened" v-text="isSerbian ? 'Zatvori mapu' : 'Close map'"></span>
+                  </b-button>
+
+                  <b-card-text 
+                    style="margin-top: 20px;" v-if="offer.edit && offer.edit.tasks.length > 0" 
+                    :class="isMapOpened ? 'visible' : 'invisible'"
+                  >
+                    <Map />
+                  </b-card-text>
+
                 </div>
-                <b-button style="margin-top: 10px;" v-if="offer.edit && offer.edit.tasks.length > 0" @click="toggleMap">
-                  <span v-if="!isMapOpened" v-text="isSerbian ? 'Prikaži izmene na mapi' : 'Show changes on map'"></span>
-                  <span v-if="isMapOpened" v-text="isSerbian ? 'Zatvori mapu' : 'Close map'"></span>
-                </b-button>
-
-               <b-card-text style="margin-top: 20px;" v-if="offer.edit && offer.edit.tasks.length > 0" :class="isMapOpened ? 'visible' : 'invisible'">
-                  <Map />
-                </b-card-text>
-
               </div>
             </div>
+            <div class="offer-buttons">
+              <button 
+                type="button" class="btn btn-info" 
+                style="margin-right: 5px;" v-text="isSerbian ? 'Prihvati' : 'Accept'"
+                @click="accept=true; showAreYouSure=true">
+              </button>
+              <button 
+                type="button" class="btn btn-info" 
+                v-text="isSerbian ? 'Odbij' : 'Decline'"
+                @click="accept=false; showAreYouSure=true">
+              </button>
+            </div>
           </div>
-          <div class="offer-buttons">
-            <button 
-              type="button" class="btn btn-info" 
-              style="margin-right: 5px;" v-text="isSerbian ? 'Prihvati' : 'Accept'"
-              @click="accept=true; showAreYouSure=true">
-            </button>
-            <button 
-              type="button" class="btn btn-info" 
-              v-text="isSerbian ? 'Odbij' : 'Decline'"
-              @click="accept=false; showAreYouSure=true">
-            </button>
-          </div>
-        </div>
+        </b-collapse>
       </b-card-body>
 
       <ModalAreYouSure 
@@ -113,6 +127,7 @@
 <script>
 import ModalAreYouSure from "@/components/ModalAreYouSure"
 import Map from "@/components/Map"
+import {mapState} from 'vuex'
 
 export default {
   components: {
@@ -131,6 +146,10 @@ export default {
     oldDateAndTime: {
       required: false,
       type: String
+    },
+    myIndex: {
+      required: true,
+      type: Number
     }
   },
   data()
@@ -139,10 +158,12 @@ export default {
       showModal:false,
       showAreYouSure: false,
       accept: false,
-      isMapOpened: false
+      isMapOpened: false,
+      opened: false
     }
   },
   computed: {
+    ...mapState(['openedOffersOrEdits']),
     isSerbian() {
       return this.$store.state.isSerbian
     },
@@ -183,16 +204,33 @@ export default {
       return returnValue
     },
     tekstS() {
-      if(this.accept)
-        return "Da li ste sigurni da želite da prihvatite ovu ponudu? Nakon prihvatanja, nećete moći da promenite odluku."
+      if(this.accept) {
+        if(this.offer.edit)
+          return "Da li ste sigurni da želite da prihvatite ovu ponudu i sve zahtevane izmene? Nakon prihvatanja, nećete moći da promenite odluku."
+        else
+          return "Da li ste sigurni da želite da prihvatite ovu ponudu? Nakon prihvatanja, nećete moći da promenite odluku."
+      }
       else 
         return "Da li ste sigurni da želite da odbijete ovu ponudu?"
     },
     tekstE() {
-      if(this.accept)
-        return "Are you sure you want to accept this offer? After accepting, you will not be able to change your decission."
+      if(this.accept) {
+        if(this.offer.edit)
+          return "Are you sure you want to accept this offer and all the requested changes? After accepting, you will not be able to change your decission."
+        else
+          return "Are you sure you want to accept this offer? After accepting, you will not be able to change your decission."
+      }
       else
         return "Are you sure you want to decline this offer?"
+    }
+  },
+  watch: {
+    // eslint-disable-next-line no-unused-vars
+    openedOffersOrEdits(newVal, oldVal) {
+      if(newVal[this.myIndex] == true) {
+        this.isMapOpened = true
+      }
+      else this.isMapOpened = false
     }
   },
   methods: {
@@ -216,14 +254,16 @@ export default {
     setMapMarkers() {
       const markerPositions = [];
       this.offer.edit.tasks.forEach((newTask, ind) => {
-        const oldTask = this.oldTasklist.find(task => task.id == newTask.task)
+        const oldTaskInd = this.oldTasklist.findIndex(task => task.id == newTask.task)
+        const oldTask = this.oldTasklist[oldTaskInd]
+
         const oldPosition = {
           showEditsOnMap: (ind==0) ? true : false,
           pos: {
             lat: oldTask.address.latitude,
             lng: oldTask.address.longitude
           },
-          lab: String(ind + 1),
+          lab: String(oldTaskInd + 1),
           info: oldTask.address.name
         }
 
@@ -232,9 +272,10 @@ export default {
             lat: newTask.address.latitude,
             lng: newTask.address.longitude
           },
-          lab: String(ind + 1),
+          lab: String(oldTaskInd + 1),
           info: newTask.address.name,
-          icon: "https://www.iconsdb.com/icons/preview/color/29D10F/map-marker-2-xxl.png"
+          icon: true
+          //icon: "https://www.iconsdb.com/icons/preview/color/29D10F/map-marker-2-xxl.png"
         }
         markerPositions.push(oldPosition)
         markerPositions.push(newPosition)
@@ -243,8 +284,14 @@ export default {
     },
     toggleMap() {
       if(!this.isMapOpened) {
-        this.setMapMarkers()
-        this.isMapOpened = true
+        if(!this.$store.getters['getOpenedOffersOrEdits'][this.myIndex]) {
+          const newArray = new Array(this.$store.getters['getOpenedOffersOrEdits'].length).fill(false)
+          newArray[this.myIndex] = true
+          this.$store.dispatch('fillOpenedOffersOrEdits', newArray)
+          this.setMapMarkers()
+        }
+        else
+          this.isMapOpened = true
       }
       else
         this.isMapOpened = false
@@ -277,11 +324,18 @@ export default {
     display: flex;
     flex-direction: row;
     padding-bottom: 5px;
+    align-items: center;
   }
 
   .offer {
     display: flex;
     flex-direction: column;
+    justify-content: space-between;
+    border-top: 1px dashed lightgray;
+  }
+
+  .offer-no-edits {
+    display: flex;
     justify-content: space-between;
     border-top: 1px dashed lightgray;
   }
@@ -411,6 +465,18 @@ export default {
     height:0px;
   }
 
+  .toggle-image {
+    margin-left: 5px;
+    padding: 2px;
+    border-radius: 2px;
+  }
+
+  .toggle-image:hover {
+    cursor: pointer;
+    height: 23px;
+    width:23px;
+  }
+
   @media only screen and (max-width:650px)
   {
     .card-footer {
@@ -454,6 +520,13 @@ export default {
     }
   
     .offer {
+      flex-direction: column;
+      width: 100%;
+      padding-left: 5px;
+      padding-right: 5px;
+    }
+
+    .offer-no-edits {
       flex-direction: column;
       width: 100%;
       padding-left: 5px;

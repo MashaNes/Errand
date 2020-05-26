@@ -40,10 +40,7 @@ export default {
               fontWeight: "600",
               fontSize: "16px"
             },
-            icon: {
-              url: mark.icon ? mark.icon : "https://www.iconsdb.com/icons/preview/color/FF3112/map-marker-2-xxl.png",
-              scaledSize: new window.google.maps.Size(40, 40)
-            },
+            icon: mark.icon ? require("@/assets/small-marker-green.png") : require("@/assets/small-marker-red.png"),
             map: this.map
           })
           if(mark.info) {
@@ -77,10 +74,7 @@ export default {
             fontWeight: "600",
             fontSize: "16px"
           },
-          icon: {
-            url: newVal[0].icon ? newVal[0].icon : "https://www.iconsdb.com/icons/preview/color/FF3112/map-marker-2-xxl.png",
-            scaledSize: new window.google.maps.Size(40, 40)
-          },
+          icon: newVal[0].icon ? require("@/assets/small-marker-green.png") : require("@/assets/small-marker-red.png"),
           map: this.map
         })
         if(newVal[0].info) {
@@ -102,10 +96,7 @@ export default {
             fontWeight: "600",
             fontSize: "16px"
           },
-          icon: {
-            url: newVal[newVal.length - 1].icon ? newVal[newVal.length - 1].icon : "https://www.iconsdb.com/icons/preview/color/FF3112/map-marker-2-xxl.png",
-            scaledSize: new window.google.maps.Size(40, 40)
-          },
+          icon: newVal[newVal.length - 1].icon ? require("@/assets/small-marker-green.png") : require("@/assets/small-marker-red.png"),
           map: this.map
         })
         if(newVal[newVal.length - 1].info) {
@@ -154,10 +145,7 @@ export default {
                 fontWeight: "600",
                 fontSize: "16px"
               },
-              icon: {
-                url: mark.icon ? mark.icon : "https://www.iconsdb.com/icons/preview/color/FF3112/map-marker-2-xxl.png",
-                scaledSize: new window.google.maps.Size(40, 40)
-              },
+              icon: mark.icon ? require("@/assets/small-marker-green.png") : require("@/assets/small-marker-red.png"),
               map:vm.map
             })
             if(mark.info) {

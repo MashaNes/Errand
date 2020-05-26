@@ -1,7 +1,7 @@
 <template>
   <Spinner v-if="!computedRequest || !this.$store.state.isRequestInfoLoaded" />
   <div class="wrapper" v-else>
-    <b-card>
+    <b-card style="min-width: 240px;">
       <b-card-title class="main-title">
         <div class="title-start">{{computedRequest.name}}</div>
         <div class="title-end">
@@ -18,29 +18,29 @@
           </div>
           <b-button 
             variant="secondary"
-            v-b-popover.hover.top="isSerbian ? 'Imate ' + filteredInfo.offers.length + ' ponuda' : 'You have ' + filteredInfo.offers.length + ' offers'"
+            v-b-popover.hover.top="isSerbian ? 'Imate ' + filteredOffers.length + ' ponuda' : 'You have ' + filteredOffers.length + ' offers'"
             v-if="computedRequest.status == 0 && !isRunner && showView == 'Details'"
-            :disabled="filteredInfo.offers.length == 0"
-            @click="showView = 'Offers'"
+            :disabled="filteredOffers.length == 0"
+            @click="showOffers"
           >
             <strong 
               class="notification-span" 
               v-text="isSerbian ? 'Ponude' : 'Offers'"
             ></strong>
-            <b-badge variant="danger" class="notification-badge" >{{filteredInfo.offers.length}}</b-badge>
+            <b-badge variant="danger" class="notification-badge" >{{filteredOffers.length}}</b-badge>
           </b-button>
           <b-button 
             variant="secondary"
-            v-b-popover.hover.top="isSerbian ? 'Imate ' + filteredInfo.edits.length + ' zahteva za izmenama' : 'You have ' + filteredInfo.edits.length + ' edit requests'"
+            v-b-popover.hover.top="isSerbian ? 'Imate ' + filteredEdits.length + ' zahteva za izmenama' : 'You have ' + filteredEdits.length + ' edit requests'"
             v-if="computedRequest.status == 1 && !isRunner && showView == 'Edits'"
-            :disabled="filteredInfo.edits.length == 0"
+            :disabled="filteredEdits.length == 0"
             @click="showView = 'Edits'"
           >
             <strong 
               class="notification-span" 
               v-text="isSerbian ? 'Zahtevi za izmenama' : 'Edit requests'"
             ></strong>
-            <b-badge variant="danger" class="notification-badge" >{{filteredInfo.edits.length}}</b-badge>
+            <b-badge variant="danger" class="notification-badge" >{{filteredEdits.length}}</b-badge>
           </b-button>
           <b-button 
             variant="secondary"
@@ -57,9 +57,10 @@
 
       <div style="display: flex; flex-direction: column" v-if="computedRequest.status == 0 && !isRunner && showView == 'Offers'" >
         <OfferBox 
-          v-for="offer in filteredInfo.offers" :key="offer.id" :offer="offer" 
+          v-for="(offer, ind) in filteredOffers" :key="offer.id" :offer="offer" 
           :oldTasklist="(offer.edit && offer.edit.tasks.length > 0) ? computedRequest.tasklist : null"
           :oldDateAndTime="(offer.edit && offer.edit.time) ? computedRequest.time : null"
+          :myIndex="ind"
           @acceptOffer="acceptOffer" @rejectOffer="rejectOffer"
         />
       </div>
@@ -179,6 +180,7 @@ import Task from "@/components/Task"
 import Spinner from "@/components/Spinner"
 import OfferBox from "@/components/OfferBox"
 import ModalPicture from "@/components/ModalPicture"
+//import Vue from 'vue'
 
 export default {
   components: {
@@ -206,6 +208,9 @@ export default {
   computed: {
     filteredInfo() {
       return this.$store.state.requestFilteredInfo
+    },
+    filteredOffers() {
+      return this.$store.state.offers
     },
     isSerbian() {
       return this.$store.state.isSerbian
@@ -422,52 +427,55 @@ export default {
       this.pictureExpanded = true
     },
     acceptOffer(offer) {
-      // eslint-disable-next-line no-debugger
-      debugger
-      console.log('accepted')
-      console.log(offer)
-      this.showView = 'Details'
       this.filteredInfo.acceptedOffer = offer
       this.computedRequest.working_with = offer.created_by
       this.computedRequest.status = 1
-      const index = this.$store.state.createdAuthRequests.results.findIndex(req => req.id == this.computedRequest.id)
+      let index = -1
+      if(this.$store.state.createdAuthRequests)
+        index = this.$store.state.createdAuthRequests.results.findIndex(req => req.id == this.computedRequest.id)
       
-      if(this.$store.state.createdAuthRequests) {
+      if(index != -1) {
         this.$store.state.createdAuthRequests.results[index].status = 1
+        this.$store.state.createdAuthRequests.results[index].working_with = offer.created_by
       }
       if(offer.edit) {
         if(offer.edit.time) {
-          if(this.$store.state.createdAuthRequests)
+          if(index != -1)
             this.$store.state.createdAuthRequests.results[index].time = offer.edit.time
           this.computedRequest.time = offer.edit.time
         }
         if(offer.edit.tasks && offer.edit.tasks.length > 0) {
           offer.edit.tasks.forEach(newTask => {
-            console.log(this.filteredInfo)
-            const oldTask = this.filteredInfo.tasklist.find(task => task.id == newTask.id)
+            const oldTask = this.filteredInfo.tasklist.find(task => task.id == newTask.task)
             if(oldTask)
               oldTask.address = newTask.address
           })
         }
       }
       this.$store.dispatch('acceptOffer', {offerId: offer.id, requestId: this.computedRequest.id})
+      this.setMapMarkers()
+      this.showView = 'Details'
     },
     rejectOffer(offer) {
-      console.log('reject')
-      console.log(offer)
-      const index = this.filteredInfo.offers.findIndex(off => off.id == offer.id)
-      this.filteredInfo.offers.splice(index, 1)
+      const index = this.filteredOffers.findIndex(off => off.id == offer.id)
+      this.$store.state.offers.splice(index, 1)
+      if(this.filteredOffers.length == 0) {
+        this.showDetails()
+      }
       this.$store.dispatch('rejectOffer', offer.id)
     },
     showDetails() {
       this.setMapMarkers()
       this.showView = 'Details'
+    },
+    showOffers() {
+      this.$store.state.openedOffersOrEdits = new Array(this.filteredOffers.length).fill(false)
+      this.showView = 'Offers'
     }
   },
   created() {
     this.$store.dispatch('fillTestPictures')
     this.routeChanged()
-    //izbaciti kad bude moguce dodavanje slike u request i u taskove
   },
   watch: {
     $route() {
