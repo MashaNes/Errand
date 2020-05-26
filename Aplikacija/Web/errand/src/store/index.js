@@ -46,9 +46,9 @@ export default new Vuex.Store({
         requestInCreation: null,
         servicesRequired: [],
         testPictures: null,
-        // offers: null,
-        // //editRequests: null,
-        // acceptedOffer: null,
+        offers: null,
+        edits: null,
+        openedOffersOrEdits: null,
         requestFilteredInfo: {},
         filledInfoForRequest: null,
         messageToShow: "",
@@ -58,6 +58,9 @@ export default new Vuex.Store({
     getters:{
         getAuthUserId(state) {
             return state.authUser.id
+        },
+        getOpenedOffersOrEdits(state) {
+            return state.openedOffersOrEdits
         }
     },
     actions:{
@@ -1041,7 +1044,11 @@ export default new Vuex.Store({
                         else
                         {
                             this.state.requestFilteredInfo.offers = data.offers
+                            this.state.offers = data.offers
+
                             this.state.requestFilteredInfo.edits = data.edits
+                            this.state.edits = data.edits
+
                             this.state.requestFilteredInfo.acceptedOffer = data.accepted_offer
                             this.state.requestFilteredInfo.ratingCreatedBy = data.rating_created_by
                             this.state.requestFilteredInfo.ratingWorkingWith = data.rating_working_with
@@ -1108,10 +1115,14 @@ export default new Vuex.Store({
                     p.json().then(data => {
                         console.log(data)
                         this.state.filledInfoForRequest = requestId
-                        if(filters.offers)
+                        if(filters.offers) {
+                            this.state.offers = data.offers
                             this.state.requestFilteredInfo.offers = data.offers
-                        if(filters.edits)
+                        }
+                        if(filters.edits) {
+                            this.state.edits = data.edits
                             this.state.requestFilteredInfo.edits = data.edits
+                        }
                         if(filters.accepted_offer)
                             this.state.requestFilteredInfo.acceptedOffer = data.accepted_offer
                         if(filters.rating_created_by)
@@ -1206,14 +1217,14 @@ export default new Vuex.Store({
                     }
                 });
         },
-        fillTestPictures() {
-            this.state.testPictures = fetchPictures()
-        },
         fillActiveReports(){
             this.state.activeReports = fetchActiveReports()
         },
         fillHandeledReports(){
             this.state.handeledReports = fetchHandeledReports()
+        },
+        fillOpenedOffersOrEdits({commit}, array) {
+            commit('openOfferOrEdit', array)
         }
     },
     mutations:{
@@ -1257,6 +1268,9 @@ export default new Vuex.Store({
         },
         setMarkers(state, positions) {
             state.mapMarkerPositions = positions
+        },
+        openOfferOrEdit(state, array) {
+            state.openedOffersOrEdits = [...array]
         }
     }
 })
