@@ -27,6 +27,7 @@ import PageStatistics from "@/pages/PageStatistics"
 import PageForbidden from "@/pages/PageForbidden"
 import PageAdminServices from "@/pages/PageAdminServices"
 import PageReports from "@/pages/PageReports"
+import PageUncategorizedTasks from "@/pages/PageUncategorizedTasks"
 
 Vue.use(Router)
 
@@ -346,6 +347,24 @@ const router = new Router(
                 path: "/reports",
                 name: "PageReports",
                 component: PageReports,
+                props: true,
+                beforeEnter(to,from,next)
+                {
+                    if(store.state.logedIn)
+                    {
+                        if(store.state.isAdmin)
+                            next()
+                        else
+                        next({name: 'PageForbidden'})
+                    }
+                    else
+                        next({name: 'PageNotAuthenticated'})
+                }
+            },
+            {
+                path: "/uncategorizedTasks",
+                name: "PageUncategorizedTasks",
+                component: PageUncategorizedTasks,
                 props: true,
                 beforeEnter(to,from,next)
                 {

@@ -34,7 +34,8 @@
                 <span class = "request-status"> {{status}} </span>
             </div>
             <div class = "bottom-left">
-                <div class = "request-date"> {{myRequest.time | showTime}} </div>
+                <div class = "request-date" v-if="!isSerbian"> {{myRequest.time | showTime}} </div>
+                <div class = "request-date" v-else> {{dateAndTime}} </div>
                 <div class = "tagovi" v-if="isSerbian">
                     <div v-for="tag in tags" :key="tag.id" class = "request-tag" v-b-popover.hover.bottom="tag.description_sr">
                         {{tag.service_type_sr}}
@@ -178,6 +179,66 @@ export default {
                 return !this.myRequest.rated_working_with
             else
                 return !this.myRequest.rated_created_by
+        },
+        dateAndTime()
+        {
+            var date = new Date(this.myRequest.time)
+            
+            var day = date.getDate()
+            var month = date.getMonth()+1
+            var year = date.getFullYear()
+            var hours = date.getHours()
+            var minutes = date.getMinutes()
+            
+            var monthString = ""
+            var hoursString = hours
+            var minutesString = minutes
+            if(hours < 10)
+                hoursString = "0" + hours
+            if(minutes < 10)
+                minutesString = "0" + minutes
+
+            switch(month)
+            {
+                case 1: 
+                        monthString = "Januar"
+                        break
+                case 2: 
+                        monthString = "Februar"
+                        break
+                case 3: 
+                        monthString = "Mart"
+                        break
+                case 4: 
+                        monthString = "April"
+                        break
+                case 5: 
+                        monthString = "Maj"
+                        break
+                case 6: 
+                        monthString = "Jun"
+                        break
+                case 7: 
+                        monthString = "Jul"
+                        break 
+                case 8: 
+                        monthString = "Avgust"
+                        break
+                case 9: 
+                        monthString = "Septembar"
+                        break
+                case 10: 
+                        monthString = "Oktobar"
+                        break
+                case 11: 
+                        monthString = "Novembar"
+                        break
+                default:
+                        monthString = "Decembar"
+                        break
+            }
+
+            return day + ". " + monthString + " " + year + "." + "  " + hoursString + ":" + minutesString + "h"
         }
     },
     methods:
@@ -275,6 +336,7 @@ export default {
         justify-items: center;
         margin-right: 10px;
         font-size: 18px;
+        width:fit-content;
     }
 
     .ikonica
@@ -297,6 +359,7 @@ export default {
     {
         display: flex;
         flex-direction: row;
+        align-items:center;
     }
     
     .bottom-left
@@ -311,6 +374,7 @@ export default {
     {
         padding: 10px;
         text-align: center;
+        font-size: 18px;
     }
 
     .user-name
@@ -381,7 +445,7 @@ export default {
         font-size: 25px;
         color:rgb(11, 97, 126);
         text-align: left;
-        flex-grow: 1;
+        width:100%;
         margin-left: 10px;
         margin-top:2px;
     }
@@ -398,6 +462,7 @@ export default {
         padding-left:7px;
         padding-right:7px;
         padding-top:5px;
+        padding-bottom:5px;
         margin:5px;
         background-color: rgb(15, 170, 221);
         color: white;

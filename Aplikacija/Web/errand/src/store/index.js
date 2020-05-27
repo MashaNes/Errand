@@ -12,6 +12,7 @@ import {fetchAchievements} from "@/api/achievements.js"
 import {fetchPictures} from "@/api/pictureTest.js"
 import {fetchActiveReports} from "@/api/activeReports.js"
 import {fetchHandeledReports} from "@/api/handeledReports.js"
+import {fetchRequestsOther} from "@/api/requestsOther.js"
 
 export default new Vuex.Store({
     state:{
@@ -86,6 +87,7 @@ export default new Vuex.Store({
                 if(p.ok) {
                     p.json().then(data => {
                         this.state[objectToFill] = data
+                        console.log(data)
                     })
                 }
             })
@@ -135,7 +137,6 @@ export default new Vuex.Store({
             const specificUser = Object.values(users).find(u => u.id == userId)
             commit('setUser', specificUser)
         },
-        // eslint-disable-next-line no-unused-vars
         fillAuthUser({commit}, payload) {
             this.state.isDataLoaded = false
             fetch("http://127.0.0.1:8000/api/v1/login/",
@@ -180,7 +181,6 @@ export default new Vuex.Store({
                     }
                 });
         },
-        // eslint-disable-next-line no-unused-vars
         createUser({commit}, payload)
         {
             this.state.isDataLoaded = false
@@ -675,7 +675,6 @@ export default new Vuex.Store({
                     }
                 });
         },
-        // eslint-disable-next-line no-unused-vars
         getUserById({commit}, payload)
         {
             this.state.isDataLoaded = false
@@ -1225,6 +1224,9 @@ export default new Vuex.Store({
         },
         fillOpenedOffersOrEdits({commit}, array) {
             commit('openOfferOrEdit', array)
+        },
+        fillOtherRequests(){
+            this.state.overAuthRequests = fetchRequestsOther()
         }
     },
     mutations:{

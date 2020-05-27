@@ -82,11 +82,11 @@
                                 <span v-if="isSerbian" class = "ikonica"> Upravljanje prijavama </span>
                                 <span v-else class = "ikonica"> Handle reports </span>
                             </router-link>
-                            <a class="dropdown-item">
+                            <router-link :to = "'/uncategorizedTasks'" class="dropdown-item">
                                 <img src = "../assets/other.svg" class="slichka">
                                 <span v-if="isSerbian" class = "ikonica"> Nekategorizovani zadaci </span>
                                 <span v-else class = "ikonica"> Uncategorized tasks </span>
-                            </a>
+                            </router-link>
                             <router-link :to = "'/addService'" class="dropdown-item">
                                 <img src = "../assets/add-service.svg" class="slichka">
                                 <span v-if="isSerbian" class = "ikonica"> Nova usluga </span>

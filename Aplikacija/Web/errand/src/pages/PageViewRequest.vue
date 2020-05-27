@@ -7,7 +7,8 @@
         <div class="title-end">
           <div class="clock pic-and-span">
             <img src="@/assets/clock.svg" height="25" width="25" class="title-pic">
-            <span>{{computedRequest.time | showTime}}</span>
+            <span v-if="!isSerbian">{{computedRequest.time | showTime}}</span>
+            <span v-else>{{dateAndTime}}</span>
           </div>
           <div class="pic-and-span">
             <img v-if="computedRequest.status == 0" src="@/assets/running.svg" height="25" width="25" class="title-pic">
@@ -18,7 +19,7 @@
           </div>
           <b-button 
             variant="secondary"
-            v-b-popover.hover.top="isSerbian ? 'Imate ' + filteredOffers.length + ' ponuda' : 'You have ' + filteredOffers.length + ' offers'"
+            v-b-popover.hover.top="ponudeTekst"
             v-if="computedRequest.status == 0 && !isRunner && showView == 'Details'"
             :disabled="filteredOffers.length == 0"
             @click="showOffers"
@@ -31,7 +32,7 @@
           </b-button>
           <b-button 
             variant="secondary"
-            v-b-popover.hover.top="isSerbian ? 'Imate ' + filteredEdits.length + ' zahteva za izmenama' : 'You have ' + filteredEdits.length + ' edit requests'"
+            v-b-popover.hover.top="zahteviTekst"
             v-if="computedRequest.status == 1 && !isRunner && showView == 'Edits'"
             :disabled="filteredEdits.length == 0"
             @click="showView = 'Edits'"
@@ -297,6 +298,129 @@ export default {
         }
       }
       return returnValue
+    },
+    dateAndTime()
+    {
+      var date = new Date(this.computedRequest.time)
+            
+      var day = date.getDate()
+      var month = date.getMonth()+1
+      var year = date.getFullYear()
+      var hours = date.getHours()
+      var minutes = date.getMinutes()
+      
+      var monthString = ""
+      var hoursString = hours
+      var minutesString = minutes
+      if(hours < 10)
+          hoursString = "0" + hours
+      if(minutes < 10)
+          minutesString = "0" + minutes
+
+      switch(month)
+      {
+          case 1: 
+                  monthString = "Januar"
+                  break
+          case 2: 
+                  monthString = "Februar"
+                  break
+          case 3: 
+                  monthString = "Mart"
+                  break
+          case 4: 
+                  monthString = "April"
+                  break
+          case 5: 
+                  monthString = "Maj"
+                  break
+          case 6: 
+                  monthString = "Jun"
+                  break
+          case 7: 
+                  monthString = "Jul"
+                  break 
+          case 8: 
+                  monthString = "Avgust"
+                  break
+          case 9: 
+                  monthString = "Septembar"
+                  break
+          case 10: 
+                  monthString = "Oktobar"
+                  break
+          case 11: 
+                  monthString = "Novembar"
+                  break
+          default:
+                  monthString = "Decembar"
+                  break
+      }
+
+      return day + ". " + monthString + " " + year + "." + "  " + hoursString + ":" + minutesString + "h"
+    },
+    ponudeTekst()
+    {
+      if(this.isSerbian)
+      {
+        var jedinice = this.filteredOffers.length - (Math.round(this.filteredOffers.length/10).toFixed(0))*10
+        var string = ""
+        switch(jedinice)
+        {
+            case 0: 
+                    string = "ponuda"
+                    break
+            case 1: 
+                    string = "ponudu"
+                    break
+            case 2: 
+                    string = "ponude"
+                    break
+            case 3: 
+                    string = "ponude"
+                    break
+            case 4: 
+                    string = "ponude"
+                    break
+            default: 
+                    string = "ponuda"
+                    break
+        }
+        if(this.filteredOffers.length == 11 || this.filteredOffers.length == 12  || this.filteredOffers.length == 13 || this.filteredOffers.length == 14)
+          string = "ponuda"
+        return 'Imate ' + this.filteredOffers.length + ' ' + string
+      }
+      else
+      {
+        return this.filteredOffers.length == 1? 'You have ' + this.filteredOffers.length + ' offer' : 'You have ' + this.filteredOffers.length + ' offers'
+      }
+    },
+    zahteviTekst()
+    {
+      if(this.isSerbian)
+      {
+        var jedinice = this.filteredEdits.length - (Math.round(this.filteredEdits.length/10).toFixed(0))*10
+        var string = ""
+        switch(jedinice)
+        {
+            case 0: 
+                    string = "zahteva"
+                    break
+            case 1: 
+                    string = "zahtev"
+                    break
+            default: 
+                    string = "zahteva"
+                    break
+        }
+        if(this.filteredOffers.length == 11)
+          string = "zahteva"
+        return 'Imate ' + this.filteredEdits.length + ' ' + string + ' za izmenama'
+      }
+      else
+      {
+        return this.filteredEdits.length == 1? 'You have ' + this.filteredEdits.length + ' edit request' : 'You have ' + this.filteredEdits.length + ' edit requests'
+      }
     }
   },
   methods: {

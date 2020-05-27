@@ -52,10 +52,10 @@
               <li class="stavka-navigacije" v-if="isSerbian"> Upravljanje prijavama </li>
               <li class="stavka-navigacije" v-else> Handle reports </li>
             </router-link>
-            <!--<router-link>-->
+            <router-link :to = "'/uncategorizedTasks'">
               <li class="stavka-navigacije" v-if="isSerbian"> Nekategorizovani zadaci </li>
               <li class="stavka-navigacije" v-else> Uncategorized tasks </li>
-            <!--</router-link>-->
+            </router-link>
             <router-link :to = "'/addService'">
               <li class="stavka-navigacije" v-if="isSerbian"> Nova usluga </li>
               <li class="stavka-navigacije" v-else> New service </li>
