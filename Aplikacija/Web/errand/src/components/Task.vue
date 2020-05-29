@@ -5,8 +5,18 @@
       v-b-toggle="String(task.id)" 
       @click="opened = !opened"
     >
-      <span style="margin-right:5px; max-width:90%;" v-text=task.name ></span>
-      <img v-if="!opened" src="@/assets/down-chevron.svg" height="15" width="15">
+      <span class="task-title-tag">
+        <span v-text="task.name" class="task-name"></span>
+        <span class = "tagovi">
+            <span v-if="isSerbian" class = "request-tag" v-b-popover.hover.bottom="task.service_type.description_sr">
+                {{task.service_type.service_type_sr}}
+            </span>
+            <span v-else class = "request-tag" v-b-popover.hover.bottom="task.service_type.description_en">
+                {{task.service_type.service_type_en}}
+            </span>
+        </span>
+      </span>
+      <img v-if="!opened" src="@/assets/down-chevron.svg" height="15" width="15"> 
       <img v-else src="@/assets/up-chevron.svg" height="15" width="15">
 
     </b-card-title>
@@ -124,6 +134,7 @@ export default {
     
     border:1px solid black;
     border-radius:5px;
+    word-break: break-word;
   }
 
   .open-task-div {
@@ -134,12 +145,12 @@ export default {
     padding:10px;
     border-radius:4px;
     border: 1px solid grey;
-    flex-wrap: nowrap;
+    flex-wrap: nowrap !important;
   }
 
   .open-task-div:hover {
     cursor: pointer;
-    flex-wrap: nowrap;
+    flex-wrap: nowrap !important;
   }
 
   .open-task-bottom-border {
@@ -233,6 +244,39 @@ export default {
   .expandable-image:hover {
     cursor: pointer;
     border-color: black;
+  }
+
+  .tagovi
+  {
+    display: flex;
+    flex-direction: row;
+    align-items:center;
+  }
+
+  .task-name {
+    margin-right: 10px;
+  }
+
+  .request-tag
+  {
+    border-radius: 5px;
+    padding-left:7px;
+    padding-right:7px;
+    padding-top:5px;
+    padding-bottom:5px;
+    margin:5px;
+    background-color: rgb(15, 170, 221);
+    color: white;
+    font-weight: bold;
+    font-size: 16px;
+    margin-left: 0px;
+  }
+
+  .task-title-tag {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-right: 5px;
   }
 
 </style>
