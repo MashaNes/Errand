@@ -18,19 +18,15 @@
             <span>{{status}}</span>
           </div>
           <b-button 
-            variant="secondary" v-b-popover.hover.top="ponudeTekst"
-            v-if="computedRequest.status == 0 && !isRunner && showView == 'Details'"
-            :disabled="filteredOffers.length == 0" @click="showOffers"
-            class="button-flex-center"
+            variant="secondary" v-b-popover.hover.top="ponudeTekst"  v-if="computedRequest.status == 0 && !isRunner && showView == 'Details'"
+            :disabled="filteredOffers.length == 0" @click="changeViewFromDetails('Offers')" class="button-flex-center"
           >
             <strong class="notification-span" v-text="isSerbian ? 'Ponude' : 'Offers'"></strong>
             <b-badge variant="danger" class="notification-badge" >{{filteredOffers.length}}</b-badge>
           </b-button>
           <b-button 
-            variant="secondary" v-b-popover.hover.top="zahteviTekst" 
-            v-if="computedRequest.status == 1 && !isRunner && showView == 'Edits'"
-            :disabled="filteredEdits.length == 0" @click="showView = 'Edits'"
-            class="button-flex-center"
+            variant="secondary" v-b-popover.hover.top="zahteviTekst" v-if="computedRequest.status == 1 && !isRunner && showView == 'Details'"
+            :disabled="filteredEdits.length == 0" @click="changeViewFromDetails('Edits')" class="button-flex-center"
           >
             <strong class="notification-span" v-text="isSerbian ? 'Zahtevi za izmenama' : 'Edit requests'"></strong>
             <b-badge variant="danger" class="notification-badge" >{{filteredEdits.length}}</b-badge>
@@ -45,16 +41,26 @@
         </div>
       </b-card-title>
 
-      <div style="display: flex; flex-direction: column" v-if="computedRequest.status == 0 && !isRunner && showView == 'Offers'" >
+      <div class="no-detail-view" v-if="computedRequest.status == 0 && !isRunner && showView == 'Offers'" >
+        <b-card-title v-text="isSerbian ? 'Ponude' : 'Offers'" class="no-details-title"></b-card-title>
         <OfferBox 
           v-for="(offer, ind) in filteredOffers" :key="offer.id" :offer="offer" 
           :oldTasklist="(offer.edit && offer.edit.tasks.length > 0) ? computedRequest.tasklist : null"
           :oldDateAndTime="(offer.edit && offer.edit.time) ? computedRequest.time : null"
-          :myIndex="ind" :request="computedRequest"
-          @acceptOffer="acceptOffer" @rejectOffer="rejectOffer"
+          :myIndex="ind" :request="computedRequest" @acceptOffer="acceptOffer" @rejectOffer="rejectOffer"
         />
       </div>
 
+      <div class="no-detail-view" v-if="computedRequest.status == 1 && !isRunner && showView == 'Edits'">
+        <div v-text="isSerbian ? 'Zahtevi za izmenama' : 'Edit requests'" class="no-details-title"></div>
+        <EditBox
+          v-for="(edit, ind) in filteredEdits" :key="edit.id" :edit="edit" 
+          :oldTasklist="edit.request_edit.tasks.length > 0 ? computedRequest.tasklist : null"
+          :oldDateAndTime="edit.request_edit.time ? computedRequest.time : null"
+          :myIndex="ind" :request="computedRequest" @acceptEdit="acceptEdit" @rejectEdit="rejectEdit"
+        />
+        
+      </div>
 
       <div v-if="showView == 'Details'">
         <b-card-text class="request-note">
@@ -78,13 +84,11 @@
                 </div>
                 <span 
                   v-text="(isSerbian ? 'Prihvaćena ponuda od ' : 'Accepted offer from ') + fullUserName"
-                  style="margin-right: 5px"
-                  v-if="!isRunner"
+                  style="margin-right: 5px" v-if="!isRunner"
                 ></span>
                 <span 
                   v-text="(isSerbian ? 'Zahtev kreirao/la ' : 'Request created by ') + fullUserName"
-                  style="margin-right: 5px"
-                  v-if="isRunner"
+                  style="margin-right: 5px" v-if="isRunner"
                 ></span>
               </span>
             </div>
@@ -170,6 +174,7 @@ import Task from "@/components/Task"
 import Spinner from "@/components/Spinner"
 import OfferBox from "@/components/OfferBox"
 import ModalPicture from "@/components/ModalPicture"
+import EditBox from "@/components/EditBox"
 //import Vue from 'vue'
 
 export default {
@@ -178,15 +183,17 @@ export default {
     Task,
     Spinner,
     OfferBox,
-    ModalPicture
+    ModalPicture,
+    EditBox
   },
   props: {
     request: {
       required: false
     },
     startingView: {
-      required: true,
-      type: String
+      required: false,
+      type: String,
+      default: "Details"
     }
   },
   data() {
@@ -205,6 +212,9 @@ export default {
     },
     filteredOffers() {
       return this.$store.state.offers
+    },
+    filteredEdits() {
+      return this.$store.state.edits
     },
     isSerbian() {
       return this.$store.state.isSerbian
@@ -406,7 +416,7 @@ export default {
                     string = "zahteva"
                     break
         }
-        if(this.filteredOffers.length == 11)
+        if(this.filteredEdits.length == 11)
           string = "zahteva"
         return 'Imate ' + this.filteredEdits.length + ' ' + string + ' za izmenama'
       }
@@ -581,13 +591,46 @@ export default {
       }
       this.$store.dispatch('rejectOffer', offer.id)
     },
+    acceptEdit(edit) {
+      let index = -1
+      if(this.$store.state.createdAuthRequests)
+        index = this.$store.state.createdAuthRequests.results.findIndex(req => req.id == this.computedRequest.id)
+      
+      if(edit.request_edit.time) {
+        if(index != -1)
+          this.$store.state.createdAuthRequests.results[index].time = edit.request_edit.time
+        this.computedRequest.time = edit.request_edit.time
+      }
+      if(edit.request_edit.tasks.length > 0) {
+        edit.request_edit.tasks.forEach(newTask => {
+          const oldTask = this.filteredInfo.tasklist.find(task => task.id == newTask.task)
+          if(oldTask)
+            oldTask.address = newTask.address
+        })
+      }
+      this.$store.dispatch('acceptEdit', {requestId: this.computedRequest.id, editId: edit.id})
+      const editIndex = this.filteredEdits.findIndex(ed => ed.id == edit.id)
+      this.$store.state.edits.splice(editIndex, 1)
+      if(this.filteredEdits.length == 0) {
+        this.showDetails()
+      }
+    },
+    rejectEdit(edit) {
+      const index = this.filteredEdits.findIndex(ed => ed.id == edit.id)
+      this.$store.state.edits.splice(index, 1)
+      if(this.filteredEdits.length == 0) {
+        this.showDetails()
+      }
+      this.$store.dispatch('rejectEdit', edit.id)
+    },
     showDetails() {
       this.setMapMarkers()
       this.showView = 'Details'
     },
-    showOffers() {
-      this.$store.state.openedOffersOrEdits = new Array(this.filteredOffers.length).fill(false)
-      this.showView = 'Offers'
+    changeViewFromDetails(view) {
+      const len = view == 'Edits' ? this.filteredEdits.length : this.filteredOffers.length
+      this.$store.state.openedOffersOrEdits = new Array(len).fill(false)
+      this.showView = view
     },
     goToProfile() {
       this.$router.push({
@@ -719,6 +762,11 @@ export default {
     display: flex;
     align-items: center;
     word-break: break-word;
+  }
+
+  .no-detail-view {
+    display: flex; 
+    flex-direction: column;
   }
 
   .inner-text-title {
@@ -886,6 +934,11 @@ export default {
     display: flex;
     font-size: 35px;
     font-weight: 600;
+  }
+
+  .no-details-title {
+    font-size: 30px;
+    font-weight: bold;
   }
 
 </style>

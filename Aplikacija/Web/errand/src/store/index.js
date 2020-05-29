@@ -1181,6 +1181,47 @@ export default new Vuex.Store({
                 else console.log("Error")
             })
         },
+        rejectEdit({commit}, offerId) {
+            fetch("http://127.0.0.1:8000/api/v1/edit_cancel/", {
+                method: "DELETE",
+                headers: {
+                    "Content-type" : "application/json",
+                    "Authorization" : "Token " + this.state.token
+                },
+                body: JSON.stringify({
+                    "created_by" : this.state.authUser.id,
+                    "edit" : offerId
+                })
+            }).then(p => {
+                if(p.ok) {
+                    p.json().then(data => {
+                        console.log(data)
+                    })
+                }
+                else console.log("Error")
+            })
+        },
+        acceptEdit({commit}, {requestId, editId}) {
+            fetch("http://127.0.0.1:8000/api/v1/edit_accept/", {
+                method: "PUT",
+                headers: {
+                    "Content-type" : "application/json",
+                    "Authorization" : "Token " + this.state.token
+                },
+                body: JSON.stringify({
+                    "created_by" : this.state.authUser.id,
+                    "request" : requestId,
+                    "edit" : editId
+                })
+            }).then(p => {
+                if(p.ok) {
+                    p.json().then(data => {
+                        console.log(data)
+                    })
+                }
+                else console.log("Error")
+            })
+        },
         createService({commit}, payload)
         {
             fetch("http://127.0.0.1:8000/api/v1/service_create/",
