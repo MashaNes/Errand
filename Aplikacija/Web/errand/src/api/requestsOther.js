@@ -6,6 +6,16 @@ export const fetchRequestsOther = () =>
             name:"Kupovina",
             time: new Date(),
             status: 3,
+            destination:
+            {
+                arrived: false,
+                home: false,
+                id: 2,
+                latitude: 43.3203158,
+                longitude: 21.9170784,
+                name: "bulevar nemanjica nis"
+            },
+            pictures: ["slika1", "slika2", "slika3"],
             created_by: {
                 id: 3,
                 first_name: "Dimitrije",
@@ -26,8 +36,8 @@ export const fetchRequestsOther = () =>
             },
             tasklist: [
                 {
-                    "id": 1,
-                    "address": {
+                    id: 1,
+                    address: {
                         "id": 1,
                         "name": "Sokobanja, Zmaj Jovina 3",
                         "latitude": 43.642689,
@@ -35,7 +45,7 @@ export const fetchRequestsOther = () =>
                         "home": false,
                         "arrived": false
                     },
-                    "service_type": {
+                    service_type: {
                         "id": 2,
                         "service_type_sr": "Nabavka",
                         "service_type_en": "Grocery shopping",
@@ -43,7 +53,7 @@ export const fetchRequestsOther = () =>
                         "description_en": "Shop for groceries in a nearby supermarket",
                         "picture_required": true
                     },
-                    "checklist": [
+                    checklist: [
                         {
                             "id": 1,
                             "check_list": "krompir 20kg"
@@ -57,15 +67,15 @@ export const fetchRequestsOther = () =>
                             "check_list": "mleko 1l"
                         }
                     ],
-                    "name": "task1",
-                    "description": "Nabavi mi sve ovo i slikaj racun.",
-                    "picture_required": true,
-                    "pictures": []
+                    name: "task1",
+                    description: "Nabavi mi sve ovo i slikaj racun.",
+                    picture_required: true,
+                    pictures: []
                 },
                 {
-                    "id": 2,
-                    "address": null,
-                    "service_type": {
+                    id: 2,
+                    address: null,
+                    service_type: {
                         "id": 1,
                         "service_type_sr": "Ostalo",
                         "service_type_en": "Other",
@@ -73,14 +83,14 @@ export const fetchRequestsOther = () =>
                         "description_en": "Undefined services",
                         "picture_required": false
                     },
-                    "checklist": [],
-                    "name": "task2",
-                    "description": "Ovde nesto pise.",
-                    "picture_required": false,
-                    "pictures": []
+                    checklist: [],
+                    name: "task2",
+                    description: "Ovde nesto pise.",
+                    picture_required: false,
+                    pictures: ["slika1", "slika2", "slika3"]
                 }
             ],
-            "note": "Budi brz"
+            note: "Budi brz"
         },
         {
             id: 2,
@@ -107,8 +117,8 @@ export const fetchRequestsOther = () =>
             },
             tasklist: [
                 {
-                    "id": 3,
-                    "address": {
+                    id: 3,
+                    address: {
                         "id": 2,
                         "name": "Neki grad, neka ulica",
                         "latitude": 44.642689,
@@ -116,7 +126,7 @@ export const fetchRequestsOther = () =>
                         "home": false,
                         "arrived": false
                     },
-                    "service_type": {
+                    service_type: {
                         "id": 2,
                         "service_type_sr": "Nabavka",
                         "service_type_en": "Grocery shopping",
@@ -124,7 +134,7 @@ export const fetchRequestsOther = () =>
                         "description_en": "Shop for groceries in a nearby supermarket",
                         "picture_required": true
                     },
-                    "checklist": [
+                    checklist: [
                         {
                             "id": 4,
                             "check_list": "Pirinač 500g"
@@ -142,14 +152,14 @@ export const fetchRequestsOther = () =>
                             "check_list": "Kvasac dve kocke"
                         }
                     ],
-                    "name": "Nabavka u Maxi-ju",
-                    "description": "Nabavi mi sve ove stvari u Maxi-ju sa adrese",
-                    "picture_required": true,
-                    "pictures": []
+                    name: "Nabavka u Maxi-ju",
+                    description: "Nabavi mi sve ove stvari u Maxi-ju sa adrese",
+                    picture_required: true,
+                    pictures: ["slika1", "slika2", "slika3"]
                 },
                 {
-                    "id": 4,
-                    "address": {
+                    id: 4,
+                    address: {
                         "id": 3,
                         "name": "Neka druga adresa, neki broj",
                         "latitude": 44.621289,
@@ -157,7 +167,7 @@ export const fetchRequestsOther = () =>
                         "home": false,
                         "arrived": false
                     },
-                    "service_type": {
+                    service_type: {
                         "id": 2,
                         "service_type_sr": "Nabavka",
                         "service_type_en": "Grocery shopping",
@@ -165,7 +175,7 @@ export const fetchRequestsOther = () =>
                         "description_en": "Shop for groceries in a nearby supermarket",
                         "picture_required": true
                     },
-                    "checklist": [
+                    checklist: [
                         {
                             "id": 8,
                             "check_list": "Toalet papir (celo pakovanje od 8 rolni)"
@@ -179,14 +189,14 @@ export const fetchRequestsOther = () =>
                             "check_list": "Sredstvno za brisanje podova (bilo koje, jedna boca)"
                         },
                     ],
-                    "name": "Nabavka u lokalnom dragstoru",
-                    "description": "Nabavi mi ove stvari u dragstoru sa adrese",
-                    "picture_required": true,
-                    "pictures": []
+                    name: "Nabavka u lokalnom dragstoru",
+                    description: "Nabavi mi ove stvari u dragstoru sa adrese",
+                    picture_required: true,
+                    pictures: []
                 },
                 {
-                    "id": 5,
-                    "address": {
+                    id: 5,
+                    address: {
                         "id": 4,
                         "name": "Neka druga adresa, neki broj",
                         "latitude": 44.521289,
@@ -194,39 +204,39 @@ export const fetchRequestsOther = () =>
                         "home": true,
                         "arrived": false
                     },
-                    "service_type": {
-                        "id": 3,
-                        "service_type_sr": "Dostava",
-                        "service_type_en": "Delivery",
-                        "description_sr": "Dostava na kućnu adresu",
-                        "description_en": "Delivery at home address",
-                        "picture_required": false
+                    service_type: {
+                        id: 3,
+                        service_type_sr: "Dostava",
+                        service_type_en: "Delivery",
+                        description_sr: "Dostava na kućnu adresu",
+                        description_en: "Delivery at home address",
+                        picture_required: false
                     },
-                    "checklist": [],
-                    "name": "Dostava kupljenih stvari na kućnu adresu",
-                    "description": "Dostavi mi sve ove stvari na kućnu adresu koja je navedena ovde",
-                    "picture_required": true,
-                    "pictures": []
+                    checklist: [],
+                    name: "Dostava kupljenih stvari na kućnu adresu",
+                    description: "Dostavi mi sve ove stvari na kućnu adresu koja je navedena ovde",
+                    picture_required: true,
+                    pictures: ["slika1", "slika2", "slika3"]
                 },
                 {
-                    "id": 6,
-                    "address": null,
-                    "service_type": {
-                        "id": 1,
-                        "service_type_sr": "Ostalo",
-                        "service_type_en": "Other",
-                        "description_sr": "Nedefinisane usluge",
-                        "description_en": "Undefined services",
-                        "picture_required": false
+                    id: 6,
+                    address: null,
+                    service_type: {
+                        id: 1,
+                        service_type_sr: "Ostalo",
+                        service_type_en: "Other",
+                        description_sr: "Nedefinisane usluge",
+                        description_en: "Undefined services",
+                        picture_required: false
                     },
-                    "checklist": [],
-                    "name": "task2",
-                    "description": "Ovde nesto pise.",
-                    "picture_required": false,
-                    "pictures": []
+                    checklist: [],
+                    name: "task2",
+                    description: "Ovde nesto pise.",
+                    picture_required: false,
+                    pictures: []
                 }
             ],
-            "note": "Slikaj račune za obe kupovine!"
+            note: "Slikaj račune za obe kupovine!"
         }
     ]
 }
