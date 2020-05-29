@@ -62,9 +62,9 @@
                 <div v-if="offer.edit.time">
                   <span v-text="isSerbian ? 'Datum i vreme' : 'Date and time'" style="font-size: 20px;"></span>
                   <div class="left-padding">
-                    <div v-if="isSerbian" class="red-color"> Trenutni datum i vreme: {{oldDateAndTime | showTime}}</div>
+                    <div v-if="isSerbian" class="red-color"> Trenutni datum i vreme: {{dateAndTime(oldDateAndTime)}}</div>
                     <div v-else class="red-color"> Current date and time: {{oldDateAndTime | showTime}}</div>
-                    <div v-if="isSerbian" class="green-color"> Novi datum i vreme: {{offer.edit.time | showTime}}</div>
+                    <div v-if="isSerbian" class="green-color"> Novi datum i vreme: {{dateAndTime(offer.edit.time)}}</div>
                     <div v-else class="green-color"> New date and time: {{offer.edit.time | showTime}}</div>
                   </div>
                 </div>
@@ -261,6 +261,64 @@ export default {
     },
     getOldTask(taskId) {
       return this.oldTasklist.find(task => task.id == taskId)
+    },
+    dateAndTime(timeString) {
+      var date = new Date(timeString)
+            
+      var day = date.getUTCDate()
+      var month = date.getUTCMonth()+1
+      var year = date.getUTCFullYear()
+      var hours = date.getUTCHours()
+      var minutes = date.getUTCMinutes()
+      
+      var monthString = ""
+      var hoursString = hours
+      var minutesString = minutes
+      if(hours < 10)
+        hoursString = "0" + hours
+      if(minutes < 10)
+        minutesString = "0" + minutes
+
+      switch(month) {
+        case 1: 
+          monthString = "Januar"
+          break
+        case 2: 
+          monthString = "Februar"
+          break
+        case 3: 
+          monthString = "Mart"
+          break
+        case 4: 
+          monthString = "April"
+          break
+        case 5: 
+          monthString = "Maj"
+          break
+        case 6: 
+          monthString = "Jun"
+          break
+        case 7: 
+          monthString = "Jul"
+          break 
+        case 8: 
+          monthString = "Avgust"
+          break
+        case 9: 
+          monthString = "Septembar"
+          break
+        case 10: 
+          monthString = "Oktobar"
+          break
+        case 11: 
+          monthString = "Novembar"
+          break
+        default:
+          monthString = "Decembar"
+          break
+      }
+
+      return day + ". " + monthString + " " + year + "." + "  " + hoursString + ":" + minutesString + "h"
     },
     setMapMarkers() {
       const markerPositions = [];

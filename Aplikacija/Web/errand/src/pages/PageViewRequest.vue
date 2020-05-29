@@ -306,11 +306,11 @@ export default {
     {
       var date = new Date(this.computedRequest.time)
             
-      var day = date.getDate()
-      var month = date.getMonth()+1
-      var year = date.getFullYear()
-      var hours = date.getHours()
-      var minutes = date.getMinutes()
+      var day = date.getUTCDate()
+      var month = date.getUTCMonth()+1
+      var year = date.getUTCFullYear()
+      var hours = date.getUTCHours()
+      var minutes = date.getUTCMinutes()
       
       var monthString = ""
       var hoursString = hours
