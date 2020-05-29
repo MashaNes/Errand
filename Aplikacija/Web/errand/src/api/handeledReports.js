@@ -20,7 +20,12 @@ export const fetchHandeledReports = () =>
                     last_name: "Milivojevic",
                     email: "ivana.milivojevic@gmail.com"
                 },
-                status: 1
+                status: 1,
+                request:
+                {
+                    name: "Request 1"
+                },
+                pictures:[]
             },
             {
                 id: 2,
@@ -39,7 +44,12 @@ export const fetchHandeledReports = () =>
                     last_name: "Milivojevic",
                     email: "ivana.milivojevic@gmail.com"
                 },
-                status: 2
+                status: 2,
+                request:
+                {
+                    name: "Request 2"
+                },
+                pictures:["slika1", "slika2"]
             },
             {
                 id: 3,
@@ -58,7 +68,9 @@ export const fetchHandeledReports = () =>
                     last_name: "Milivojevic",
                     email: "ivana.milivojevic@gmail.com"
                 },
-                status: 3
+                status: 3,
+                request: null,
+                pictures:["slika1", "slika2", "slika3", "slika4", "slika5", "slika6"]
             },
             {
                 id: 4,
@@ -77,7 +89,9 @@ export const fetchHandeledReports = () =>
                     last_name: "Milivojevic",
                     email: "ivana.milivojevic@gmail.com"
                 },
-                status: 4
+                status: 4,
+                request: null,
+                pictures:[]
             }
         ]
 

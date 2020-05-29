@@ -87,10 +87,9 @@ export default {
     {
         display:flex;
         flex-direction: column;
-        width:80%;
+        width:600px;
         padding:10px;
-        margin-top:15px;
-        margin-bottom: 15px;
+        margin: 15px;
         align-items: flex-start;
         border: 1px solid black;
         border-radius: 10px;
@@ -166,6 +165,7 @@ export default {
         display: flex;
         flex-direction: row;
         align-items: center;
+        height:fit-content;
     }
 
     .count
@@ -173,7 +173,7 @@ export default {
         background-color: white;
         color:black;
         border-radius:20px;
-        padding:1px;
+        padding:0px;
         margin:3px;
         margin-left: 7px;
         padding-left: 7px;

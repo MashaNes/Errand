@@ -18,6 +18,11 @@ export const fetchActiveReports = () =>
                 last_name: "Milivojevic",
                 email: "ivana.milivojevic@gmail.com"
             },
+            request:
+            {
+                name: "Request 1"
+            },
+            pictures:[]
         },
         {
             id: 2,
@@ -36,6 +41,11 @@ export const fetchActiveReports = () =>
                 last_name: "Milivojevic",
                 email: "ivana.milivojevic@gmail.com"
             },
+            request:
+            {
+                name: "Request 2"
+            },
+            pictures:["slika1", "slika2"]
         },
         {
             id: 3,
@@ -54,6 +64,8 @@ export const fetchActiveReports = () =>
                 last_name: "Milivojevic",
                 email: "ivana.milivojevic@gmail.com"
             },
+            request: null,
+            pictures:["slika1", "slika2", "slika3", "slika4", "slika5", "slika6"]
         },
         {
             id: 4,
@@ -72,6 +84,8 @@ export const fetchActiveReports = () =>
                 last_name: "Milivojevic",
                 email: "ivana.milivojevic@gmail.com"
             },
+            request: null,
+            pictures:[]
         }
     ]
 }

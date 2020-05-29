@@ -31,6 +31,7 @@ export default {
     {
         this.$store.dispatch("fillOtherRequests")
         //pagintaion?
+        //Nabavljanje jedne po jedne stranice i automatsko nadovezivanje pribavljenih podataka
     }
 }
 </script>
@@ -39,8 +40,10 @@ export default {
     .wrapper-page
     {
         display: flex;
-        flex-direction: column;
+        flex-direction: row;
+        flex-wrap: wrap;
         align-items: center;
+        justify-content: center;
         padding:30px;
     }
 
