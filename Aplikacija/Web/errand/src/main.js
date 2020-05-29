@@ -32,7 +32,7 @@ Vue.component('font-awesome-icon', FontAwesomeIcon)
 
 Vue.filter("showTime", function(datum)
 {
-  return moment(datum).format("LLL")
+  return moment.utc(datum).format("LLL")
 })
 
 Vue.use(vuelidate)
