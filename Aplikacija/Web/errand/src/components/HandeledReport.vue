@@ -6,7 +6,7 @@
         </div>
         <div class="item" :class="{'opasnost' : report.status == 1 || report.status == 3}">
             <div class="bedz" v-if="report.status == 1 || report.status == 3">
-                <span v-if="isSerbian"> Kaženjen/a </span>
+                <span v-if="isSerbian"> Kaženjen(a) </span>
                 <span v-else> Banned </span>
             </div>
             <div class="item-inner">
@@ -18,7 +18,7 @@
         </div>
         <div class="item" :class="{'opasnost' : report.status == 2 || report.status == 3}">
             <div class="bedz" v-if="report.status == 2 || report.status == 3">
-                <span v-if="isSerbian"> Kaženjen/a </span>
+                <span v-if="isSerbian"> Kaženjen(a) </span>
                 <span v-else> Banned </span>
             </div>
             <div class="item-inner">
@@ -28,11 +28,27 @@
                 <span> {{report.user.first_name}} {{report.user.last_name}}, <span class="email-div"> {{report.user.email}} </span> </span>
             </div>
         </div>
-        <div class="item-different">
+        <div class="item-different dodatak" v-if="report.request != null">
+            <img src="../assets/requests.svg" class="ikonica" />
+            <span v-if="isSerbian" class="naziv"> Zahtev: </span>
+            <span v-else class="naziv"> Request: </span>
+            <span> {{report.request.name}} </span>
+        </div>
+        <div class="item-different" :class="{'dodatak' : report.pictures.length > 0}">
             <img src="../assets/comment.svg" class="ikonica" />
             <span v-if="isSerbian" class="naziv"> Komentar: </span>
             <span v-else class="naziv"> Comment: </span>
             <span> {{report.comment}} </span>
+        </div>
+        <div class="item-different" v-if="report.pictures.length > 0">
+            <img src="../assets/pictures.svg" class="ikonica" />
+            <span v-if="isSerbian" class="naziv"> Slike: </span>
+            <span v-else class="naziv"> Photos: </span>
+            <div class="photo-list">
+                <div v-for="picture in report.pictures" :key="picture" class="photo">
+                    {{picture}}
+                </div> 
+            </div>
         </div>
     </div>
 </template>
@@ -81,6 +97,11 @@ export default {
         padding:5px;
     }
 
+    .dodatak
+    {
+        border-bottom: 1px solid black;
+    }
+
     .item
     {
         border-bottom: 1px solid black;
@@ -119,12 +140,33 @@ export default {
     .bedz
     {
         font-weight: 600;
-        padding: 7px;
+        font-size:15px;
+        padding-left: 7px;
+        padding-right: 7px;
+        padding-top: 3px;
+        padding-bottom: 3px;
         margin: 7px;
         border: 1px solid black;
         background-color: white;
         color:red;
         border-radius: 30px;
+    }
+
+    .photo-list
+    {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: flex-start;
+    }
+
+    .photo
+    {
+        margin:7px;
+        width:70px;
+        height:100px;
+        border:0.5px solid black;
     }
 
     @media only screen and (max-width: 900px)

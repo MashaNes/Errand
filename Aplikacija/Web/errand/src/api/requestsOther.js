@@ -207,6 +207,23 @@ export const fetchRequestsOther = () =>
                     "description": "Dostavi mi sve ove stvari na kućnu adresu koja je navedena ovde",
                     "picture_required": true,
                     "pictures": []
+                },
+                {
+                    "id": 6,
+                    "address": null,
+                    "service_type": {
+                        "id": 1,
+                        "service_type_sr": "Ostalo",
+                        "service_type_en": "Other",
+                        "description_sr": "Nedefinisane usluge",
+                        "description_en": "Undefined services",
+                        "picture_required": false
+                    },
+                    "checklist": [],
+                    "name": "task2",
+                    "description": "Ovde nesto pise.",
+                    "picture_required": false,
+                    "pictures": []
                 }
             ],
             "note": "Slikaj račune za obe kupovine!"

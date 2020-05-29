@@ -12,11 +12,27 @@
             <span v-else class="naziv"> Reported: </span>
             <span> {{report.user.first_name}} {{report.user.last_name}}, <span class="email-div"> {{report.user.email}} </span> </span>
         </div>
+        <div class="item" v-if="report.request != null">
+            <img src="../assets/requests.svg" class="ikonica" />
+            <span v-if="isSerbian" class="naziv"> Zahtev: </span>
+            <span v-else class="naziv"> Request: </span>
+            <span> {{report.request.name}} </span>
+        </div>
         <div class="item">
             <img src="../assets/comment.svg" class="ikonica" />
             <span v-if="isSerbian" class="naziv"> Komentar: </span>
             <span v-else class="naziv"> Comment: </span>
             <span> {{report.comment}} </span>
+        </div>
+        <div class="item" v-if="report.pictures.length > 0">
+            <img src="../assets/pictures.svg" class="ikonica" />
+            <span v-if="isSerbian" class="naziv"> Slike: </span>
+            <span v-else class="naziv"> Photos: </span>
+            <div class="photo-list">
+                <div v-for="picture in report.pictures" :key="picture" class="photo">
+                    {{picture}}
+                </div> 
+            </div>
         </div>
         <div class="button-div">
             <button type="button" class="btn btn-danger" @click="showModalBan = true">
@@ -202,6 +218,8 @@ export default {
     .ikonica
     {
         margin-right:10px;
+        width:24px;
+        height:24px;
     }
 
     .naziv
@@ -218,6 +236,23 @@ export default {
         padding: 7px;
         align-items: center;
         justify-content: space-around;
+    }
+
+    .photo-list
+    {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: flex-start;
+    }
+
+    .photo
+    {
+        margin:7px;
+        width:70px;
+        height:100px;
+        border:0.5px solid black;
     }
 
     @media only screen and (max-width: 900px)
