@@ -270,7 +270,8 @@ export default {
                 name: "PageViewRequest",
                 params: {
                     id: this.myRequest.id,
-                    request: this.myRequest
+                    request: this.myRequest,
+                    startingView: "Details"
                 }
             })
         },

@@ -37,6 +37,13 @@
             <span v-else> Back to choosing a user </span>
           </button>
         </div>
+        <div class="nav-buttons" v-if="RequestView">
+          <button type="button" class="btn btn-info dugmeRequest" @click="goToViewRequest">
+            <img class="slika-dugme" src="../assets/back.png">
+            <span v-if="isSerbian"> Nazad na pregled zahteva </span>
+            <span v-else> Back to request details </span>
+          </button>
+        </div>
       </div>
       <div class="personal-info">
         <b-list-group>
@@ -180,6 +187,11 @@ export default {
     {
       type: Boolean,
       required: true
+    },
+    RequestView: {
+      type: Object,
+      required: false,
+      default: null
     }
   },
   components:
@@ -297,6 +309,16 @@ export default {
     nazadNaPretragu()
     {
       this.$router.push({ name: 'PageBrowseUsers', params: {benefitList: "noBenefit", servicesList:this.$store.servicesRequired}})
+    },
+    goToViewRequest() {
+      this.$router.push({
+        name: "PageViewRequest",
+        params: {
+          id: this.RequestView.request.id,
+          request: this.RequestView.request,
+          startingView: this.RequestView.view
+        }
+      })
     }
   },
   created()

@@ -2,13 +2,13 @@
     <b-card 
       :border-variant="progressBarVariant"
       no-body
+      id="scroll-card"
     >
   
       <b-card-body>
         <div class="user-info">
           <div class="media-center">
-            <!-- <p class="image is-96x96" @click="goToProfile"> -->
-            <p class="image">
+            <p class="image" @click="goToProfile">
               <img class="rounded-image" :src="offer.created_by.picture ? 'data:;base64,' + offer.created_by.picture : require('../assets/no-picture.png')">
             </p>
           </div>
@@ -21,7 +21,6 @@
                 width = "20"
                 style = "margin-right: 15px"
               />
-              <!-- <span @click="goToProfile" class="full-name-span">{{fullUserName}}</span> -->
               <span class="full-name-span">{{fullUserName}}</span>
             </div>
             <div class="info-element grade">
@@ -46,69 +45,64 @@
 
           <img 
             v-if="!opened" src="@/assets/down-chevron.svg" height="22" width="22" 
-            v-b-toggle="String(offer.id)" class="toggle-image" @click="opened = !opened"
+            class="toggle-image" @click="toggleOfferBox"
           >
           <img 
             v-else src="@/assets/up-chevron.svg" height="22" width="22"  
-            v-b-toggle="String(offer.id)" class="toggle-image" @click="opened = !opened"
+            class="toggle-image" @click="toggleOfferBox"
           > 
         </div>
-        <b-collapse :id="String(offer.id)">
-          <div :class="offer.edit ? 'offer' : 'offer-no-edits'">
-            <div class="offer-details">
-              <span v-text="(isSerbian ? 'Tip naplate: ' : 'Payment type: ') + paymentType" class="bold-message"></span>
-              <span v-text="(isSerbian ? 'Cena: ' : 'Price: ') + offer.payment_ammount + ' din'" class="bold-message"></span>
-              <div v-if="offer.edit" class="edit">
-                <span v-text="isSerbian ? 'Zahtevane izmene' : 'Required edits'" class="edit-title"></span>
-                <div class="edit-details">
-                  <div v-if="offer.edit.time">
-                    <span v-text="isSerbian ? 'Datum i vreme' : 'Date and time'" style="font-size: 20px;"></span>
-                    <div class="left-padding">
-                      <div v-if="isSerbian" class="red-color"> Trenutni datum i vreme: {{oldDateAndTime | showTime}}</div>
-                      <div v-else class="red-color"> Current date and time: {{oldDateAndTime | showTime}}</div>
-                      <div v-if="isSerbian" class="green-color"> Novi datum i vreme: {{offer.edit.time | showTime}}</div>
-                      <div v-else class="green-color"> New date and time: {{offer.edit.time | showTime}}</div>
-                    </div>
+        <div :class="offer.edit ? 'offer' : 'offer-no-edits'" v-if="opened">
+          <div class="offer-details">
+            <span v-text="(isSerbian ? 'Tip naplate: ' : 'Payment type: ') + paymentType" class="bold-message"></span>
+            <span v-text="(isSerbian ? 'Cena: ' : 'Price: ') + offer.payment_ammount + ' din'" class="bold-message"></span>
+            <div v-if="offer.edit" class="edit">
+              <span v-text="isSerbian ? 'Zahtevane izmene' : 'Required edits'" class="edit-title"></span>
+              <div class="edit-details">
+                <div v-if="offer.edit.time">
+                  <span v-text="isSerbian ? 'Datum i vreme' : 'Date and time'" style="font-size: 20px;"></span>
+                  <div class="left-padding">
+                    <div v-if="isSerbian" class="red-color"> Trenutni datum i vreme: {{oldDateAndTime | showTime}}</div>
+                    <div v-else class="red-color"> Current date and time: {{oldDateAndTime | showTime}}</div>
+                    <div v-if="isSerbian" class="green-color"> Novi datum i vreme: {{offer.edit.time | showTime}}</div>
+                    <div v-else class="green-color"> New date and time: {{offer.edit.time | showTime}}</div>
                   </div>
-                  <div v-if="offer.edit && offer.edit.tasks.length > 0" :style="offer.edit.time ? 'margin-top:15px;' : ''">
-                    <span v-text="isSerbian ? 'Nove adrese' : 'New addresses'" style="font-size: 20px;"></span>
-                    <div v-for="item in offer.edit.tasks" :key="item.task" class="left-padding">
-                      <div v-text='(isSerbian ? "Zadatak " : "Task ") + "\"" + getOldTask(item.task).name + "\":"'></div>
-                      <div class="left-padding" style="margin-top: 5px !important;">
-                        <div v-text='(isSerbian ? "Trenutna adresa: " : "Current address: ") + getOldTask(item.task).address.name' class="red-color"></div>
-                        <div v-text='(isSerbian ? "Nova adresa: " : "New address: ") + item.address.name' class="green-color"></div>
-                      </div>
-                    </div>
-                  </div>
-                  <b-button style="margin-top: 10px;" v-if="offer.edit && offer.edit.tasks.length > 0" @click="toggleMap">
-                    <span v-if="!isMapOpened" v-text="isSerbian ? 'Prikaži izmene na mapi' : 'Show changes on map'"></span>
-                    <span v-if="isMapOpened" v-text="isSerbian ? 'Zatvori mapu' : 'Close map'"></span>
-                  </b-button>
-
-                  <b-card-text 
-                    style="margin-top: 20px;" v-if="offer.edit && offer.edit.tasks.length > 0" 
-                    :class="isMapOpened ? 'visible' : 'invisible'"
-                  >
-                    <Map />
-                  </b-card-text>
-
                 </div>
+                <div v-if="offer.edit && offer.edit.tasks.length > 0" :style="offer.edit.time ? 'margin-top:15px;' : ''">
+                  <span v-text="isSerbian ? 'Nove adrese' : 'New addresses'" style="font-size: 20px;"></span>
+                  <div v-for="item in offer.edit.tasks" :key="item.task" class="left-padding">
+                    <div v-text='(isSerbian ? "Zadatak " : "Task ") + "\"" + getOldTask(item.task).name + "\":"'></div>
+                    <div class="left-padding" style="margin-top: 5px !important;">
+                      <div v-text='(isSerbian ? "Trenutna adresa: " : "Current address: ") + getOldTask(item.task).address.name' class="red-color"></div>
+                      <div v-text='(isSerbian ? "Nova adresa: " : "New address: ") + item.address.name' class="green-color"></div>
+                    </div>
+                  </div>
+                </div>
+                <b-button style="margin-top: 10px;" v-if="offer.edit && offer.edit.tasks.length > 0" @click="isMapOpened = !isMapOpened">
+                  <span v-if="!isMapOpened" v-text="isSerbian ? 'Prikaži izmene na mapi' : 'Show changes on map'"></span>
+                  <span v-if="isMapOpened" v-text="isSerbian ? 'Zatvori mapu' : 'Close map'"></span>
+                </b-button>
+
+                <b-card-text  v-if="offer.edit && offer.edit.tasks.length > 0" :class="isMapOpened ? 'visible' : 'invisible'">
+                  <Map />
+                </b-card-text>
+
               </div>
             </div>
-            <div class="offer-buttons">
-              <button 
-                type="button" class="btn btn-info" 
-                style="margin-right: 5px;" v-text="isSerbian ? 'Prihvati' : 'Accept'"
-                @click="accept=true; showAreYouSure=true">
-              </button>
-              <button 
-                type="button" class="btn btn-info" 
-                v-text="isSerbian ? 'Odbij' : 'Decline'"
-                @click="accept=false; showAreYouSure=true">
-              </button>
-            </div>
           </div>
-        </b-collapse>
+          <div class="offer-buttons">
+            <button 
+              type="button" class="btn btn-info" 
+              style="margin-right: 5px;" v-text="isSerbian ? 'Prihvati' : 'Accept'"
+              @click="accept=true; showAreYouSure=true">
+            </button>
+            <button 
+              type="button" class="btn btn-info" 
+              v-text="isSerbian ? 'Odbij' : 'Decline'"
+              @click="accept=false; showAreYouSure=true">
+            </button>
+          </div>
+        </div>
       </b-card-body>
 
       <ModalAreYouSure 
@@ -150,6 +144,10 @@ export default {
     myIndex: {
       required: true,
       type: Number
+    },
+    request: {
+      required: true,
+      type: Object
     }
   },
   data()
@@ -228,16 +226,29 @@ export default {
     // eslint-disable-next-line no-unused-vars
     openedOffersOrEdits(newVal, oldVal) {
       if(newVal[this.myIndex] == true) {
-        this.isMapOpened = true
+        this.opened = true
       }
-      else this.isMapOpened = false
+      else {
+        this.opened = false
+        this.isMapOpened = false
+      }
     }
   },
   methods: {
-    // goToProfile() {
-    //   //prepraviti da se stranici kao prop prosledi user
-    //   this.$router.push({name: "PageViewProfile", params: {id: this.user.id, user: this.user, RequestSelect:this.RequestSelect}})
-    // },
+    goToProfile() {
+      this.$router.push({
+        name: "PageViewProfile", 
+        params: {
+          id: this.offer.created_by.id, 
+          user: this.offer.created_by, 
+          RequestSelect: false,
+          RequestView: {
+            request: this.request,
+            view: "Offers"
+          }
+        }
+      })
+    },
     makeDecission() {
       if(this.accept)
         this.$emit('acceptOffer', this.offer)
@@ -275,31 +286,27 @@ export default {
           lab: String(oldTaskInd + 1),
           info: newTask.address.name,
           icon: true
-          //icon: "https://www.iconsdb.com/icons/preview/color/29D10F/map-marker-2-xxl.png"
         }
         markerPositions.push(oldPosition)
         markerPositions.push(newPosition)
       })
       this.$store.dispatch('setMarkerPositions', markerPositions)
     },
-    toggleMap() {
-      if(!this.isMapOpened) {
+    toggleOfferBox() {
+      if(!this.opened) {
         if(!this.$store.getters['getOpenedOffersOrEdits'][this.myIndex]) {
           const newArray = new Array(this.$store.getters['getOpenedOffersOrEdits'].length).fill(false)
           newArray[this.myIndex] = true
           this.$store.dispatch('fillOpenedOffersOrEdits', newArray)
           this.setMapMarkers()
         }
-        else
-          this.isMapOpened = true
+        else {
+          this.opened = true
+        }
       }
       else
-        this.isMapOpened = false
+        this.opened = false
     }
-  },
-  created() {
-    //if(this.offer.edit && this.offer.edit.tasks.length > 0)
-      //this.setMapMarkers()
   }
 }
 </script>
@@ -458,6 +465,7 @@ export default {
 
   .visible {
     visibility: visible;
+    margin-top: 20px;
   }
 
   .invisible {

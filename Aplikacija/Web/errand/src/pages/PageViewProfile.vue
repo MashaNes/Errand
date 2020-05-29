@@ -6,6 +6,7 @@
       :user="computedUser" 
       :isMyProfile="isMyProfile"
       :RequestSelect="RequestSelect"
+      :RequestView="RequestView"
       :addresses="addresses"
       @editProfile="componentToShow = 'Edit'"
       @rateUser="componentToShow = 'Rate'"
@@ -42,6 +43,11 @@ export default {
       type: Boolean,
       required: false,
       default: false
+    },
+    RequestView: {
+      type: Object,
+      required: false,
+      default: null
     }
   },
   components: {
