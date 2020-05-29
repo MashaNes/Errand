@@ -18,40 +18,29 @@
             <span>{{status}}</span>
           </div>
           <b-button 
-            variant="secondary"
-            v-b-popover.hover.top="ponudeTekst"
+            variant="secondary" v-b-popover.hover.top="ponudeTekst"
             v-if="computedRequest.status == 0 && !isRunner && showView == 'Details'"
-            :disabled="filteredOffers.length == 0"
-            @click="showOffers"
+            :disabled="filteredOffers.length == 0" @click="showOffers"
+            class="button-flex-center"
           >
-            <strong 
-              class="notification-span" 
-              v-text="isSerbian ? 'Ponude' : 'Offers'"
-            ></strong>
+            <strong class="notification-span" v-text="isSerbian ? 'Ponude' : 'Offers'"></strong>
             <b-badge variant="danger" class="notification-badge" >{{filteredOffers.length}}</b-badge>
           </b-button>
           <b-button 
-            variant="secondary"
-            v-b-popover.hover.top="zahteviTekst"
+            variant="secondary" v-b-popover.hover.top="zahteviTekst" 
             v-if="computedRequest.status == 1 && !isRunner && showView == 'Edits'"
-            :disabled="filteredEdits.length == 0"
-            @click="showView = 'Edits'"
+            :disabled="filteredEdits.length == 0" @click="showView = 'Edits'"
+            class="button-flex-center"
           >
-            <strong 
-              class="notification-span" 
-              v-text="isSerbian ? 'Zahtevi za izmenama' : 'Edit requests'"
-            ></strong>
+            <strong class="notification-span" v-text="isSerbian ? 'Zahtevi za izmenama' : 'Edit requests'"></strong>
             <b-badge variant="danger" class="notification-badge" >{{filteredEdits.length}}</b-badge>
           </b-button>
-          <b-button 
-            variant="secondary"
-            v-if="showView != 'Details'"
-            @click="showDetails"
-          >
-            <strong 
-              class="notification-span" 
-              v-text="isSerbian ? 'Detalji zahteva' : 'Request details'"
-            ></strong>
+          <b-button variant="secondary" v-if="showView != 'Details'" @click="showDetails" class="button-flex-center">
+            <strong class="notification-span" v-text="isSerbian ? 'Detalji zahteva' : 'Request details'"></strong>
+          </b-button>
+          <b-button variant="secondary" @click="goToPageRequests" class="button-flex-center">
+            <img class="slika-dugme" src="../assets/back.png">
+            <strong class="notification-span" v-text="isSerbian ? 'Nazad na pregled svih zahteva' : 'Back to all requests'"></strong>
           </b-button>
         </div>
       </b-card-title>
@@ -61,7 +50,7 @@
           v-for="(offer, ind) in filteredOffers" :key="offer.id" :offer="offer" 
           :oldTasklist="(offer.edit && offer.edit.tasks.length > 0) ? computedRequest.tasklist : null"
           :oldDateAndTime="(offer.edit && offer.edit.time) ? computedRequest.time : null"
-          :myIndex="ind"
+          :myIndex="ind" :request="computedRequest"
           @acceptOffer="acceptOffer" @rejectOffer="rejectOffer"
         />
       </div>
@@ -83,7 +72,7 @@
             <div class="offer-title">
               <span class="smaller-title-pic-span" style="flex-wrap: wrap;">
                 <div class="media-center">
-                  <p class="image">
+                  <p class="image" @click="goToProfile">
                     <img class="rounded-image" :src="otherUser.picture ? 'data:;base64,' + otherUser.picture : require('../assets/no-picture.png')">
                   </p>
                 </div>
@@ -149,7 +138,7 @@
           </b-button>
         </b-card-text>
 
-        <b-card-text style="margin-top: 20px;" v-if="hasAddresses" :class="isMapOpened ? 'visible' : 'invisible'">
+        <b-card-text v-if="hasAddresses" :class="isMapOpened ? 'visible' : 'invisible'">
           <Map />
         </b-card-text>
 
@@ -194,6 +183,10 @@ export default {
   props: {
     request: {
       required: false
+    },
+    startingView: {
+      required: true,
+      type: String
     }
   },
   data() {
@@ -203,7 +196,7 @@ export default {
       hasAddresses: false,
       clickedPicture: null,
       pictureExpanded: false,
-      showView: "Details"
+      showView: this.startingView
     }
   },
   computed: {
@@ -595,10 +588,26 @@ export default {
     showOffers() {
       this.$store.state.openedOffersOrEdits = new Array(this.filteredOffers.length).fill(false)
       this.showView = 'Offers'
+    },
+    goToProfile() {
+      this.$router.push({
+        name: "PageViewProfile",
+        params: {
+          id: this.otherUser.id,
+          user: this.otherUser,
+          RequestSelect: false,
+          RequestView: {
+            request: this.computedRequest,
+            view: "Details"
+          }
+        }
+      })
+    },
+    goToPageRequests() {
+      this.$router.push({name: "PageRequests"})
     }
   },
   created() {
-    this.$store.dispatch('fillTestPictures')
     this.routeChanged()
   },
   watch: {
@@ -667,9 +676,18 @@ export default {
     align-items: center;
   }
 
-  /* .clock {
-    margin-right: 20px;
-  } */
+  .slika-dugme
+  {
+    width: 22px;
+    height: 22px;
+    margin-right: 10px;
+  }
+
+  .button-flex-center {
+    display: flex;
+    align-items: center;
+    margin: 10px 40px 10px 0px;
+  }
 
   .title-pic {
     margin: 0px 10px 0px 0px;
@@ -749,6 +767,7 @@ export default {
   }
 
   .image {
+    border-radius: 60px;
     width: 40px;
     height: 40px;
     margin-right: 5px;
@@ -768,6 +787,7 @@ export default {
     font-size: 20px;
     background-color:  #6c757d !important;
     border-color: #6c757d !important;
+    
   }
 
   .btn {
@@ -825,6 +845,7 @@ export default {
 
   .visible {
     visibility: visible;
+    margin-top: 20px;
   }
 
   .invisible {
