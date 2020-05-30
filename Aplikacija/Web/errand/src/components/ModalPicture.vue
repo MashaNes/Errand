@@ -59,7 +59,7 @@ export default {
     }
     .modal-mask {
         position: fixed;
-        z-index: 9998;
+        z-index: 9999999999999999998;
         top: 0;
         left: 0;
         width: 100%;
@@ -69,27 +69,34 @@ export default {
         transition: opacity 0.3s ease;
     }
 
-    @media only screen and (max-width: 600px)
+    /* @media only screen and (max-width: 600px)
     {
         .modal-mask 
         {
             height: 120%;
         }
-    }
+    } */
 
     .modal-wrapper {
         display: table-cell;
         vertical-align: middle;
+        height: 100%;
     }
 
     .modal-container {
-        width: 80%;
+        width: fit-content;
+        max-width: 70%;
+        min-width: 450px;
         background-color: rgb(255, 209, 109);
         margin: 0px auto;
         border-radius: 2px;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.33);
         transition: all 0.3s ease;
         font-family: Helvetica, Arial, sans-serif;
+        height: fit-content;
+        max-height: 90%;
+        display: flex;
+        flex-direction: column;
     }
 
     .modal-header{
@@ -111,6 +118,8 @@ export default {
         overflow-y: auto;
         width: fit-content;
         width:100%;
+        height: 100%;
+        display: flex;
     }
 
     .modal-default-button {
@@ -164,9 +173,12 @@ export default {
 
     .content-pic {
         width: 100%;
+        max-height: 100%;
+        object-fit: contain;
     }
 
     .remove:hover {
         cursor: pointer;
+        height: 100%;
     }
 </style>

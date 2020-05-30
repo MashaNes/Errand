@@ -6,6 +6,7 @@ import moment from "moment"
 import vuelidate from "vuelidate"
 import VueCookie from 'vue-cookie'
 import Toasted from 'vue-toasted';
+import VueLazyLoad from 'vue-lazyload'
 
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { faUserSecret } from '@fortawesome/free-solid-svg-icons'
@@ -25,7 +26,9 @@ Vue.component('vue-phone-number-input', VuePhoneNumberInput);
 Vue.use(BootstrapVue)
 Vue.use(VueCookie)
 Vue.use(Toasted)
+Vue.use(VueLazyLoad)
 
+require('vue-image-lightbox/dist/vue-image-lightbox.min.css')
 library.add(faUserSecret)
 
 Vue.component('font-awesome-icon', FontAwesomeIcon)

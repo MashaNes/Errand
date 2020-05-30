@@ -63,9 +63,9 @@
             <div  v-if="pictures.length > 0" class="images-wrapper" >
               <img 
                 class="expandable-image" 
-                :src="'data:;base64,' + picture.picture"
-                @click="expandPicture(picture.picture)"
-                v-for="picture in pictures" 
+                :src="picture.src"
+                @click="expandPicture(ind)"
+                v-for="(picture, ind) in pictures" 
                 :key="picture.id"
               />
             </div>
@@ -81,16 +81,16 @@
         </div>
       </div>
     </b-collapse>
-    <ModalPicture :picture="clickedPicture" v-if="pictureExpanded" @shrinkPicture="pictureExpanded = false" />
+    <LightBox :media="pictures" v-if="pictureExpanded" :startAt="clickedPicture" @onClosed="pictureExpanded = false"></LightBox>
   </b-card-text>
 </template>
 
 <script>
-import ModalPicture from "@/components/ModalPicture"
+import LightBox from 'vue-image-lightbox'
 
 export default {
   components: {
-    ModalPicture
+    LightBox
   },
   props: {
     task: {
@@ -114,14 +114,21 @@ export default {
       return this.$store.state.isSerbian
     },
     pictures() {
-      if(this.task.picture_required)
-        return this.task.pictures
-      else return []
+      const retValue = []
+      if(this.task.picture_required) {
+        this.task.pictures.forEach(pic => {
+          retValue.push({
+             thumb: 'data:;base64,' + pic.picture,
+             src: 'data:;base64,' + pic.picture
+          })
+        })
+      }
+      return retValue
     }
   },
   methods: {
-    expandPicture(picture) {
-      this.clickedPicture = picture
+    expandPicture(index) {
+      this.clickedPicture = index
       this.pictureExpanded = true
     }
   }
