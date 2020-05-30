@@ -15,6 +15,7 @@ router.register(r'filtered_users', api_views.FilterUserViewSet)
 router.register(r'user_info_filtered', api_views.UserInfoFilteredViewSet)
 router.register(r'filtered_requests', api_views.FilterRequestViewSet)
 router.register(r'request_info_filtered', api_views.RequestInfoFilteredViewSet)
+router.register(r'reports', api_views.ReportViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -81,7 +82,11 @@ urlblocked = [
     path('api/v1/block_add/', api_views.BlockAdd.as_view(),
          name='block_add'),
     path('api/v1/block_remove/', api_views.BlockRemove.as_view(),
-         name='block_remove')
+         name='block_remove'),
+    path('api/v1/report_create/', api_views.ReportCreate.as_view(),
+         name='report_create'),
+    path('api/v1/report_handle/', api_views.ReportHandle.as_view(),
+         name='report_handle'),
 ]
 urlpatterns += urlblocked
 
@@ -90,6 +95,8 @@ urlrequest = [
          name='request_create'),
     path('api/v1/request_cancel/', api_views.RequestCancel.as_view(),
          name='request_cancel'),
+    path('api/v1/request_finish/', api_views.RequestFinish.as_view(),
+         name='request_finish'),
     path('api/v1/rate_user/', api_views.RateUser.as_view(),
          name='rate_user'),
     path('api/v1/offer_create/', api_views.OfferCreate.as_view(),

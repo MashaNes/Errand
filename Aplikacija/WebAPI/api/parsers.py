@@ -62,7 +62,6 @@ def create_user(data):
     return user
 
 def update_user(user, data):
-
     if user.is_admin:
         user.email = data['email']
         user.username = data['email']
@@ -176,12 +175,27 @@ def create_rating(data):
 
 # ================== REPORT ==================
 def create_report(data):
-    reported_user = models.User.objects.filter(id=data['reported_user'])
-    created_by = models.User.objects.filter(id=data['created_by'])
-    report = models.Report(comment=data['comment'],
-                           report_type=data['report_type'],
+    created_by = models.User.objects.get(id=data['created_by'])
+    reported_user = models.User.objects.get(id=data['reported_user'])
+    request = None
+    if data['request']:
+        request = models.Request.objects.get(id=data['request'])
+
+    report = models.Report(created_by=created_by,
                            reported_user=reported_user,
-                           created_by=created_by)
+                           request=request,
+                           comment=data['comment'])
+    report.save()
+
+    if data['pictures']:
+        for _p in data['pictures']:
+            pic = models.Picture(picture=None)
+            pic.save()
+            pic.picture = create_picture(_p['picture'], 'pictures/' + str(pic.id))
+            pic.save()
+            report.pictures.add(pic)
+    report.save()
+
     return report
 
 
@@ -406,7 +420,7 @@ def create_service(data):
     return service
 
 def create_ban(data):
-    banned_user = models.User.objects.filter(id=data['banned_user'])
+    banned_user = models.User.objects.get(id=data['banned_user'])
     banned = models.Banned(until=data['until'],
                            comment=data['comment'],
                            banned_user=banned_user)

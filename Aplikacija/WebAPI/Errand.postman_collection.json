@@ -652,6 +652,129 @@
 			"response": []
 		},
 		{
+			"name": "ReportCreate",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token cfd6e5d73c5ae3403b2769b4287cc993e6569165",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"created_by\" : 4,\n\t\"reported_user\" : 2,\n\t\"comment\" : \"Problem1\",\n\t\"request\" : null,\n\t\"pictures\" : [\n\t\t{\n\t\t\t\"picture\" : \"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\"\n\t\t}\n\t]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "127.0.0.1:8000/api/v1/report_create/",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"v1",
+						"report_create",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Reports",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token cfd6e5d73c5ae3403b2769b4287cc993e6569165",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"created_by\" : 1,\n\t\"reported_by\" : null,\n\t\"reported\" : null,\n\t\"reported_by_or_reported\": 2,\n\t\"handled\" : true\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "127.0.0.1:8000/api/v1/reports/?paginate=false",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"v1",
+						"reports",
+						""
+					],
+					"query": [
+						{
+							"key": "paginate",
+							"value": "false"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ReportHandle",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token cfd6e5d73c5ae3403b2769b4287cc993e6569165",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"created_by\" : 1,\n\t\"id\" : 5,\n\t\"status\" : 1\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "127.0.0.1:8000/api/v1/report_handle/",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"v1",
+						"report_handle",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "AddressAdd",
 			"request": {
 				"method": "POST",
@@ -1731,6 +1854,45 @@
 						"api",
 						"v1",
 						"rate_user",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "RequestFinish",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token cfd6e5d73c5ae3403b2769b4287cc993e6569165",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"created_by\" : 5,\n\t\"request\" : 1,\n\t\"status\" : 2\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "127.0.0.1:8000/api/v1/request_finish/",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"v1",
+						"request_finish",
 						""
 					]
 				}

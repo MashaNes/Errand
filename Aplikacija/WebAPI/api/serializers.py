@@ -80,14 +80,6 @@ class BenefitSerializer(serializers.ModelSerializer):
         model = models.Benefit
         fields = '__all__'
 
-class ReportSerializer(serializers.ModelSerializer):
-    reported_user = UserSerializer()
-    created_by = UserSerializer()
-
-    class Meta:
-        model = models.Report
-        fields = '__all__'
-
 class BannedSerializer(serializers.ModelSerializer):
     banned_user = UserSerializer()
 
@@ -126,6 +118,16 @@ class OfferSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Offer
+        fields = '__all__'
+
+class ReportSerializer(serializers.ModelSerializer):
+    reported_user = UserSerializer()
+    created_by = UserSerializer()
+    pictures = PictureSerializer(many=True)
+    request = RequestSerializer()
+
+    class Meta:
+        model = models.Report
         fields = '__all__'
 
 class NotificationSerializer(serializers.ModelSerializer):

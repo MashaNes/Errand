@@ -5,6 +5,7 @@ URL = api/v1/{endpoint_name}
 (example: 127.0.0.1:8000/api/v1/users/)
 
 Endpoints:
+__GET_________________________________________________________________________________________
 + GET users_info/{id} 				// Returns only basic user data
 + GET users/{id} 					// Returns full user data
 + POST filtered_users/ 				// Returns users based on filters
@@ -20,8 +21,9 @@ Endpoints:
 + GET achievements/{id}				// Returns list of all achievements
 + GET services/{id}                 // Returns list of all types of services
 - GET stats/ (A)		 			// Returns statistics based on filters
-- GET reported_users/ (A)           // Returns list of reported users
++ POST reports/ (A)                 // Returns filtered reports
 
+__POST________________________________________________________________________________________
 + POST login/                       // Login as some user
 + POST user_create/					// Creates new user
 + POST benefit_add/					// Adds new user to benefit list
@@ -34,13 +36,12 @@ Endpoints:
 + POST request_create/ 				// Creates request
 + POST picture_upload/              // Uploads picture to request or task
 + POST rate_user/ 					// Adds new rating for completed request
-- POST report_create/				// Reports user
-- POST report_filtered              // Returns filtered reports
++ POST report_create/				// Reports user
 - POST ban_create/ (A)	 			// Bans reported user
-- POST ban_remove/ (A)	 			// Remove user from banned list
 + POST achievement_create/ (A)	 	// Creates new achievement
 + POST service_type_create/ (A)		// Creates new service type
 
+__PUT_________________________________________________________________________________________
 + PUT logout/                       // Logout user
 + PUT user_update/			        // Updates basic user data
 + PUT user_benefit_update/          // Updates user's benefit settings
@@ -49,16 +50,19 @@ Endpoints:
 + PUT address_update/			    // Updates address to addresses
 + PUT working_hours_update/ 		// Updates working hours for user
 + PUT user_service_update/		    // Updates user service for user
-- PUT report_handle/ (A)            // Handles reported user
++ PUT report_handle/ (A)            // Handles reported user
 - PUT service_edit/ (A)             // Edits service
 + PUT offer_accept/ 				// Accepts offer for request
 + PUT edit_accept/                  // Accpets edit request
++ PUT request_finish/               // Finishes request
 
+__DELETE______________________________________________________________________________________
 + DELETE benefit_remove/ 			// Removes user from benefit list
 + DELETE address_remove/ 			// Removes address from user
 + DELETE working_hours_remove/ 		// Removes working hours from user
 + DELETE user_service_remove/ 		// Removes user service from user
 + DELETE block_remove/ 			    // Removes user from blocklist
+- DELETE ban_remove/ (A)	 		// Remove user from banned list
 + DELETE request_cancel/ 			// Cancels request (when pending)
 + DELETE offer_cancel/ 			    // Cancels offer (when not accepted)
 + DELETE edit_cancel/               // Cancels edit request

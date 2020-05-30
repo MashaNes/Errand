@@ -14,6 +14,7 @@ from . import utils
 
 '''
 Endpoints:
+__GET_________________________________________________________________________________________
 + GET users_info/{id} 				// Returns only basic user data
 + GET users/{id} 					// Returns full user data
 + POST filtered_users/ 				// Returns users based on filters
@@ -29,8 +30,9 @@ Endpoints:
 + GET achievements/{id}				// Returns list of all achievements
 + GET services/{id}                 // Returns list of all types of services
 - GET stats/ (A)		 			// Returns statistics based on filters
-- GET reported_users/ (A)           // Returns list of reported users
++ POST reports/ (A)                 // Returns filtered reports
 
+__POST________________________________________________________________________________________
 + POST login/                       // Login as some user
 + POST user_create/					// Creates new user
 + POST benefit_add/					// Adds new user to benefit list
@@ -43,12 +45,12 @@ Endpoints:
 + POST request_create/ 				// Creates request
 + POST picture_upload/              // Uploads picture to request or task
 + POST rate_user/ 					// Adds new rating for completed request
-- POST report_create/				// Reports user
-- POST report_filtered              // Returns filtered reports
++ POST report_create/				// Reports user
 - POST ban_create/ (A)	 			// Bans reported user
 + POST achievement_create/ (A)	 	// Creates new achievement
 + POST service_type_create/ (A)		// Creates new service type
 
+__PUT_________________________________________________________________________________________
 + PUT logout/                       // Logout user
 + PUT user_update/			        // Updates basic user data
 + PUT user_benefit_update/          // Updates user's benefit settings
@@ -57,11 +59,13 @@ Endpoints:
 + PUT address_update/			    // Updates address to addresses
 + PUT working_hours_update/ 		// Updates working hours for user
 + PUT user_service_update/		    // Updates user service for user
-- PUT report_handle/ (A)            // Handles reported user
++ PUT report_handle/ (A)            // Handles reported user
 - PUT service_edit/ (A)             // Edits service
 + PUT offer_accept/ 				// Accepts offer for request
 + PUT edit_accept/                  // Accpets edit request
++ PUT request_finish/               // Finishes request
 
+__DELETE______________________________________________________________________________________
 + DELETE benefit_remove/ 			// Removes user from benefit list
 + DELETE address_remove/ 			// Removes address from user
 + DELETE working_hours_remove/ 		// Removes working hours from user
@@ -584,6 +588,27 @@ class BlockRemove(generics.RetrieveDestroyAPIView):
         return Response(response)
 
 
+# ================= REPORT =================
+# POST report_create/
+class ReportCreate(generics.ListCreateAPIView):
+    def create(self, request):
+        report = parsers.create_report(request.data)
+        serializer = serializers.ReportSerializer(report)
+        response = serializer.data
+        if response['created_by']['picture']:
+            response['created_by']['picture'] = \
+                utils.load_img(response['created_by']['picture'])
+        if response['reported_user']['picture']:
+            response['reported_user']['picture'] = \
+                utils.load_img(response['reported_user']['picture'])
+        if response['pictures']:
+            for _p in response['pictures']:
+                _p['picture'] = utils.load_img(_p['picture'])
+        if response['request']:
+            response['request'] = utils.load_pictures_request_info(response['request'])
+
+        return Response(response)
+
 # =============== RATE USER ===============
 # POST rate_user/
 class RateUser(generics.ListCreateAPIView):
@@ -744,7 +769,7 @@ class FilterRequestViewSet(viewsets.ModelViewSet):
     queryset = models.FullRequest.objects.all()
 
     def create(self, request):
-        self.queryset = models.FullRequest.objects.all()
+        self.queryset = models.FullRequest.objects.all().order_by('-id')
         self.queryset = utils.filter_requests(self.queryset, request.data)
 
         if request.GET.get('paginate'):
@@ -766,6 +791,40 @@ class FilterRequestViewSet(viewsets.ModelViewSet):
         }
 
         return Response(custom_response)
+
+# PUT request_finish/
+class RequestFinish(generics.UpdateAPIView):
+    def update(self, request):
+        created_by = models.User.objects.get(id=request.data['created_by'])
+        req = models.FullRequest.objects.get(id=request.data['request'])
+
+        if not req:
+            return Response({'detail' : 'Request does not exist.'})
+
+        if req.request.status != 1:
+            return Response({'detail' : 'Request is pending or already finished.'})
+
+        if created_by.id == req.request.created_by.id:
+            if request.data['status'] == 3:
+                req.request.status = 3
+                req.request.save()
+            elif request.data['status'] == 2:
+                req.request.finished_created_by = True
+                req.request.save()
+
+        elif created_by.id == req.request.working_with.id:
+            if request.data['status'] == 3:
+                req.request.status = 3
+                req.request.save()
+            elif request.data['status'] == 2:
+                req.request.finished_working_with = True
+                req.request.save()
+
+        if req.request.finished_created_by and req.request.finished_working_with:
+            req.request.status = 2
+            req.request.save()
+
+        return Response({'detail' : 'success'})
 
 # POST offer_create/
 class OfferCreate(generics.ListCreateAPIView):
@@ -821,7 +880,6 @@ class OfferCancel(generics.RetrieveDestroyAPIView):
 class EditCreate(generics.ListCreateAPIView):
     def create(self, request):
         edit = parsers.create_edit(request.data)
-        created_by = request.data['created_by']
         serializer = serializers.EditSerializer(edit)
 
         return Response(serializer.data)
@@ -1011,3 +1069,67 @@ class ServiceCreate(generics.ListCreateAPIView):
             return Response(serializer.data)
         else:
             return Response({"detail" : "User is not admin."})
+
+# POST reports/
+class ReportViewSet(viewsets.ModelViewSet):
+    queryset = models.Report.objects.all()
+    serializer_class = serializers.ReportSerializer
+
+    def create(self, request):
+        created_by = request.data['created_by']
+        user = models.User.objects.get(id=created_by)
+
+        if user.is_admin:
+            if request.data['handled'] == 0:
+                self.queryset = models.Report.objects.all().order_by('-id')
+            else:
+                self.queryset = models.Report.objects.all()
+
+            self.queryset = utils.filter_reports(self.queryset, request.data)
+
+            if request.GET.get('paginate'):
+                page = self.paginate_queryset(self.queryset)
+            else:
+                page = self.queryset
+
+            serializer = serializers.ReportSerializer(page, many=True)
+            response = serializer.data
+            for _r in response:
+                if _r['created_by']['picture']:
+                    _r['created_by']['picture'] = utils.load_img(_r['created_by']['picture'])
+                if _r['reported_user']['picture']:
+                    _r['reported_user']['picture'] = utils.load_img(_r['reported_user']['picture'])
+                if _r['pictures']:
+                    for _p in _r['pictures']:
+                        _p['picture'] = utils.load_img(_p['picture'])
+                if _r['request']:
+                    _r['request'] = utils.load_pictures_request_info(_r['request'])
+
+            if request.GET.get('paginate'):
+                return self.get_paginated_response(response)
+
+            custom_response = {
+                'count' : len(response),
+                'results' : response
+            }
+            return Response(custom_response)
+        else:
+            return Response({'detail' : 'User is not admin.'})
+
+# PUT report_handle/
+class ReportHandle(generics.UpdateAPIView):
+    queryset = models.Report.objects.all()
+    serializer_class = serializers.ReportSerializer
+
+    def update(self, request):
+        self.queryset = models.Report.objects.all()
+        report = get_object_or_404(self.queryset, id=request.data['id'])
+        created_by = request.data['created_by']
+        user = models.User.objects.get(id=created_by)
+
+        if user.is_admin:
+            report.status = request.data['status']
+            report.save()
+            return Response({'detail' : 'success'})
+        else:
+            return Response({'detail' : 'User is not admin.'})

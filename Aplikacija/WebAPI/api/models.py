@@ -85,14 +85,7 @@ class Benefit(models.Model):
     benefit_user = models.ForeignKey(User, related_name='benefit_user_id',
                                      on_delete=models.CASCADE)
 
-class Report(models.Model):
-    comment = models.CharField(max_length=256)
-    handled = models.BooleanField(default=False)
-    # Status -> 0, 1(b), 2(ignored), 3(b-reversed)
-    reported_user = models.ForeignKey(User, related_name='report_reported_user_id',
-                                      on_delete=models.CASCADE)
-    created_by = models.ForeignKey(User, related_name='report_created_by_id',
-                                   on_delete=models.CASCADE)
+
 
 class Banned(models.Model):
     until = models.DateTimeField()
@@ -110,6 +103,8 @@ class Request(models.Model):
     broadcast = models.BooleanField(default=False)
     rated_created_by = models.BooleanField(default=False)
     rated_working_with = models.BooleanField(default=False)
+    finished_created_by = models.BooleanField(default=False)
+    finished_working_with = models.BooleanField(default=False)
     picture_required = models.BooleanField(default=False)
     pictures = models.ManyToManyField(Picture)
     note = models.CharField(max_length=256)
@@ -135,6 +130,18 @@ class Edit(models.Model):
     working_with = models.ForeignKey(User, related_name='working_with_id',
                                      on_delete=models.CASCADE)
     request_edit = models.ForeignKey(RequestEdit, on_delete=models.CASCADE)
+
+class Report(models.Model):
+    comment = models.CharField(max_length=256)
+    request = models.ForeignKey(Request, null=True, blank=True,
+                                on_delete=models.SET_NULL)
+    pictures = models.ManyToManyField(Picture)
+    status = models.IntegerField(default=0)
+    # status -> 0, 1(b), 2(ignored), 3(b-reversed)
+    reported_user = models.ForeignKey(User, related_name='report_reported_user_id',
+                                      on_delete=models.CASCADE)
+    created_by = models.ForeignKey(User, related_name='report_created_by_id',
+                                   on_delete=models.CASCADE)
 
 class Rating(models.Model):
     grade = models.FloatField()

@@ -154,6 +154,8 @@ def filter_user(queryset, data):
         if to_add and data['services']:
             for _s in data['services']:
                 found = False
+                if _s['id'] == 1:
+                    found = True
                 for _q_s in _q.services.all():
                     # TODO: Filter against location
                     if (_s['id'] == _q_s.service.id and _s['max_dist'] >= _q_s.max_dist):
@@ -244,6 +246,41 @@ def filter_user_info(serializer, data):
         response['requests'] = serializer['requests']
 
     return response
+
+def filter_reports(queryset, data):
+    new_queryset = list()
+
+    for _q in queryset:
+        to_add = True
+
+        if data['handled']:
+            if _q.status == 0:
+                to_add = False
+        else:
+            if _q.status > 0:
+                to_add = False
+
+        if to_add and data['reported_by']:
+            if _q.created_by.id != data['reported_by']:
+                to_add = False
+
+        if to_add and data['reported']:
+            if _q.reported_user.id != data['reported']:
+                to_add = False
+
+        if to_add and data['reported_by_or_reported']:
+            found = False
+
+            if _q.created_by.id == data['reported_by_or_reported'] or \
+                 _q.reported_user.id == data['reported_by_or_reported']:
+                found = True
+
+            to_add = found
+
+        if to_add:
+            new_queryset.append(_q)
+
+    return new_queryset
 
 # ==================== REQUEST ====================
 # =================================================
