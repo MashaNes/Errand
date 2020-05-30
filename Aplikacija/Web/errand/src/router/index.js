@@ -28,6 +28,7 @@ import PageForbidden from "@/pages/PageForbidden"
 import PageAdminServices from "@/pages/PageAdminServices"
 import PageReports from "@/pages/PageReports"
 import PageUncategorizedTasks from "@/pages/PageUncategorizedTasks"
+import PageViewRequestAdmin from "@/pages/PageViewRequestAdmin"
 
 Vue.use(Router)
 
@@ -283,8 +284,13 @@ const router = new Router(
                 props: true,
                 beforeEnter(to,from,next)
                 {
-                    if(store.state.logedIn) // we shall see, moyda ce ya admina morati zasebna stranica, videcemo
-                        next()
+                    if(store.state.logedIn)
+                    {
+                        if(!store.state.isAdmin)
+                            next()
+                        else
+                        next({name: 'PageForbidden'})
+                    }
                     else
                         next({name: 'PageNotAuthenticated'})
                 }
@@ -365,6 +371,24 @@ const router = new Router(
                 path: "/uncategorizedTasks",
                 name: "PageUncategorizedTasks",
                 component: PageUncategorizedTasks,
+                props: true,
+                beforeEnter(to,from,next)
+                {
+                    if(store.state.logedIn)
+                    {
+                        if(store.state.isAdmin)
+                            next()
+                        else
+                        next({name: 'PageForbidden'})
+                    }
+                    else
+                        next({name: 'PageNotAuthenticated'})
+                }
+            },
+            {
+                path: "/requestAdmin/:editable/:id",
+                name: "PageViewRequestAdmin",
+                component: PageViewRequestAdmin,
                 props: true,
                 beforeEnter(to,from,next)
                 {

@@ -1,6 +1,6 @@
 <template>
     <div class="other-request-wrapper">
-        <span class="naziv"> {{request.name}} </span>
+        <span class="naziv clickable"> <a @click="gotoRequest">{{request.name}} </a> </span>
         <div class="user-data">
             <div class="name">
                 <img src="../assets/requests.svg" class="ikonica" />
@@ -17,8 +17,8 @@
         </div>
         <div class="tagovi">
             <div class="tag" v-for="tag in tags" :key="tag.id">
-                <span v-if="isSerbian"> {{tag.service_type_sr}} </span>
-                <span v-else> {{tag.service_type_en}} </span>
+                <span v-if="isSerbian" v-b-popover.hover.bottom="tag.description_sr"> {{tag.service_type_sr}} </span>
+                <span v-else v-b-popover.hover.bottom="tag.description_en"> {{tag.service_type_en}} </span>
             </div>
             <div class="tag-other">
                 <span v-if="isSerbian"> Ostalo </span>
@@ -78,6 +78,13 @@ export default {
             })
             return rez
         }
+    },
+    methods:
+    {
+        gotoRequest()
+        {
+            this.$router.push({ name: 'PageViewRequestAdmin', params: {request: this.request, id: this.request.id, editable: "other"}})
+        }
     }
 }
 </script>
@@ -101,6 +108,11 @@ export default {
         font-size: 22px;
         font-weight:600;
         margin-bottom:15px;
+    }
+
+    .clickable:hover
+    {
+        color: grey
     }
 
     .user-data
