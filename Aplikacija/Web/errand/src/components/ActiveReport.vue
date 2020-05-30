@@ -16,7 +16,7 @@
             <img src="../assets/requests.svg" class="ikonica" />
             <span v-if="isSerbian" class="naziv"> Zahtev: </span>
             <span v-else class="naziv"> Request: </span>
-            <span> {{report.request.name}} </span>
+            <span class="clickable"> <a @click="gotoRequest"> {{report.request.name}} </a> </span>
         </div>
         <div class="item">
             <img src="../assets/comment.svg" class="ikonica" />
@@ -90,6 +90,10 @@ export default {
     },
     methods:
     {
+        gotoRequest()
+        {
+            this.$router.push({ name: 'PageViewRequestAdmin', params: {request: this.report.request, id: this.report.request.id, editable: "regular"}})
+        },
         dismiss()
         {
             this.showModalDismiss = false
@@ -253,6 +257,11 @@ export default {
         width:70px;
         height:100px;
         border:0.5px solid black;
+    }
+
+    .clickable:hover
+    {
+        color: grey
     }
 
     @media only screen and (max-width: 900px)

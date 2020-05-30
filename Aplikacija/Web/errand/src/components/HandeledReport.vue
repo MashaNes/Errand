@@ -32,7 +32,7 @@
             <img src="../assets/requests.svg" class="ikonica" />
             <span v-if="isSerbian" class="naziv"> Zahtev: </span>
             <span v-else class="naziv"> Request: </span>
-            <span> {{report.request.name}} </span>
+            <span class="clickable"> <a @click="gotoRequest"> {{report.request.name}} </a> </span>
         </div>
         <div class="item-different" :class="{'dodatak' : report.pictures.length > 0}">
             <img src="../assets/comment.svg" class="ikonica" />
@@ -68,6 +68,13 @@ export default {
         isSerbian()
         {
             return this.$store.state.isSerbian
+        }
+    },
+    methods:
+    {
+        gotoRequest()
+        {
+            this.$router.push({ name: 'PageViewRequestAdmin', params: {request: this.report.request, id: this.report.request.id, editable: "regular"}})
         }
     }
 }
@@ -167,6 +174,11 @@ export default {
         width:70px;
         height:100px;
         border:0.5px solid black;
+    }
+
+    .clickable:hover
+    {
+        color: grey
     }
 
     @media only screen and (max-width: 900px)

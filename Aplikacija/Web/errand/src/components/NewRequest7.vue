@@ -24,7 +24,7 @@
             <span v-if="isSerbian"> Zadaci: </span>
             <span v-else> Tasks: </span>
         </div>
-        <table class="table">
+        <table class="table smanji">
             <thead>
                 <tr>
                     <th  class="poravnanje" scope="col"><span v-if="isSerbian">Broj</span> <span v-else>Number</span></th>
@@ -217,5 +217,18 @@ export default {
     {
         font-size: 18px;
         color:rgb(206, 94, 94);
+    }
+
+    @media only screen and (max-width: 400px)
+    {
+        .smanji
+        {
+            font-size: 12px;
+        }
+
+        .labelDiv
+        {
+            font-size:16px; 
+        }
     }
 </style>

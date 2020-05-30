@@ -701,7 +701,7 @@ export default new Vuex.Store({
                                 router.back();
                             if(router.currentRoute["path"] == "/" || router.currentRoute["path"] == "/login" ||
                             router.currentRoute["path"] == "/loginAdmin" || router.currentRoute["path"] == "/register" ||
-                            router.currentRoute["path"] == "/registerAdmin" || router.currentRoute["path"] == "/401")
+                            router.currentRoute["path"] == "/registerAdmin")
                             {
                                 if(!this.state.isAdmin)
                                     router.push("/requests");
@@ -747,6 +747,7 @@ export default new Vuex.Store({
                         this.state.createdAuthRequests = null
                         this.state.runnerAuthRequests = null
                         this.state.overAuthRequests = null
+                        this.store.specificRequest = null
                         Vue.cookie.delete('id');
                         Vue.cookie.delete('token');
                         Vue.cookie.delete('ime');
@@ -1268,7 +1269,27 @@ export default new Vuex.Store({
         },
         fillOtherRequests(){
             this.state.overAuthRequests = fetchRequestsOther()
-        }
+        },
+        getRequestByIdAdmin({commit}, requestId) {
+            fetch("http://localhost:8000/api/v1/requests/" + requestId, {
+                method: 'GET',
+                headers: {
+                    "Content-type" : "application/json",
+                    "Authorization" : "Token " + this.state.token
+                }
+            }).then(p => {
+                if(p.ok) {
+                    p.json().then(data => {
+                        console.log(data)
+                        this.state.specificRequest = data.request
+                    })
+                }
+                else {
+                    console.log("Error")
+                    this.state.specificRequest = -1
+                }
+            }) 
+        },
     },
     mutations:{
         setUser(state, user) {
