@@ -120,17 +120,18 @@
               <div v-if="pictures.length > 0" class="images-wrapper" >
                 <img 
                   class="expandable-image" 
-                  :src="'data:;base64,' + picture.picture"
-                  @click="expandPicture(picture.picture)"
-                  v-for="picture in pictures" 
+                  :src="picture.src"
+                  @click="expandPicture(ind)"
+                  v-for="(picture, ind) in pictures" 
                   :key="picture.id"
                 />
+
+                <LightBox :media="pictures" v-if="pictureExpanded" :startAt="clickedPicture" @onClosed="pictureExpanded = false"></LightBox>
+              
               </div>
               <span v-else v-text="isSerbian ? 'Još uvek nije dostavljena nijedna slika' : 'No pictures have been taken so far'"></span>
             </b-card-text>
           </div>
-
-          <ModalPicture :picture="clickedPicture" v-if="pictureExpanded" @shrinkPicture="pictureExpanded = false" />
         </b-card-text>
 
 
@@ -173,9 +174,8 @@ import Map from "@/components/Map"
 import Task from "@/components/Task"
 import Spinner from "@/components/Spinner"
 import OfferBox from "@/components/OfferBox"
-import ModalPicture from "@/components/ModalPicture"
 import EditBox from "@/components/EditBox"
-//import Vue from 'vue'
+import LightBox from 'vue-image-lightbox'
 
 export default {
   components: {
@@ -183,8 +183,8 @@ export default {
     Task,
     Spinner,
     OfferBox,
-    ModalPicture,
-    EditBox
+    EditBox,
+    LightBox
   },
   props: {
     request: {
@@ -262,9 +262,16 @@ export default {
       return returnValue
     },
     pictures() {
-      if(this.computedRequest.picture_required)
-        return this.filteredInfo.pictures
-      else return []
+      const retValue = []
+      if(this.computedRequest.picture_required) {
+        this.filteredInfo.pictures.forEach(pic => {
+          retValue.push({
+             thumb: 'data:;base64,' + pic.picture,
+             src: 'data:;base64,' + pic.picture
+          })
+        })
+      }
+      return retValue
     },
     isRunner() {
       if(!this.computedRequest.created_by || this.computedRequest.created_by.id == this.$store.state.authUser.id)
@@ -549,8 +556,8 @@ export default {
     {
       this.$router.push({ name: 'PageNewRequest', params: {requestProp: this.request}})
     },
-    expandPicture(picture) {
-      this.clickedPicture = picture
+    expandPicture(index) {
+      this.clickedPicture = index
       this.pictureExpanded = true
     },
     acceptOffer(offer) {
