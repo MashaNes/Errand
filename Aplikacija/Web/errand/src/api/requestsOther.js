@@ -97,6 +97,7 @@ export const fetchRequestsOther = () =>
             name:"Ciscenje snega",
             time: new Date(),
             status: 2,
+            pictures: [],
             working_with: {
                 id: 3,
                 first_name: "Dimitrije",
@@ -127,9 +128,9 @@ export const fetchRequestsOther = () =>
                         "arrived": false
                     },
                     service_type: {
-                        "id": 2,
-                        "service_type_sr": "Nabavka",
-                        "service_type_en": "Grocery shopping",
+                        "id": 1,
+                        "service_type_sr": "OStalo",
+                        "service_type_en": "Other",
                         "description_sr": "Nabavka namirnica u supermarketu",
                         "description_en": "Shop for groceries in a nearby supermarket",
                         "picture_required": true

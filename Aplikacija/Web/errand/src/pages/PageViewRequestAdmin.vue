@@ -29,10 +29,10 @@
             <b-card-text v-if="hasAddresses" class="mapa">
                 <Map />
             </b-card-text>
-            <div class="item" v-if="myRequest.pictures.length > 0">
+            <div class="item" v-if="myRequest.pictures != null && myRequest.pictures.length > 0">
                 <img src="../assets/pictures.svg" class="ikonica" />
                 <div class="photo-list">
-                    <div v-for="picture in myRequest.pictures" :key="picture" class="photo">
+                    <div v-for="(picture,index) in myRequest.pictures" :key="index" class="photo">
                         {{picture}}
                     </div> 
                 </div>
@@ -45,8 +45,18 @@
                           @fokus="currentNumber = index + 1"
                           @close="currentNumber = 0"
                           :editable="isEditable"
-                          @editedChanged="editedChanged" />
+                          @editedChanged="editedChanged"
+                          @newCategory="newCategory" />
             </div>
+            <button type="button" class="btn btn-success" @click="finish" v-if="wasEdited > 0">
+                <img src="../assets/finished.svg" />
+                <span v-if="isSerbian">
+                    Sačuvaj
+                </span>
+                <span v-else>
+                    Save
+                </span>
+            </button>
         </div>
     </div>
 </template>
@@ -76,7 +86,8 @@ export default {
             hasAddresses: false,
             currentNumber: 0,
             myRequest: this.request,
-            wasEdited: false
+            wasEdited: 0,
+            newCategories: []
         }
     },
     computed:
@@ -152,9 +163,58 @@ export default {
     },
     methods:
     {
+        finish()
+        {
+            this.newCategories.forEach(element =>
+            {
+                this.request.tasklist.forEach(task =>
+                {
+                    if(task.id == element.task)
+                    {
+                        task.service_type = element.category
+                        //poslati promenu bazi
+                    }
+                })
+            })
+
+            var hasOthers = false
+            this.request.tasklist.forEach(task =>
+            {
+                if(task.service_type.id == 1)
+                {
+                    hasOthers = true
+                }
+            })
+
+            if(!hasOthers)
+            {
+                this.$store.state.overAuthRequests.forEach((element,index) =>
+                {
+                    if(element.id == this.request.id)
+                        this.$store.state.overAuthRequests.splice(index,1)
+                })
+            }
+
+            this.$router.push("/uncategorizedTasks")
+        },
+        newCategory(data)
+        {
+            this.newCategories.forEach((element, index) =>
+            {
+                if(element.task == data.task)
+                    this.newCategories.splice(index,1)
+            })
+            if(data.category.id != 1)
+            {
+                this.newCategories.push(data)
+            }
+        },
         editedChanged(value)
         {
-            this.wasEdited = value
+            if(value)
+                this.wasEdited = this.wasEdited + 1
+            else
+                this.wasEdited = this.wasEdited - 1
         },
         callbackRequest()
         {
@@ -233,6 +293,9 @@ export default {
         }
 
         this.callbackMaps()
+
+        if(this.$store.state.allServices == null)
+            this.$store.dispatch("fillServices")
     }
 }
 </script>

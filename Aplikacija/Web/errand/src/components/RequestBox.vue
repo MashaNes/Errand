@@ -1,17 +1,26 @@
 <template>
     <div class = "wrapper" :class="color">
         <div class="request-top" v-if="myRequest.status != 0">
-            <div class="user-div"> 
-                <button v-if="(myRequest.status == 2 || myRequest.status == 3) && canRate" type="button" class="btn btn-success dugme-rate" @click="rateUser">
-                    <!-- proveriti kad bude bilo primera!!!!!!! -->
-                    <img src="../assets/rate.png" class="slika">
-                    <span v-if="isSerbian"> Oceni </span>
-                    <span v-else> Rate </span>
-                </button>
-                <span class="user-name" @click="goToProfile"> {{userName}} </span>
-                <p class="image is-128x128" >
-                    <img class="rounded-image" :src="user.picture ? 'data:;base64,' + user.picture : require('../assets/no-picture.png')" @click="goToProfile">
-                </p>
+            <div class="user-related-div">
+                <div class="user-div"> 
+                    <span class="user-name" @click="goToProfile"> {{userName}} </span>
+                    <p class="image is-128x128" >
+                        <img class="rounded-image" :src="user.picture ? 'data:;base64,' + user.picture : require('../assets/no-picture.png')" @click="goToProfile">
+                    </p>
+                </div>
+                <div class="button-div">
+                    <button v-if="(myRequest.status > 0)" type="button" class="btn btn-danger dugme-rate" @click="reportUser">
+                        <img src="../assets/report.png" class="slika">
+                        <span v-if="isSerbian"> Prijavi </span>
+                        <span v-else> Report </span>
+                    </button>
+                    <button v-if="(myRequest.status == 2 || myRequest.status == 3) && canRate" type="button" class="btn btn-success dugme-rate" @click="rateUser">
+                        <!-- proveriti kad bude bilo primera!!!!!!! -->
+                        <img src="../assets/rate.png" class="slika">
+                        <span v-if="isSerbian"> Oceni </span>
+                        <span v-else> Rate </span>
+                    </button>
+                </div>
             </div>
             <div class = "request-name" @click="goToRequest">
                 {{myRequest.name}}
@@ -279,6 +288,11 @@ export default {
         {
             console.log(this.user)
             //rate the user
+        },
+        reportUser()
+        {
+            console.log(this.user)
+            console.log(this.myRequest)
         }
     }
 }
@@ -304,7 +318,7 @@ export default {
         display: flex;
         flex-direction: row-reverse;
         justify-content: flex-start;
-        align-items: center;
+        align-items: flex-start;
         width: 100%;
     }
 
@@ -327,6 +341,22 @@ export default {
         margin-right: 10px;
         margin-top:10px;
         font-size: 18px;
+    }
+
+    .user-related-div
+    {
+        display: flex;
+        flex-direction:column;
+        align-items:center;
+    }
+
+    .button-div
+    {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-items: center;
+        margin-right: 10px;
     }
 
     .cancel-request
@@ -483,9 +513,10 @@ export default {
 
     .slika
     {
-        width:20px;
-        height:20px;
-        margin-right:7px;
+        width:18px;
+        height:18px;
+        margin-right:4px;
+        margin-bottom:3px;
     }
 
     .dugme-rate
@@ -512,6 +543,12 @@ export default {
             margin-left: 15px;
             margin-top: 10px;
             flex-direction: row-reverse;
+        }
+
+        .user-related-div
+        {
+            margin-top:15px;
+            margin-bottom:15px;
         }
 
         .bottom-left

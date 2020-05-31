@@ -747,7 +747,7 @@ export default new Vuex.Store({
                         this.state.createdAuthRequests = null
                         this.state.runnerAuthRequests = null
                         this.state.overAuthRequests = null
-                        this.store.specificRequest = null
+                        this.state.specificRequest = null
                         Vue.cookie.delete('id');
                         Vue.cookie.delete('token');
                         Vue.cookie.delete('ime');
