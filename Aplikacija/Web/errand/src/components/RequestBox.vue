@@ -9,7 +9,7 @@
                     </p>
                 </div>
                 <div class="button-div">
-                    <button v-if="(myRequest.status > 0)" type="button" class="btn btn-danger dugme-rate" @click="reportUser">
+                    <button v-if="(myRequest.status > 1)" type="button" class="btn btn-danger dugme-rate" @click="reportUser">
                         <img src="../assets/report.png" class="slika">
                         <span v-if="isSerbian"> Prijavi </span>
                         <span v-else> Report </span>
