@@ -1007,6 +1007,7 @@ export default new Vuex.Store({
                         {
                             this.state.userAdded = true
                             console.log(data)
+                            this.state.createdAuthRequests.results.unshift(data)
                             const filters = {
                                 created_by : this.state.authUser.id,
                                 done_by : null,
@@ -1014,7 +1015,6 @@ export default new Vuex.Store({
                                 statuses : [0, 1],
                                 unrated : null
                             }
-                            this.dispatch("fillRequests", {filters: filters, objectToFill: "createdAuthRequests"})
                         })
                     }
                     else

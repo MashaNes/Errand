@@ -1,7 +1,7 @@
 <template>
     <div class="wrapper-step3">
         <div v-if="isSerbian" class="obavestenje">
-            Napomena: Proverite sve do sada unete informacije o zahtevu, nakon ovog odabira više nećete moći da se vratite da ih menjate
+            <span class="napomena"> Napomena: </span> Proverite sve do sada unete informacije o zahtevu, nakon ovog odabira više nećete moći da se vratite da ih menjate
         </div>
         <div v-else class="obavestenje">
             Note: Check all of the information you have provided about the request so far, after making this choice you will no longer have the ability to change them
@@ -114,8 +114,13 @@ export default {
 
     .obavestenje
     {
-        font-size: 12px;
-        color:rgb(201, 127, 127);
+        font-size: 14px;
+        color:red;
+    }
+
+    .napomena
+    {
+        font-weight: 600;
     }
 
     .buttonDiv

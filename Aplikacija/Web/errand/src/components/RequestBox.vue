@@ -21,7 +21,7 @@
             <a class = "cancel-request" @click="showModal = true">
                 <img class = "ikonica" src="../assets/remove.svg">
             </a>
-            <div class = "request-name" @click="goToRequest">
+            <div class = "request-name-2" @click="goToRequest">
                 {{myRequest.name}}
             </div>
         </div>
@@ -333,11 +333,14 @@ export default {
     {
         display: flex;
         flex-direction: row;
-        align-items: center;
+        align-items: flex-start;
         justify-items: center;
         margin-right: 10px;
+        margin-top: 10px;
         font-size: 18px;
-        width:fit-content;
+        width:25px;
+        align-self:flex-start;
+        height:100%;
     }
 
     .ikonica
@@ -361,11 +364,13 @@ export default {
         display: flex;
         flex-direction: row;
         align-items:center;
+        flex-wrap:wrap;
     }
     
     .bottom-left
     {
         flex-grow: 1;
+        width:82%;
         display: flex;
         flex-direction: row;
         justify-content: flex-start;
@@ -391,67 +396,32 @@ export default {
 
     }
 
-    @media only screen and (max-width: 600px)
-    {
-        .wrapper
-        {
-            width: 90%;
-        }
-
-        .request-top
-        {
-            flex-direction: column-reverse;
-            align-items: flex-start;
-        }
-
-        .user-div
-        {
-            margin-left: 15px;
-            margin-top: 10px;
-            flex-direction: row-reverse;
-        }
-
-        .bottom-left
-        {
-            flex-direction: column;
-            align-items: flex-start;
-        }
-
-        .request-bottom
-        {
-            margin-top: 10px;
-        }
-        
-        .tagovi
-        {
-            margin-bottom: 5px;
-            margin-left: 5px;
-        }
-        
-        .request-date
-        {
-            padding: 2px;
-            padding-left: 10px;
-        }
-
-        .user-name
-        {
-            margin-left: 10px;
-        }
-    }
-
     .request-name
     {
         font-weight: bold;
         font-size: 25px;
         color:rgb(11, 97, 126);
         text-align: left;
-        width:100%;
+        /*width:96%;*/
+        flex-grow:1;
         margin-left: 10px;
         margin-top:2px;
+        margin-right:7px;
     }
 
-    .request-name:hover
+    .request-name-2
+    {
+        font-weight: bold;
+        font-size: 25px;
+        color:rgb(11, 97, 126);
+        text-align: left;
+        width:96%;
+        margin-left: 10px;
+        margin-top:2px;
+        margin-right:7px;
+    }
+
+    .request-name:hover, .request-name-2:hover
     {
         color:rgb(7, 133, 175);
         cursor: pointer;
@@ -473,6 +443,7 @@ export default {
     .request-status
     {
         margin-left:7px;
+        word-break: keep-all;
     }
 
     .crveno
@@ -521,5 +492,71 @@ export default {
     {
         margin-right: 7px;
         margin-left: 7px;
+    }
+
+    @media only screen and (max-width: 900px)
+    {
+        .wrapper
+        {
+            width: 90%;
+        }
+
+        .request-top
+        {
+            flex-direction: column-reverse;
+            align-items: flex-start;
+        }
+
+        .user-div
+        {
+            margin-left: 15px;
+            margin-top: 10px;
+            flex-direction: row-reverse;
+        }
+
+        .bottom-left
+        {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .request-bottom
+        {
+            margin-top: 10px;
+        }
+        
+        .tagovi
+        {
+            margin-bottom: 5px;
+            margin-left: 5px;
+        }
+        
+        .request-date
+        {
+            padding: 2px;
+            padding-left: 10px;
+            font-size: 15px;
+        }
+
+        .user-name
+        {
+            margin-left: 10px;
+        }
+
+        .request-name, .request-name-2
+        {
+            font-size:20px;
+        }
+
+        .request-tag
+        {
+            font-size: 15px;
+            font-weight:500;
+        }
+
+        .request-status
+        {
+            font-size: 16px;
+        }
     }
 </style>

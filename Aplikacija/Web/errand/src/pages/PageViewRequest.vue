@@ -373,6 +373,8 @@ export default {
     {
       if(this.isSerbian)
       {
+        if(this.filteredOffers == null)
+          return ""
         var jedinice = this.filteredOffers.length - (Math.round(this.filteredOffers.length/10).toFixed(0))*10
         var string = ""
         switch(jedinice)
@@ -407,6 +409,8 @@ export default {
     },
     zahteviTekst()
     {
+      if(this.filteredEdits == null)
+        return ""
       if(this.isSerbian)
       {
         var jedinice = this.filteredEdits.length - (Math.round(this.filteredEdits.length/10).toFixed(0))*10

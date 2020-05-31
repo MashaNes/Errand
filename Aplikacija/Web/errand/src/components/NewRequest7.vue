@@ -37,7 +37,7 @@
             <tbody>
                 <tr v-for="task in request.tasklist" :key="task.id">
                     <td class="poravnanje">{{task.id}}</td>
-                    <td class="poravnanje">{{task.name}}</td>
+                    <td class="poravnanje"> <span  v-b-popover.hover.bottom="task.description"> {{task.name}} </span> </td>
                     <td class="poravnanje">
                         <span v-if="isSerbian" v-b-popover.hover.bottom="task.service_type.description_sr">{{task.service_type.service_type_sr}}</span> 
                         <span v-else v-b-popover.hover.bottom="task.service_type.description_en">{{task.service_type.service_type_en}}</span>
