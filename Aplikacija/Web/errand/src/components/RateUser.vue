@@ -1,5 +1,6 @@
 <template>
-  <div class="main-wrapper">
+  <Spinner v-if="requests" />
+  <div class="main-wrapper" v-else>
     <div class="side-info">
       <AsideProfileInfo :user="user" :forWideScreen="false" />
       <div class="btns">
@@ -74,13 +75,15 @@
 import AsideProfileInfo from "@/components/AsideProfileInfo"
 import ModalRateUser from "@/components/ModalRateUser"
 import ModalAreYouSure from "@/components/ModalAreYouSure"
+import Spinner from "@/components/Spinner"
 
 export default {
   
   components: {
     AsideProfileInfo,
     ModalRateUser,
-    ModalAreYouSure
+    ModalAreYouSure,
+    Spinner
   },
   props: {
     user: {
@@ -103,7 +106,10 @@ export default {
       return this.user.firstName + " " +this.user.lastName
     },
     requests() {
-      return this.$store.state.specificRequests
+      return {
+        count: this.$store.state.specificRequestsCreated.count + this.$store.state.specificRequestsDoneBy.count,
+        results: this.$store.state.specificRequestsCreated.results.concat(this.$store.state.specificRequestsDoneBy.results)
+      }
     }
   },
   methods: {
@@ -135,11 +141,25 @@ export default {
     },
   },
   created() {
+    this.$store.state.specificRequests = null
     window.scrollTo(0, 0)
-    const userId = this.user.id
-    console.log(userId)
-    //fetch-ovati sve neocenjene zahteve izmedju ulogovanog korisnika i onog ciji profil se gleda
-    this.$store.dispatch('fillSpecificRequests', userId)
+    const filtersCreated = {
+      created_by : this.user.id,
+      done_by : null,
+      created_or_done_by: null,
+      statuses : [2, 3],
+      unrated : true
+    }
+    this.$store.dispatch("fillRequests", {filters: filtersCreated, objectToFill: "specificRequestsCreated"})
+
+    const filtersDone = {
+      created_by : null,
+      done_by : this.user.id,
+      created_or_done_by: null,
+      statuses : [2, 3],
+      unrated : true
+    }
+    this.$store.dispatch("fillRequests", {filters: filtersDone, objectToFill: "specificRequestsDoneBy"})
   }
 }
 </script>

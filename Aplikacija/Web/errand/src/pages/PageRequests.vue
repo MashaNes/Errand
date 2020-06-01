@@ -41,6 +41,10 @@
                       :textS="'Zahtev uspešno kreiran.'"
                       :textE="'Request successfully created.'"
                       @close="closeModal" />
+        <ModalSuccess v-if="reportCreated" 
+                      :textS="'Uspešno prijavljen problem sa korisnikom.'" 
+                      :textE="'User successfuly reported.'" 
+                      @close="closeModalSuccess" />
     </div>
 </template>
 
@@ -90,6 +94,10 @@
             requestCreated()
             {
                 return this.$store.state.userAdded
+            },
+            reportCreated() 
+            {
+                return this.$store.state.success
             }
         },
         data()
@@ -134,6 +142,10 @@
             newRequest()
             {
                 this.$router.push("/newRequest")
+            },
+            closeModalSuccess() 
+            {
+                this.$store.state.success = false
             }
         },
         created()
