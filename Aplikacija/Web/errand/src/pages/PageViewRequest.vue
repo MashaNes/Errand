@@ -2,8 +2,55 @@
   <Spinner v-if="!computedRequest || !this.$store.state.isRequestInfoLoaded" />
   <div class="wrapper" v-else>
     <b-card style="min-width: 240px;">
+      <div class="request-end-btns">
+        <div class="important" v-if="finishedOtherUser && !isRunner && computedRequest.status == 1">
+          <p v-if="isSerbian" class="important-img-div" v-b-popover.hover.bottom='"Vaš saradnik na ovom zahtevu pokrenuo je proces okončanja zahteva. Izaberite opciju \"Okončaj zahtev\" kako biste dovršili ovaj proces i označili uspešan kraj saradnje."'>
+            <img src="@/assets/exclamation.png" class="important-img"/>
+          </p>
+          <p v-else class="important-img-div" v-b-popover.hover.bottom='"Your partner in this request has started the procces of ending the request. Choose the \"End request\" option to finish the process and mark the collaboration as successfull."'>
+            <img src="@/assets/exclamation.png" class="important-img"/>
+          </p>
+        </div>
+        <div class="action-btns" v-if="!((isRunner && computedRequest.status == 1) || (computedRequest.status == 1 && finishedThisUser))">
+          <div class="info-and-btn" v-if="computedRequest.status != 0">
+            <b-button 
+              variant="success" class="request-end-btn" v-if="computedRequest.status == 1"
+              @click="success = true; showModalAreYouSure = true;" 
+              v-b-popover.hover.bottom='isSerbian ? "Kliknite da biste okončali zahtev i označili da je bio uspešan." 
+                                                  : "Click to end the request and mark it as successful."'
+            >
+              <img src="@/assets/checkmark.png" class="slika-dugme" />
+              <span v-text="isSerbian ? 'Uspešno okončaj zahtev' : 'Successfully end request'"></span>
+            </b-button>
+            <b-button variant="success" class="request-end-btn" v-else-if="computedRequest.status > 1" @click="success = true; showModalAreYouSure = true;">
+              <img src="@/assets/rate.png" class="slika-dugme" />
+              <span v-text="isSerbian ? 'Oceni korisnika' : 'Rate user'"></span>
+            </b-button>
+          </div>
+          <div class="info-and-btn">
+            <b-button 
+              variant="danger"  class="request-end-btn" v-if="computedRequest.status == 1"
+              @click="success = false; showModalAreYouSure = true;" 
+              v-b-popover.hover.bottom='isSerbian ? "Kliknite da biste prekinuli zahtev i označili da je bio neuspešan." 
+                                                  : "Click to end the request and mark it as successful."'
+            >
+              <img src="@/assets/remove.svg" class="slika-dugme" />
+              <span v-text="isSerbian ? 'Prekini zahtev' : 'Cancel request'"></span>
+            </b-button>
+            <b-button variant="danger"  class="request-end-btn" v-else-if="computedRequest.status > 1"  @click="success = false; showModalAreYouSure = true;">
+              <img src="@/assets/report.png" class="slika-dugme" />
+              <span v-text="isSerbian ? 'Prijavi problem' : 'Report user'"></span>
+            </b-button>
+            <b-button variant="danger"  class="request-end-btn" v-else  @click="success = false; showModalAreYouSure = true;">
+              <img src="@/assets/xmark.png" class="slika-dugme" />
+              <span v-text="isSerbian ? 'Obriši zahtev' : 'Delete request'"></span>
+            </b-button>
+          </div>
+        </div>
+      </div>
       <b-card-title class="main-title">
         <div class="title-start">{{computedRequest.name}}</div>
+        
         <div class="title-end">
           <div class="clock pic-and-span">
             <img src="@/assets/clock.svg" height="25" width="25" class="title-pic">
@@ -166,6 +213,19 @@
         </div>
       </div>
     </b-card>
+    <ModalAreYouSure 
+      v-if="showModalAreYouSure"
+      :naslovS="'Da li ste sigurni?'"
+      :naslovE="'Are you sure?'"
+      :tekstE="tekstE"
+      :tekstS="tekstS"
+      @close="showModalAreYouSure = false"
+      @yes="endRequest"
+    />
+    <ModalSuccess 
+      v-if="requestFinished" :textS="'Uspešno okončan zahtev'" 
+      :textE="'Request finished successfully'" @close="closeModalSuccess"
+    />
   </div>
 </template>
 
@@ -176,6 +236,9 @@ import Spinner from "@/components/Spinner"
 import OfferBox from "@/components/OfferBox"
 import EditBox from "@/components/EditBox"
 import LightBox from 'vue-image-lightbox'
+import ModalAreYouSure from "@/components/ModalAreYouSure"
+import ModalSuccess from "@/components/ModalSuccess"
+//import Vue from 'vue'
 
 export default {
   components: {
@@ -184,7 +247,9 @@ export default {
     Spinner,
     OfferBox,
     EditBox,
-    LightBox
+    LightBox,
+    ModalAreYouSure,
+    ModalSuccess
   },
   props: {
     request: {
@@ -203,7 +268,9 @@ export default {
       hasAddresses: false,
       clickedPicture: null,
       pictureExpanded: false,
-      showView: this.startingView
+      showView: this.startingView,
+      showModalAreYouSure: false,
+      success: true
     }
   },
   computed: {
@@ -230,6 +297,67 @@ export default {
         return this.computedRequest.working_with
       else
         return this.computedRequest.created_by
+    },
+    finishedOtherUser() {
+      if(this.computedRequest.created_by && this.computedRequest.created_by.id == this.$store.state.authUser.id)
+        return this.computedRequest.finished_working_with
+      else
+        return this.computedRequest.finished_created_by
+    },
+    finishedThisUser() {
+      if(this.computedRequest.created_by && this.computedRequest.created_by.id == this.$store.state.authUser.id)
+        return this.computedRequest.finished_created_by
+      else
+        return this.computedRequest.finished_working_with
+    },
+    tekstE() {
+      if(this.success) {
+        if(this.finishedOtherUser) {  
+          return 'If you choose "yes", this request will be finished and marked as successful. ' + 
+                 'After this, you will not be able to make any action concerning the execution of this request.' +
+                 'You will be able to see it in the "Finished" tab, and you will have the options to report ' +
+                 'and rate the user you have been working with. Do you wish to proceed?'
+        }
+        else {
+          return 'If you choose "yes", you will start the process of successfully ending the request. ' +
+                 'After this, you will not be able to make any action concerning the execution of this request, ' +
+                 'and you will have to wait for the other user to confirm the successful ending of this request. ' + 
+                 'After he/she confirms, you will be able to see this request in the "Finished" tab, and you will have the options to report ' +
+                 'and rate the user you have been working with. Do you wish to proceed?' 
+        }
+      }
+      else {
+        return 'If you choose "yes", this request will be finished and marked as unsuccessful. ' +
+               'After this, you will not be able to make any action concerning the execution of this request. ' +
+               'You will be able to see it in the "Finished" tab, and you will have the options to report ' +
+               'and rate the user you have been working with. Do you wish to proceed?'
+      }
+    },
+    tekstS() {
+      if(this.success) {
+        if(this.finishedOtherUser) {  
+          return 'Ako izaberete "da", ovaj zahtev će biti okončan i označen kao uspešan. ' + 
+                 'Nakon ovoga, nećete moći da preduzimate nikakve akcije u vezi sa izvršenjem ovog zahteva. ' +
+                 'Moći ćete da vidite zahtev u kartici "Završeni", i imaćete opcije prijavljivanja problema sa saradnikom, ' +
+                 'kao i ocenjivanje saradnika. Da li želite da nastavite?'
+        }
+        else {
+          return 'Ako izaberete "da", započećete proces uspešnog okončanja zahteva. ' +
+                 'Nakon ovoga , nećete moći da preduzimate nikakve akcije u vezi sa izvršenjem ovog zahteva, ' +
+                 'i moraćete da sačekate da Vaš saradnik na ovom zahtevu potvrdi uspešan završetak. ' + 
+                 'Nakon što potvrdi, moći ćete da vidite zahtev u kartici "Završeni", i imaćete opcije prijavljivanja problema sa saradnikom, ' +
+                 'kao i ocenjivanje saradnika. Da li želite da nastavite?' 
+        }
+      }
+      else {
+        return 'Ako izaberete "da", ovaj zahtev će biti okončan i označen kao neuspešan. ' + 
+               'Nakon ovoga, nećete moći da preduzimate nikakve akcije u vezi sa izvršenjem ovog zahteva. ' +
+               'Moći ćete da vidite zahtev u kartici "Završeni", i imaćete opcije prijavljivanja problema sa saradnikom, ' +
+               'kao i ocenjivanje saradnika. Da li želite da nastavite?'
+      }
+    },
+    requestFinished() {
+      return this.$store.state.success
     },
     status() {
       let returnValue = ""
@@ -634,6 +762,23 @@ export default {
       }
       this.$store.dispatch('rejectEdit', edit.id)
     },
+    endRequest() {
+      if(this.success) {
+        if(this.finishedOtherUser) {
+          this.computedRequest.status = 2
+        }
+        this.computedRequest.finished_created_by = true
+        this.$store.dispatch('finishRequest', this.computedRequest)
+      }
+      else {
+        this.computedRequest.status = 3
+        this.$store.dispatch('cancelRequest', this.computedRequest)
+      }
+      this.showModalAreYouSure = false
+    },
+    closeModalSuccess() {
+      this.$store.state.success = false
+    },
     showDetails() {
       this.setMapMarkers()
       this.showView = 'Details'
@@ -689,6 +834,47 @@ export default {
     padding-right:3%;
   } 
 
+  .request-end-btns {
+    display: flex;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .request-end-btn {
+    margin-left: 2px;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+  }
+
+  .important-img-div {
+    height: fit-content;
+    width: fit-content;
+    background-color: #28a745;
+    border-radius: 40px;
+    margin-top: 5px;
+    border: 1px solid #28a745;
+  }
+
+  .important-img {
+    height: 40px;
+    width: 40px;
+  }
+
+  .action-btns {
+    display: flex;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+  }
+
+  .info-and-btn {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    margin: 5px 0 0 25px;
+  }
+
   .card-title {
     font-size: 25px;
     display: flex;
@@ -732,8 +918,8 @@ export default {
 
   .slika-dugme
   {
-    width: 22px;
-    height: 22px;
+    width: 20px;
+    height: 20px;
     margin-right: 10px;
   }
 
@@ -750,7 +936,7 @@ export default {
   .notification-span {
     margin-right: 5px;
     color:white;
-    font-size: 20px;
+    font-size: 16px;
   }
 
   .notification-badge {
