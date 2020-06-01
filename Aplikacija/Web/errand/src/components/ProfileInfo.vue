@@ -149,18 +149,13 @@
         </b-list-group>
       </div>
     </div>
-     <ModalAddBenefit v-if="showModal" @close="showModal = false" :user="user"/>
-     <ModalReportUser v-if="showModalReport" @close="showModalReport = false" @tryToReportUser="tryReport"/>
-     <ModalAreYouSure 
-      :naslovS = "'Da li ste sigurni?'"
-      :naslovE = "'Are you sure?'"
-      :tekstS = "'Prijavljujete korisnika ' + fullUserName + '. Da li želite da potvrdite?'"
-      :tekstE = "'You are reporting user ' + fullUserName + '. Do you wish to confirm?'"
-      @yes="reportUser()"
-      @close="dismissReport"
-      v-if="showModalAreYouSure" 
-    />
+    <ModalAddBenefit v-if="showModal" @close="showModal = false" :user="user"/>
+    <ModalReportUser v-if="showModalReport" @close="showModalReport = false" :userToReport="user"/>
     <ModalBenefitAdded v-if="benefitAdded" @close="closeModal"/>
+    <ModalSuccess 
+      v-if="reportCreated" :textS="'Uspešno prijavljen problem sa korisnikom'" 
+      :textE="'User successfuly reported'" @close="closeModalSuccess"
+    />
   </div>
 </template>
 
@@ -168,7 +163,8 @@
 import ModalBenefitAdded from "@/components/ModalBenefitAdded"
 import ModalAddBenefit from "@/components/ModalAddBenefit"
 import ModalReportUser from "@/components/ModalReportUser"
-import ModalAreYouSure from "@/components/ModalAreYouSure"
+import ModalSuccess from "@/components/ModalSuccess"
+
 
 export default {
   props: {
@@ -198,16 +194,14 @@ export default {
   {
     ModalAddBenefit,
     ModalReportUser,
-    ModalAreYouSure,
-    ModalBenefitAdded
+    ModalBenefitAdded,
+    ModalSuccess
   },
   data()
   {
     return{
       showModal : false,
       showModalReport: false,
-      showModalAreYouSure: false,
-      report: {},
       idHelp: null
     }
   },
@@ -249,6 +243,9 @@ export default {
     benefitAdded(){
       return this.$store.state.userAdded
     },
+    reportCreated() {
+      return this.$store.state.success
+    },
     firstAddresses() {
       const lastIndex = this.addresses.length
       const arrayCopy = this.addresses.map(addr => addr.name)
@@ -268,20 +265,6 @@ export default {
   methods: {
     goToProfileEdit() {
       this.$emit("editProfile");
-    },
-    tryReport(rep) {
-      this.report.reportType = rep.reportType
-      this.report.comment = rep.comment
-      this.showModalReport = false
-      this.showModalAreYouSure = true
-    },
-    dismissReport() {
-      this.report = {}
-      this.showModalAreYouSure = false
-    },
-    reportUser() {
-      this.$store.dispatch('addReport', this.report)
-      this.showModalAreYouSure = false
     },
     goToAchievements() {
       this.$router.push({
@@ -305,6 +288,9 @@ export default {
     },
     closeModal(){
       this.$store.state.userAdded = false  
+    },
+    closeModalSuccess() {
+      this.$store.state.success = false
     },
     nazadNaPretragu()
     {
