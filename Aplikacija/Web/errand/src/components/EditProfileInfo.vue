@@ -265,9 +265,6 @@ export default {
       }
       return null
     },
-    // phoneArrayLength() {
-    //   return this.changedUser['phone'].length
-    // },
     addressArrayLength() {
       return this.changedAddresses.length
     },
@@ -388,6 +385,7 @@ export default {
     pictureSelected(e) {
 
       const file = e.target.files[0];
+      e.target.value = null
       this.addImage(file);
     },
     onDrop(e) {

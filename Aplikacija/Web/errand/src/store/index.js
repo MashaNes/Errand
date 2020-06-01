@@ -54,7 +54,8 @@ export default new Vuex.Store({
         filledInfoForRequest: null,
         messageToShow: "",
         activeReports: null,
-        handeledReports: null
+        handeledReports: null,
+        success: false
     },
     getters:{
         getAuthUserId(state) {
@@ -504,15 +505,31 @@ export default new Vuex.Store({
             }
             commit('addRatingToUser', newRating)
         },
-        addReport({commit}, report) {
-            const newReport = {
-                //id = ...
-                comment: report.comment,
-                createdBy: this.state.authUser,
-                user: this.state.user,
-                reportType: report.reportType
-            }
-            commit('addNewReport', newReport)
+        addReport({commit}, filters) {
+            fetch("http://127.0.0.1:8000/api/v1/report_create/", {
+                method: 'POST',
+                headers: {
+                    "Content-type" : "application/json",
+                    "Authorization" : "Token " + this.state.token
+                },
+                body:  JSON.stringify({
+                    "created_by" : this.state.authUser.id,
+                    "reported_user" : filters.reported_user,
+                    "comment" : filters.comment,
+                    "request" : filters.request,
+                    "pictures" : filters.pictures
+                })
+            }).then( p => {
+                if(p.ok) {
+                    p.json().then(data => {
+                        console.log(data)
+                        this.state.success = true
+                    })
+                }
+                else {
+                    console.log("Error")
+                }
+            });
         },
         fillUserServices()
         {
