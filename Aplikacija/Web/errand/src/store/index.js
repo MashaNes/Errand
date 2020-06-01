@@ -1307,6 +1307,97 @@ export default new Vuex.Store({
                 }
             }) 
         },
+        cancelRequest({commit}, request) {
+            fetch("http://localhost:8000/api/v1/request_finish/", {
+                method: 'PUT',
+                headers: {
+                    "Content-type" : "application/json",
+                    "Authorization" : "Token " + this.state.token
+                },
+                body: JSON.stringify({
+                    "created_by" : this.state.authUser.id,
+                    "request" : request.id,
+                    "status" : 3
+                })
+            }).then(p => {
+                if(p.ok) {
+                    p.json().then(data => {
+                        console.log(data)
+                        if(data["detail"] == "success") {
+                            let index = -1
+                            if(this.state.createdAuthRequests != null)
+                                index = this.state.createdAuthRequests.results.findIndex(req => req.id == request.id) 
+                            
+                            if(index != -1)
+                                this.state.createdAuthRequests.results.splice(index, 1)
+                            
+                            if(this.state.overAuthRequests == null) {
+                                this.state.overAuthRequests = {
+                                    results: [],
+                                    count: 0
+                                }
+                            }
+                            this.state.overAuthRequests.results.push(request)
+                            this.state.overAuthRequests.count += 1
+                            this.state.success = true
+                        }
+                    })
+                }
+                else {
+                    console.log("Error")
+                    this.state.specificRequest = -1
+                }
+            })
+        },
+        finishRequest({commit}, request) {
+            fetch("http://localhost:8000/api/v1/request_finish/", {
+                method: 'PUT',
+                headers: {
+                    "Content-type" : "application/json",
+                    "Authorization" : "Token " + this.state.token
+                },
+                body: JSON.stringify({
+                    "created_by" : this.state.authUser.id,
+                    "request" : request.id,
+                    "status" : 2
+                })
+            }).then(p => {
+                if(p.ok) {
+                    p.json().then(data => {
+                        console.log(data)
+                        if(data["detail"] == "success") {
+                            let index = -1
+                            if(this.state.createdAuthRequests != null)
+                                index = this.state.createdAuthRequests.results.findIndex(req => req.id == request.id) 
+                            
+
+                            if(index != -1) {
+                                if(request.status == 2)
+                                    this.state.createdAuthRequests.results.splice(index, 1)
+                                else
+                                    this.state.createdAuthRequests.results[index].finished_created_by = true
+                            }
+                            
+                            if(request.status == 2) {
+                                if(this.state.overAuthRequests == null) {
+                                    this.state.overAuthRequests = {
+                                        results: [],
+                                        count: 0
+                                    }
+                                }
+                                this.state.overAuthRequests.results.push(request)
+                                this.state.overAuthRequests.count += 1
+                            }
+                            this.state.success = true
+                        }
+                    })
+                }
+                else {
+                    console.log("Error")
+                    this.state.specificRequest = -1
+                }
+            })
+        }
     },
     mutations:{
         setUser(state, user) {
