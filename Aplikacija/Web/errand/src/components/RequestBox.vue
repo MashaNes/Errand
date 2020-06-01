@@ -62,11 +62,14 @@
                          :naslovE="'Deleting a request'"
                          :tekstE="'Are you sure you want to delete this request?'"
                          @close="showModal = false" @yes="deleteRequest" v-if="showModal"/>
+        <ModalReportUser v-if="showModalReport" @close="showModalReport = false" :userToReport="user"/>
     </div>
 </template>
 
 <script>
 import ModalAreYouSure from "@/components/ModalAreYouSure"
+import ModalReportUser from "@/components/ModalReportUser"
+
 export default {
     props:
     {
@@ -77,12 +80,14 @@ export default {
     },
     components:
     {
-        ModalAreYouSure
+        ModalAreYouSure,
+        ModalReportUser
     },
     data()
     {
         return{
-            showModal: false
+            showModal: false,
+            showModalReport: false
         }
     },
     computed:
@@ -291,8 +296,7 @@ export default {
         },
         reportUser()
         {
-            console.log(this.user)
-            console.log(this.myRequest)
+            this.showModalReport = true
         }
     }
 }

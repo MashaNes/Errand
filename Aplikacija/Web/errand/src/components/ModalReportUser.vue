@@ -161,6 +161,7 @@ export default {
       this.showModalAreYouSure = true
     },
     reportUser() {
+      this.$emit('setMessages')
       const picsToSend = this.pictures.map(pic => {
         const splitted = pic.split(',')
         return {picture: splitted[1]}

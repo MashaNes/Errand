@@ -37,7 +37,7 @@
               <img src="@/assets/remove.svg" class="slika-dugme" />
               <span v-text="isSerbian ? 'Prekini zahtev' : 'Cancel request'"></span>
             </b-button>
-            <b-button variant="danger"  class="request-end-btn" v-else-if="computedRequest.status > 1"  @click="success = false; showModalAreYouSure = true;">
+            <b-button variant="danger"  class="request-end-btn" v-else-if="computedRequest.status > 1"  @click="showModalReport = true">
               <img src="@/assets/report.png" class="slika-dugme" />
               <span v-text="isSerbian ? 'Prijavi problem' : 'Report user'"></span>
             </b-button>
@@ -223,9 +223,10 @@
       @yes="endRequest"
     />
     <ModalSuccess 
-      v-if="requestFinished" :textS="'Uspešno okončan zahtev'" 
-      :textE="'Request finished successfully'" @close="closeModalSuccess"
+      v-if="requestFinished" :textS="successMessageS" 
+      :textE="successMessageE" @close="closeModalSuccess"
     />
+    <ModalReportUser v-if="showModalReport" @setMessages="setReportMessages" @close="showModalReport = false" :userToReport="otherUser"/>
   </div>
 </template>
 
@@ -238,6 +239,7 @@ import EditBox from "@/components/EditBox"
 import LightBox from 'vue-image-lightbox'
 import ModalAreYouSure from "@/components/ModalAreYouSure"
 import ModalSuccess from "@/components/ModalSuccess"
+import ModalReportUser from "@/components/ModalReportUser"
 //import Vue from 'vue'
 
 export default {
@@ -249,7 +251,8 @@ export default {
     EditBox,
     LightBox,
     ModalAreYouSure,
-    ModalSuccess
+    ModalSuccess,
+    ModalReportUser
   },
   props: {
     request: {
@@ -270,7 +273,10 @@ export default {
       pictureExpanded: false,
       showView: this.startingView,
       showModalAreYouSure: false,
-      success: true
+      showModalReport: false,
+      success: true,
+      successMessageS: "",
+      successMessageE: ""
     }
   },
   computed: {
@@ -766,6 +772,12 @@ export default {
       if(this.success) {
         if(this.finishedOtherUser) {
           this.computedRequest.status = 2
+          this.successMessageS = "Zahtev uspešno okončan."
+          this.successMessageE = "Request successfully finished."
+        }
+        else {
+          this.successMessageS = "Pokrenuto uspešno okončanje zahteva."
+          this.successMessageE = "The process of successfully finishing the request has been started."
         }
         this.computedRequest.finished_created_by = true
         this.$store.dispatch('finishRequest', this.computedRequest)
@@ -773,8 +785,14 @@ export default {
       else {
         this.computedRequest.status = 3
         this.$store.dispatch('cancelRequest', this.computedRequest)
+        this.successMessageS = "Zahtev uspešno prekinut."
+        this.successMessageE = "The request has successfully been canceled."
       }
       this.showModalAreYouSure = false
+    },
+    setReportMessages() {
+      this.successMessageS = "Uspešno prijavljen problem sa korisnikom."
+      this.successMessageE = "User successfuly reported."
     },
     closeModalSuccess() {
       this.$store.state.success = false

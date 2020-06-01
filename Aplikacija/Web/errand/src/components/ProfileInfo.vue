@@ -153,8 +153,8 @@
     <ModalReportUser v-if="showModalReport" @close="showModalReport = false" :userToReport="user"/>
     <ModalBenefitAdded v-if="benefitAdded" @close="closeModal"/>
     <ModalSuccess 
-      v-if="reportCreated" :textS="'Uspešno prijavljen problem sa korisnikom'" 
-      :textE="'User successfuly reported'" @close="closeModalSuccess"
+      v-if="reportCreated" :textS="'Uspešno prijavljen problem sa korisnikom.'" 
+      :textE="'User successfuly reported.'" @close="closeModalSuccess"
     />
   </div>
 </template>
