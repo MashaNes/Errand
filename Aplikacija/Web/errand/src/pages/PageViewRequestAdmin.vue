@@ -15,16 +15,16 @@
             <div class="stavka user-div">
                 <div class="name">
                     <img src="../assets/requests.svg" class="ikonica" />
-                    {{myRequest.created_by.first_name}} {{myRequest.created_by.last_name}}, 
+                    <a @click="gotoProfileCreated" class="clickable">{{myRequest.created_by.first_name}} {{myRequest.created_by.last_name}}, </a>
                 </div>
-                {{myRequest.created_by.email}}
+                <a @click="gotoProfileCreated" class="clickable">{{myRequest.created_by.email}}</a>
             </div>
             <div class="stavka user-div" v-if="myRequest.working_with != null">
                 <div class="name">
                     <img src="../assets/running.svg" class="ikonica" />
-                    {{myRequest.working_with.first_name}} {{myRequest.working_with.last_name}}, 
+                    <a @click="gotoProfileWorking" class="clickable">{{myRequest.working_with.first_name}} {{myRequest.working_with.last_name}}, </a>
                 </div>
-                {{myRequest.working_with.email}}
+                <a @click="gotoProfileWorking" class="clickable">{{myRequest.working_with.email}} </a>
             </div>
             <b-card-text v-if="hasAddresses" class="mapa">
                 <Map />
@@ -163,11 +163,31 @@ export default {
     },
     methods:
     {
+        gotoProfileCreated()
+        {
+            this.$router.push({
+                name: "PageViewProfile", 
+                params: {
+                    id: this.myRequest.created_by.id, 
+                    user: this.myRequest.created_by
+                }
+            })
+        },
+        gotoProfileWorking()
+        {
+            this.$router.push({
+                name: "PageViewProfile", 
+                params: {
+                    id: this.myRequest.working_with.id, 
+                    user: this.myRequest.working_with
+                }
+            })
+        },
         finish()
         {
             this.newCategories.forEach(element =>
             {
-                this.request.tasklist.forEach(task =>
+                this.myRequest.tasklist.forEach(task =>
                 {
                     if(task.id == element.task)
                     {
@@ -178,7 +198,7 @@ export default {
             })
 
             var hasOthers = false
-            this.request.tasklist.forEach(task =>
+            this.myRequest.tasklist.forEach(task =>
             {
                 if(task.service_type.id == 1)
                 {
@@ -190,7 +210,7 @@ export default {
             {
                 this.$store.state.overAuthRequests.forEach((element,index) =>
                 {
-                    if(element.id == this.request.id)
+                    if(element.id == this.myRequest.id)
                         this.$store.state.overAuthRequests.splice(index,1)
                 })
             }
@@ -410,6 +430,11 @@ export default {
         display: flex;
         flex-direction: column;
         margin:7px;
+    }
+
+    .clickable:hover
+    {
+        color: grey
     }
 
     @media only screen and (max-width: 900px)

@@ -48,7 +48,7 @@
                         </button>
                     </div>
                 </div>
-                <b-pagination v-model="currentPage" :total-rows="handeledReports.count || 1" :per-page="10" align="center" class="pag-top" @input="getAnotherPortion">
+                <b-pagination v-model="currentPage" :total-rows="handeledReports == null? 1 : handeledReports.count" :per-page="10" align="center" class="pag-top" @input="getAnotherPortion">
                 </b-pagination>
                 <Spinner v-if="handeledReports == null || !isDataLoaded" />
                 <div class="handeledReports" v-else>
@@ -56,7 +56,7 @@
                     <i v-if="handeledReports.results.length == 0 && isSerbian" class="natpis"> Trenutno nema obrađenih prijava </i>
                     <i v-if="handeledReports.results.length == 0 && !isSerbian" class="natpis"> No handeled reports to display </i>
                 </div>
-                <b-pagination v-model="currentPage" :total-rows="handeledReports.count || 1" :per-page="10" align="center" class="pag-bottom">
+                <b-pagination v-model="currentPage" :total-rows="handeledReports == null? 1 : handeledReports.count" :per-page="10" align="center" class="pag-bottom">
                 </b-pagination>
             </div>
         </div>
@@ -111,16 +111,20 @@ export default {
         switchToHandeledReports()
         {
             this.activeTab = 1;
-            this.$store.dispatch("fillHandeledReports")
+            this.$store.dispatch("fillHandeledReports", {reporter: null, reported: null, page: 1})
         },
         searchHandeledReports()
         {
-            this.$store.dispatch("fillHandeledReports")
+            var reporter = this.searchData.sender == '' ? null : this.searchData.sender
+            var reported = this.searchData.reported == '' ? null : this.searchData.reported
+            this.$store.dispatch("fillHandeledReports", {reporter: reporter, reported: reported, page: 1})
             //with search parameters
         },
         getAnotherPortion()
         {
-            this.$store.dispatch("fillHandeledReports")
+            var reporter = this.searchData.sender == '' ? null : this.searchData.sender
+            var reported = this.searchData.reported == '' ? null : this.searchData.reported
+            this.$store.dispatch("fillHandeledReports", {reporter: reporter, reported: reported, page: this.currentPage})
             //with search parameters
             //with page equal to currentPage
         }

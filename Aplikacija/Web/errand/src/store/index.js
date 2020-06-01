@@ -1276,10 +1276,75 @@ export default new Vuex.Store({
                 });
         },
         fillActiveReports(){
-            this.state.activeReports = fetchActiveReports()
+            //this.state.activeReports = fetchActiveReports()
+            fetch("http://127.0.0.1:8000/api/v1/reports/",
+            {
+                method: 'POST',
+                headers:
+                {
+                    "Content-type" : "application/json",
+                    "Authorization" : "Token " + this.state.token
+                },
+                body:  JSON.stringify(
+                    {
+                        "created_by" : this.state.authUser.id,
+                        "reported_by" : null,
+                        "reported" : null,
+                        "reported_by_or_reported": null,
+                        "handled" : false
+                    })
+            }).then( p => 
+                {
+                    if(p.ok)
+                    {
+                        p.json().then(data =>
+                        {
+                            console.log(data)
+                            this.state.activeReports = data.results
+                        })
+                    }
+                    else
+                    {
+                        console.log("Error")
+                    }
+                }); 
         },
-        fillHandeledReports(){
-            this.state.handeledReports = fetchHandeledReports()
+        fillHandeledReports({commit}, payload){
+            //this.state.handeledReports = fetchHandeledReports()
+            this.state.isDataLoaded = false
+            fetch("http://127.0.0.1:8000/api/v1/reports/?paginate=true&page=" + payload.page,
+            {
+                method: 'POST',
+                headers:
+                {
+                    "Content-type" : "application/json",
+                    "Authorization" : "Token " + this.state.token
+                },
+                body:  JSON.stringify(
+                    {
+                        "created_by" : this.state.authUser.id,
+                        "reported_by" : payload.reporter,
+                        "reported" : payload.reported,
+                        "reported_by_or_reported": null,
+                        "handled" : true
+                    })
+            }).then( p => 
+                {
+                    if(p.ok)
+                    {
+                        p.json().then(data =>
+                        {
+                            console.log(data)
+                            this.state.handeledReports = data
+                            this.state.isDataLoaded = true
+                        })
+                    }
+                    else
+                    {
+                        console.log("Error")
+                        this.state.isDataLoaded = true
+                    }
+                });
         },
         fillOpenedOffersOrEdits({commit}, array) {
             commit('openOfferOrEdit', array)
@@ -1397,6 +1462,37 @@ export default new Vuex.Store({
                     this.state.specificRequest = -1
                 }
             })
+        },
+        handleReport({commit}, payload)
+        {
+            fetch("http://127.0.0.1:8000/api/v1/report_handle/",
+            {
+                method: 'PUT',
+                headers:
+                {
+                    "Content-type" : "application/json",
+                    "Authorization" : "Token " + this.state.token
+                },
+                body:  JSON.stringify(
+                    {
+                        "created_by" : this.state.authUser.id,
+                        "id" : payload.id,
+                        "status" : payload.status
+                    })
+            }).then( p => 
+                {
+                    if(p.ok)
+                    {
+                        p.json().then(data =>
+                        {
+                            console.log(data)
+                        })
+                    }
+                    else
+                    {
+                        console.log("Error")
+                    }
+                });
         }
     },
     mutations:{

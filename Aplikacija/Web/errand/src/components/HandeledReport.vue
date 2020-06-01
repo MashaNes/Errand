@@ -13,7 +13,7 @@
                 <img src="../assets/send.svg" class="ikonica" />
                 <span v-if="isSerbian" class="naziv"> Poslao/la: </span>
                 <span v-else class="naziv"> Sender: </span>
-                <span> {{report.created_by.first_name}} {{report.created_by.last_name}}, <span class="email-div"> {{report.created_by.email}} </span> </span>
+                <a @click="gotoProfileReporter" class="clickable"> <span> {{report.created_by.first_name}} {{report.created_by.last_name}}, <span class="email-div"> {{report.created_by.email}} </span> </span> </a>
             </div>
         </div>
         <div class="item" :class="{'opasnost' : report.status == 2 || report.status == 3}">
@@ -25,7 +25,7 @@
                 <img src="../assets/reports.svg" class="ikonica" />
                 <span v-if="isSerbian" class="naziv"> Prijavljen(a): </span>
                 <span v-else class="naziv"> Reported: </span>
-                <span> {{report.user.first_name}} {{report.user.last_name}}, <span class="email-div"> {{report.user.email}} </span> </span>
+                <a @click="gotoProfileReported" class="clickable"> <span> {{report.reported_user.first_name}} {{report.reported_user.last_name}}, <span class="email-div"> {{report.reported_user.email}} </span> </span> </a>
             </div>
         </div>
         <div class="item-different dodatak" v-if="report.request != null">
@@ -75,6 +75,26 @@ export default {
         gotoRequest()
         {
             this.$router.push({ name: 'PageViewRequestAdmin', params: {request: this.report.request, id: this.report.request.id, editable: "regular"}})
+        },
+        gotoProfileReported()
+        {
+            this.$router.push({
+                name: "PageViewProfile", 
+                params: {
+                    id: this.report.reported_user.id, 
+                    user: this.report.reported_user
+                }
+            })
+        },
+        gotoProfileReporter()
+        {
+            this.$router.push({
+                name: "PageViewProfile", 
+                params: {
+                    id: this.report.created_by.id, 
+                    user: this.report.created_by
+                }
+            })
         }
     }
 }

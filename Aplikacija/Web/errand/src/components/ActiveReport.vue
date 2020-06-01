@@ -4,13 +4,13 @@
             <img src="../assets/send.svg" class="ikonica" />
             <span v-if="isSerbian" class="naziv"> Poslao/la: </span>
             <span v-else class="naziv"> Sender: </span>
-            <span> {{report.created_by.first_name}} {{report.created_by.last_name}}, <span class="email-div"> {{report.created_by.email}} </span> </span>
+            <a @click="gotoProfileReporter" class="clickable"> <span> {{report.created_by.first_name}} {{report.created_by.last_name}}, <span class="email-div"> {{report.created_by.email}} </span> </span> </a>
         </div>
         <div class="item">
             <img src="../assets/reports.svg" class="ikonica" />
             <span v-if="isSerbian" class="naziv"> Prijavljen(a): </span>
             <span v-else class="naziv"> Reported: </span>
-            <span> {{report.user.first_name}} {{report.user.last_name}}, <span class="email-div"> {{report.user.email}} </span> </span>
+            <a @click="gotoProfileReported" class="clickable"> <span> {{report.reported_user.first_name}} {{report.reported_user.last_name}}, <span class="email-div"> {{report.reported_user.email}} </span> </span> </a>
         </div>
         <div class="item" v-if="report.request != null">
             <img src="../assets/requests.svg" class="ikonica" />
@@ -29,8 +29,8 @@
             <span v-if="isSerbian" class="naziv"> Slike: </span>
             <span v-else class="naziv"> Photos: </span>
             <div class="photo-list">
-                <div v-for="picture in report.pictures" :key="picture" class="photo">
-                    {{picture}}
+                <div v-for="(picture,index) in report.pictures" :key="index" class="photo">
+                    <img :src="'data:;base64,' + picture.picture" class="photo1">
                 </div> 
             </div>
         </div>
@@ -90,6 +90,26 @@ export default {
     },
     methods:
     {
+        gotoProfileReported()
+        {
+            this.$router.push({
+                name: "PageViewProfile", 
+                params: {
+                    id: this.report.reported_user.id, 
+                    user: this.report.reported_user
+                }
+            })
+        },
+        gotoProfileReporter()
+        {
+            this.$router.push({
+                name: "PageViewProfile", 
+                params: {
+                    id: this.report.created_by.id, 
+                    user: this.report.created_by
+                }
+            })
+        },
         gotoRequest()
         {
             this.$router.push({ name: 'PageViewRequestAdmin', params: {request: this.report.request, id: this.report.request.id, editable: "regular"}})
@@ -101,8 +121,8 @@ export default {
                 if(element.id == this.report.id)
                     this.$store.state.activeReports.splice(index,1)
             });
-            //Posalji u bazu da se status prebaci na 4
-            //Pribavi ponovo aktivne report-ove
+            this.$store.dispatch("handleReport", {id: this.report.id, status: 4})
+            this.$store.dispatch("fillActiveReports")
         },
         ban(information)
         {
@@ -117,8 +137,8 @@ export default {
             if(information.reported.flag)
                 status += 2
             console.log(status)
-            //Posalji u bazu da se status prebaci na status
-            //Pribavi ponovo aktivne report-ove
+            this.$store.dispatch("handleReport", {id: this.report.id, status: status})
+            this.$store.dispatch("fillActiveReports")
             if(information.sender.flag)
             {
                 const date = new Date();
@@ -185,8 +205,8 @@ export default {
 
                 console.log(year + "-" + monthString + "-" + dayString + " " + hoursString + ":" + minutesString)
                 console.log(information.reported.comment)
-                console.log(this.report.user)
-                //Posalji ka bazi kreiranje bana za report.user, information.reported.comment i finalDateR
+                console.log(this.report.reported_user)
+                //Posalji ka bazi kreiranje bana za report.reported_user, information.reported.comment i finalDateR
                 //proveriti u kom formatu ide datum
             }
         }
@@ -257,6 +277,12 @@ export default {
         width:70px;
         height:100px;
         border:0.5px solid black;
+    }
+
+    .photo1
+    {
+        width:70px;
+        height:100px;
     }
 
     .clickable:hover
