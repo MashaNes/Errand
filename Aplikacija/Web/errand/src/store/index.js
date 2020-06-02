@@ -30,8 +30,10 @@ export default new Vuex.Store({
         logedIn: false,
         usersPortion: {},
         usersWithBenefit: null,
-        specificRequestsCreated: null,
-        specificRequestsDoneBy: null,
+        unratedRequestsCreated: null,
+        unratedRequestsDoneBy: null,
+        ratedRequestsCreated: null,
+        ratedRequestsDoneBy: null,
         services: null,
         notAuthUserServices: null,
         userServices: null,
@@ -512,16 +514,32 @@ export default new Vuex.Store({
             })
             commit('setSpecificRequests', filteredRequests)
         },
-        addRating({commit}, rating) {
-            const newRating = {
-                id: Object.values(fetchRatings()).length + 1,
-                grade: rating.grade,
-                comment: rating.comment,
-                createdBy: this.state.authUser,
-                request: rating.request,
-                ratedUser: this.state.user.id
-            }
-            commit('addRatingToUser', newRating)
+        addRating({commit}, filters) {
+            fetch('http://localhost:8000/api/v1/rate_user/', {
+                method: 'POST',
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Token " + this.state.token
+                },
+                body: JSON.stringify({
+                    "created_by" : this.state.authUser.id,
+                    "rated_user" : filters.rated_user,
+                    "request" : filters.request,
+                    "grade" : filters.grade,
+                    "comment" : filters.comment
+                })
+            }).then(p => {
+
+                if(p.ok) {
+                    p.json().then(data=> {
+                        console.log(data)
+                        this.state.success = true
+                    })
+                }
+                else {
+                    console.log("error")
+                }
+            })
         },
         addReport({commit}, filters) {
             fetch("http://127.0.0.1:8000/api/v1/report_create/", {

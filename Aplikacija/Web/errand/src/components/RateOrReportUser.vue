@@ -1,8 +1,8 @@
 <template>
-  <Spinner v-if="requests" />
+  <Spinner v-if="!requests" />
   <div class="main-wrapper" v-else>
     <div class="side-info">
-      <AsideProfileInfo :user="user" :forWideScreen="false" />
+      <AsideProfileInfo :user="user" :forWideScreen="true" />
       <div class="btns">
         <b-button @click="$emit('cancelRate')" class="button is-primary" style="width:100%;">
           <strong v-if="isSerbian">Detalji profila</strong>
@@ -10,80 +10,33 @@
         </b-button>
       </div>  
     </div>
-    <div class="req-wrap">
-      <div 
-        class = "wrapper" 
-        :class="color(request)"
-        v-for="request in requests"
-        :key="request.id"
-      >
-        <div class="request-top">
-          <div class="request-btns">
-            <b-button 
-              class="req-btn" 
-              v-text="isSerbian ? 'Oceni': 'Rate'"
-              @click="showModalRate = true"
-            >
-            </b-button>
-            <b-button class="req-btn" v-text="isSerbian ? 'Detalji': 'Details'">
-            </b-button>
-          </div>
-          <div class = "request-name">
-              {{request.name}}
-          </div>
+    <div class="request-side">
+      <div class="chk-rated-wrap">
+        <div class="chk-rated-div">
+          <input type="checkbox" v-model="showAll" class="chk-box" />
+          <span v-if="!showAll" v-text="isSerbian ? 'Prikaži i ocenjene zahteve' : 'Show rated requests too'"></span>
+          <span v-else v-text="isSerbian ? 'Prikaži samo neocenjene zahteve' : 'Show only unrated requests'"></span> 
         </div>
-        <div class="request-bottom">
-          <div class="status-div">
-            <img v-if="request.status == 'finished'" src = "../assets/finished.svg">
-            <img v-if="request.status == 'failed'" src = "../assets/failed.svg">
-            <span class = "request-status"> {{request.status}} </span>
-          </div>
-          <div class = "bottom-left">
-            <div class = "request-date"> {{request.date | showTime}} </div>
-            <div class = "tagovi">
-              <div v-for="tag in request.tags" :key="tag" class = "request-tag">{{tag}}</div>
-            </div>
-          </div>
-        </div>
-
-        <ModalAreYouSure 
-          :naslovS = "'Da li ste sigurni?'"
-          :naslovE = "'Are you sure?'"
-          :tekstS = "'Ocenjujete korisnika ' + fullUserName + ', ocenom ' + rating.grade + ', za zahtev ' + request.name + '. Da li želite da potvrdite?'"
-          :tekstE = "'You are rating user ' + fullUserName + ', with grade ' + rating.grade + ', for request ' + request.name + '. Do you wish to confirm?'"
-          @yes="rateUser(request)"
-          @close="dismissRate"
-          v-if="showModalAreYouSure"
-        />
-
+      </div>
+      <div class="req-wrap">
+        <RateOrReportBox v-for="request in requests.results" :key="request.id" :request="request" :user="user" />
       </div>
     </div>
-
-    <ModalRateUser 
-      @close="showModalRate = false" 
-      @tryToRateUser="tryRate"
-      v-if="showModalRate" 
-    />
-
-    
-
   </div>
 </template>
 
 <script>
 
 import AsideProfileInfo from "@/components/AsideProfileInfo"
-import ModalRateUser from "@/components/ModalRateUser"
-import ModalAreYouSure from "@/components/ModalAreYouSure"
 import Spinner from "@/components/Spinner"
+import RateOrReportBox from "@/components/RateOrReportBox"
 
 export default {
   
   components: {
     AsideProfileInfo,
-    ModalRateUser,
-    ModalAreYouSure,
-    Spinner
+    Spinner,
+    RateOrReportBox
   },
   props: {
     user: {
@@ -93,9 +46,9 @@ export default {
   },
   data() {
     return {
-      showModalRate: false,
       showModalAreYouSure: false,
-      rating: {}
+      rating: {},
+      showAll: false
     }
   },
   computed: {
@@ -106,60 +59,39 @@ export default {
       return this.user.firstName + " " +this.user.lastName
     },
     requests() {
-      return {
-        count: this.$store.state.specificRequestsCreated.count + this.$store.state.specificRequestsDoneBy.count,
-        results: this.$store.state.specificRequestsCreated.results.concat(this.$store.state.specificRequestsDoneBy.results)
+      if(!this.$store.state.unratedRequestsCreated || !this.$store.state.unratedRequestsDoneBy)
+        return null
+      else {
+        return {
+          count: this.$store.state.unratedRequestsCreated.count + this.$store.state.unratedRequestsDoneBy.count,
+          results: this.$store.state.unratedRequestsCreated.results.concat(this.$store.state.unratedRequestsDoneBy.results)
+        }
       }
     }
   },
-  methods: {
-    cancel() {
-      this.$emit('cancelRate')
-    },
-    rateUser(request) {
-      this.rating.request = request
-      //poslati 'post' za kreiranje nove ocene
-      this.$store.dispatch('addRating', this.rating)
-      this.showModalAreYouSure = false
-    },
-    dismissRate() {
-      this.rating = {}
-      this.showModalAreYouSure = false
-    },
-    color(request)
-    {
-      if (request.status == "finished")
-          return "zeleno"
-      else 
-          return "crveno"
-    },
-    tryRate(rtg) {
-      this.rating.grade = rtg.grade
-      this.rating.comment = rtg.comment
-      this.showModalRate = false
-      this.showModalAreYouSure = true
-    },
-  },
   created() {
-    this.$store.state.specificRequests = null
+    this.$store.state.specificRequestsCreated = null
+    this.$store.state.specificRequestsDoneBy = null
     window.scrollTo(0, 0)
     const filtersCreated = {
       created_by : this.user.id,
-      done_by : null,
+      done_by : this.$store.state.authUser.id,
       created_or_done_by: null,
       statuses : [2, 3],
-      unrated : true
+      unrated_created_by : null,
+      unrated_done_by : true
     }
-    this.$store.dispatch("fillRequests", {filters: filtersCreated, objectToFill: "specificRequestsCreated"})
+    this.$store.dispatch("fillRequests", {filters: filtersCreated, objectToFill: "unratedRequestsCreated"})
 
     const filtersDone = {
-      created_by : null,
+      created_by : this.$store.state.authUser.id,
       done_by : this.user.id,
       created_or_done_by: null,
       statuses : [2, 3],
-      unrated : true
+      unrated_created_by : true,
+      unrated_done_by : null
     }
-    this.$store.dispatch("fillRequests", {filters: filtersDone, objectToFill: "specificRequestsDoneBy"})
+    this.$store.dispatch("fillRequests", {filters: filtersDone, objectToFill: "unratedRequestsDoneBy"})
   }
 }
 </script>
@@ -197,11 +129,30 @@ export default {
     margin: 10px 5px 10px 5px;
   }
 
+  .request-side {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .chk-rated-wrap {
+    width: 100%;
+    display: flex;
+  }
+
+  .chk-rated-div {
+    margin: 30px 15% 10px 15%;
+    border: 1px solid black;
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    background-color: white;
+    border-radius: 10px;
+  }
+
   .req-wrap {
     width:100%;
-    display: flex;
-    flex-direction:column;
-    align-items:center;
   }
 
   .request-btns {
@@ -298,8 +249,31 @@ export default {
     margin-right: 10px;
   }
 
+  .image {
+    height: 22px;
+    width: 22px;
+    margin-right: 10px;
+  }
+
+  .chk-box {
+    height: 15px;
+    width: 15px;
+    margin-right: 10px;
+    margin-bottom: 2px;
+  }
+
+  @media only screen and (max-width:900px) {
+    .chk-rated-div {
+      margin: 30px 10% 10px 10%;
+    }
+  }
+
   @media only screen and (max-width:600px)
   {
+    .chk-rated-div {
+      margin: 20px 5% 10px 5%;
+    }
+
     .wrapper
     {
       width:95%;
@@ -347,7 +321,7 @@ export default {
     }
   }
 
-  @media only screen and (max-width: 499px)
+  @media only screen and (max-width: 599px)
   {
     .main-wrapper {
       flex-direction: column;
@@ -359,7 +333,7 @@ export default {
       border-right: 1px solid black;
       border-left: 1px solid black;
       border-bottom: 1px solid black;
-      top:85px;
+      top:70px;
       font-size: 13px;
       background-color:white;
       border-radius: 0 0 10px 10px;
@@ -420,5 +394,9 @@ export default {
       background-color: rgb(217, 250, 217);
     }
 
-
+  @media only screen and (max-width: 499px) {
+    .side-info {
+      top: 85px;
+    }
+  }
 </style>

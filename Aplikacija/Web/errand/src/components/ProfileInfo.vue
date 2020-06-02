@@ -72,25 +72,13 @@
               </router-link>
             </div>
             <div class="l-group-btns" v-if="!isMyProfile && !isAdminLoggedIn">
-              <b-button 
-                class="button is-primary title-btn"
-                @click="$emit('rateUser')"
-              >
+              <b-button class="button is-primary title-btn" @click="$emit('rateUser')">
                 <img class="slika-dugme" src="../assets/rate.png">
-                <strong v-if="isSerbian">Oceni korisnika</strong>
-                <strong v-else>Rate user</strong>
+                <strong v-if="isSerbian">Oceni ili prijavi korisnika</strong>
+                <strong v-else>Rate or report user</strong>
               </b-button>
               <b-button 
-                class="button is-primary title-btn"
-                @click="showModalReport = true"
-              >
-                <img class="slika-dugme" src="../assets/report.png">
-                <strong v-if="isSerbian">Prijavi korisnika</strong>
-                <strong v-else>Report user</strong>
-              </b-button>
-              <b-button 
-                class="button is-primary title-btn"
-                @click="showModal = true"
+                class="button is-primary title-btn" @click="showModal = true" 
                 :disabled="isInBenefitList || idHelp > 0 || idHelp == undefined"
               >
                 <img class="slika-dugme" src="../assets/benefit.png">
@@ -150,20 +138,13 @@
       </div>
     </div>
     <ModalAddBenefit v-if="showModal" @close="showModal = false" :user="user"/>
-    <ModalReportUser v-if="showModalReport" @close="showModalReport = false" :userToReport="user"/>
     <ModalBenefitAdded v-if="benefitAdded" @close="closeModal"/>
-    <ModalSuccess 
-      v-if="reportCreated" :textS="'Uspešno prijavljen problem sa korisnikom.'" 
-      :textE="'User successfuly reported.'" @close="closeModalSuccess"
-    />
   </div>
 </template>
 
 <script>
 import ModalBenefitAdded from "@/components/ModalBenefitAdded"
 import ModalAddBenefit from "@/components/ModalAddBenefit"
-import ModalReportUser from "@/components/ModalReportUser"
-import ModalSuccess from "@/components/ModalSuccess"
 
 
 export default {
@@ -193,9 +174,7 @@ export default {
   components:
   {
     ModalAddBenefit,
-    ModalReportUser,
-    ModalBenefitAdded,
-    ModalSuccess
+    ModalBenefitAdded
   },
   data()
   {
@@ -351,7 +330,7 @@ export default {
   }
 
   .main-container {
-    margin-top: 30px;
+    padding-top: 30px;
     margin-left: 10%;
     margin-right: 10%;
     display: flex;
@@ -471,7 +450,7 @@ export default {
   {
     .main-container {
       flex-direction: column;
-      margin-top: 30px;
+      padding-top: 30px;
       margin-left: 1%;
       margin-right: 1%;
       align-items:center;
