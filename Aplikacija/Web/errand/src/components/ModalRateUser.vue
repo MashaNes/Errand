@@ -1,7 +1,6 @@
 <template>
-
   <transition name="modal">
-    <div class="modal-mask">
+    <div class="modal-mask-report">
       <div class="modal-wrapper">
         <div class="modal-container">
 
@@ -28,14 +27,13 @@
                 v-model="rating.grade"
               />
 
-              <b-form-textarea 
+              <b-form-textarea
                 class="txt-area"
                 id="textarea"
                 :placeholder="isSerbian ? 'Unesite kratak komentar...': 'Add a short comment...'"
-                rows="3"
+                rows="4"
                 no-resize
                 v-model="rating.comment"
-                :maxlength="maxChar"
                 @blur="$v.rating.comment.$touch()"
               >
               </b-form-textarea>
@@ -45,13 +43,6 @@
                 class='text-danger'
                 v-text="isSerbian ? 'Morate uneti komentar' : 'You must enter a comment'"
               ></span>
-
-              <span 
-                v-if="rating.comment.length == maxChar" 
-                class='text-danger max-char'
-                v-text="isSerbian ? 'Uneli ste maksimalan broj karaktera' : 'You entered the maximum number of characters'"
-              >
-              </span>
             </slot>
           </div>
 
@@ -77,28 +68,50 @@
           </div>
         </div>
       </div>
+      <ModalAreYouSure 
+        :naslovS = "'Da li ste sigurni?'"
+        :naslovE = "'Are you sure?'"
+        :tekstS = "'Prijavljujete korisnika ' + fullUserName + '. Da li želite da potvrdite?'"
+        :tekstE = "'You are reporting user ' + fullUserName + '. Do you wish to confirm?'"
+        @yes="reportUser()"
+        @close="showModalAreYouSure = false"
+        v-if="showModalAreYouSure" 
+      />
     </div>
   </transition>
+  
 </template>
 
 <script>
 
 import {required} from "vuelidate/lib/validators"
+import ModalAreYouSure from "@/components/ModalAreYouSure"
 import VueSlider from 'vue-slider-component'
 import 'vue-slider-component/theme/default.css'
 
-
 export default {
   components: {
+    ModalAreYouSure,
     VueSlider
+  },
+  props: {
+    userToRate: {
+      type: Object,
+      required: true
+    },
+    request: {
+      type: Object, 
+      required: true
+    }
   },
   data() {
     return {
+      showModalAreYouSure: false,
+      show: true,
       rating: {
         grade:3,
         comment: ""
       },
-      maxChar: 100
     }
   },
   validations: {
@@ -111,10 +124,7 @@ export default {
       return this.$store.state.isSerbian
     },
     fullUserName() {
-      return this.user.firstName + " " +this.user.lastName
-    },
-    requests() {
-      return this.$store.state.specificRequests
+      return this.userToRate.first_name + " " +this.userToRate.last_name
     },
     isInvalid() {
       return this.$v.rating.$invalid
@@ -122,7 +132,20 @@ export default {
   },
   methods: {
     tryToRate() {
-      this.$emit('tryToRateUser', this.rating)
+      this.showModalAreYouSure = true
+    },
+    rateUser() {
+      this.$emit('setMessages')
+
+      const filters = {
+        "rated_user" : this.userToRate.id,
+        "request" : this.request.id,
+        "grade" : this.rating.grade,
+        "comment" : this.rating.comment
+      }
+      this.$store.dispatch('addRating', filters)
+      this.showModalAreYouSure = false
+      this.$emit('close')
     }
   }
 }
@@ -130,7 +153,7 @@ export default {
 
 <style scoped>
 
-  .modal-mask {
+  .modal-mask-report {
     position: fixed;
     z-index: 9998;
     top: 0;
@@ -138,13 +161,23 @@ export default {
     width: 100%;
     height: 100%;
     background-color: rgba(0, 0, 0, 0.5);
-    display: table;
+    display: flex;
     transition: opacity 0.3s ease;
+    justify-content: center;
+  }
+
+  .big-z-index {
+    z-index: 99999999999999999;
   }
 
   .modal-wrapper {
     display: table-cell;
     vertical-align: middle;
+    display: flex;
+    padding-top: 80px;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
   }
 
   .modal-container {
@@ -156,19 +189,24 @@ export default {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.33);
     transition: all 0.3s ease;
     font-family: Helvetica, Arial, sans-serif;
+    max-height: 90%;
+    overflow-y: scroll;
   }
 
   @media only screen and (max-width: 600px)
   {
-      .modal-mask 
-      {
-          height: 110%;
-      }
 
       .modal-container {
         padding: 5px 10px;
         width:90%;
         min-width: 300px;
+      }
+  }
+
+  @media only screen and (max-width: 499px)
+  {
+      .modal-wrapper {
+        padding-top: 95px;
       }
   }
 
@@ -179,8 +217,9 @@ export default {
   }
 
   .modal-body {
-    margin: 20px 0;
+    margin: 10px;
   }
+
 
   .modal-default-button {
     float: right;
@@ -200,28 +239,18 @@ export default {
     transform: scale(1.1);
   }
 
+  .grade-label {
+    width:fit-content;
+    font-size: 18px;
+  }
+
+  .text-danger {
+    margin-top:10px;
+    font-size:12px;
+  }
 
   .txt-area {
     margin-top:40px;
-  }
-
-  .grade-title {
-    font-size: 25px;
-    font-weight: bold;
-    margin-bottom: 20px;
-    display: flex;
-    flex-wrap: wrap;
-    word-break:break-all;
-    width:fit-content;
-  }
-
-  .grade-label {
-    width:fit-content;
-    margin-bottom: 40px;
-  }
-
-  .max-char {
-    margin-top:10px;
   }
 
   .form-control {
@@ -240,6 +269,118 @@ export default {
 
   .vue-slider {
     margin-top: 30px;
+  }
+
+  .select-type {
+    width:100%;
+    margin-top:5px;
+  }
+
+  .is-128x128 {
+    width: 70px;
+    height: 70px;
+    border-radius: 5px;
+    margin: 0px 5px 5px 0px;
+  }
+
+  .rounded-image {
+    border-radius: 5px;
+    border: 1px solid black;
+    height: 70px;
+    width: 70px;
+    object-fit:cover;
+    position: relative;
+    top:0;
+    left:0; 
+    cursor:pointer
+  }
+
+  .no-pointer {
+    cursor: auto;
+  }
+
+  .transparent {
+    position: absolute;
+    opacity: 0;
+  }
+
+  .semi-transparent {
+    position: absolute;
+    opacity: 0.5;
+  }
+
+  .shown {
+    visibility:visible;
+  }
+
+  .hidden {
+    visibility:hidden;
+    height: 0px;
+  }
+
+  .picture-msg {
+    font-size: 16px;
+    width: 100%;
+    border: 2px solid transparent;
+    border-radius: 5px;
+    padding: 2px;
+    margin: 0px -5px 0px -5px;
+  }
+
+  .picture-msg-dragged {
+    border: 2px solid lightgrey;
+    cursor: pointer;
+    background-color: rgb(235, 230, 230);
+    font-size: 16px;
+    width: 100%;
+    border-radius: 5px;
+    padding: 2px;
+  }
+
+  .upload-pic-div {
+    display: flex;
+    flex-direction: column;
+    width: fit-content;
+    margin-bottom: 5px;
+    margin-top: 15px;
+  }
+
+  .remove-pic-div {
+    width: fit-content;
+    align-self: flex-start;
+    margin-bottom: 5px;
+    display: flex;
+    align-items: center;
+    font-weight: 600;
+  }
+
+  .remove-pic-div:hover {
+    cursor: pointer;
+    color: blue;
+  }
+
+  .remove-pic {
+    height:20px;
+    width: 20px;
+    margin: 2px 0 0 2px;
+    top: 0;
+    left:0;
+    position: absolute;
+    border:1px solid transparent;
+    border-radius: 20px;
+    background-color: red;
+  }
+
+  .remove-pic:hover {
+    cursor: pointer;
+    border: 1px solid grey;
+  }
+
+  .media-center {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin-bottom: 5px;
   }
 
 </style>

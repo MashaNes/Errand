@@ -117,6 +117,11 @@ export default {
     userToReport: {
       type: Object,
       required: true
+    },
+    request: {
+      type: Object,
+      required: false,
+      default: null
     }
   },
   data() {
@@ -127,8 +132,8 @@ export default {
       dragCounter: 0,
       pictureExpanded: false,
       clickedPicture: 0,
-      showModalAreYouSure: false,
-      show: true
+      showModalAreYouSure: false
+      //show: true
       //maxChar: 300
     }
   },
@@ -170,7 +175,7 @@ export default {
       const filters = {
         "reported_user" : this.userToReport.id,
         "comment" : this.comment,
-        "request" : null,
+        "request" : this.request ? this.request.id : null,
         "pictures" : picsToSend
       }
       this.$store.dispatch('addReport', filters)

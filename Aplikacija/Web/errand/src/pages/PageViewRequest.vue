@@ -15,14 +15,14 @@
           <div class="info-and-btn" v-if="computedRequest.status != 0">
             <b-button 
               variant="success" class="request-end-btn" v-if="computedRequest.status == 1"
-              @click="success = true; showModalAreYouSure = true;" 
+              @click="purpose = 'finish'; showModalAreYouSure = true;" 
               v-b-popover.hover.bottom='isSerbian ? "Kliknite da biste okončali zahtev i označili da je bio uspešan." 
                                                   : "Click to end the request and mark it as successful."'
             >
               <img src="@/assets/checkmark.png" class="slika-dugme" />
               <span v-text="isSerbian ? 'Uspešno okončaj zahtev' : 'Successfully end request'"></span>
             </b-button>
-            <b-button variant="success" class="request-end-btn" v-else-if="computedRequest.status > 1" @click="success = true; showModalAreYouSure = true;">
+            <b-button variant="success" class="request-end-btn" v-else-if="computedRequest.status > 1 && canRate" @click="showModalRate = true">
               <img src="@/assets/rate.png" class="slika-dugme" />
               <span v-text="isSerbian ? 'Oceni korisnika' : 'Rate user'"></span>
             </b-button>
@@ -30,7 +30,7 @@
           <div class="info-and-btn">
             <b-button 
               variant="danger"  class="request-end-btn" v-if="computedRequest.status == 1"
-              @click="success = false; showModalAreYouSure = true;" 
+              @click="purpose = 'cancel'; showModalAreYouSure = true;" 
               v-b-popover.hover.bottom='isSerbian ? "Kliknite da biste prekinuli zahtev i označili da je bio neuspešan." 
                                                   : "Click to end the request and mark it as successful."'
             >
@@ -41,7 +41,7 @@
               <img src="@/assets/report.png" class="slika-dugme" />
               <span v-text="isSerbian ? 'Prijavi problem' : 'Report user'"></span>
             </b-button>
-            <b-button variant="danger"  class="request-end-btn" v-else  @click="success = false; showModalAreYouSure = true;">
+            <b-button variant="danger"  class="request-end-btn" v-else  @click="purpose = 'delete'; showModalAreYouSure = true;">
               <img src="@/assets/xmark.png" class="slika-dugme" />
               <span v-text="isSerbian ? 'Obriši zahtev' : 'Delete request'"></span>
             </b-button>
@@ -226,7 +226,10 @@
       v-if="requestFinished" :textS="successMessageS" 
       :textE="successMessageE" @close="closeModalSuccess"
     />
-    <ModalReportUser v-if="showModalReport" @setMessages="setReportMessages" @close="showModalReport = false" :userToReport="otherUser"/>
+    <ModalReportUser 
+      v-if="showModalReport" @setMessages="setReportMessages" 
+      @close="showModalReport = false" :userToReport="otherUser" :request="request"
+    />
   </div>
 </template>
 
@@ -274,7 +277,7 @@ export default {
       showView: this.startingView,
       showModalAreYouSure: false,
       showModalReport: false,
-      success: true,
+      purpose: "",
       successMessageS: "",
       successMessageE: ""
     }
@@ -317,7 +320,7 @@ export default {
         return this.computedRequest.finished_working_with
     },
     tekstE() {
-      if(this.success) {
+      if(this.purpose == 'finish') {
         if(this.finishedOtherUser) {  
           return 'If you choose "yes", this request will be finished and marked as successful. ' + 
                  'After this, you will not be able to make any action concerning the execution of this request.' +
@@ -332,15 +335,18 @@ export default {
                  'and rate the user you have been working with. Do you wish to proceed?' 
         }
       }
-      else {
+      else if(this.purpose == 'cancel') {
         return 'If you choose "yes", this request will be finished and marked as unsuccessful. ' +
                'After this, you will not be able to make any action concerning the execution of this request. ' +
                'You will be able to see it in the "Finished" tab, and you will have the options to report ' +
                'and rate the user you have been working with. Do you wish to proceed?'
       }
+      else {
+        return 'Are you sure you want to delete this request?'
+      }
     },
     tekstS() {
-      if(this.success) {
+      if(this.purpose == 'finish') {
         if(this.finishedOtherUser) {  
           return 'Ako izaberete "da", ovaj zahtev će biti okončan i označen kao uspešan. ' + 
                  'Nakon ovoga, nećete moći da preduzimate nikakve akcije u vezi sa izvršenjem ovog zahteva. ' +
@@ -355,11 +361,14 @@ export default {
                  'kao i ocenjivanje saradnika. Da li želite da nastavite?' 
         }
       }
-      else {
+      else if(this.purpose == 'cancel') {
         return 'Ako izaberete "da", ovaj zahtev će biti okončan i označen kao neuspešan. ' + 
                'Nakon ovoga, nećete moći da preduzimate nikakve akcije u vezi sa izvršenjem ovog zahteva. ' +
                'Moći ćete da vidite zahtev u kartici "Završeni", i imaćete opcije prijavljivanja problema sa saradnikom, ' +
                'kao i ocenjivanje saradnika. Da li želite da nastavite?'
+      }
+      else {
+        return 'Da li ste sigurni da želite da obrišete ovaj zahtev?'
       }
     },
     requestFinished() {
@@ -569,6 +578,16 @@ export default {
       {
         return this.filteredEdits.length == 1? 'You have ' + this.filteredEdits.length + ' edit request' : 'You have ' + this.filteredEdits.length + ' edit requests'
       }
+    },
+    canRate() {
+      // if(this.isRunner) 
+      //   return !this.computedRequest.rated_working_with
+      // else
+      //   return !this.computedRequest.rated_created_by
+      if(this.isRunner) 
+        return !this.computedRequest.rated_created_by
+      else
+        return !this.computedRequest.rated_working_with
     }
   },
   methods: {
@@ -769,7 +788,7 @@ export default {
       this.$store.dispatch('rejectEdit', edit.id)
     },
     endRequest() {
-      if(this.success) {
+      if(this.purpose == 'finish') {
         if(this.finishedOtherUser) {
           this.computedRequest.status = 2
           this.successMessageS = "Zahtev uspešno okončan."
@@ -782,11 +801,20 @@ export default {
         this.computedRequest.finished_created_by = true
         this.$store.dispatch('finishRequest', this.computedRequest)
       }
-      else {
+      else if(this.purpose == 'cancel') {
         this.computedRequest.status = 3
         this.$store.dispatch('cancelRequest', this.computedRequest)
         this.successMessageS = "Zahtev uspešno prekinut."
         this.successMessageE = "The request has successfully been canceled."
+      }
+      else {
+        if(this.$store.state.createdAuthRequests) {
+          this.$store.state.createdAuthRequests.results.forEach((element,index) => {
+              if(element.id == this.computedRequest.id)
+                  this.$store.state.createdAuthRequests.results.splice(index,1)
+          })
+        }
+        this.$store.dispatch("deleteRequest", this.computedRequest.id)
       }
       this.showModalAreYouSure = false
     },

@@ -18,7 +18,7 @@
       @saveEditChanges="editSaved"
       @cancelChanges="componentToShow = 'Info'"
     />
-    <RateUser
+    <RateOrReportUser
       v-if="componentToShow == 'Rate'"
       :user="computedUser"
       @cancelRate="componentToShow = 'Info'"
@@ -30,7 +30,7 @@
 
 import ProfileInfo from "@/components/ProfileInfo"
 import EditProfileInfo from "@/components/EditProfileInfo"
-import RateUser from "@/components/RateUser"
+import RateOrReportUser from "@/components/RateOrReportUser"
 import Spinner from "@/components/Spinner"
 
 export default {
@@ -53,7 +53,7 @@ export default {
   components: {
     ProfileInfo,
     EditProfileInfo,
-    RateUser,
+    RateOrReportUser,
     Spinner
   },
   data() {
@@ -129,12 +129,12 @@ export default {
 
 <style scoped>
   
-  @media only screen and (min-width: 499px)
+  /* @media only screen and (min-width: 499px)
   {
     .wrapper
     {
       padding-top: 10px;
     }
-  }
+  } */
 
 </style>
