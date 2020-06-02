@@ -45,8 +45,8 @@
             <span v-if="isSerbian" class="naziv"> Slike: </span>
             <span v-else class="naziv"> Photos: </span>
             <div class="photo-list">
-                <div v-for="picture in report.pictures" :key="picture" class="photo">
-                    {{picture}}
+                <div v-for="(picture,index) in report.pictures" :key="index" class="photo">
+                    <img :src="'data:;base64,' + picture.picture" class="photo1">
                 </div> 
             </div>
         </div>
@@ -199,6 +199,12 @@ export default {
     .clickable:hover
     {
         color: grey
+    }
+
+    .photo1
+    {
+        width:70px;
+        height:100px;
     }
 
     @media only screen and (max-width: 900px)

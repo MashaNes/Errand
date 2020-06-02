@@ -122,7 +122,6 @@ export default {
                     this.$store.state.activeReports.splice(index,1)
             });
             this.$store.dispatch("handleReport", {id: this.report.id, status: 4})
-            this.$store.dispatch("fillActiveReports")
         },
         ban(information)
         {
@@ -138,7 +137,6 @@ export default {
                 status += 2
             console.log(status)
             this.$store.dispatch("handleReport", {id: this.report.id, status: status})
-            this.$store.dispatch("fillActiveReports")
             if(information.sender.flag)
             {
                 const date = new Date();

@@ -56,7 +56,8 @@ export default new Vuex.Store({
         messageToShow: "",
         activeReports: null,
         handeledReports: null,
-        success: false
+        success: false,
+        moreRequests: false
     },
     getters:{
         getAuthUserId(state) {
@@ -71,8 +72,9 @@ export default new Vuex.Store({
             commit('setMarkers', positions)
         },
         fillRequests({commit}, {filters, objectToFill}) {
-            //this.state.requests = fetchRequests();
-            fetch("http://127.0.0.1:8000/api/v1/filtered_requests/", {
+            this.state.isDataLoaded = false
+            var str = (objectToFill.object == "overAuthRequests" ? "?paginate=true&page=" +  objectToFill.page : "")
+            fetch("http://127.0.0.1:8000/api/v1/filtered_requests/" + str, {
                 method: "POST",
                 headers: {
                     "Content-type" : "application/json",
@@ -89,7 +91,21 @@ export default new Vuex.Store({
             }).then(p => {
                 if(p.ok) {
                     p.json().then(data => {
-                        this.state[objectToFill] = data
+                        if(objectToFill.object == "overAuthRequests")
+                        {
+                            if (this.state.overAuthRequests == null)
+                                this.state.overAuthRequests = []
+                            this.state.overAuthRequests = this.state.overAuthRequests.concat(data.results)
+                            if(data.next != null)
+                            {
+                                this.state.moreRequests = true
+                            }
+                        }
+                        else
+                        {
+                            this.state[objectToFill.object] = data.results
+                        }
+                        this.state.isDataLoaded = true
                         console.log(data)
                     })
                 }
@@ -767,6 +783,9 @@ export default new Vuex.Store({
                         this.state.runnerAuthRequests = null
                         this.state.overAuthRequests = null
                         this.state.specificRequest = null
+                        this.state.activeReports = null
+                        this.state.handeledReports = null
+                        this.state.moreRequests = false
                         Vue.cookie.delete('id');
                         Vue.cookie.delete('token');
                         Vue.cookie.delete('ime');

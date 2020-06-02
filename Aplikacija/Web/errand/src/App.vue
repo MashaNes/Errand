@@ -60,7 +60,6 @@ export default {
 
   .cover {
     background-size: cover;
-    /*background-position: center;*/
     background-repeat: no-repeat;
     background-attachment: fixed;
   }
@@ -83,8 +82,6 @@ export default {
   .page-wrapper
   {
     min-height: 73vh;
-    /*background-image: url("http://chicagosgirlonthego.com/Wpress/wp-content/uploads/chicago-errand-running-service-02.jpg");*/
-    /*background-color: rgba(248, 249, 250);*/
   }
 
   .top-div
@@ -100,9 +97,9 @@ export default {
 
   .please
   {
-    position: sticky; /* Set the navbar to fixed position */
-    top: 0; /* Position the navbar at the top of the page */
-    width: 100%; /* Full width */
+    position: sticky;
+    top: 0;
+    width: 100%;
     background-color: white;
     z-index: 1000000000;
   }

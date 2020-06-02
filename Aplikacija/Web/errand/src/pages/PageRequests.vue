@@ -30,6 +30,18 @@
         <div class="request-div" v-else>
              <RequestBox v-for="request in requests" :key="request.id" :myRequest="request"/>
         </div>
+        <div v-if="requests != null && tab =='Finished' && moreRequests && isDataLoaded" class="button-div">
+            <button type="button" class="btn btn-info" @click="loadMore">
+                <span v-if="isSerbian"> Učitaj još </span>
+                <span v-else> Load more </span>
+            </button>
+        </div>
+        <div v-if="requests != null && tab == 'Finished' && !isDataLoaded" class="button-div">
+            <button type="button" class="btn btn-info" :disabled="true">
+                <span v-if="isSerbian"> Učitavanje... </span>
+                <span v-else> Loading... </span>
+            </button>
+        </div>
         <div v-if="requests != null && requests.length == 0" class="button-div">
             <button type="button" class="btn btn-success" @click="newRequest">
                 <img src="../assets/add.svg" class="slika">
@@ -69,7 +81,7 @@
                     if(!this.$store.state.createdAuthRequests)
                         requests_temp = null
                     else
-                        requests_temp = this.$store.state.createdAuthRequests.results
+                        requests_temp = this.$store.state.createdAuthRequests
                         
                 }
                 else if(this.tab == "Running")
@@ -77,13 +89,13 @@
                     if(!this.$store.state.runnerAuthRequests)
                         requests_temp = null
                     else
-                        requests_temp = this.$store.state.runnerAuthRequests.results
+                        requests_temp = this.$store.state.runnerAuthRequests
                 }
                 else{
                     if(!this.$store.state.overAuthRequests)
                         requests_temp = null
                     else
-                        requests_temp = this.$store.state.overAuthRequests.results
+                        requests_temp = this.$store.state.overAuthRequests
                 }
                 return requests_temp
             },
@@ -98,12 +110,21 @@
             reportCreated() 
             {
                 return this.$store.state.success
+            },
+            isDataLoaded()
+            {
+                return this.$store.state.isDataLoaded
+            },
+            moreRequests()
+            {
+                return this.$store.state.moreRequests
             }
         },
         data()
         {
             return{
-                tab:"Requested"
+                tab:"Requested",
+                currentPage : 1
             }
         },
         methods:{
@@ -122,7 +143,7 @@
                     unrated_created_by : null,
                     unrated_done_by: null
                 }
-                this.$store.dispatch("fillRequests", {filters: filters, objectToFill: "runnerAuthRequests"})
+                this.$store.dispatch("fillRequests", {filters: filters, objectToFill: { object:"runnerAuthRequests", page: 1 }})
             },
             tabFinished()
             {
@@ -135,7 +156,8 @@
                     unrated_created_by : null,
                     unrated_done_by: null
                 }
-                this.$store.dispatch("fillRequests", {filters: filters, objectToFill: "overAuthRequests"})
+                if(this.$store.state.overAuthRequests == null)
+                    this.$store.dispatch("fillRequests", {filters: filters, objectToFill: { object:"overAuthRequests", page: 1 }})
             },
             closeModal()
             {
@@ -148,6 +170,20 @@
             closeModalSuccess() 
             {
                 this.$store.state.success = false
+            },
+            loadMore()
+            {
+                this.currentPage++
+                this.tab = "Finished"
+                const filters = {
+                    created_by : null,
+                    done_by : null,
+                    created_or_done_by: this.$store.state.authUser.id,
+                    statuses : [2, 3],
+                    unrated_created_by : null,
+                    unrated_done_by: null
+                }
+                this.$store.dispatch("fillRequests", {filters: filters, objectToFill: { object:"overAuthRequests", page: this.currentPage }})
             }
         },
         created()
@@ -160,7 +196,7 @@
                 unrated_created_by : null,
                 unrated_done_by: null
             }
-            this.$store.dispatch("fillRequests", {filters: filters, objectToFill: "createdAuthRequests"})
+            this.$store.dispatch("fillRequests", {filters: filters, objectToFill: { object:"createdAuthRequests", page: 1 }})
         }
     }
 </script>

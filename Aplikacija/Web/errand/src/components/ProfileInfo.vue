@@ -230,6 +230,8 @@ export default {
       else
       {
         var id = -1
+        // eslint-disable-next-line vue/no-side-effects-in-computed-properties
+        this.idHelp = -1
         this.$store.state.usersWithBenefit.forEach((item, index) =>
         {
             if(item.benefit_user.id == this.user.id)
