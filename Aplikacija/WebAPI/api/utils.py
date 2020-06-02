@@ -261,18 +261,18 @@ def filter_reports(queryset, data):
                 to_add = False
 
         if to_add and data['reported_by']:
-            if _q.created_by.id != data['reported_by']:
+            if _q.created_by.email != data['reported_by']:
                 to_add = False
 
         if to_add and data['reported']:
-            if _q.reported_user.id != data['reported']:
+            if _q.reported_user.email != data['reported']:
                 to_add = False
 
         if to_add and data['reported_by_or_reported']:
             found = False
 
-            if _q.created_by.id == data['reported_by_or_reported'] or \
-                 _q.reported_user.id == data['reported_by_or_reported']:
+            if _q.created_by.email == data['reported_by_or_reported'] or \
+                 _q.reported_user.email == data['reported_by_or_reported']:
                 found = True
 
             to_add = found
@@ -293,30 +293,30 @@ def filter_requests(queryset, data):
         if data['created_by']:
             if _q.request.created_by.id != data['created_by']:
                 to_add = False
-            if data['unrated'] and _q.request.rated_working_with:
+            if data['unrated_done_by'] and _q.request.rated_working_with:
                 to_add = False
 
         if to_add and data['done_by']:
             if (_q.request.working_with and
                     _q.request.working_with.id != data['done_by']):
                 to_add = False
-            if data['unrated'] and _q.request.rated_created_by:
+            if data['unrated_created_by'] and _q.request.rated_created_by:
                 to_add = False
 
         if to_add and data['created_or_done_by']:
             found = False
 
             if _q.request.created_by.id == data['created_or_done_by']:
-                if not data['unrated']:
+                if not data['unrated_done_by']:
                     found = True
-                if data['unrated'] and not _q.request.rated_working_with:
+                if data['unrated_done_by'] and not _q.request.rated_working_with:
                     found = True
 
             if (_q.request.working_with and
                     _q.request.working_with.id == data['created_or_done_by']):
-                if not data['unrated']:
+                if not data['unrated_created_by']:
                     found = True
-                if data['unrated'] and not _q.request.rated_created_by:
+                if data['unrated_created_by'] and not _q.request.rated_created_by:
                     found = True
 
             to_add = found

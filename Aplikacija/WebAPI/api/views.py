@@ -624,7 +624,7 @@ class RateUser(generics.ListCreateAPIView):
                     req.request.rated_created_by:
             return Response({'detail' : 'User is already rated for this request'})
 
-        if req.request.working_with.id == request.data['working_with'] and \
+        if req.request.working_with.id == request.data['rated_user'] and \
                     req.request.rated_working_with:
             return Response({'detail' : 'User is already rated for this request'})
 

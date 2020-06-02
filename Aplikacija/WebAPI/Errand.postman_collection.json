@@ -703,7 +703,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\t\"created_by\" : 1,\n\t\"reported_by\" : null,\n\t\"reported\" : null,\n\t\"reported_by_or_reported\": 2,\n\t\"handled\" : true\n}",
+					"raw": "{\n\t\"created_by\" : 1,\n\t\"reported_by\" : null,\n\t\"reported\" : \"djordjepav@errand.com\",\n\t\"reported_by_or_reported\": null,\n\t\"handled\" : true\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -1276,7 +1276,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\t\"created_by\" : null,\n\t\"done_by\" : null,\n\t\"created_or_done_by\": 4,\n\t\"statuses\" : [0, 1],\n\t\"unrated\" : true\n}",
+					"raw": "{\n\t\"created_by\" : null,\n\t\"done_by\" : null,\n\t\"created_or_done_by\": 4,\n\t\"statuses\" : [2],\n\t\"unrated_created_by\" : true,\n\t\"unrated_done_by\" : false\n}",
 					"options": {
 						"raw": {
 							"language": "json"
