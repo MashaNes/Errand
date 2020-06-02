@@ -83,7 +83,8 @@ export default new Vuex.Store({
                     "done_by" : filters.done_by,
                     "created_or_done_by": filters.created_or_done_by,
                     "statuses" : filters.statuses,
-                    "unrated" : filters.unrated
+                    "unrated_created_by" : filters.unrated_created_by,
+                    "unrated_done_by" : filters.unrated_done_by
                 })
             }).then(p => {
                 if(p.ok) {

@@ -119,7 +119,8 @@
                     done_by : this.$store.state.authUser.id,
                     created_or_done_by: null,
                     statuses : [1],
-                    unrated : null
+                    unrated_created_by : null,
+                    unrated_done_by: null
                 }
                 this.$store.dispatch("fillRequests", {filters: filters, objectToFill: "runnerAuthRequests"})
             },
@@ -131,7 +132,8 @@
                     done_by : null,
                     created_or_done_by: this.$store.state.authUser.id,
                     statuses : [2, 3],
-                    unrated : null
+                    unrated_created_by : null,
+                    unrated_done_by: null
                 }
                 this.$store.dispatch("fillRequests", {filters: filters, objectToFill: "overAuthRequests"})
             },
@@ -155,7 +157,8 @@
                 done_by : null,
                 created_or_done_by: null,
                 statuses : [0, 1],
-                unrated : null
+                unrated_created_by : null,
+                unrated_done_by: null
             }
             this.$store.dispatch("fillRequests", {filters: filters, objectToFill: "createdAuthRequests"})
         }
