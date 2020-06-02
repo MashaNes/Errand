@@ -617,7 +617,7 @@ class RateUser(generics.ListCreateAPIView):
         user = models.FullUser.objects.get(id=request.data['rated_user'])
         req = models.FullRequest.objects.get(id=request.data['request'])
 
-        if req.request.status != 2:
+        if req.request.status < 2:
             return Response({'detail' : 'Request is not finished'})
 
         if req.request.created_by.id == request.data['rated_user'] and \
