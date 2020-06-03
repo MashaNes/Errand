@@ -71,9 +71,9 @@
       <ModalAreYouSure 
         :naslovS = "'Da li ste sigurni?'"
         :naslovE = "'Are you sure?'"
-        :tekstS = "'Prijavljujete korisnika ' + fullUserName + '. Da li želite da potvrdite?'"
-        :tekstE = "'You are reporting user ' + fullUserName + '. Do you wish to confirm?'"
-        @yes="reportUser()"
+        :tekstS = "'Ocenjujete korisnika  ' + fullUserName + '. Da li želite da potvrdite?'"
+        :tekstE = "'You are rating user ' + fullUserName + '. Do you wish to confirm?'"
+        @yes="rateUser()"
         @close="showModalAreYouSure = false"
         v-if="showModalAreYouSure" 
       />
@@ -143,7 +143,8 @@ export default {
         "grade" : this.rating.grade,
         "comment" : this.rating.comment
       }
-      this.$store.dispatch('addRating', filters)
+      const isInUnratedCreated = this.request.created_by.id != this.userToRate.id ? false : true
+      this.$store.dispatch('addRating', {filters, isInUnratedCreated})
       this.showModalAreYouSure = false
       this.$emit('close')
     }

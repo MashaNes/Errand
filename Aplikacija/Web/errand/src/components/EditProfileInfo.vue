@@ -470,7 +470,7 @@ export default {
   }
 
   .main-container {
-    margin-top: 30px;
+    padding-top: 30px;
     margin-left: 10%;
     margin-right: 10%;
     display: flex;
@@ -628,7 +628,7 @@ export default {
   {
     .main-container {
       flex-direction: column;
-      margin-top: 30px;
+      padding-top: 30px;
       margin-left: 1%;
       margin-right: 1%;
       align-items:center;

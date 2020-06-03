@@ -1,6 +1,5 @@
 <template>
-  <Spinner v-if="!requests" />
-  <div class="main-wrapper" v-else>
+  <div class="main-wrapper">
     <div class="side-info">
       <AsideProfileInfo :user="user" :forWideScreen="true" />
       <div class="btns">
@@ -18,10 +17,12 @@
           <span v-else v-text="isSerbian ? 'Prikaži samo neocenjene zahteve' : 'Show only unrated requests'"></span> 
         </div>
       </div>
-      <div class="req-wrap">
-        <RateOrReportBox v-for="request in requests.results" :key="request.id" :request="request" :user="user" />
+      <Spinner v-if="!requests" />
+      <div class="req-wrap" v-else>
+        <RateOrReportBox v-for="request in requests.results" :key="request.id" :request="request" :user="user" @setMessages="setMessages" />
       </div>
     </div>
+    <ModalSuccess v-if="success && messagesSet" :textS="textMessageS" :textE="textMessageE" @close="closeModalSuccess"/>
   </div>
 </template>
 
@@ -30,13 +31,15 @@
 import AsideProfileInfo from "@/components/AsideProfileInfo"
 import Spinner from "@/components/Spinner"
 import RateOrReportBox from "@/components/RateOrReportBox"
+import ModalSuccess from "@/components/ModalSuccess"
 
 export default {
   
   components: {
     AsideProfileInfo,
     Spinner,
-    RateOrReportBox
+    RateOrReportBox,
+    ModalSuccess
   },
   props: {
     user: {
@@ -48,7 +51,11 @@ export default {
     return {
       showModalAreYouSure: false,
       rating: {},
-      showAll: false
+      showAll: false,
+      fetchedAll: false,
+      textMessageS: "",
+      textMessageE: "",
+      messagesSet: false
     }
   },
   computed: {
@@ -59,39 +66,102 @@ export default {
       return this.user.firstName + " " +this.user.lastName
     },
     requests() {
-      if(!this.$store.state.unratedRequestsCreated || !this.$store.state.unratedRequestsDoneBy)
-        return null
+      if(!this.showAll) {
+        if(!this.$store.state.unratedRequestsCreated || !this.$store.state.unratedRequestsDoneBy)
+          return null
+        else {
+          return {
+            count: this.$store.state.unratedRequestsCreated.count + this.$store.state.unratedRequestsDoneBy.count,
+            results: this.$store.state.unratedRequestsCreated.results.concat(this.$store.state.unratedRequestsDoneBy.results)
+          }
+        }
+      }
       else {
-        return {
-          count: this.$store.state.unratedRequestsCreated.count + this.$store.state.unratedRequestsDoneBy.count,
-          results: this.$store.state.unratedRequestsCreated.results.concat(this.$store.state.unratedRequestsDoneBy.results)
+        if(!this.$store.state.ratedRequestsCreated || !this.$store.state.ratedRequestsDoneBy)
+            return null
+        else {
+          return {
+            count: this.$store.state.ratedRequestsCreated.count + this.$store.state.ratedRequestsDoneBy.count,
+            results: this.$store.state.ratedRequestsCreated.results.concat(this.$store.state.ratedRequestsDoneBy.results)
+          }
+        }
+      }
+    },
+    success() {
+      return this.$store.state.success
+    },
+  },
+  watch: {
+    // eslint-disable-next-line no-unused-vars
+    showAll(newVal, oldVal) {
+      if(!this.fetchedAll) {
+        if(newVal) {
+          const filtersCreated = {
+            created_by : this.user.id,
+            done_by : this.$store.state.authUser.id,
+            created_or_done_by: null,
+            statuses : [2, 3],
+            unrated_created_by : false,
+            unrated_done_by : null
+          }
+          this.$store.dispatch("fillRequests", {filters: filtersCreated, objectToFill: {object: "ratedRequestsCreated", page: 1}})
+
+          const filtersDone = {
+            created_by : this.$store.state.authUser.id,
+            done_by : this.user.id,
+            created_or_done_by: null,
+            statuses : [2, 3],
+            unrated_created_by : null,
+            unrated_done_by : false
+          }
+          this.$store.dispatch("fillRequests", {filters: filtersDone, objectToFill: {object: "ratedRequestsDoneBy", page: 1 }})
+          this.fetchedAll = true
         }
       }
     }
   },
+  methods: {
+    closeModalSuccess() {
+      this.$store.state.success = false
+      this.messagesSet = false
+    },
+    setMessages({textMessageS, textMessageE}) {
+      this.textMessageS = textMessageS
+      this.textMessageE = textMessageE
+      this.messagesSet = true
+    }
+  },
   created() {
-    this.$store.state.specificRequestsCreated = null
-    this.$store.state.specificRequestsDoneBy = null
+    this.$store.state.unratedRequestsCreated = null
+    this.$store.state.unratedRequestsDoneBy = null
+    this.$store.state.ratedRequestsCreated = null
+    this.$store.state.ratedRequestsDoneBy = null
+
+    //Ako ne bude previše komplikovano, zameniti da se ove stvari ne postavljaju na null, nego da se proveri
+    //na kog korisnika se odnose request-ovi koji već postoje u store-u, pa na osnovu toga da se šalje fetch ili ne.
+    //(Zahteva da se manipuliše store-om isto kao u slučaju svih request-ova, da se menjaju podaci, splice-uju i slično.
+    //Obratiti pažnju da treba da bude pogodno za rad sa notifikacijama.)
+
     window.scrollTo(0, 0)
     const filtersCreated = {
       created_by : this.user.id,
       done_by : this.$store.state.authUser.id,
       created_or_done_by: null,
       statuses : [2, 3],
-      unrated_created_by : null,
-      unrated_done_by : true
+      unrated_created_by : true,
+      unrated_done_by : null
     }
-    this.$store.dispatch("fillRequests", {filters: filtersCreated, objectToFill: "unratedRequestsCreated"})
+    this.$store.dispatch("fillRequests", {filters: filtersCreated, objectToFill: {object: "unratedRequestsCreated", page: 1}})
 
     const filtersDone = {
       created_by : this.$store.state.authUser.id,
       done_by : this.user.id,
       created_or_done_by: null,
       statuses : [2, 3],
-      unrated_created_by : true,
-      unrated_done_by : null
+      unrated_created_by : null,
+      unrated_done_by : true
     }
-    this.$store.dispatch("fillRequests", {filters: filtersDone, objectToFill: "unratedRequestsDoneBy"})
+    this.$store.dispatch("fillRequests", {filters: filtersDone, objectToFill: {object: "unratedRequestsDoneBy", page: 1 }})
   }
 }
 </script>
@@ -155,106 +225,6 @@ export default {
     width:100%;
   }
 
-  .request-btns {
-    display: flex;
-    flex-direction:row;
-    flex-grow:1;
-    justify-content: flex-end;
-  }
-
-  .req-btn {
-    margin: 5px 5px 5px 5px;
-    font-size:12px;
-    font-weight: bold;
-    background-color: rgb(15, 170, 221);
-    border:hidden;
-  }
-
-  .wrapper
-  {
-    margin:10px;
-    border: 1px solid rgb(43, 41, 41);
-    border-radius: 15px;
-    min-height: 100px;
-    padding:5px;
-    width: 80%;
-    display:flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-  }
-
-  .request-top
-  {
-    display: flex;
-    flex-direction: row-reverse;
-    justify-content: flex-start;
-    align-items: center;
-    width: 100%;
-  }
-
-  .request-bottom
-  {
-    display: flex;
-    flex-direction: row-reverse;
-    justify-content: flex-start;
-    align-items: center;
-    width: 100%;
-    margin-top: 30px;
-  }
-
-  .user-div
-  {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-items: center;
-    margin-right: 10px;
-    margin-top:10px;
-    font-size: 18px;
-  }
-
-  .status-div
-  {
-    display: flex;
-    flex-direction: row;
-    align-items: flex-end;
-    justify-items: flex-end;
-    margin-right: 10px;
-    font-size: 18px;
-  }
-
-  .tagovi
-  {
-    display: flex;
-    flex-direction: row;
-  }
-    
-  .bottom-left
-  {
-    flex-grow: 1;
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-start;
-  }
-  
-  .request-date
-  {
-    padding: 10px;
-    text-align: center;
-  }
-
-  .user-name
-  {
-    margin-right: 10px;
-  }
-
-  .image {
-    height: 22px;
-    width: 22px;
-    margin-right: 10px;
-  }
-
   .chk-box {
     height: 15px;
     width: 15px;
@@ -265,59 +235,6 @@ export default {
   @media only screen and (max-width:900px) {
     .chk-rated-div {
       margin: 30px 10% 10px 10%;
-    }
-  }
-
-  @media only screen and (max-width:600px)
-  {
-    .chk-rated-div {
-      margin: 20px 5% 10px 5%;
-    }
-
-    .wrapper
-    {
-      width:95%;
-    }
-
-    .request-top
-    {
-      flex-direction: column-reverse;
-      align-items: flex-start;
-    }
-
-    .user-div
-    {
-      margin-left: 15px;
-      margin-top: 10px;
-      flex-direction: row-reverse;
-    }
-
-    .bottom-left
-    {
-      flex-direction: column;
-      align-items: flex-start;
-    }
-
-    .request-bottom
-    {
-      margin-top: 10px;
-    }
-
-    .tagovi
-    {
-      margin-bottom: 5px;
-      margin-left: 5px;
-    }
-    
-    .request-date
-    {
-      padding: 2px;
-      padding-left: 10px;
-    }
-
-    .user-name
-    {
-      margin-left: 10px;
     }
   }
 
@@ -353,46 +270,11 @@ export default {
       margin: 5px 5px 5px 5px;
     }
 
+    .chk-rated-div {
+      margin: 20px 5% 10px 5%;
+    }
     
   }
-
-  .request-name
-    {
-        font-weight: bold;
-        font-size: 25px;
-        color:rgb(11, 97, 126);
-        text-align: left;
-        flex-grow: 1;
-        margin-left: 10px;
-        margin-top:2px;
-    }
-
-    .request-tag
-    {
-      border-radius: 5px;
-      padding-left:7px;
-      padding-right:7px;
-      padding-top:5px;
-      margin:5px;
-      background-color: rgb(15, 170, 221);
-      color: white;
-      font-weight: bold;
-    }
-
-    .request-status
-    {
-      margin-left:7px;
-    }
-
-    .crveno
-    {
-      background-color: rgb(255, 212, 212);
-    }
-
-    .zeleno
-    {
-      background-color: rgb(217, 250, 217);
-    }
 
   @media only screen and (max-width: 499px) {
     .side-info {
