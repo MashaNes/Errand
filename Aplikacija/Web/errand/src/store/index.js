@@ -13,6 +13,7 @@ import {fetchPictures} from "@/api/pictureTest.js"
 import {fetchActiveReports} from "@/api/activeReports.js"
 import {fetchHandeledReports} from "@/api/handeledReports.js"
 import {fetchRequestsOther} from "@/api/requestsOther.js"
+import {fetchStatistics} from "@/api/statistics.js"
 
 export default new Vuex.Store({
     state:{
@@ -59,7 +60,8 @@ export default new Vuex.Store({
         activeReports: null,
         handeledReports: null,
         success: false,
-        onPageOne: false
+        onPageOne: false,
+        statistics: null
     },
     getters:{
         getAuthUserId(state) {
@@ -1566,6 +1568,10 @@ export default new Vuex.Store({
                         console.log("Error")
                     }
                 });
+        },
+        getStatistics()
+        {
+            this.state.statistics = fetchStatistics()
         }
     },
     mutations:{
