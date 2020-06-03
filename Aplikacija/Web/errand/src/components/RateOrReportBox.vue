@@ -47,20 +47,18 @@
       v-if="showModalRate" @close="showModalRate = false" 
       :userToRate="user" @setMessages="setMessagesRating" :request="request"
     />
-    <ModalSuccess v-if="success" :textS="textMessageS" :textE="textMessageE" @close="closeModalSuccess"/>
+    
   </div>
 </template>
 
 <script>
 import ModalReportUser from "@/components/ModalReportUser"
-import ModalSuccess from "@/components/ModalSuccess"
 import ModalRateUser from "@/components/ModalRateUser"
 
 
 export default {
   components: {
     ModalReportUser,
-    ModalSuccess,
     ModalRateUser
   },
   props: {
@@ -212,22 +210,15 @@ export default {
     }
   },
   methods: {
-    rateUser() {
-      console.log("rate")
-    },
-    dismissRate() {
-      console.log("dismiss")
-    },
-    closeModalSuccess() {
-      this.$store.state.success = false
-    },
     setMessagesReport() {
       this.textMessageS = "Uspešno prijavljen problem sa korisnikom."
       this.textMessageE = "User successfully reported."
+      this.$emit('setMessages', {textMessageS: this.textMessageS, textMessageE: this.textMessageE})
     },
     setMessagesRating() {
       this.textMessageS = "Uspešno ocenjen korisnik."
       this.textMessageE = "User successfully rated."
+      this.$emit('setMessages', {textMessageS: this.textMessageS, textMessageE: this.textMessageE})
     }
   }
 }
@@ -345,7 +336,7 @@ export default {
     }
   }
 
-  @media only screen and (max-width:600px) {
+  @media only screen and (max-width:599px) {
     .box-wrapper {
       margin: 30px 5% 30px 5%;
     }
@@ -373,5 +364,13 @@ export default {
       margin-bottom: 5px;
       margin-left: 5px;
     }
+  }
+
+  .crveno {
+      background-color: rgb(255, 212, 212);
+  }
+
+  .zeleno {
+      background-color: rgb(217, 250, 217);
   }
 </style>

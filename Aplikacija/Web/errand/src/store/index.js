@@ -21,7 +21,7 @@ export default new Vuex.Store({
         runnerAuthRequests: null,
         overAuthRequests: null,
         specificRequest: null,
-        user: {},
+        user: null,
         authUser: null,
         userAchievements: {},
         userRatings: {},
@@ -521,7 +521,7 @@ export default new Vuex.Store({
             })
             commit('setSpecificRequests', filteredRequests)
         },
-        addRating({commit}, filters) {
+        addRating({commit}, {filters, isInUnratedCreated}) {
             fetch('http://localhost:8000/api/v1/rate_user/', {
                 method: 'POST',
                 headers: {
@@ -541,6 +541,33 @@ export default new Vuex.Store({
                     p.json().then(data=> {
                         console.log(data)
                         this.state.success = true
+                        commit('setUser', data.rated_user)
+                        if(isInUnratedCreated) {
+                            const index = this.state.unratedRequestsCreated.results.findIndex(req => req.id == filters.request)
+                            const request = this.state.unratedRequestsCreated.results[index]
+                            this.state.unratedRequestsCreated.results.splice(index, 1)
+                            if(this.state.overAuthRequests) {
+                                const indexOver = this.state.overAuthRequests.results.findIndex(req => req.id == filters.request)
+                                this.state.overAuthRequests.results[indexOver].rated_created_by = true
+                            }
+                            if(this.state.ratedRequestsCreated) {
+                                const indexRated = this.state.ratedRequestsCreated.results.findIndex(req => req.id == filters.request)
+                                this.state.ratedRequestsCreated.results[indexRated].rated_created_by = true
+                            }
+                        }
+                        else {
+                            const index = this.state.unratedRequestsDoneBy.results.findIndex(req => req.id == filters.request)
+                            const request = this.state.unratedRequestsDoneBy.results[index]
+                            this.state.unratedRequestsDoneBy.results.splice(index, 1)
+                            if(this.state.overAuthRequests) {
+                                const indexOver = this.state.overAuthRequests.results.findIndex(req => req.id == filters.request)
+                                this.state.overAuthRequests.results[indexOver].rated_working_with = true
+                            }
+                            if(this.state.ratedRequestsDoneBy) {
+                                const indexRated = this.state.ratedRequestsDoneBy.results.findIndex(req => req.id == filters.request)
+                                this.state.ratedRequestsDoneBy.results[indexRated].rated_working_with = true
+                            }
+                        }
                     })
                 }
                 else {

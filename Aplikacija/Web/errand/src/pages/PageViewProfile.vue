@@ -1,9 +1,9 @@
 <template>
-  <Spinner v-if="!computedUser || (isMyProfile && !addresses)" />
+  <Spinner v-if="!userLoaded || (isMyProfile && !addresses)" />
   <div class = "wrapper" v-else>
     <ProfileInfo 
       v-if="componentToShow == 'Info'"
-      :user="computedUser" 
+      :user="isMyProfile ? $store.state.authUser : computedUser" 
       :isMyProfile="isMyProfile"
       :RequestSelect="RequestSelect"
       :RequestView="RequestView"
@@ -13,7 +13,7 @@
     />
     <EditProfileInfo
       v-if="componentToShow == 'Edit'"
-      :user="computedUser"
+      :user="$store.state.authUser"
       :addresses="addresses"
       @saveEditChanges="editSaved"
       @cancelChanges="componentToShow = 'Info'"
@@ -59,7 +59,7 @@ export default {
   data() {
     return {
       componentToShow: "Info",
-      computedUser: null,
+      //computedUser: null,
       addresses: null
     }
   },
@@ -69,24 +69,33 @@ export default {
     },
     isMyProfile() {
       return this.$route.params.id == this.$store.getters['getAuthUserId']
+    },
+    computedUser() {
+      return this.$store.state.user
+    },
+    userLoaded() {
+      if(!this.isMyProfile)
+        return this.computedUser != null
+      else
+        return true
     }
   },
   methods: {
     editSaved() {
       console.log("SAVED")
       this.componentToShow = "Info"
-      this.computedUser = this.$store.state.authUser
       this.addresses = this.$store.state.userAddresses
     },
     changedRoute() {
+      this.$store.state.user = null
       //fetch-ovati sve korisnikove home adrese
       let vm = this
-      function callbackUser() {
-        if(vm.$store.state.isDataLoaded)
-          vm.computedUser = vm.$store.state.user
-        else 
-          setTimeout(callbackUser, 200)
-      }
+      // function callbackUser() {
+      //   if(vm.$store.state.isDataLoaded)
+      //     vm.computedUser = vm.$store.state.user
+      //   else 
+      //     setTimeout(callbackUser, 200)
+      // }
       function callbackAddresses() {
         if(vm.$store.state.userAddresses)
           vm.addresses = vm.$store.state.userAddresses
@@ -96,19 +105,15 @@ export default {
       
       const routeId = this.$route.params.id
 
-      if(!this.user)
+      if(!this.user && !this.isMyProfile)
       {
-        if(this.isMyProfile)
-        {
-          this.computedUser = this.$store.state.authUser
-        }
-        else {
           this.$store.dispatch('getUserInfo', routeId)
-          callbackUser()
-        }
-        this.componentToShow = 'Info'
+          //callbackUser()
+          
       }
-      else this.computedUser = this.user
+      else if(!this.isMyProfile) 
+        this.$store.state.user = this.user
+      this.componentToShow = 'Info'
       if(this.isMyProfile) {
         vm.$store.state.userAddresses = null
         this.$store.dispatch('fillUserAddresses', routeId)
