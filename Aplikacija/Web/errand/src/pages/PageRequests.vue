@@ -26,11 +26,30 @@
                 <span v-else>Finished</span>
             </a>
         </nav>
-        <Spinner v-if="!requests" />
-        <div class="request-div" v-else>
-             <RequestBox v-for="request in requests" :key="request.id" :myRequest="request"/>
+        <div class="button-div">
+            <b-pagination v-if="tab =='Finished'"
+                        v-model="currentPage" 
+                        :total-rows="requests == null? 1 : requests.count" 
+                        :per-page="10" 
+                        align="center" class="pag-top"
+                        @input="getAnotherPortion">
+            </b-pagination>
         </div>
-        <div v-if="requests != null && tab =='Finished' && moreRequests && isDataLoaded" class="button-div">
+        <Spinner v-if="!requests || (tab == 'Finished' && !isDataLoaded)" />
+        <div class="request-div" v-else>
+            <RequestBox v-for="request in requests.results" :key="request.id" :myRequest="request"/>
+            <i v-if="requests.results.length == 0 && tab == 'Finished' && isSerbian" class="natpis"> Trenutno nema zahteva u ovoj kategoriji </i>
+            <i v-if="requests.results.length == 0 && tab == 'Finished' && !isSerbian" class="natpis"> No requests to display in this category </i>
+        </div>
+        <div class="button-div">
+            <b-pagination v-if="tab =='Finished'"
+                        v-model="currentPage" 
+                        :total-rows="requests == null? 1 : requests.count" 
+                        :per-page="10" 
+                        align="center" class="pag-bottom">
+            </b-pagination>
+        </div>
+        <!--<div v-if="requests != null && tab =='Finished' && moreRequests && isDataLoaded" class="button-div">
             <button type="button" class="btn btn-info" @click="loadMore">
                 <span v-if="isSerbian"> Učitaj još </span>
                 <span v-else> Load more </span>
@@ -41,8 +60,8 @@
                 <span v-if="isSerbian"> Učitavanje... </span>
                 <span v-else> Loading... </span>
             </button>
-        </div>
-        <div v-if="requests != null && requests.length == 0" class="button-div">
+        </div>-->
+        <div v-if="requests != null && requests.results.length == 0 && tab !='Finished'" class="button-div">
             <button type="button" class="btn btn-success" @click="newRequest">
                 <img src="../assets/add.svg" class="slika">
                 <span v-if="isSerbian"> Novi zahtev </span>
@@ -115,9 +134,9 @@
             {
                 return this.$store.state.isDataLoaded
             },
-            moreRequests()
+            isOnPageOne()
             {
-                return this.$store.state.moreRequests
+                return this.$store.state.onPageOne
             }
         },
         data()
@@ -147,6 +166,7 @@
             },
             tabFinished()
             {
+                this.currentPage = 1
                 this.tab = "Finished"
                 const filters = {
                     created_by : null,
@@ -156,7 +176,7 @@
                     unrated_created_by : null,
                     unrated_done_by: null
                 }
-                if(this.$store.state.overAuthRequests == null)
+                if(this.$store.state.overAuthRequests == null || !this.isOnPageOne)
                     this.$store.dispatch("fillRequests", {filters: filters, objectToFill: { object:"overAuthRequests", page: 1 }})
             },
             closeModal()
@@ -174,7 +194,18 @@
             loadMore()
             {
                 this.currentPage++
-                this.tab = "Finished"
+                const filters = {
+                    created_by : null,
+                    done_by : null,
+                    created_or_done_by: this.$store.state.authUser.id,
+                    statuses : [2, 3],
+                    unrated_created_by : null,
+                    unrated_done_by: null
+                }
+                this.$store.dispatch("fillRequests", {filters: filters, objectToFill: { object:"overAuthRequests", page: this.currentPage }})
+            },
+            getAnotherPortion()
+            {
                 const filters = {
                     created_by : null,
                     done_by : null,
@@ -256,5 +287,19 @@
         justify-content: center;
         align-items: center;
         width: 100%;
+    }
+
+    .pag-top 
+    {
+        margin-bottom: 40px;
+        margin-top: 20px;
+        z-index:0;
+    }
+
+    .pag-bottom 
+    {
+        margin: 40px 0 0px 0;
+        z-index:0;
+        padding-bottom: 40px;
     }
 </style>

@@ -59,7 +59,7 @@ export default new Vuex.Store({
         activeReports: null,
         handeledReports: null,
         success: false,
-        moreRequests: false
+        onPageOne: false
     },
     getters:{
         getAuthUserId(state) {
@@ -93,7 +93,7 @@ export default new Vuex.Store({
             }).then(p => {
                 if(p.ok) {
                     p.json().then(data => {
-                        if(objectToFill.object == "overAuthRequests")
+                        /*if(objectToFill.object == "overAuthRequests")
                         {
                             if (this.state.overAuthRequests == null)
                                 this.state.overAuthRequests = []
@@ -106,11 +106,18 @@ export default new Vuex.Store({
                         else
                         {
                             this.state[objectToFill.object] = data.results
-                        }
+                        }*/
+                        this.state[objectToFill.object] = data
+                        if(objectToFill.object == "overAuthRequests" && objectToFill.page == 1)
+                            this.state.onPageOne = true
+                        else if(objectToFill.object == "overAuthRequests" && objectToFill.page != 1)
+                            this.state.onPageOne = false
                         this.state.isDataLoaded = true
                         console.log(data)
                     })
                 }
+                else
+                    this.state.isDataLoaded = true
             })
         },
         fillUsersWithBenefit()
@@ -803,7 +810,7 @@ export default new Vuex.Store({
                         this.state.specificRequest = null
                         this.state.activeReports = null
                         this.state.handeledReports = null
-                        this.state.moreRequests = false
+                        this.state.onPageOne = false
                         Vue.cookie.delete('id');
                         Vue.cookie.delete('token');
                         Vue.cookie.delete('ime');
