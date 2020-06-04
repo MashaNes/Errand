@@ -36,7 +36,7 @@
                   :value="offer.created_by.avg_rating"
                   :variant="progressBarVariant"
                 > 
-                  <span class="rating-grade"> {{offer.created_by.avg_rating}} </span> 
+                  <span class="rating-grade"> {{formattedRating}} </span> 
                 </b-progress-bar>
               </b-progress>
               <span v-else class="bold-message" v-text="isSerbian ? 'Korisnik do sada nije bio ocenjivan' : 'This user has not been rated yet'"></span>
@@ -168,6 +168,9 @@ export default {
     progressBarVariant() {
       return this.offer.created_by.avg_rating < 2.5 ? 'danger' : 
               this.offer.created_by.avg_rating < 4.5 ? 'warning' : 'success'
+    },
+    formattedRating() {
+      return this.offer.created_by.avg_rating ? this.offer.created_by.avg_rating.toFixed(2) : null
     },
     fullUserName() {
       return this.offer.created_by.first_name + " " +this.offer.created_by.last_name

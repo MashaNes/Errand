@@ -62,13 +62,17 @@
                          :naslovE="'Deleting a request'"
                          :tekstE="'Are you sure you want to delete this request?'"
                          @close="showModal = false" @yes="deleteRequest" v-if="showModal"/>
-        <ModalReportUser v-if="showModalReport" @close="showModalReport = false" :userToReport="user"/>
+        <ModalReportUser v-if="showModalReport" @close="showModalReport = false" 
+                         :userToReport="user" :request="myRequest" @setMessages="setMessagesReport"/>
+        <ModalRateUser v-if="showModalRate" @close="showModalRate = false" 
+                       :userToRate="user" :request="myRequest" @setMessages="setMessagesRating"/>
     </div>
 </template>
 
 <script>
 import ModalAreYouSure from "@/components/ModalAreYouSure"
 import ModalReportUser from "@/components/ModalReportUser"
+import ModalRateUser from "@/components/ModalRateUser"
 
 export default {
     props:
@@ -81,13 +85,15 @@ export default {
     components:
     {
         ModalAreYouSure,
-        ModalReportUser
+        ModalReportUser,
+        ModalRateUser
     },
     data()
     {
         return{
             showModal: false,
-            showModalReport: false
+            showModalReport: false,
+            showModalRate: false
         }
     },
     computed:
@@ -291,12 +297,23 @@ export default {
         },
         rateUser()
         {
-            console.log(this.user)
-            //rate the user
+            this.showModalRate = true
         },
         reportUser()
         {
             this.showModalReport = true
+        },
+        setMessagesReport() 
+        {
+            this.textMessageS = "Uspešno prijavljen problem sa korisnikom."
+            this.textMessageE = "User successfully reported."
+            this.$emit('setMessages', {textMessageS: this.textMessageS, textMessageE: this.textMessageE})
+        },
+        setMessagesRating() 
+        {
+            this.textMessageS = "Uspešno ocenjen korisnik."
+            this.textMessageE = "User successfully rated."
+            this.$emit('setMessages', {textMessageS: this.textMessageS, textMessageE: this.textMessageE})
         }
     }
 }

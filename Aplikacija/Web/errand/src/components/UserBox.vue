@@ -50,7 +50,7 @@
                 :value="user.avg_rating"
                 :variant="progressBarVariant"
               > 
-                <span class="rating-grade"> {{user.avg_rating}} </span> 
+                <span class="rating-grade"> {{formattedRating}} </span> 
               </b-progress-bar>
             </b-progress>
             <span v-else class="rating-message" v-text="isSerbian ? 'Korisnik do sada nije bio ocenjivan' : 'This user has not been rated yet'"></span>
@@ -103,6 +103,9 @@ export default {
       progressBarVariant() {
         return this.user.avg_rating < 2.5 ? 'danger' : 
                this.user.avg_rating < 4.5 ? 'warning' : 'success'
+      },
+      formattedRating() {
+        return this.user.avg_rating ? this.user.avg_rating.toFixed(2) : null
       },
       fullUserName() {
         return this.user.first_name + " " +this.user.last_name

@@ -66,17 +66,17 @@
           </div>
           <b-button 
             variant="secondary" v-b-popover.hover.top="ponudeTekst"  v-if="computedRequest.status == 0 && !isRunner && showView == 'Details'"
-            :disabled="filteredOffers.length == 0" @click="changeViewFromDetails('Offers')" class="button-flex-center"
+            :disabled="!filteredOffers || filteredOffers.length == 0" @click="changeViewFromDetails('Offers')" class="button-flex-center"
           >
             <strong class="notification-span" v-text="isSerbian ? 'Ponude' : 'Offers'"></strong>
-            <b-badge variant="danger" class="notification-badge" >{{filteredOffers.length}}</b-badge>
+            <b-badge variant="danger" class="notification-badge" >{{offersBadge}}</b-badge>
           </b-button>
           <b-button 
             variant="secondary" v-b-popover.hover.top="zahteviTekst" v-if="computedRequest.status == 1 && !isRunner && showView == 'Details'"
-            :disabled="filteredEdits.length == 0" @click="changeViewFromDetails('Edits')" class="button-flex-center"
+            :disabled="!filteredEdits || filteredEdits.length == 0" @click="changeViewFromDetails('Edits')" class="button-flex-center"
           >
             <strong class="notification-span" v-text="isSerbian ? 'Zahtevi za izmenama' : 'Edit requests'"></strong>
-            <b-badge variant="danger" class="notification-badge" >{{filteredEdits.length}}</b-badge>
+            <b-badge variant="danger" class="notification-badge" >{{editsBadge}}</b-badge>
           </b-button>
           <b-button variant="secondary" v-if="showView != 'Details'" @click="showDetails" class="button-flex-center">
             <strong class="notification-span" v-text="isSerbian ? 'Detalji zahteva' : 'Request details'"></strong>
@@ -228,7 +228,11 @@
     />
     <ModalReportUser 
       v-if="showModalReport" @setMessages="setReportMessages" 
-      @close="showModalReport = false" :userToReport="otherUser" :request="request"
+      @close="showModalReport = false" :userToReport="otherUser" :request="computedRequest"
+    />
+    <ModalRateUser 
+      v-if="showModalRate" @setMessages="setRateMessages" 
+      @close="showModalRate = false" :userToRate="otherUser" :request="computedRequest"
     />
   </div>
 </template>
@@ -243,6 +247,7 @@ import LightBox from 'vue-image-lightbox'
 import ModalAreYouSure from "@/components/ModalAreYouSure"
 import ModalSuccess from "@/components/ModalSuccess"
 import ModalReportUser from "@/components/ModalReportUser"
+import ModalRateUser from "@/components/ModalRateUser"
 //import Vue from 'vue'
 
 export default {
@@ -255,7 +260,8 @@ export default {
     LightBox,
     ModalAreYouSure,
     ModalSuccess,
-    ModalReportUser
+    ModalReportUser,
+    ModalRateUser
   },
   props: {
     request: {
@@ -277,6 +283,7 @@ export default {
       showView: this.startingView,
       showModalAreYouSure: false,
       showModalReport: false,
+      showModalRate: false,
       purpose: "",
       successMessageS: "",
       successMessageE: ""
@@ -580,20 +587,28 @@ export default {
       }
     },
     canRate() {
-      // if(this.isRunner) 
-      //   return !this.computedRequest.rated_working_with
-      // else
-      //   return !this.computedRequest.rated_created_by
       if(this.isRunner) 
         return !this.computedRequest.rated_created_by
       else
         return !this.computedRequest.rated_working_with
+    },
+    offersBadge() {
+      if(!this.filteredOffers) 
+        return 0
+      else return this.filteredOffers.length
+    },
+    editsBadge() {
+      if(!this.filteredEdits) 
+        return 0
+      else return this.filteredEdits.length
     }
   },
   methods: {
     routeChanged() {
       let fetchedById = false
       this.$store.state.requestFilteredInfo = {}
+      this.$store.state.offers = null
+      this.$store.state.edits = null
       this.$store.state.isRequestInfoLoaded = false
       const routeId = this.$route.params.id
 
@@ -821,6 +836,10 @@ export default {
     setReportMessages() {
       this.successMessageS = "Uspešno prijavljen problem sa korisnikom."
       this.successMessageE = "User successfuly reported."
+    },
+    setRateMessages() {
+      this.successMessageS = "Uspešno ocenjen korisnik."
+      this.successMessageE = "User successfuly rated."
     },
     closeModalSuccess() {
       this.$store.state.success = false

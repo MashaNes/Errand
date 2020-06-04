@@ -55,13 +55,6 @@
               </div>
               
               <input type="file" ref="file" style="display: none" accept="image/*" @change="pictureSelected"/>
-              
-              <strong v-if="isSerbian"> Napomena: 
-                <span> ako želite da prijavite problem vezan za konkretan zahtev, kliknite na opciju "Zahtevi" u meniju. Zatim, izaberite konkretan zahtev.  </span>
-              </strong>
-              <strong v-else> Note: 
-                <span> if you want to report a problem about a specific request, select "Requests" from the menu. After that, choose a specific request.  </span>
-              </strong>
             </slot>
           </div>
 
