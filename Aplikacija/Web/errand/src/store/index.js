@@ -547,9 +547,12 @@ export default new Vuex.Store({
                         this.state.success = true
                         commit('setUser', data.rated_user)
                         if(isInUnratedCreated) {
-                            const index = this.state.unratedRequestsCreated.results.findIndex(req => req.id == filters.request)
-                            const request = this.state.unratedRequestsCreated.results[index]
-                            this.state.unratedRequestsCreated.results.splice(index, 1)
+                            if(this.state.unratedRequestsCreated) {
+                                const index = this.state.unratedRequestsCreated.results.findIndex(req => req.id == filters.request)
+                                if(index != -1) {
+                                    this.state.unratedRequestsCreated.results.splice(index, 1)
+                                }
+                            }
                             if(this.state.overAuthRequests) {
                                 const indexOver = this.state.overAuthRequests.results.findIndex(req => req.id == filters.request)
                                 this.state.overAuthRequests.results[indexOver].rated_created_by = true
@@ -560,9 +563,11 @@ export default new Vuex.Store({
                             }
                         }
                         else {
-                            const index = this.state.unratedRequestsDoneBy.results.findIndex(req => req.id == filters.request)
-                            const request = this.state.unratedRequestsDoneBy.results[index]
-                            this.state.unratedRequestsDoneBy.results.splice(index, 1)
+                            if(this.state.unratedRequestsDoneBy) {
+                                const index = this.state.unratedRequestsDoneBy.results.findIndex(req => req.id == filters.request)
+                                if(index != -1)
+                                    this.state.unratedRequestsDoneBy.results.splice(index, 1)
+                            }
                             if(this.state.overAuthRequests) {
                                 const indexOver = this.state.overAuthRequests.results.findIndex(req => req.id == filters.request)
                                 this.state.overAuthRequests.results[indexOver].rated_working_with = true
@@ -1585,6 +1590,36 @@ export default new Vuex.Store({
     mutations:{
         setUser(state, user) {
             state.user = user
+            if(state.createdAuthRequests) {
+                state.createdAuthRequests.results.map(req => {
+                    if(req.created_by.id == user.id) {
+                        req.created_by = user
+                    }
+                    else if(req.working_with.id == user.id) {
+                        req.working_with = user
+                    }
+                })
+            }
+            if(state.runnerAuthRequests) {
+                state.runnerAuthRequests.results.map(req => {
+                    if(req.created_by.id == user.id) {
+                        req.created_by = user
+                    }
+                    else if(req.working_with.id == user.id) {
+                        req.working_with = user
+                    }
+                })
+            }
+            if(state.overAuthRequests) {
+                state.overAuthRequests.results.map(req => {
+                    if(req.created_by.id == user.id) {
+                        req.created_by = user
+                    }
+                    else if(req.working_with.id == user.id) {
+                        req.working_with = user
+                    }
+                })
+            }
         },
         setUserAchievements(state, achievements) {
             state.userAchievements = achievements
