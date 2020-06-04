@@ -37,7 +37,7 @@
         </div>
         <Spinner v-if="!requests || (tab == 'Finished' && !isDataLoaded)" />
         <div class="request-div" v-else>
-            <RequestBox v-for="request in requests.results" :key="request.id" :myRequest="request"/>
+            <RequestBox v-for="request in requests.results" :key="request.id" :myRequest="request" @setMessages="setSuccessMessages"/>
             <i v-if="requests.results.length == 0 && tab == 'Finished' && isSerbian" class="natpis"> Trenutno nema zahteva u ovoj kategoriji </i>
             <i v-if="requests.results.length == 0 && tab == 'Finished' && !isSerbian" class="natpis"> No requests to display in this category </i>
         </div>
@@ -72,7 +72,7 @@
                       :textS="'Zahtev uspešno kreiran.'"
                       :textE="'Request successfully created.'"
                       @close="closeModal" />
-        <ModalSuccess v-if="reportCreated" 
+        <ModalSuccess v-if="success" 
                       :textS="'Uspešno prijavljen problem sa korisnikom.'" 
                       :textE="'User successfuly reported.'" 
                       @close="closeModalSuccess" />
@@ -126,7 +126,7 @@
             {
                 return this.$store.state.userAdded
             },
-            reportCreated() 
+            success() 
             {
                 return this.$store.state.success
             },
@@ -143,7 +143,9 @@
         {
             return{
                 tab:"Requested",
-                currentPage : 1
+                currentPage : 1,
+                textMessageS: "",
+                textmMessageE: ""
             }
         },
         methods:{
@@ -215,6 +217,12 @@
                     unrated_done_by: null
                 }
                 this.$store.dispatch("fillRequests", {filters: filters, objectToFill: { object:"overAuthRequests", page: this.currentPage }})
+            },
+            setSuccessMessages({textMessageS, textMessageE}) 
+            {
+                this.textMessageS = textMessageS
+                this.textMessageE = textMessageE
+                this.messagesSet = true
             }
         },
         created()

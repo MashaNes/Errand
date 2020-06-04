@@ -10,11 +10,22 @@
       </div>  
     </div>
     <div class="request-side">
-      <div class="chk-rated-wrap">
-        <div class="chk-rated-div">
-          <input type="checkbox" v-model="showAll" class="chk-box" />
-          <span v-if="!showAll" v-text="isSerbian ? 'Prikaži i ocenjene zahteve' : 'Show rated requests too'"></span>
-          <span v-else v-text="isSerbian ? 'Prikaži samo neocenjene zahteve' : 'Show only unrated requests'"></span> 
+      <div class="request-side-top-wrap">
+        <div class="request-side-top">
+          <div class="report-top">
+            <b-button class="report-top-btn" variant="danger" @click="showModalReport = true">
+              <div>
+                <img src="../assets/report.png" class="btn-image">
+                <span v-text="isSerbian ? 'Prijavi' : 'Report'"></span>
+              </div>
+            </b-button>
+            <img src="../assets/info.svg" v-b-popover.hover.bottom="popoverMessage" />
+          </div>
+          <div class="chk-box-div">
+            <input type="checkbox" v-model="showAll" class="chk-box" />
+            <span v-if="!showAll" v-text="isSerbian ? 'Prikaži i ocenjene zahteve' : 'Show rated requests too'"></span>
+            <span v-else v-text="isSerbian ? 'Prikaži samo neocenjene zahteve' : 'Show only unrated requests'"></span> 
+          </div>
         </div>
       </div>
       <Spinner v-if="!requests" />
@@ -23,6 +34,10 @@
       </div>
     </div>
     <ModalSuccess v-if="success && messagesSet" :textS="textMessageS" :textE="textMessageE" @close="closeModalSuccess"/>
+    <ModalReportUser 
+      v-if="showModalReport" @close="showModalReport = false" 
+      :userToReport="user" @setMessages="setMessagesReport"
+    />
   </div>
 </template>
 
@@ -32,6 +47,7 @@ import AsideProfileInfo from "@/components/AsideProfileInfo"
 import Spinner from "@/components/Spinner"
 import RateOrReportBox from "@/components/RateOrReportBox"
 import ModalSuccess from "@/components/ModalSuccess"
+import ModalReportUser from "@/components/ModalReportUser"
 
 export default {
   
@@ -39,7 +55,8 @@ export default {
     AsideProfileInfo,
     Spinner,
     RateOrReportBox,
-    ModalSuccess
+    ModalSuccess,
+    ModalReportUser
   },
   props: {
     user: {
@@ -50,6 +67,7 @@ export default {
   data() {
     return {
       showModalAreYouSure: false,
+      showModalReport: false,
       rating: {},
       showAll: false,
       fetchedAll: false,
@@ -61,6 +79,12 @@ export default {
   computed: {
     isSerbian() {
       return this.$store.state.isSerbian
+    },
+    popoverMessage() {
+      if(this.isSerbian) {
+        return "Prijavite korisnika nevezano za konkretan zahtev"
+      }
+      else return "Report user without specifying a request"
     },
     fullUserName() {
       return this.user.firstName + " " +this.user.lastName
@@ -129,6 +153,12 @@ export default {
       this.textMessageS = textMessageS
       this.textMessageE = textMessageE
       this.messagesSet = true
+    },
+    setMessagesReport() {
+      this.setMessages({
+        textMessageS: "Uspešno prijavljen problem sa korisnikom.",
+        textMessageE: "User successfully reported."
+      })
     }
   },
   created() {
@@ -206,19 +236,35 @@ export default {
     align-items: center;
   }
 
-  .chk-rated-wrap {
+  .request-side-top-wrap {
     width: 100%;
     display: flex;
   }
 
-  .chk-rated-div {
+  .request-side-top {
     margin: 30px 15% 10px 15%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .report-top {
+    margin-bottom: 10px;
+    display:flex;
+    align-items: center;
+  }
+
+  .report-top-btn {
+    margin-right: 5px;
+  }
+
+  .chk-box-div {
     border: 1px solid black;
+    background-color: white;
     display: flex;
     align-items: center;
-    padding: 10px;
-    background-color: white;
     border-radius: 10px;
+    padding: 10px;
   }
 
   .req-wrap {
@@ -232,8 +278,15 @@ export default {
     margin-bottom: 2px;
   }
 
+  .btn-image {
+    height: 18px;
+    width: 18px;
+    margin-right: 5px;
+    margin-bottom: 3px;
+  }
+
   @media only screen and (max-width:900px) {
-    .chk-rated-div {
+    .request-side-top {
       margin: 30px 10% 10px 10%;
     }
   }
@@ -270,7 +323,7 @@ export default {
       margin: 5px 5px 5px 5px;
     }
 
-    .chk-rated-div {
+    .request-side-top {
       margin: 20px 5% 10px 5%;
     }
     
