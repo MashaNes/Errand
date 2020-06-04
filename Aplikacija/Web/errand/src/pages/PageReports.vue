@@ -118,15 +118,12 @@ export default {
             var reporter = this.searchData.sender == '' ? null : this.searchData.sender
             var reported = this.searchData.reported == '' ? null : this.searchData.reported
             this.$store.dispatch("fillHandeledReports", {reporter: reporter, reported: reported, page: 1})
-            //with search parameters
         },
         getAnotherPortion()
         {
             var reporter = this.searchData.sender == '' ? null : this.searchData.sender
             var reported = this.searchData.reported == '' ? null : this.searchData.reported
             this.$store.dispatch("fillHandeledReports", {reporter: reporter, reported: reported, page: this.currentPage})
-            //with search parameters
-            //with page equal to currentPage
         }
     },
     validations:

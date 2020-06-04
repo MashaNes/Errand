@@ -60,10 +60,10 @@
               <li class="stavka-navigacije" v-if="isSerbian"> Nova usluga </li>
               <li class="stavka-navigacije" v-else> New service </li>
             </router-link>
-            <!--<router-link>-->
+            <router-link :to = "'/addAchievement'">
               <li class="stavka-navigacije" v-if="isSerbian"> Novo dostignuće </li>
               <li class="stavka-navigacije" v-else> New achievement </li>
-            <!--</router-link>-->
+            </router-link>
             <li class="stavka-navigacije" v-if="isSerbian" @click="odjaviSe"> Odjavi se </li>
             <li class="stavka-navigacije" v-else @click="odjaviSe"> Log out </li>
           </ul>

@@ -29,6 +29,7 @@ import PageAdminServices from "@/pages/PageAdminServices"
 import PageReports from "@/pages/PageReports"
 import PageUncategorizedTasks from "@/pages/PageUncategorizedTasks"
 import PageViewRequestAdmin from "@/pages/PageViewRequestAdmin"
+import PageNewAchievement from "@/pages/PageNewAchievement"
 
 Vue.use(Router)
 
@@ -389,6 +390,24 @@ const router = new Router(
                 path: "/requestAdmin/:editable/:id",
                 name: "PageViewRequestAdmin",
                 component: PageViewRequestAdmin,
+                props: true,
+                beforeEnter(to,from,next)
+                {
+                    if(store.state.logedIn)
+                    {
+                        if(store.state.isAdmin)
+                            next()
+                        else
+                        next({name: 'PageForbidden'})
+                    }
+                    else
+                        next({name: 'PageNotAuthenticated'})
+                }
+            },
+            {
+                path: "/addAchievement",
+                name: "PageNewAchievement",
+                component: PageNewAchievement,
                 props: true,
                 beforeEnter(to,from,next)
                 {

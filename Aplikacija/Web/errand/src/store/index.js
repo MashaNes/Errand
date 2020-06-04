@@ -14,6 +14,7 @@ import {fetchActiveReports} from "@/api/activeReports.js"
 import {fetchHandeledReports} from "@/api/handeledReports.js"
 import {fetchRequestsOther} from "@/api/requestsOther.js"
 import {fetchStatistics} from "@/api/statistics.js"
+import {fetchAllAchievements} from "@/api/allAchievements.js"
 
 export default new Vuex.Store({
     state:{
@@ -61,7 +62,8 @@ export default new Vuex.Store({
         handeledReports: null,
         success: false,
         onPageOne: false,
-        statistics: null
+        statistics: null,
+        achievements: null
     },
     getters:{
         getAuthUserId(state) {
@@ -840,6 +842,8 @@ export default new Vuex.Store({
                         this.state.activeReports = null
                         this.state.handeledReports = null
                         this.state.onPageOne = false
+                        this.state.statistics = null
+                        this.state.achievements = null
                         Vue.cookie.delete('id');
                         Vue.cookie.delete('token');
                         Vue.cookie.delete('ime');
@@ -1572,6 +1576,10 @@ export default new Vuex.Store({
         getStatistics()
         {
             this.state.statistics = fetchStatistics()
+        },
+        getAllAchievements()
+        {
+            this.state.achievements = fetchAllAchievements()
         }
     },
     mutations:{

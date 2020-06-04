@@ -20,7 +20,7 @@
             <div class="odabir-kategorije" v-if="isEditing">
                 <div class="opcije"> 
                     <v-select :options="services" label="service_type_sr" v-model="myCategory" class="selekt" v-if="isSerbian" :clearable="false"></v-select> 
-                    <v-select :options="services" label="service_type_en" v-model="myCategory" class="selekt" v-else :clearable="false">></v-select> 
+                    <v-select :options="services" label="service_type_en" v-model="myCategory" class="selekt" v-else :clearable="false"></v-select> 
                     <img src="../assets/info.svg" v-if="myCategory != null && isSerbian" v-b-popover.hover.bottom="myCategory.description_sr">
                     <img src="../assets/info.svg" v-if="myCategory != null && !isSerbian" v-b-popover.hover.bottom="myCategory.description_en">
                 </div>

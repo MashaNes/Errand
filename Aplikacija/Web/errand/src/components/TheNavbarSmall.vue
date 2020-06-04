@@ -92,11 +92,11 @@
                                 <span v-if="isSerbian" class = "ikonica"> Nova usluga </span>
                                 <span v-else class = "ikonica"> New service </span>
                             </router-link>
-                            <a class="dropdown-item">
+                            <router-link :to = "'/addAchievement'" class="dropdown-item">
                                 <img src = "../assets/achievement-add.svg" class="slichka">
                                 <span v-if="isSerbian" class = "ikonica"> Novo dostignuće </span>
                                 <span v-else class = "ikonica"> New achievement </span>
-                            </a>
+                            </router-link>
                             <div class="dropdown-divider"></div>
                             <a @click="odjaviSe" class="dropdown-item">
                                 <img src = "../assets/logout.svg">
