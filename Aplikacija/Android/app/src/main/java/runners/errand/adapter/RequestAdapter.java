@@ -65,6 +65,7 @@ public class RequestAdapter extends BaseAdapter {
         ImageView image = view.findViewById(R.id.item_request_status);
 
         LinearLayout services = view.findViewById(R.id.item_request_services);
+        if (services.getChildCount() > 0) services.removeViews(0, services.getChildCount());
         for (Task task : request.getTasks()) {
             View v = LayoutInflater.from(context).inflate(R.layout.item_service, services, false);
             ((TextView) v.findViewById(R.id.item_request_service)).setText(task.getService().getType());

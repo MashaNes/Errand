@@ -42,6 +42,8 @@ public class RequestFragment extends Fragment {
 			return root;
 		}
 
+		activity.setTitle(request.getName());
+
 		fragments.clear();
 		fragments.add(new TasksFragment());
 		fragments.add(new MapFragment());

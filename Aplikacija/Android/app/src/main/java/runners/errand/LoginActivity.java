@@ -19,6 +19,8 @@ import android.widget.ProgressBar;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import runners.errand.model.User;
+import runners.errand.utils.Static;
 import runners.errand.utils.dialogs.SimpleDialog;
 import runners.errand.utils.PreferenceManager;
 import runners.errand.utils.net.NetManager;
@@ -62,20 +64,14 @@ public class LoginActivity extends AppCompatActivity {
 		findViewById(R.id.login_up_btn).setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				findViewById(R.id.login_layout_bottom_in).setVisibility(View.GONE);
-				findViewById(R.id.login_layout_center_in).setVisibility(View.GONE);
-				findViewById(R.id.login_layout_bottom_up).setVisibility(View.VISIBLE);
-				findViewById(R.id.login_layout_center_up).setVisibility(View.VISIBLE);
+				showSignUp();
 			}
 		});
 
 		findViewById(R.id.login_in_btn).setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				findViewById(R.id.login_layout_bottom_up).setVisibility(View.GONE);
-				findViewById(R.id.login_layout_center_up).setVisibility(View.GONE);
-				findViewById(R.id.login_layout_bottom_in).setVisibility(View.VISIBLE);
-				findViewById(R.id.login_layout_center_in).setVisibility(View.VISIBLE);
+				showLogin();
 			}
 		});
 
@@ -137,7 +133,7 @@ public class LoginActivity extends AppCompatActivity {
 			NetManager.setToken(token);
 			apiGetUser(findViewById(R.id.login), userId);
 		} else {
-			findViewById(R.id.login_in_btn).callOnClick();
+			showLogin();
 		}
 	}
 
@@ -153,6 +149,20 @@ public class LoginActivity extends AppCompatActivity {
 		super.onResume();
 	}
 
+	private void showLogin() {
+		findViewById(R.id.login_layout_bottom_up).setVisibility(View.GONE);
+		findViewById(R.id.login_layout_center_up).setVisibility(View.GONE);
+		findViewById(R.id.login_layout_bottom_in).setVisibility(View.VISIBLE);
+		findViewById(R.id.login_layout_center_in).setVisibility(View.VISIBLE);
+	}
+
+	private void showSignUp() {
+		findViewById(R.id.login_layout_bottom_in).setVisibility(View.GONE);
+		findViewById(R.id.login_layout_center_in).setVisibility(View.GONE);
+		findViewById(R.id.login_layout_bottom_up).setVisibility(View.VISIBLE);
+		findViewById(R.id.login_layout_center_up).setVisibility(View.VISIBLE);
+	}
+
 	private void startLoading() {
 		findViewById(R.id.login).setVisibility(View.INVISIBLE);
 		findViewById(R.id.sign_up).setVisibility(View.INVISIBLE);
@@ -161,6 +171,9 @@ public class LoginActivity extends AppCompatActivity {
 	}
 
 	private void stopLoading() {
+		if (findViewById(R.id.login_layout_bottom_in).getVisibility() != View.VISIBLE && findViewById(R.id.login_layout_bottom_up).getVisibility() != View.VISIBLE) {
+			showLogin();
+		}
 		findViewById(R.id.login_progress).setVisibility(View.INVISIBLE);
 		findViewById(R.id.sign_up_progress).setVisibility(View.INVISIBLE);
 		findViewById(R.id.login).setVisibility(View.VISIBLE);
@@ -176,8 +189,13 @@ public class LoginActivity extends AppCompatActivity {
 					@Override
 					public void run() {
 						Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-						intent.putExtra("user", getResult().getMsg());
-						startActivity(intent);
+						try {
+							Static.user = new User(new JSONObject(getResult().getMsg()));
+							startActivity(intent);
+						} catch (JSONException e) {
+							e.printStackTrace();
+							SimpleDialog.buildMessageDialog(activity, getString(R.string.error), getString(R.string.error_login) + "\n" + getResult().getMsg(), "json/LA-" + (getResult().getType() == NetResult.TYPE_ERROR_LOCAL ? "L" : "R"), null);
+						}
 					}
 				}, 300);
 				icon.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.slide_out));
@@ -274,9 +292,9 @@ public class LoginActivity extends AppCompatActivity {
 		request.putParam("first_name", firstName);
 		request.putParam("last_name", lastName);
 		request.putParam("phone", phone);
-		request.putParam("picture", null);
-		request.putParam("benefit_discount", null);
-		request.putParam("benefit_requirement", null);
+		request.putNull("picture");
+		request.putNull("benefit_discount");
+		request.putNull("benefit_requirement");
 		NetManager.add(request);
 		v.setEnabled(false);
 	}

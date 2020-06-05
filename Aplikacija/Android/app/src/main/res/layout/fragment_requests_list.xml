@@ -39,6 +39,8 @@
 		android:layout_height="match_parent">
 
 		<TextView
+			android:id="@+id/requests_list_no_items"
+			android:visibility="invisible"
 			android:text="@string/no_requests"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
@@ -49,8 +51,6 @@
 
 		<ListView
 			android:id="@+id/list_view"
-			android:background="@color/colorWhite"
-			android:overScrollMode="never"
 			android:layout_width="match_parent"
 			android:layout_height="match_parent"/>
 	</FrameLayout>

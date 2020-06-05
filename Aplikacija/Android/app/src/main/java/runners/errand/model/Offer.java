@@ -1,5 +1,9 @@
 package runners.errand.model;
 
+import androidx.annotation.NonNull;
+
+import org.json.JSONObject;
+
 public class Offer {
 	private static final int
 			PAYMENT_TYPE_FIXED = 0,
@@ -7,18 +11,25 @@ public class Offer {
 			PAYMENT_TYPE_PH = 2,
 			PAYMENT_TYPE_FIXED_PLUS = 3;
 
-	private int id, paymentType, request;
-	private float paymentAmount;
+	private int id, createdBy, paymentType, request, paymentAmount;
+	private Edit edit;
 
-	public Offer(int id, int paymentType, int request, float paymentAmount) {
-		this.id = id;
-		this.paymentType = paymentType;
-		this.request = request;
-		this.paymentAmount = paymentAmount;
+	public Offer(@NonNull JSONObject o) {
+		this.id = o.optInt("id");
+		this.createdBy = o.optInt("created_by");
+		this.paymentType = o.optInt("payment_type");
+		this.request = o.optInt("payment_ammount");
+		this.paymentAmount = o.optInt("request");
+		JSONObject edit = o.optJSONObject("edit");
+		if (edit != null) this.edit = new Edit(edit);
 	}
 
 	public int getId() {
 		return id;
+	}
+
+	public int getCreatedBy() {
+		return createdBy;
 	}
 
 	public int getPaymentType() {
@@ -29,7 +40,7 @@ public class Offer {
 		return request;
 	}
 
-	public float getPaymentAmount() {
+	public int getPaymentAmount() {
 		return paymentAmount;
 	}
 }

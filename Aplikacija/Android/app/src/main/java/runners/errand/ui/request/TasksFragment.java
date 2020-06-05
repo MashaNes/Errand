@@ -47,6 +47,9 @@ public class TasksFragment extends Fragment {
 		DisplayMetrics metrics = new DisplayMetrics();
 		parent.getMainActivity().getWindowManager().getDefaultDisplay().getMetrics(metrics);
 
+		// Destination
+		((TextView) root.findViewById(R.id.task_destination)).setText(request.getDestination().getName());
+
 		// Note
 		((TextView) root.findViewById(R.id.task_note)).setText(request.getNote());
 

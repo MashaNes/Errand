@@ -14,6 +14,7 @@
 	<string name="generic_yes">Yes</string>
 	<string name="generic_no">No</string>
 	<string name="generic_save">Save</string>
+	<string name="generic_cancel">Cancel</string>
 	<string name="generic_close">Close</string>
 	<string name="generic_success">Success</string>
 	<string name="generic_enabled">Enabled</string>
@@ -105,6 +106,7 @@
 	<string name="newrequest_info_min_rating">Min rating</string>
 	<string name="newrequest_info_min_rating_hint">" Minimum rating"</string>
 	<string name="newrequest_info_min_rating_info">Minimum rating of a Runner that can send offers for this request.</string>
+	<string name="newrequest_info_destination">Destination</string>
 	<string name="newrequest_task_service">Service</string>
 	<string name="newrequest_task_service_hint">" Service"</string>
 	<string name="newrequest_task_service_default">Select a service</string>
@@ -114,20 +116,74 @@
 	<string name="newrequest_task_description_hint">" Description"</string>
 	<string name="newrequest_task_checklist">Checklist</string>
 	<string name="newrequest_task_checklist_hint">" Checklist"</string>
+	<string name="newrequest_task_checklist_info">You can add a checklist by putting each item in a new row.</string>
 	<string name="newrequest_task_address">Address</string>
 	<string name="newrequest_task_address_hint">" Address"</string>
+	<string name="newrequest_task_address_default">Select an address</string>
 	<string name="newrequest_task_address_other">Other</string>
 	<string name="newrequest_task_address_other_desc">Choose an address that isn\'t saved to your account.</string>
 	<string name="newrequest_offers_broadcast">Broadcast</string>
 	<string name="newrequest_offers_broadcast_hint">" Broadcast"</string>
 	<string name="newrequest_offers_broadcast_info">Broadcasting requests will allow others to see them and send you offers.</string>
 	<string name="newrequest_offers_direct_info">You can send requests directly to Runners you prefer, they\'ll be notified and able to send you an offer.</string>
-	<string name="newrequest_offers_direct_add">Add another Runner</string>
+	<string name="newrequest_offers_direct_add">Add a Runner</string>
 
 	<string name="notifications_tab_requested">Requested</string>
 	<string name="notifications_tab_running">Running</string>
 	<string name="notifications_tab_other">Other</string>
 	<string name="no_notifications">You don\'t have any notifications in this category.</string>
+	
+	<string name="settings_notifications">Notifications</string>
+	<string name="settings_notifications_new_rating">New rating</string>
+	<string name="settings_notifications_new_rating_desc">Receive a push notification every time someone rates your account.</string>
+	<string name="settings_notifications_achievement">Achievement</string>
+	<string name="settings_notifications_achievement_desc">Receive a push notification every time you unlock a new achievement.</string>
+	<string name="settings_notifications_offer_accepted">Offer accepted</string>
+	<string name="settings_notifications_offer_accepted_desc">Receive a push notification every time someone accepts your offer.</string>
+	<string name="settings_notifications_offer_declined">Offer declined</string>
+	<string name="settings_notifications_offer_declined_desc">Receive a push notification every time someone declines your offer.</string>
+	<string name="settings_notifications_offer_request_canceled">Request canceled</string>
+	<string name="settings_notifications_offer_request_canceled_desc">Receive a push notification every time someone cancels a request that has your offer accepted.</string>
+	<string name="settings_notifications_request_direct">Direct request</string>
+	<string name="settings_notifications_request_direct_desc">Allow people to send you push notifications about request they would like you to send an offer for.</string>
+	<string name="settings_notifications_request_success">Successful request</string>
+	<string name="settings_notifications_request_success_desc">Receive a push notification every time one of your requests is completed successfully.</string>
+	<string name="settings_notifications_request_failure">Failed request</string>
+	<string name="settings_notifications_request_failure_desc">Receive a push notification every time one of your requests fails to complete.</string>
+	<string name="settings_blocked">Blocked users</string>
+	<string name="settings_runner">Runner settings</string>
+	<string name="settings_runner_service_defaults">Service defaults</string>
+	<string name="settings_runner_service_defaults_desc">Set default pricing and filtering by maximum distance and minimum rating for each available service type.</string>
+	<string name="settings_runner_service_defaults_no_defaults">You don\'t have any preferences saved for this service type.</string>
+	<string name="settings_runner_service_defaults_payment_type">"Payment type"</string>
+	<string name="settings_runner_service_defaults_payment_amount">"Payment amount"</string>
+	<string name="settings_runner_service_defaults_max_distance">"Max distance"</string>
+	<string name="settings_runner_service_defaults_min_rating">"Min rating"</string>
+	<string name="settings_runner_service_defaults_clear">Clear service default</string>
+	<string name="settings_runner_service_defaults_clear_desc">Do you want to clear default values set for this service?</string>
+	<string name="settings_runner_working_hours">Working hours</string>
+	<string name="settings_runner_working_hours_desc">Set your working hours as a Runner. This will automatically mark your account active during your set working hours.</string>
+	<string-array name="settings_runner_working_hours_days">
+		<item>Monday</item>
+		<item>Tuesday</item>
+		<item>Wednesday</item>
+		<item>Thursday</item>
+		<item>Friday</item>
+		<item>Saturday</item>
+		<item>Sunday</item>
+	</string-array>
+	<string name="settings_runner_working_hours_empty">You don\'t have any working hours set for this day.</string>
+	<string name="settings_runner_benefits">Benefits</string>
+	<string name="settings_runner_benefits_desc">Set discounts for users you work like working with as a Runner.</string>
+	<string name="settings_runner_benefits_auto">Auto add</string>
+	<string name="settings_runner_benefits_auto_desc">Automatically add users that you\'ve worked with required number of times to the benefits list with a set discount.</string>
+	<string name="settings_runner_benefits_discount">Discount</string>
+	<string name="settings_runner_benefits_requirement">Requirement</string>
+
+	<string name="payment_type_fixed">Fixed</string>
+	<string name="payment_type_per_hour">Per hour</string>
+	<string name="payment_type_per_kilometer">Per kilometer</string>
+	<string name="payment_type_unknown">Unknown</string>
 
 	<string name="image_cd_add">Add</string>
 	<string name="image_cd_logout">Logout</string>
@@ -144,6 +200,7 @@
 
 	<string name="error">Error</string>
 	<string name="error_generic">An error occurred.</string>
+	<string name="error_generic_api">An error occurred while getting data from our servers.</string>
 	<string name="error_location_required">To use this functionality your location tracking needs to be on.</string>
 	<string name="error_file_write">Failed to write file to storage.</string>
 	<string name="error_login">Failed to sign in with given credentials.</string>

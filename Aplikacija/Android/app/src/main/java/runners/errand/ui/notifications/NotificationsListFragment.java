@@ -64,12 +64,13 @@ public class NotificationsListFragment extends Fragment {
 
 		if (notifications == null) {
 			notifications = new ArrayList<>();
+			// TODO: Notification categories
 			for (Notification n : activity.getUser().getNotifications()) {
-				if (index == 0 && n.getCategory() == Notification.CATEGORY_REQUEST)
+				if (index == 0 && n.getCategory() == 0)
 					notifications.add(n);
-				else if (index == 1 && n.getCategory() == Notification.CATEGORY_RUNNING)
+				else if (index == 1 && n.getCategory() == 1)
 					notifications.add(n);
-				else if (index == 2 && n.getCategory() >= Notification.CATEGORY_RATING)
+				else if (index == 2 && n.getCategory() >= 2)
 					notifications.add(n);
 			}
 		}
@@ -87,11 +88,14 @@ public class NotificationsListFragment extends Fragment {
 				Bundle args = new Bundle();
 
 				switch (n.getCategory()) {
-					case Notification.CATEGORY_REQUEST:
-					case Notification.CATEGORY_RUNNING:
-						// TODO: Get request id from notification and open request activity
+					case Notification.CATEGORY_OFFER_ACCEPTED:
+					case Notification.CATEGORY_OFFER_DECLINED:
+					case Notification.CATEGORY_OFFER_DIRECT_REQUEST:
+					case Notification.CATEGORY_REQUEST_SUCCESS:
+					case Notification.CATEGORY_REQUEST_FAILURE:
+						// TODO: Get request id from notification and open request fragment
 						break;
-					case Notification.CATEGORY_RATING:
+					case Notification.CATEGORY_NEW_RATING:
 						args.putInt(ProfileFragment.ARG_KEY_TAB_SELECT, 1);
 						activity.navigateTo(R.id.nav_page_profile, args);
 						break;

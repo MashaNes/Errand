@@ -135,25 +135,40 @@
 				android:text="@string/newrequest_task_description" />
 		</androidx.constraintlayout.widget.ConstraintLayout>
 
+		<TextView
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_marginTop="12dp"
+			android:layout_marginBottom="4dp"
+			android:paddingHorizontal="16dp"
+			android:text="@string/newrequest_task_checklist_info"
+			android:textSize="@dimen/text_small"/>
+
 		<androidx.constraintlayout.widget.ConstraintLayout
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:minHeight="28dp"
 			android:layout_marginHorizontal="8dp"
-			android:layout_marginTop="12dp"
 			android:paddingBottom="4dp"
 			android:orientation="horizontal"
 			android:background="@drawable/edit_text_login">
 
-			<LinearLayout
+			<EditText
 				android:id="@+id/item_task_checklist"
+				android:hint="@string/newrequest_task_description_hint"
+				app:layout_constraintTop_toTopOf="parent"
+				app:layout_constraintEnd_toEndOf="parent"
+				app:layout_constraintStart_toEndOf="@id/item_task_checklist_label"
 				android:layout_width="0dp"
 				android:layout_height="wrap_content"
-				android:orientation="vertical"
-				app:layout_constraintTop_toTopOf="parent"
-				app:layout_constraintStart_toEndOf="@id/item_task_checklist_label"
-				app:layout_constraintEnd_toEndOf="parent"
-				android:paddingBottom="4dp"/>
+				android:layout_marginTop="4dp"
+				android:layout_weight="1"
+				android:descendantFocusability="beforeDescendants"
+				style="@style/EditText.Login"
+				android:paddingStart="8dp"
+				android:paddingEnd="8dp"
+				android:importantForAutofill="no"
+				android:inputType="textMultiLine"/>
 
 			<TextView
 				android:id="@+id/item_task_checklist_label"
@@ -196,6 +211,7 @@
 				android:layout_height="match_parent"
 				android:layout_weight="1"
 				android:focusable="false"
+				android:text="@string/newrequest_task_address_default"
 				style="@style/EditText.Login"
 				android:paddingStart="8dp"
 				android:paddingEnd="8dp"
@@ -204,17 +220,22 @@
 		</LinearLayout>
 
 		<LinearLayout
+			android:id="@+id/item_task_service_layout"
 			android:layout_width="match_parent"
 			android:layout_height="28dp"
 			android:layout_marginTop="12dp"
 			android:layout_marginHorizontal="8dp"
+			android:clickable="true"
 			android:orientation="horizontal"
-			android:background="@drawable/edit_text_login">
+			android:background="@drawable/edit_text_login"
+			tools:ignore="KeyboardInaccessibleWidget">
 
 			<TextView
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				style="@style/TextView.Service"
+				android:focusable="false"
+				android:clickable="false"
 				android:layout_marginStart="8dp"
 				android:layout_marginLeft="8dp"
 				android:text="@string/request_info_service"/>
@@ -225,7 +246,7 @@
 				android:layout_width="0dp"
 				android:layout_height="match_parent"
 				android:layout_weight="1"
-				android:enabled="false"
+				android:focusable="false"
 				android:text="@string/newrequest_task_service_default"
 				style="@style/EditText.Login"
 				android:paddingStart="8dp"

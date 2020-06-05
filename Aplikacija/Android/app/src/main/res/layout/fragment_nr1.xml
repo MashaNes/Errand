@@ -162,5 +162,39 @@
 				android:importantForAutofill="no"
 				android:inputType="numberDecimal" />
 		</LinearLayout>
+
+		<LinearLayout
+			android:layout_width="match_parent"
+			android:layout_height="28dp"
+			android:layout_marginTop="12dp"
+			android:layout_marginHorizontal="8dp"
+			android:orientation="horizontal"
+			android:clickable="true"
+			android:background="@drawable/edit_text_login"
+			tools:ignore="KeyboardInaccessibleWidget">
+
+			<TextView
+				android:text="@string/newrequest_info_destination"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:clickable="false"
+				android:focusable="false"
+				style="@style/TextView.Service"
+				android:layout_marginStart="8dp"
+				android:layout_marginLeft="8dp"/>
+
+			<TextView
+				android:id="@+id/newrequest_info_destination_et"
+				android:layout_width="0dp"
+				android:layout_height="match_parent"
+				android:layout_weight="1"
+				android:focusable="false"
+				android:ellipsize="end"
+				android:lines="1"
+				android:maxLines="1"
+				style="@style/EditText.Login"
+				android:paddingStart="8dp"
+				android:paddingEnd="8dp" />
+		</LinearLayout>
 	</LinearLayout>
 </ScrollView>

@@ -25,11 +25,15 @@ public class Request {
     private Date time;
     private String name, note;
     private boolean pictureRequired;
+    private boolean broadcast;
     private Service service;
+    private Address destination;
     private ArrayList<String> pictures = new ArrayList<>();
     private ArrayList<Task> tasks = new ArrayList<>();
     private ArrayList<Offer> offers = new ArrayList<>();
+    private Offer acceptedOffer;
     private User createdBy;
+    private Rating rating;
 
     public Request() {};
 
@@ -58,7 +62,21 @@ public class Request {
             }
         }
 
-        // TODO: Offers
+        JSONObject acceptedOffer = o.optJSONObject("accepted_offer");
+        if (acceptedOffer != null) {
+            this.acceptedOffer = new Offer(acceptedOffer);
+        } else {
+            JSONArray offers = o.optJSONArray("offers");
+            if (offers != null) {
+                for (int i = 0; i < offers.length(); i++) {
+                    JSONObject offer = offers.optJSONObject(i);
+                    if (offer != null) this.offers.add(new Offer(offer));
+                }
+            }
+        }
+
+        JSONObject rating = o.optJSONObject("rating");
+        if (rating != null) this.rating = new Rating(rating);
 
         this.name = o.optString("name");
         this.status = o.optInt("status");
@@ -69,34 +87,16 @@ public class Request {
             e.printStackTrace();
             this.time = null;
         }
+
+        JSONObject destination = o.optJSONObject("destination");
+        if (destination != null) this.destination = new Address(destination);
+
         this.pictureRequired = o.optBoolean("picture_required");
+        this.broadcast = o.optBoolean("broadcast");
         this.note = o.optString("note");
         this.requestType = o.optInt("request_type");
         this.maxDistance = o.optDouble("max_dist");
         this.minRating = o.optDouble("min_rating");
-    }
-
-    public Request(int id, int status, int locationStatus, Date time, String name, String note, boolean pictureRequired, Service service) {
-        this.id = id;
-        this.status = status;
-        this.locationStatus = locationStatus;
-        this.time = time;
-        this.name = name;
-        this.note = note;
-        this.pictureRequired = pictureRequired;
-        this.service = service;
-    }
-
-    public void setPictures(ArrayList<String> pictures) {
-        this.pictures = pictures;
-    }
-
-    public void setTasks(ArrayList<Task> tasks) {
-        this.tasks = tasks;
-    }
-
-    public void setOffers(ArrayList<Offer> offers) {
-        this.offers = offers;
     }
 
     public int getId() {
@@ -105,10 +105,6 @@ public class Request {
 
     public int getStatus() {
         return status;
-    }
-
-    public int getLocationStatus() {
-        return locationStatus;
     }
 
     public Service getService() {
@@ -127,10 +123,6 @@ public class Request {
         return note;
     }
 
-    public boolean isPictureRequired() {
-        return pictureRequired;
-    }
-
     public ArrayList<String> getPictures() {
         return pictures;
     }
@@ -139,48 +131,8 @@ public class Request {
         return tasks;
     }
 
-    public ArrayList<Offer> getOffers() {
-        return offers;
-    }
-
-    public int getRequestType() {
-        return requestType;
-    }
-
-    public double getMaxDistance() {
-        return maxDistance;
-    }
-
-    public double getMinRating() {
-        return minRating;
-    }
-
     public User getCreatedBy() {
         return createdBy;
-    }
-
-    public void setStatus(int status) {
-        this.status = status;
-    }
-
-    public void setLocationStatus(int locationStatus) {
-        this.locationStatus = locationStatus;
-    }
-
-    public void setRequestType(int requestType) {
-        this.requestType = requestType;
-    }
-
-    public void setMaxDistance(double maxDistance) {
-        this.maxDistance = maxDistance;
-    }
-
-    public void setMinRating(double minRating) {
-        this.minRating = minRating;
-    }
-
-    public void setTime(Date time) {
-        this.time = time;
     }
 
     public void setName(String name) {
@@ -191,15 +143,39 @@ public class Request {
         this.note = note;
     }
 
-    public void setPictureRequired(boolean pictureRequired) {
-        this.pictureRequired = pictureRequired;
-    }
-
     public void setService(Service service) {
         this.service = service;
     }
 
-    public void setCreatedBy(User createdBy) {
-        this.createdBy = createdBy;
+    public Address getDestination() {
+        return destination;
+    }
+
+    public void setDestination(Address destination) {
+        this.destination = destination;
+    }
+
+    public boolean isBroadcast() {
+        return broadcast;
+    }
+
+    public void setBroadcast(boolean broadcast) {
+        this.broadcast = broadcast;
+    }
+
+    public double getMaxDistance() {
+        return maxDistance;
+    }
+
+    public void setMaxDistance(double maxDistance) {
+        this.maxDistance = maxDistance;
+    }
+
+    public double getMinRating() {
+        return minRating;
+    }
+
+    public void setMinRating(double minRating) {
+        this.minRating = minRating;
     }
 }

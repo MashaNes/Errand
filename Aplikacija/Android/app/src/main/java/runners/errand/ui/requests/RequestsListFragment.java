@@ -5,6 +5,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,8 +23,7 @@ import runners.errand.model.Request;
 import runners.errand.ui.request.RequestFragment;
 
 public class RequestsListFragment extends Fragment {
-	private static final String
-			SIS_KEY_INDEX = "runners.errand.ui.requests.index";
+	private static final String SIS_KEY_INDEX = "runners.errand.ui.requests.index";
 
 	private MainActivity activity;
 
@@ -32,6 +32,9 @@ public class RequestsListFragment extends Fragment {
     private View.OnClickListener listener;
     private boolean hidePlusButton = false;
 	private int icon_id;
+	private ListView list;
+	private RequestAdapter adapter;
+	private TextView noItems;
 
 	private ArrayList<Request> requests;
 
@@ -92,21 +95,15 @@ public class RequestsListFragment extends Fragment {
         }
 
         if (requests == null) {
-			requests = new ArrayList<>();
-			for (Request r : activity.getUser().getRequests()) {
-				if (index == 0 && r.getStatus() <= Request.STATUS_ACTIVE && r.getCreatedBy().getId() == activity.getUser().getId())
-					requests.add(r);
-				if (index == 1 && r.getStatus() <= Request.STATUS_ACTIVE && r.getCreatedBy().getId() != activity.getUser().getId())
-					requests.add(r);
-				if (index == 2 && r.getStatus() > Request.STATUS_ACTIVE)
-					requests.add(r);
-			}
+        	requests = new ArrayList<>();
+			loadRequests();
 		}
 
-		ListView list = root.findViewById(R.id.list_view);
-		RequestAdapter adapter = new RequestAdapter(activity, requests);
+		noItems = root.findViewById(R.id.requests_list_no_items);
+		list = root.findViewById(R.id.list_view);
+		adapter = new RequestAdapter(activity, requests);
 		list.setAdapter(adapter);
-		if (requests.size() <= 0) list.setVisibility(View.GONE);
+		if (requests.size() <= 0) noItems.setVisibility(View.VISIBLE);
 
 		list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
@@ -114,12 +111,30 @@ public class RequestsListFragment extends Fragment {
 				Bundle bundle = new Bundle();
 				bundle.putInt(RequestFragment.ARG_KEY_REQUEST_ID, requests.get(position).getId());
 				activity.navigateTo(R.id.nav_page_request, bundle);
-				activity.setTitle(requests.get(position).getName());
+				activity.setTitle(R.string.menu_requests);
 			}
 		});
 
         return root;
     }
+
+    private void loadRequests() {
+		requests.clear();
+		for (Request r : activity.getUser().getRequests()) {
+			if (index == 0 && r.getStatus() <= Request.STATUS_ACTIVE && r.getCreatedBy().getId() == activity.getUser().getId())
+				requests.add(r);
+			if (index == 1 && r.getStatus() <= Request.STATUS_ACTIVE && r.getCreatedBy().getId() != activity.getUser().getId())
+				requests.add(r);
+			if (index == 2 && r.getStatus() > Request.STATUS_ACTIVE)
+				requests.add(r);
+		}
+	}
+
+    void dataSetChanged() {
+		loadRequests();
+		Log.e("ERROR", index + " " + requests.size() + " - ");
+		adapter.notifyDataSetChanged();
+	}
 
 	@Override
 	public void onSaveInstanceState(@NonNull Bundle outState) {

@@ -5,28 +5,26 @@ import androidx.annotation.NonNull;
 import org.json.JSONObject;
 
 public class Benefit {
-	private int id, benefitUser;
-	private float discount;
+	private int id;
+	private User user;
+	private double discount;
 
 	public Benefit(@NonNull JSONObject o) {
-
-	}
-
-	public Benefit(int id, int benefitUser, float discount) {
-		this.id = id;
-		this.benefitUser = benefitUser;
-		this.discount = discount;
+		this.id = o.optInt("id");
+		this.discount = o.optDouble("discount");
+		JSONObject user = o.optJSONObject("benefit_user");
+		if (user != null) this.user = new User(user);
 	}
 
 	public int getId() {
 		return id;
 	}
 
-	public int getBenefitUser() {
-		return benefitUser;
+	public User getUser() {
+		return user;
 	}
 
-	public float getDiscount() {
+	public double getDiscount() {
 		return discount;
 	}
 }

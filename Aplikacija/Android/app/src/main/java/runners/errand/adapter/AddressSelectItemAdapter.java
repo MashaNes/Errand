@@ -49,7 +49,7 @@ public class AddressSelectItemAdapter extends BaseAdapter {
 		View view;
 
 		if (convertView == null) {
-			view = LayoutInflater.from(activity).inflate(R.layout.item_address_select, parent, false);
+			view = LayoutInflater.from(activity).inflate(R.layout.item_list_select, parent, false);
 		} else {
 			view = convertView;
 		}

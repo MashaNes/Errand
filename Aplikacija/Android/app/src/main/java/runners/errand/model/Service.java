@@ -1,10 +1,13 @@
 package runners.errand.model;
 
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
 public class Service {
     private int id;
@@ -14,8 +17,13 @@ public class Service {
 
     public Service(@NonNull JSONObject o) {
         this.id = o.optInt("id");
-        this.type = o.optString("service_type");
-        this.description = o.optString("description");
+        if (Locale.getDefault().getLanguage().equals("sr")) {
+            this.type = o.optString("service_type_sr");
+            this.description = o.optString("description_sr");
+        } else {
+            this.type = o.optString("service_type_en");
+            this.description = o.optString("description_en");
+        }
         this.pictureRequired = o.optBoolean("picture_required");
     }
 

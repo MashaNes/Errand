@@ -40,6 +40,10 @@ public class NetManager extends AsyncTask<NetRequest, String, NetRequest> {
 	public static final String API_ADDRESS_ADD = API_BASE + "address_add/";
 	public static final String API_ADDRESS_UPDATE = API_BASE + "address_update/";
 	public static final String API_ADDRESS_REMOVE = API_BASE + "address_remove/";
+	public static final String API_SERVICES = API_BASE + "services/";
+	public static final String API_USER_SERVICES_ADD = API_BASE + "user_service_add/";
+	public static final String API_USER_SERVICES_UPDATE = API_BASE + "user_service_update/";
+	public static final String API_USER_SERVICES_REMOVE = API_BASE + "user_service_remove/";
 
 	public static final String POST = "POST";
 	public static final String GET = "GET";

@@ -29,7 +29,7 @@
 		<EditText
 			android:id="@+id/dialog_map_address_et"
 			android:hint="@string/profile_info_address_hint"
-			android:inputType="textPersonName"
+			android:inputType="textPostalAddress"
 			android:layout_width="0dp"
 			android:layout_height="match_parent"
 			android:layout_weight="1"

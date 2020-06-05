@@ -3,13 +3,14 @@ package runners.errand.model;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 public class Address {
 	private int id;
 	private String name;
 	private float lng, lat;
-	private boolean home, arrived;
+	private boolean home = false, arrived = false;
 
 	public Address() {}
 
@@ -84,5 +85,19 @@ public class Address {
 	public boolean equals(@Nullable Object obj) {
 		Address comp = ((Address) obj);
 		return comp != null && comp.getLat() == lat && comp.getLng() == lng && comp.getName().equals(name);
+	}
+
+	public JSONObject toJSON() {
+		JSONObject o = new JSONObject();
+		try {
+			o.put("name", name);
+			o.put("latitude", lat);
+			o.put("longitude", lng);
+			o.put("home", home);
+			o.put("arrived", arrived);
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		return o;
 	}
 }

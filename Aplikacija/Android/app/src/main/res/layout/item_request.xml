@@ -5,7 +5,6 @@
 	android:orientation="horizontal"
 	android:layout_width="match_parent"
 	android:layout_height="wrap_content"
-	android:background="@color/colorWhite"
 	android:descendantFocusability="blocksDescendants"
 	android:padding="8dp">
 
@@ -33,6 +32,7 @@
 		android:textColor="@color/colorBlack"/>
 
 	<TextView
+		android:visibility="gone"
 		android:id="@+id/item_request_date"
 		app:layout_constraintTop_toBottomOf="@id/item_request_name"
 		app:layout_constraintStart_toStartOf="parent"

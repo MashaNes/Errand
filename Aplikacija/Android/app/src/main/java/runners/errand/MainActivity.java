@@ -2,6 +2,10 @@ package runners.errand;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -9,6 +13,7 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.location.Criteria;
 import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -20,6 +25,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -32,6 +39,7 @@ import androidx.viewpager.widget.ViewPager;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.tabs.TabLayout;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -39,9 +47,14 @@ import java.util.ArrayList;
 
 import runners.errand.model.Service;
 import runners.errand.model.User;
+import runners.errand.utils.Static;
 import runners.errand.utils.dialogs.SimpleDialog;
 import runners.errand.utils.PreferenceManager;
 import runners.errand.utils.net.NetManager;
+import runners.errand.utils.net.NetRequest;
+import runners.errand.utils.net.NetResult;
+
+import static android.app.Notification.EXTRA_NOTIFICATION_ID;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 	public static final int PERMISSION_LOCATION = 0, PERMISSION_STORAGE = 1;
@@ -58,7 +71,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 	public boolean active = false;
 
 	private User user;
-	private ArrayList<Service> services;
+	private ArrayList<Service> services = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +79,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setContentView(R.layout.activity_main);
 
         activity = this;
+
+		apiGetServices();
 
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -114,15 +129,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // To change the nav menu icon in the toolbar at runtime
         // toolbar.setNavigationIcon(R.drawable.ic_achievements);
 
-		String tmp = getIntent().getStringExtra("user");
-		if (tmp != null) {
-			try {
-				user = new User(new JSONObject(tmp));
-			} catch (JSONException e) {
-				e.printStackTrace();
-				SimpleDialog.buildMessageDialog(activity, getString(R.string.error), getString(R.string.error_json), "user_json/MA-L", null);
-			}
-		}
+		user = Static.user;
     }
 
 	@Override
@@ -287,6 +294,31 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void setUser(User user) { this.user = user; }
+
+    private void apiGetServices() {
+		NetRequest netRequest = new NetRequest(NetManager.getApiServer() + NetManager.API_SERVICES, NetManager.GET) {
+			@Override
+			public void success() {
+				try {
+					JSONObject o = new JSONObject(getResult().getMsg());
+					JSONArray a = o.optJSONArray("results");
+					services.clear();
+					for (int i = 0; i < (a != null ? a.length() : 0); i++) {
+						services.add(0, new Service(a.getJSONObject(i)));
+					}
+				} catch (JSONException e) {
+					e.printStackTrace();
+					SimpleDialog.buildMessageDialog(activity, getString(R.string.error), getString(R.string.error_generic_api), "service/MA-" + (getResult().getType() == NetResult.TYPE_ERROR_LOCAL ? "L" : "R"), null);
+				}
+			}
+
+			@Override
+			public void error() {
+				SimpleDialog.buildMessageDialog(activity, getString(R.string.error), getString(R.string.error_generic_api), "service/MA-" + (getResult().getType() == NetResult.TYPE_ERROR_LOCAL ? "L" : "R"), null);
+			}
+		};
+		NetManager.add(netRequest);
+	}
 
     public ArrayList<Service> getServices() { return services; }
 

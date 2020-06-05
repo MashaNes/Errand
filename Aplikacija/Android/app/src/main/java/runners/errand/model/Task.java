@@ -3,6 +3,7 @@ package runners.errand.model;
 import androidx.annotation.NonNull;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -94,16 +95,6 @@ public class Task {
         return result.toString();
     }
 
-    static class ChecklistItem {
-        public int id;
-        public String s;
-
-        public ChecklistItem(int id, String s) {
-            this.id = id;
-            this.s = s;
-        }
-    }
-
     public void setId(int id) {
         this.id = id;
     }
@@ -130,5 +121,36 @@ public class Task {
 
     public void setChecklist(ArrayList<ChecklistItem> checklist) {
         this.checklist = checklist;
+    }
+
+    public static class ChecklistItem {
+        public int id;
+        public String s;
+
+        public ChecklistItem(int id, String s) {
+            this.id = id;
+            this.s = s;
+        }
+    }
+
+    public JSONObject toJSON() {
+        JSONObject o = new JSONObject();
+        try {
+            o.put("name", name);
+            o.put("description", description);
+            o.put("picture_required", pictureRequired);
+            JSONArray jsonArray = new JSONArray();
+            for (ChecklistItem item : checklist) {
+                JSONObject tmp = new JSONObject();
+                tmp.put("item", item.s);
+                jsonArray.put(tmp);
+            }
+            o.put("checklist", jsonArray);
+            o.put("address", address != null ? address.toJSON() : JSONObject.NULL);
+            o.put("service_type", service != null ? service.getId() : JSONObject.NULL);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return o;
     }
 }

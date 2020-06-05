@@ -1,8 +1,8 @@
 package runners.errand.utils.net;
 
 import android.content.Context;
-import android.util.Log;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -106,11 +106,59 @@ public class NetRequest {
 		this.params.put(key, String.format(Locale.getDefault(), "%f", value));
 	}
 
+	public void putParam(String key, double value) {
+		try {
+			this.json.put(key, value);
+		} catch (JSONException e) {
+			e.printStackTrace();
+			try {
+				this.json.put(key, JSONObject.NULL);
+			} catch (JSONException ex) {
+				ex.printStackTrace();
+			}
+		}
+		this.params.put(key, String.format(Locale.getDefault(), "%f", value));
+	}
+
+	public void putParam(String key, JSONObject value) {
+		try {
+			this.json.put(key, value);
+		} catch (JSONException e) {
+			e.printStackTrace();
+			try {
+				this.json.put(key, JSONObject.NULL);
+			} catch (JSONException ex) {
+				ex.printStackTrace();
+			}
+		}
+	}
+
+	public void putParam(String key, JSONArray value) {
+		try {
+			this.json.put(key, value);
+		} catch (JSONException e) {
+			e.printStackTrace();
+			try {
+				this.json.put(key, JSONObject.NULL);
+			} catch (JSONException ex) {
+				ex.printStackTrace();
+			}
+		}
+	}
+
+	public void putNull(String key) {
+		try {
+			this.json.put(key, JSONObject.NULL);
+		} catch (JSONException ex) {
+			ex.printStackTrace();
+		}
+	}
+
 	void setResult(NetResult result) {
 		this.result = result;
 	}
 
-	private String getEncodedParams() {
+	private String getGETEncodedParams() {
 		StringBuilder s = new StringBuilder();
 
 		for (String key : params.keySet()) {
@@ -137,7 +185,7 @@ public class NetRequest {
 	}
 
 	String getFullUrl() {
-		if (type.equals(NetManager.GET)) return url + getEncodedParams();
+		if (type.equals(NetManager.GET)) return url + getGETEncodedParams();
 		return url;
 	}
 }

@@ -222,6 +222,18 @@ public class User {
 		return benefitDiscount;
 	}
 
+	public ArrayList<ServicePrefs> getServicePrefs() {
+		return servicePrefs;
+	}
+
+	public ArrayList<WorkingHours> getWorkingHours() {
+		return workingHours;
+	}
+
+	public ArrayList<User> getBlockedUsers() {
+		return blockedUsers;
+	}
+
 	public void setStatus(int status) {
 		this.status = status;
 	}

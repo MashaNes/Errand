@@ -426,7 +426,7 @@ public class InfoFragment extends Fragment {
 		r.putParam("email", email.getText().toString());
 		r.putParam("first_name", name.getText().toString());
 		r.putParam("last_name", lastname.getText().toString());
-		r.putParam("password", null);
+		r.putNull("password");
 		r.putParam("phone", phone.getText().toString());
 		r.putParam("picture", pictureChanged ? picture_b64 : null);
 		r.putParam("min_rating", user.getMinRating());

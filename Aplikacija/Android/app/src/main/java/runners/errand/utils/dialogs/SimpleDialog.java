@@ -19,6 +19,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -42,7 +43,11 @@ import runners.errand.LoginActivity;
 import runners.errand.MainActivity;
 import runners.errand.R;
 import runners.errand.adapter.UserAdapter;
+import runners.errand.model.Edit;
+import runners.errand.model.Service;
+import runners.errand.model.ServicePrefs;
 import runners.errand.model.User;
+import runners.errand.model.WorkingHours;
 
 public class SimpleDialog {
 	public static void buildMessageDialog(Activity activity, String title, String message, String errorCode, final Runnable runnableOK) {
@@ -170,6 +175,84 @@ public class SimpleDialog {
 				alertDialog.dismiss();
 			}
 		});
+
+		alertDialog.setView(dialogView);
+		if (activity.active) alertDialog.show();
+	}
+
+	private static int type = 0;
+	public static void buildEditServicePrefDialog(final MainActivity activity, final ServicePrefs prefs, Service service, final Runnable runnable) {
+		final View dialogView = View.inflate(activity,  R.layout.dialog_edit_service_pref, null);
+		final AlertDialog alertDialog = new AlertDialog.Builder(activity).create();
+		double d;
+		String s;
+
+		type = prefs.getPaymentType();
+
+		((TextView) dialogView.findViewById(R.id.dialog_edit_service_pref_service_type)).setText(service.getType());
+		((TextView) dialogView.findViewById(R.id.dialog_edit_service_pref_service_description)).setText(service.getDescription());
+		((EditText) dialogView.findViewById(R.id.dialog_edit_service_pref_payment_type)).setText(ServicePrefs.getPaymentTypeString(activity, prefs.getPaymentType()));
+		d = prefs.getPaymentAmount();
+		if (d == (long) d) {
+			s = String.format(Locale.getDefault(), "%d", (long) d);
+		} else {
+			s = String.format(Locale.getDefault(), "%s", d);
+		}
+		((EditText) dialogView.findViewById(R.id.dialog_edit_service_pref_payment_amount)).setText(s);
+		d = prefs.getMaxDistance();
+		if (d == (long) d) {
+			s = String.format(Locale.getDefault(), "%d", (long) d);
+		} else {
+			s = String.format(Locale.getDefault(), "%s", d);
+		}
+		((EditText) dialogView.findViewById(R.id.dialog_edit_service_pref_max_distance)).setText(s);
+		d = prefs.getMinRating();
+		if (d == (long) d) {
+			s = String.format(Locale.getDefault(), "%d", (long) d);
+		} else {
+			s = String.format(Locale.getDefault(), "%s", d);
+		}
+		((EditText) dialogView.findViewById(R.id.dialog_edit_service_pref_min_rating)).setText(s);
+
+		dialogView.findViewById(R.id.dialog_edit_service_pref_payment_type).setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				type++;
+				if (type > 2) type = 0;
+				((EditText) dialogView.findViewById(R.id.dialog_edit_service_pref_payment_type)).setText(ServicePrefs.getPaymentTypeString(activity, type));
+			}
+		});
+
+		dialogView.findViewById(R.id.dialog_button_positive).setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				prefs.setPaymentType(type);
+				prefs.setPaymentAmount(Double.parseDouble(((EditText) dialogView.findViewById(R.id.dialog_edit_service_pref_payment_amount)).getText().toString()));
+				prefs.setMaxDistance(Double.parseDouble(((EditText) dialogView.findViewById(R.id.dialog_edit_service_pref_max_distance)).getText().toString()));
+				prefs.setMinRating(Double.parseDouble(((EditText) dialogView.findViewById(R.id.dialog_edit_service_pref_min_rating)).getText().toString()));
+
+				runnable.run();
+
+				alertDialog.dismiss();
+			}
+		});
+
+		dialogView.findViewById(R.id.dialog_button_negative).setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				alertDialog.dismiss();
+			}
+		});
+
+		alertDialog.setView(dialogView);
+		if (activity.active) alertDialog.show();
+	}
+
+	public static void buildEditWorkingHoursDialog(MainActivity activity) {
+		final View dialogView = View.inflate(activity,  R.layout.dialog_edit_working_hours, null);
+		final AlertDialog alertDialog = new AlertDialog.Builder(activity).create();
+
+
 
 		alertDialog.setView(dialogView);
 		if (activity.active) alertDialog.show();
