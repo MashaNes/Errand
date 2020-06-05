@@ -15,7 +15,6 @@
                         <span v-else> Report </span>
                     </button>
                     <button v-if="(myRequest.status == 2 || myRequest.status == 3) && canRate" type="button" class="btn btn-success dugme-rate" @click="rateUser">
-                        <!-- proveriti kad bude bilo primera!!!!!!! -->
                         <img src="../assets/rate.png" class="slika">
                         <span v-if="isSerbian"> Oceni </span>
                         <span v-else> Rate </span>
@@ -378,6 +377,7 @@ export default {
         align-items: center;
         justify-items: center;
         margin-right: 10px;
+        margin-top:7px;
     }
 
     .cancel-request

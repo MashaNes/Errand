@@ -235,7 +235,8 @@
                 unrated_created_by : null,
                 unrated_done_by: null
             }
-            this.$store.dispatch("fillRequests", {filters: filters, objectToFill: { object:"createdAuthRequests", page: 1 }})
+            if(this.$store.state.createdAuthRequests == null)
+                this.$store.dispatch("fillRequests", {filters: filters, objectToFill: { object:"createdAuthRequests", page: 1 }})
         }
     }
 </script>

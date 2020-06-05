@@ -1114,8 +1114,10 @@ export default new Vuex.Store({
                                 done_by : null,
                                 created_or_done_by: null,
                                 statuses : [0, 1],
-                                unrated : null
+                                unrated_created_by : null,
+                                unrated_done_by: null
                             }
+                            this.dispatch("fillRequests", {filters: filters, objectToFill: { object:"createdAuthRequests", page: 1 }})
                         })
                     }
                     else
