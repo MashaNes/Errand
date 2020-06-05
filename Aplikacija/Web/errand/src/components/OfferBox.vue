@@ -359,7 +359,8 @@ export default {
           const newArray = new Array(this.$store.getters['getOpenedOffersOrEdits'].length).fill(false)
           newArray[this.myIndex] = true
           this.$store.dispatch('fillOpenedOffersOrEdits', newArray)
-          this.setMapMarkers()
+          if(this.offer.edit && this.offer.edit.tasks)
+            this.setMapMarkers()
         }
         else {
           this.opened = true
