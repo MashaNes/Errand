@@ -854,9 +854,9 @@ export default {
           })
         }
         this.$store.dispatch("deleteRequest", this.computedRequest.id)
+        this.goToPageRequests()
       }
       this.showModalAreYouSure = false
-      this.goToPageRequests()
     },
     setReportMessages() {
       this.successMessageS = "Uspešno prijavljen problem sa korisnikom."
@@ -1099,7 +1099,7 @@ export default {
   .big-notification-badge {
     font-size: 60%;
     position: relative;
-    top: -14px;
+    top: -22px;
     right: 8px;
     z-index: 1;
   }

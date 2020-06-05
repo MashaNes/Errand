@@ -1594,30 +1594,30 @@ export default new Vuex.Store({
             state.user = user
             if(state.createdAuthRequests) {
                 state.createdAuthRequests.results.map(req => {
-                    if(req.created_by.id == user.id) {
+                    if(req.created_by && req.created_by.id == user.id) {
                         req.created_by = user
                     }
-                    else if(req.working_with.id == user.id) {
+                    else if(req.working_with && req.working_with.id == user.id) {
                         req.working_with = user
                     }
                 })
             }
             if(state.runnerAuthRequests) {
                 state.runnerAuthRequests.results.map(req => {
-                    if(req.created_by.id == user.id) {
+                    if(req.created_by && req.created_by.id == user.id) {
                         req.created_by = user
                     }
-                    else if(req.working_with.id == user.id) {
+                    else if(req.working_with && req.working_with.id == user.id) {
                         req.working_with = user
                     }
                 })
             }
             if(state.overAuthRequests) {
                 state.overAuthRequests.results.map(req => {
-                    if(req.created_by.id == user.id) {
+                    if(req.created_by && req.created_by.id == user.id) {
                         req.created_by = user
                     }
-                    else if(req.working_with.id == user.id) {
+                    else if(req.working_with && req.working_with.id == user.id) {
                         req.working_with = user
                     }
                 })
