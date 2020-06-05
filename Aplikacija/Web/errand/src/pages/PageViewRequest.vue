@@ -2,92 +2,132 @@
   <Spinner v-if="!computedRequest || !this.$store.state.isRequestInfoLoaded" />
   <div class="wrapper" v-else>
     <b-card style="min-width: 240px;">
-      <div class="request-end-btns">
-        <div class="important" v-if="finishedOtherUser && !isRunner && computedRequest.status == 1">
-          <p v-if="isSerbian" class="important-img-div" v-b-popover.hover.bottom='"Vaš saradnik na ovom zahtevu pokrenuo je proces okončanja zahteva. Izaberite opciju \"Okončaj zahtev\" kako biste dovršili ovaj proces i označili uspešan kraj saradnje."'>
-            <img src="@/assets/exclamation.png" class="important-img"/>
-          </p>
-          <p v-else class="important-img-div" v-b-popover.hover.bottom='"Your partner in this request has started the procces of ending the request. Choose the \"End request\" option to finish the process and mark the collaboration as successfull."'>
-            <img src="@/assets/exclamation.png" class="important-img"/>
-          </p>
-        </div>
-        <div class="action-btns" v-if="!((isRunner && computedRequest.status == 1) || (computedRequest.status == 1 && finishedThisUser))">
-          <div class="info-and-btn" v-if="computedRequest.status != 0">
-            <b-button 
-              variant="success" class="request-end-btn" v-if="computedRequest.status == 1"
-              @click="purpose = 'finish'; showModalAreYouSure = true;" 
-              v-b-popover.hover.bottom='isSerbian ? "Kliknite da biste okončali zahtev i označili da je bio uspešan." 
-                                                  : "Click to end the request and mark it as successful."'
-            >
-              <img src="@/assets/checkmark.png" class="slika-dugme" />
-              <span v-text="isSerbian ? 'Uspešno okončaj zahtev' : 'Successfully end request'"></span>
-            </b-button>
-            <b-button variant="success" class="request-end-btn" v-else-if="computedRequest.status > 1 && canRate" @click="showModalRate = true">
-              <img src="@/assets/rate.png" class="slika-dugme" />
-              <span v-text="isSerbian ? 'Oceni korisnika' : 'Rate user'"></span>
-            </b-button>
-          </div>
-          <div class="info-and-btn">
-            <b-button 
-              variant="danger"  class="request-end-btn" v-if="computedRequest.status == 1"
-              @click="purpose = 'cancel'; showModalAreYouSure = true;" 
-              v-b-popover.hover.bottom='isSerbian ? "Kliknite da biste prekinuli zahtev i označili da je bio neuspešan." 
-                                                  : "Click to end the request and mark it as successful."'
-            >
-              <img src="@/assets/remove.svg" class="slika-dugme" />
-              <span v-text="isSerbian ? 'Prekini zahtev' : 'Cancel request'"></span>
-            </b-button>
-            <b-button variant="danger"  class="request-end-btn" v-else-if="computedRequest.status > 1"  @click="showModalReport = true">
-              <img src="@/assets/report.png" class="slika-dugme" />
-              <span v-text="isSerbian ? 'Prijavi problem' : 'Report user'"></span>
-            </b-button>
-            <b-button variant="danger"  class="request-end-btn" v-else  @click="purpose = 'delete'; showModalAreYouSure = true;">
-              <img src="@/assets/xmark.png" class="slika-dugme" />
-              <span v-text="isSerbian ? 'Obriši zahtev' : 'Delete request'"></span>
-            </b-button>
-          </div>
-        </div>
-      </div>
       <b-card-title class="main-title">
-        <div class="title-start">{{computedRequest.name}}</div>
-        
-        <div class="title-end">
-          <div class="clock pic-and-span">
-            <img src="@/assets/clock.svg" height="25" width="25" class="title-pic">
-            <span v-if="!isSerbian">{{computedRequest.time | showTime}}</span>
-            <span v-else>{{dateAndTime}}</span>
+        <div class="title-content">
+          <div class="basic-info">
+            <div class="title-start">{{computedRequest.name}}</div>
+            <div class="clock pic-and-span">
+              <img src="@/assets/clock.svg" class="title-pic">
+              <span v-if="!isSerbian">{{computedRequest.time | showTime}}</span>
+              <span v-else>{{dateAndTime}}</span>
+            </div>
+            <div class="pic-and-span">
+              <img v-if="computedRequest.status == 0" src="@/assets/running.svg" class="title-pic">
+              <img v-if="computedRequest.status == 1" src="@/assets/pending.svg" class="title-pic">
+              <img v-if="computedRequest.status == 2" src="@/assets/finished.svg" class="title-pic">
+              <img v-if="computedRequest.status == 3" src="@/assets/failed.svg" class="title-pic">
+              <span>{{status}}</span>
+            </div>
+            <div class="note">
+              <b-card-title class="side-info-title">
+                  <span style="margin-right:5px; padding-top: 3px;" v-text="isSerbian ? 'Napomena: ' : 'Note: '"></span>
+              </b-card-title>
+              <b-form-textarea
+                :class="[!computedRequest.note ? 'no-info-txt' : '', 'txt-area']"
+                id="textarea"
+                rows="2"
+                no-resize
+                :readonly="true"
+                v-model="computedNote"
+              >
+              </b-form-textarea>
+            </div>
+            <b-button v-if="showView != 'Details'" @click="showDetails">
+              <span v-text="isSerbian ? 'Detalji zahteva' : 'Request details'"></span>
+            </b-button>
           </div>
-          <div class="pic-and-span">
-            <img v-if="computedRequest.status == 0" src="@/assets/running.svg" height="25" width="25" class="title-pic">
-            <img v-if="computedRequest.status == 1" src="@/assets/pending.svg" height="25" width="25" class="title-pic">
-            <img v-if="computedRequest.status == 2" src="@/assets/finished.svg" height="25" width="25" class="title-pic">
-            <img v-if="computedRequest.status == 3" src="@/assets/failed.svg" height="25" width="25" class="title-pic">
-            <span>{{status}}</span>
+         
+          <div class="dropdown">
+            <img v-if="isSerbian && finishedOtherUser && !isRunner && computedRequest.status == 1" 
+                 src="@/assets/exclamation.png" class="important-img"
+                 v-b-popover.hover.bottom='"Vaš saradnik na ovom zahtevu pokrenuo je proces okončanja zahteva. " + 
+                                            "Izaberite opciju \"Uspešno okončaj zahtev\" u akcijama kako biste dovršili ovaj " 
+                                            + "proces i označili uspešan kraj saradnje."'/>
+            <img v-if="!isSerbian && finishedOtherUser && !isRunner && computedRequest.status == 1"
+                 src="@/assets/exclamation.png" class="important-img"
+                 v-b-popover.hover.bottom='"Your partner in this request has started the procces of ending the request. " + 
+                                            "Choose the \"Successfully end request\" option in the actions dropdown " +  
+                                            "to finish the process and mark the collaboration as successfull."'/>
+
+            <b-dropdown id="dropdown-1" variant="info" right class="drop-down">
+              <template v-slot:button-content>
+                <span v-text="isSerbian ? 'Akcije' : 'Actions'"></span>
+              </template>
+              <b-dropdown-item 
+                v-if="computedRequest.status == 1 && !isRunner" 
+                @click="purpose = 'finish'; showModalAreYouSure = true;"
+                v-b-popover.hover.bottom='isSerbian ? "Kliknite da biste okončali zahtev i označili da je bio uspešan." 
+                                                    : "Click to end the request and mark it as successful."'
+              >
+                <img src="@/assets/checkmark.png" class="slika-dugme check" />
+                <span v-text="isSerbian ? 'Uspešno okončaj zahtev' : 'Successfully end request'">
+              </span></b-dropdown-item>
+              <b-dropdown-item v-if="computedRequest.status > 1 && canRate" @click="showModalRate = true">
+                <img src="@/assets/rate.png" class="slika-dugme check" />
+                <span v-text="isSerbian ? 'Oceni korisnika' : 'Rate user'"></span>
+              </b-dropdown-item>
+              <b-dropdown-item 
+                v-if="computedRequest.status == 1 && !isRunner"
+                @click="purpose = 'cancel'; showModalAreYouSure = true;"
+                v-b-popover.hover.bottom='isSerbian ? "Kliknite da biste prekinuli zahtev i označili da je bio neuspešan." 
+                                                    : "Click to end the request and mark it as successful."' 
+              >
+                <img src="@/assets/shutdown.svg" class="slika-dugme shutdown" />
+                <span v-text="isSerbian ? 'Prekini zahtev' : 'Cancel request'"></span>
+              </b-dropdown-item>
+              <b-dropdown-item v-if="computedRequest.status > 1"  @click="showModalReport = true">
+                <img src="@/assets/report.png" class="slika-dugme xmark" />
+                <span v-text="isSerbian ? 'Prijavi problem' : 'Report user'"></span>
+              </b-dropdown-item>
+              <b-dropdown-item 
+                v-if="computedRequest.status == 0"
+                @click="purpose = 'delete'; showModalAreYouSure = true;"
+              >
+                <img src="@/assets/xmark.png" class="slika-dugme xmark" />
+                <span v-text="isSerbian ? 'Obriši zahtev' : 'Delete request'"></span>
+              </b-dropdown-item>
+              <b-dropdown-item 
+                v-if="computedRequest.status == 0 && !isRunner && showView == 'Details'"
+                :disabled="!filteredOffers || filteredOffers.length == 0" @click="changeViewFromDetails('Offers')"
+                v-b-popover.hover.top="zahteviTekst"
+              >
+                <img src="@/assets/handshake.png" class="slika-dugme wrench" />
+                <b-badge variant="danger" class="notification-badge" >{{offersBadge}}</b-badge>
+                <span class="notification-span" v-text="isSerbian ? 'Vidi ponude' : 'See offers'"></span>
+              </b-dropdown-item>
+              <b-dropdown-item 
+                v-if="computedRequest.status == 1 && !isRunner && showView == 'Details'"
+                :disabled="!filteredEdits || filteredEdits.length == 0" @click="changeViewFromDetails('Edits')"
+                v-b-popover.hover.top="ponudeTekst" 
+              >
+                <img src="@/assets/wrench.svg" class="slika-dugme wrench" />
+                <b-badge variant="danger" class="notification-badge" >{{editsBadge}}</b-badge>
+                <span class="notification-span" v-text="isSerbian ? 'Vidi zahteve za izmenama' : 'See edit requests'"></span>
+              </b-dropdown-item>
+              
+
+              <b-dropdown-item v-if="isRunner">
+                <img src="@/assets/info.svg" class="slika-dugme"/>
+                <span v-if="isSerbian" class="dropdown-runner"> Za pristup akcijama u ulozi izvršioca, skinite Android aplikaciju </span>
+                <span v-else class="dropdown-runner"> For accessing ruuner's actions, download the Android application </span>
+              </b-dropdown-item>
+
+              <b-dropdown-divider></b-dropdown-divider>
+              
+              <b-dropdown-item @click="goToPageRequests">
+                <img class="slika-dugme back" src="../assets/back.png">
+                <span v-text="isSerbian ? 'Nazad na pregled svih zahteva' : 'Back to all requests'"></span> 
+              </b-dropdown-item>
+            </b-dropdown>
+            <b-badge 
+              v-if="computedRequest.status == 1 && !isRunner && showView == 'Details' && filteredEdits && filteredEdits.length > 0"
+              variant="danger" class="big-notification-badge" >{{editsBadge}}</b-badge>
+            <b-badge 
+              v-if="computedRequest.status == 0 && !isRunner && showView == 'Details' && filteredOffers && filteredOffers.length > 0"
+              variant="danger" class="big-notification-badge" >{{offersBadge}}</b-badge>
           </div>
-          <b-button 
-            variant="secondary" v-b-popover.hover.top="ponudeTekst"  v-if="computedRequest.status == 0 && !isRunner && showView == 'Details'"
-            :disabled="!filteredOffers || filteredOffers.length == 0" @click="changeViewFromDetails('Offers')" class="button-flex-center"
-          >
-            <strong class="notification-span" v-text="isSerbian ? 'Ponude' : 'Offers'"></strong>
-            <b-badge variant="danger" class="notification-badge" >{{offersBadge}}</b-badge>
-          </b-button>
-          <b-button 
-            variant="secondary" v-b-popover.hover.top="zahteviTekst" v-if="computedRequest.status == 1 && !isRunner && showView == 'Details'"
-            :disabled="!filteredEdits || filteredEdits.length == 0" @click="changeViewFromDetails('Edits')" class="button-flex-center"
-          >
-            <strong class="notification-span" v-text="isSerbian ? 'Zahtevi za izmenama' : 'Edit requests'"></strong>
-            <b-badge variant="danger" class="notification-badge" >{{editsBadge}}</b-badge>
-          </b-button>
-          <b-button variant="secondary" v-if="showView != 'Details'" @click="showDetails" class="button-flex-center">
-            <strong class="notification-span" v-text="isSerbian ? 'Detalji zahteva' : 'Request details'"></strong>
-          </b-button>
-          <b-button variant="secondary" @click="goToPageRequests" class="button-flex-center">
-            <img class="slika-dugme" src="../assets/back.png">
-            <strong class="notification-span" v-text="isSerbian ? 'Nazad na pregled svih zahteva' : 'Back to all requests'"></strong>
-          </b-button>
         </div>
       </b-card-title>
-
       <div class="no-detail-view" v-if="computedRequest.status == 0 && !isRunner && showView == 'Offers'" >
         <b-card-title v-text="isSerbian ? 'Ponude' : 'Offers'" class="no-details-title"></b-card-title>
         <OfferBox 
@@ -97,7 +137,6 @@
           :myIndex="ind" :request="computedRequest" @acceptOffer="acceptOffer" @rejectOffer="rejectOffer"
         />
       </div>
-
       <div class="no-detail-view" v-if="computedRequest.status == 1 && !isRunner && showView == 'Edits'">
         <div v-text="isSerbian ? 'Zahtevi za izmenama' : 'Edit requests'" class="no-details-title"></div>
         <EditBox
@@ -106,111 +145,100 @@
           :oldDateAndTime="edit.request_edit.time ? computedRequest.time : null"
           :myIndex="ind" :request="computedRequest" @acceptEdit="acceptEdit" @rejectEdit="rejectEdit"
         />
-        
       </div>
-
-      <div v-if="showView == 'Details'">
-        <b-card-text class="request-note">
-          <b-card-title>
-              <span style="margin-right:5px;" v-text="isSerbian ? 'Napomena' : 'Note'"></span>
-          </b-card-title>
-          <b-card-text :class="computedRequest.note ? 'inner-text' : 'no-info'">
-            <span v-if="computedRequest.note">{{computedRequest.note}}</span>
-            <span v-else v-text="isSerbian ? 'Nema napomena za ovaj zahtev' : 'There are no notes about this request'"></span>
-          </b-card-text>
-        </b-card-text>
-
-        <div v-if="computedRequest.status != 0 && otherUser != null" class="offer">
-          <b-card-title :style="isRunner ? 'margin-bottom: 0px !important' : ''">
-            <div class="offer-title">
-              <span class="smaller-title-pic-span" style="flex-wrap: wrap;">
-                <div class="media-center">
-                  <p class="image" @click="goToProfile">
-                    <img class="rounded-image" :src="otherUser.picture ? 'data:;base64,' + otherUser.picture : require('../assets/no-picture.png')">
-                  </p>
-                </div>
-                <span 
-                  v-text="(isSerbian ? 'Prihvaćena ponuda od ' : 'Accepted offer from ') + fullUserName"
-                  style="margin-right: 5px" v-if="!isRunner"
-                ></span>
-                <span 
-                  v-text="(isSerbian ? 'Zahtev kreirao/la ' : 'Request created by ') + fullUserName"
-                  style="margin-right: 5px" v-if="isRunner"
-                ></span>
-              </span>
+      <div v-if="showView == 'Details'" class="details">
+        <div class="request-info">
+          <div v-if="computedRequest.status != 0 && otherUser != null" class="other-user">
+            <b-card-title class="side-info-title" :style="isRunner ? 'margin-bottom: 0px !important' : ''">
+              <div class="offer-title">
+                <span class="smaller-title-pic-span" style="flex-wrap: wrap;">
+                  <div class="media-center">
+                    <p class="image" @click="goToProfile">
+                      <img class="rounded-image" :src="otherUser.picture ? 'data:;base64,' + otherUser.picture : require('../assets/no-picture.png')">
+                    </p>
+                  </div>
+                  <span 
+                    v-text="(isSerbian ? 'Prihvaćena ponuda od ' : 'Accepted offer from ') + fullUserName"
+                    style="margin-right: 5px" v-if="!isRunner"
+                  ></span>
+                  <span 
+                    v-text="(isSerbian ? 'Zahtev kreirao/la ' : 'Request created by ') + fullUserName"
+                    style="margin-right: 5px" v-if="isRunner"
+                  ></span>
+                </span>
+              </div>
+            </b-card-title >
+            <div class="inner-text" v-if="otherUser != null && !isRunner">
+              <span v-text="(isSerbian ? 'Tip naplate: ' : 'Payment type: ') + paymentType"> </span>
+              <span v-text="(isSerbian ? 'Cena: ' : 'Price: ') + filteredInfo.acceptedOffer.payment_ammount + ' din'"></span>
             </div>
-          </b-card-title>
-          <div class="inner-text" v-if="otherUser != null && !isRunner">
-            <span v-text="(isSerbian ? 'Tip naplate: ' : 'Payment type: ') + paymentType"> </span>
-            <span v-text="(isSerbian ? 'Cena: ' : 'Price: ') + filteredInfo.acceptedOffer.payment_ammount + ' din'"></span>
+          </div>
+          <div class="destination">
+            <b-card-title class="side-info-title">
+              <span class="smaller-title-pic-span">
+                <img src="@/assets/address.svg" height="25" width="25" class="title-pic" />
+                <span v-text="isSerbian ? 'Finalno odredište' : 'Final destination'"></span>
+              </span>
+            </b-card-title>
+            <div :class="computedRequest.destination ? 'inner-text' : 'no-info'">
+              <span v-if="computedRequest.destination">{{computedRequest.destination.name}}</span>
+              <span v-else v-text="isSerbian ? 'Finalno odredište nije navedeno' : 'Final destination was not sepcified'"></span>
+            </div>
+
+            <b-card-text  class="pictures-div" v-if="computedRequest.picture_required && computedRequest.status > 0">
+              <div>
+                <span class="smaller-title-pic-span">
+                  <img src="@/assets/photos.svg" height="25" width="25" class="title-pic" />
+                  <span v-text="isSerbian ? 'Slike sa odredišta' : 'Pictures from the destination'" class="inner-text-title"></span>
+                </span>
+                <b-card-text :class="pictures.length > 0 ? 'inner-text' : 'no-info'">
+                  <div v-if="pictures.length > 0" class="images-wrapper" >
+                    <img 
+                      class="expandable-image" 
+                      :src="picture.src"
+                      @click="expandPicture(ind)"
+                      v-for="(picture, ind) in pictures" 
+                      :key="picture.id"
+                    />
+
+                    <LightBox :media="pictures" v-if="pictureExpanded" :startAt="clickedPicture" @onClosed="pictureExpanded = false"></LightBox>
+                  
+                  </div>
+                  <span v-else v-text="isSerbian ? 'Još uvek nije dostavljena nijedna slika' : 'No pictures have been taken so far'"></span>
+                </b-card-text>
+              </div>
+            </b-card-text>
+            <div v-else-if="computedRequest.picture_required" class='pic-required'>
+              <span v-text="isSerbian ? 'Potrebno je dostaviti slike sa odredišta' : 'Pictures from the destination are required'"></span>
+            </div>
           </div>
         </div>
-
-        <b-card-text class="request-note">
-          <b-card-title>
-            <span class="smaller-title-pic-span">
-              <img src="@/assets/address.svg" height="25" width="25" class="title-pic" />
-              <span v-text="isSerbian ? 'Finalno odredište' : 'Final destination'"></span>
-            </span>
-          </b-card-title>
-          <div :class="computedRequest.destination ? 'inner-text' : 'no-info'">
-            <span v-if="computedRequest.destination">{{computedRequest.destination.name}}</span>
-            <span v-else v-text="isSerbian ? 'Finalno odredište nije navedeno' : 'Final destination was not sepcified'"></span>
-          </div>
-        
-          <div v-if="computedRequest.picture_required && computedRequest.status > 0" style="margin-top: 10px">
-            <span class="smaller-title-pic-span">
-              <img src="@/assets/photos.svg" height="25" width="25" class="title-pic" />
-              <span v-text="isSerbian ? 'Dostavljene slike sa odredišta' : 'Pictures taken at the destination'" class="inner-text-title"></span>
-            </span>
-            <b-card-text :class="pictures.length > 0 ? 'inner-text' : 'no-info'">
-              <div v-if="pictures.length > 0" class="images-wrapper" >
-                <img 
-                  class="expandable-image" 
-                  :src="picture.src"
-                  @click="expandPicture(ind)"
-                  v-for="(picture, ind) in pictures" 
-                  :key="picture.id"
-                />
-
-                <LightBox :media="pictures" v-if="pictureExpanded" :startAt="clickedPicture" @onClosed="pictureExpanded = false"></LightBox>
-              
-              </div>
-              <span v-else v-text="isSerbian ? 'Još uvek nije dostavljena nijedna slika' : 'No pictures have been taken so far'"></span>
-            </b-card-text>
-          </div>
-        </b-card-text>
-
-
-
         <b-card-text v-if="hasAddresses">
           <b-button @click="toggleMap">
             <span v-if="!isMapOpened" v-text="isSerbian ? 'Prikaži adrese na mapi' : 'Show addresses on map'"></span>
             <span v-if="isMapOpened" v-text="isSerbian ? 'Zatvori mapu' : 'Close map'"></span>
           </b-button>
-        </b-card-text>
-
+        </b-card-text> 
         <b-card-text v-if="hasAddresses" :class="isMapOpened ? 'visible' : 'invisible'">
           <Map />
         </b-card-text>
-
-        <span class='task-title'>
-          <span v-text="isSerbian ? 'Zadaci' : 'Tasks'"></span>
-        </span>
-
-        <Task 
-          v-for="task in filteredInfo.tasklist" 
-          :key="task.id" 
-          :task="task" 
-          :myRequestStatus="computedRequest.status" 
-        />
-        
-        <div class="button-div">
-          <button type="button" class="btn btn-info" @click="kreirajZahtev">
-            <span v-if="isSerbian"> Kreiraj novi zahtev na osnovu ovog </span>
-            <span v-else> Create a new request based on this one </span>
-          </button>
+        <div class="tasks">
+          <span class='task-title'>
+            <span v-text="isSerbian ? 'Zadaci' : 'Tasks'"></span>
+          </span>
+          <Task 
+            v-for="task in filteredInfo.tasklist" 
+            :key="task.id" 
+            :task="task" 
+            :myRequestStatus="computedRequest.status" 
+          />
         </div>
+      </div>
+      <div class="button-div">
+        <button type="button" class="btn btn-info" @click="kreirajZahtev">
+          <span v-if="isSerbian"> Kreiraj novi zahtev na osnovu ovog </span>
+          <span v-else> Create a new request based on this one </span>
+        </button>
       </div>
     </b-card>
     <ModalAreYouSure 
@@ -248,7 +276,6 @@ import ModalAreYouSure from "@/components/ModalAreYouSure"
 import ModalSuccess from "@/components/ModalSuccess"
 import ModalReportUser from "@/components/ModalReportUser"
 import ModalRateUser from "@/components/ModalRateUser"
-//import Vue from 'vue'
 
 export default {
   components: {
@@ -302,8 +329,11 @@ export default {
     isSerbian() {
       return this.$store.state.isSerbian
     },
-    isTaskOpened(ind) {
-      return this.taskOpened[ind]
+    computedNote() {
+      if(!this.computedRequest.note || this.computedRequest.note == "")
+        return this.isSerbian ? 'Nema napomena za ovaj zahtev' : 'There are no notes about this request'
+      else 
+        return this.computedRequest.note
     },
     fullUserName() {
       return this.otherUser.first_name + " " + this.otherUser.last_name
@@ -319,12 +349,6 @@ export default {
         return this.computedRequest.finished_working_with
       else
         return this.computedRequest.finished_created_by
-    },
-    finishedThisUser() {
-      if(this.computedRequest.created_by && this.computedRequest.created_by.id == this.$store.state.authUser.id)
-        return this.computedRequest.finished_created_by
-      else
-        return this.computedRequest.finished_working_with
     },
     tekstE() {
       if(this.purpose == 'finish') {
@@ -479,42 +503,42 @@ export default {
 
       switch(month)
       {
-          case 1: 
-                  monthString = "Januar"
-                  break
-          case 2: 
-                  monthString = "Februar"
-                  break
-          case 3: 
-                  monthString = "Mart"
-                  break
-          case 4: 
-                  monthString = "April"
-                  break
-          case 5: 
-                  monthString = "Maj"
-                  break
-          case 6: 
-                  monthString = "Jun"
-                  break
-          case 7: 
-                  monthString = "Jul"
-                  break 
-          case 8: 
-                  monthString = "Avgust"
-                  break
-          case 9: 
-                  monthString = "Septembar"
-                  break
-          case 10: 
-                  monthString = "Oktobar"
-                  break
-          case 11: 
-                  monthString = "Novembar"
-                  break
-          default:
-                  monthString = "Decembar"
-                  break
+        case 1: 
+          monthString = "Januar"
+          break
+        case 2: 
+          monthString = "Februar"
+          break
+        case 3: 
+          monthString = "Mart"
+          break
+        case 4: 
+          monthString = "April"
+          break
+        case 5: 
+          monthString = "Maj"
+          break
+        case 6: 
+          monthString = "Jun"
+          break
+        case 7: 
+          monthString = "Jul"
+          break 
+        case 8: 
+          monthString = "Avgust"
+          break
+        case 9: 
+          monthString = "Septembar"
+          break
+        case 10: 
+          monthString = "Oktobar"
+          break
+        case 11: 
+          monthString = "Novembar"
+          break
+        default:
+          monthString = "Decembar"
+          break
       }
 
       return day + ". " + monthString + " " + year + "." + "  " + hoursString + ":" + minutesString + "h"
@@ -529,24 +553,24 @@ export default {
         var string = ""
         switch(jedinice)
         {
-            case 0: 
-                    string = "ponuda"
-                    break
-            case 1: 
-                    string = "ponudu"
-                    break
-            case 2: 
-                    string = "ponude"
-                    break
-            case 3: 
-                    string = "ponude"
-                    break
-            case 4: 
-                    string = "ponude"
-                    break
-            default: 
-                    string = "ponuda"
-                    break
+          case 0: 
+            string = "ponuda"
+            break
+          case 1: 
+            string = "ponudu"
+            break
+          case 2: 
+            string = "ponude"
+            break
+          case 3: 
+            string = "ponude"
+            break
+          case 4: 
+            string = "ponude"
+            break
+          default: 
+            string = "ponuda"
+            break
         }
         if(this.filteredOffers.length == 11 || this.filteredOffers.length == 12  || this.filteredOffers.length == 13 || this.filteredOffers.length == 14)
           string = "ponuda"
@@ -832,6 +856,7 @@ export default {
         this.$store.dispatch("deleteRequest", this.computedRequest.id)
       }
       this.showModalAreYouSure = false
+      this.goToPageRequests()
     },
     setReportMessages() {
       this.successMessageS = "Uspešno prijavljen problem sa korisnikom."
@@ -893,51 +918,73 @@ export default {
 
   .card {
     margin: 0px 10% 50px 10%;
-    width:70%;
-    align-self:center;
+    align-self:stretch;
     padding-left:3%;
     padding-right:3%;
   } 
 
-  .request-end-btns {
+  .title-content {
     display: flex;
-    justify-content: flex-end;
-    flex-wrap: wrap;
-    align-items: center;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap-reverse;
+    width: 100%;
   }
 
-  .request-end-btn {
-    margin-left: 2px;
-    font-size: 16px;
-    display: flex;
-    align-items: center;
+  .details {
+    display:flex;
+    flex-direction: column;
   }
 
-  .important-img-div {
-    height: fit-content;
-    width: fit-content;
-    background-color: #28a745;
-    border-radius: 40px;
-    margin-top: 5px;
-    border: 1px solid #28a745;
+  .request-info {
+    align-self: stretch;
+    display: flex;
+    margin-bottom: 30px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid lightgrey;
+  }
+
+  .note {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 5px;
+  }
+
+  .txt-area {
+    background-color: rgb(250, 210, 125);
+    font-size: 15px;
+    padding-top: 1px;
+  }
+
+  .tasks {
+    align-self:stretch;
+    margin-top: 20px;
+  }
+
+  .destination {
+    width: 60%;
+    padding-top: 5px;
+  }
+
+  .other-user {
+    margin-right: 30px;
+    border-right: 1px solid lightgray;
+    padding-right: 30px;
+    width: 40%;
+    padding-top: 5px;
+  }
+
+  #dropdown-1 {
+    margin-bottom: 15px;
   }
 
   .important-img {
-    height: 40px;
-    width: 40px;
-  }
-
-  .action-btns {
-    display: flex;
-    justify-content: flex-end;
-    flex-wrap: wrap;
-  }
-
-  .info-and-btn {
-    display: flex;
-    flex-wrap: nowrap;
-    align-items: center;
-    margin: 5px 0 0 25px;
+    background-color: green;
+    height: 30px;
+    width: 30px;
+    margin-right: 10px;
+    border-radius: 30px;
+    border: 1px solid green;
   }
 
   .card-title {
@@ -948,8 +995,25 @@ export default {
     flex-wrap: wrap;
   }
 
+  .pic-required {
+    font-size: 14px;
+    font-weight: 600;
+    margin-top: 5px;
+    color: rgb(175, 4, 4);
+  }
+
+  .side-info-title {
+    font-size: 16px;
+    font-weight: bold;
+  }
+
+  .dropdown {
+    display: flex;
+    align-items: center;
+    flex-wrap: nowrap;
+  }
+
   .main-title {
-    font-size: 40px;
     border-top: lightgray solid 1px;
     border-bottom: lightgray solid 1px;
     padding-top: 10px;
@@ -962,60 +1026,89 @@ export default {
   .title-start {
     flex-grow:1;  
     width:100%;
+    font-weight: bold;
+    font-size: 30px;
     margin-bottom: 10px;
-  }
-
-  .title-end {
-    font-size: 18px;
-    color:grey;
-    display:flex;
-    align-items:center;
-    flex-wrap: wrap;
-    flex-grow:1;
-    width:100%;
   }
 
   .pic-and-span {
     margin: 10px 40px 10px 0;
     display:flex;
     align-items: center;
+    font-size: 16px;
   }
 
   .slika-dugme
   {
-    width: 20px;
-    height: 20px;
+    width: 23px;
+    height: 23px;
     margin-right: 10px;
   }
 
-  .button-flex-center {
-    display: flex;
-    align-items: center;
-    margin: 10px 40px 10px 0px;
+  .basic-info {
+    margin-right: 15px;
+  }
+
+  .check {
+    background-color: green;
+    padding: 3px;
+    border-radius: 3px;
+  }
+
+  .shutdown {
+    padding: 2px;
+    background-color: rgb(240, 6, 6);
+    border-radius: 3px;
+  }
+
+  .back {    
+    background-color: gray;
+    padding: 2px;
+    border-radius: 3px;
+  }
+
+  .xmark {
+    padding: 3px;
+    background-color: rgb(240, 6, 6);
+    border-radius: 3px;
+  }
+
+  .wrench {
+    padding: 2px;
+    background-color: rgb(81, 166, 194);
+    border-radius: 3px;
   }
 
   .title-pic {
     margin: 0px 10px 0px 0px;
+    height: 18px;
+    width: 18px;
   }
 
   .notification-span {
-    margin-right: 5px;
-    color:white;
-    font-size: 16px;
+    margin-left: -17px;
   }
 
   .notification-badge {
     font-size: 85%;
     position: relative;
-    top: -15px;
-    left: 20px;
+    top: -13px;
+    right: 17px;
   }
 
-  .request-note {
+  .big-notification-badge {
+    font-size: 60%;
+    position: relative;
+    top: -14px;
+    right: 8px;
+    z-index: 1;
+  }
+
+  .pictures-div {
     border: 1px solid black;
-    padding: 15px;
+    padding: 10px;
     border-radius: 5px;
-    margin-bottom:20px;
+    margin-top: 10px;
   }
 
   .smaller-title-pic-span {
@@ -1056,6 +1149,11 @@ export default {
     background-color: rgb(250, 210, 125);
   }
 
+  .no-info-txt {
+    font-weight: 600;
+    color: rgb(175, 4, 4);
+  }
+
   .offer {
     border: 1px solid black;
     border-radius: 5px;
@@ -1069,11 +1167,6 @@ export default {
     flex-wrap: wrap;
     align-items:center;
 
-  }
-
-  .payment-info {
-    display: flex;
-    flex-direction: column;
   }
 
   .image {
@@ -1104,55 +1197,6 @@ export default {
     display: flex;
   }
 
-  .task-div {
-    margin-top: 20px;
-    
-    border:1px solid black;
-    border-radius:5px;
-  }
-
-  .open-task-div {
-    font-size:25px;
-    margin-bottom: 0px;
-    color: rgb(71, 71, 71);
-    background-color: rgb(255, 209, 109);
-    padding:10px;
-    border-radius:4px;
-    border: 1px solid grey;
-    flex-wrap: nowrap;
-  }
-
-  .open-task-div:hover {
-    cursor: pointer;
-    flex-wrap: nowrap;
-  }
-
-  .open-task-bottom-border {
-    border-bottom: 1px solid black;
-    font-size:25px;
-    margin-bottom: 0px;
-    color: rgb(71, 71, 71);
-    background-color: rgb(255, 209, 109);
-    padding:10px;
-    border-radius:4px;
-    border:1px solid grey;
-  }
-
-  .open-task-bottom-border:hover {
-    cursor: pointer;
-  }
-
-  .task-desc {
-    margin-top: 20px;
-  }
-
-  .chklist-item {
-    margin-bottom: 10px;
-    font-style: italic;
-    font-family: cursive;
-    width: fit-content;
-  }
-
   .visible {
     visibility: visible;
     margin-top: 20px;
@@ -1180,8 +1224,8 @@ export default {
 
   .expandable-image {
     margin: 5px;
-    width: 100px;
-    height: 100px;
+    width: 60px;
+    height: 60px;
     border: 1px solid grey;
     border-radius: 5px;
   }
@@ -1192,7 +1236,6 @@ export default {
   }
 
   .task-title {
-    margin-top: 30px;
     display: flex;
     font-size: 35px;
     font-weight: 600;
@@ -1201,6 +1244,38 @@ export default {
   .no-details-title {
     font-size: 30px;
     font-weight: bold;
+  }
+
+  .dropdown-runner {
+    white-space: normal !important;
+  }
+
+  @media only screen and (max-width: 749px) {
+    .card {
+      margin: 0px 5% 50px 5%;
+    }
+  }
+
+  @media only screen and (max-width: 599px) {
+    .card {
+      margin: 0px 2% 50px 2%;
+    }
+
+    .request-info {
+      flex-direction: column;
+    }
+
+    .other-user {
+      margin-bottom: 15px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid lightgray;
+      width: 100%;
+      border-right: hidden;
+    }
+
+    .destination {
+      width: unset;
+    }
   }
 
 </style>
