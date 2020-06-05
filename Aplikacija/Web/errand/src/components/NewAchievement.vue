@@ -7,8 +7,28 @@
                     <span v-else> Icon: </span>
                 </div>
                 <div class="unos-ikonica">
-                    <i v-if="achievement.icon == null && isSerbian" class="natpis"> Klinite da biste dodali ikonicu ili je prevucite ovde </i>
-                    <i v-if="achievement.icon == null && !isSerbian" class="natpis"> Click to add an icon or drag and drop it here </i>
+                    <span class="media-center" v-if="achievement.icon != null">
+                        <p class="image is-128x128">
+                            <img class="rounded-image" :src="achievement.icon">
+                            <img :src="require('@/assets/remove.svg')" class="remove-pic" @click="removePicture">
+                        </p>
+                    </span>
+                    <div 
+                        :class="['ikonica-msg', isDragged ? 'ikonica-msg-dragged' : '']"
+                        @drop.prevent="onDrop"
+                        @dragenter.prevent="onDragEnter"
+                        @dragleave.prevent="onDragLeave" 
+                        @dragover.prevent
+                        @mouseenter.prevent="onDragEnter"
+                        @mouseleave.prevent="onDragLeave"
+                        @click="$refs.file.click()"
+                    >
+                        <i v-if="isSerbian" class="natpis"> Klinite da biste dodali ikonicu ili je prevucite ovde </i>
+                        <i v-if="!isSerbian" class="natpis"> Click to add an icon or drag and drop it here </i>
+                    </div>
+
+                    
+                    <input type="file" ref="file" style="display: none" accept="image/*" @change="pictureSelected"/>
                 </div>
             </div>
             <div class="one-element">
@@ -177,7 +197,9 @@ export default {
                     name_en: "Number of different serveces the user has requested",
                     code: 9
                 }
-            ]
+            ],
+            isDragged: false,
+            dragCounter: 0
         }
     },
     computed:
@@ -269,10 +291,70 @@ export default {
         },
         createAchievement()
         {
-            this.achievement.icon = require("../assets/bee.svg") //izbaciti
+            // if(this.achievement.icon != null) 
+            // {
+            //     const splitted = this.achievement.icon.split(',')
+            //     this.achievement.icon = splitted[1]
+            // } 
+            //Skinuti komentar sa ovog dela koda kad se kreiranje prebaci na bazu. 
+            //Pogledati i komentar u AchievementAdmin, u HTML delu gde se postavlja ikonica (trenutno 37. linija).
+            //Ubaciti validaciju za ikonicu, da ase zabrani kreiranje dostignuća bez slike,
+            //ili ispratiti komentar iz AchievementAdmin
+            //Proveriti da li sve radi!!!
+
             this.$store.state.achievements.push(this.achievement)
             //Poslati kreiranje bazi
             this.$emit("achievemntCreated")
+        },
+        pictureSelected(e) 
+        {
+            const file = e.target.files[0];
+            e.target.value = null
+            this.addImage(file);
+        },
+        onDrop(e) 
+        {
+            e.stopPropagation();
+            const file = e.dataTransfer.files[0];
+            this.addImage(file);
+        },
+        addImage(file) 
+        {
+            if(!file) 
+            {
+                this.isDragged = false;
+                this.dragCounter = 0;
+                return 
+            }
+
+            if(!file.type.match('image*')) 
+            {
+                console.log('not an image!');
+            }
+            else 
+            {
+                const reader = new FileReader();
+                reader.onload = (e) => this.achievement.icon = e.target.result;
+                reader.readAsDataURL(file);
+            }
+            this.isDragged = false;
+            this.dragCounter = 0;
+        },
+        onDragEnter() 
+        {
+            this.dragCounter ++;
+            this.isDragged = true;
+        },
+        onDragLeave() 
+        {
+            if(this.dragCounter>0)
+                this.dragCounter --;
+            if(!this.dragCounter)
+                this.isDragged = false;
+        },
+        removePicture() 
+        {
+            this.achievement.icon = null
         }
     },
     components:
@@ -320,7 +402,6 @@ export default {
 
     .unos-ikonica
     {
-        border:1px solid rgb(100, 99, 99);
         height:100px;
         display:flex;
         flex-direction: row;
@@ -330,6 +411,58 @@ export default {
         text-align: center;
         color: grey;
         border-radius:2px;
+    }
+
+    .ikonica-msg {
+        height: 100%;
+        display: flex;
+        align-items: center;
+        align-self: stretch;
+        flex-grow: 1;
+        border: 1px solid black;
+        border-radius: 5px;
+    }
+    
+    .ikonica-msg-dragged {
+        cursor: pointer;
+        background-color: rgb(235, 230, 230);
+    }
+
+    .is-128x128 {
+        width: 80px;
+        height: 80px;
+        border-radius: 5px;
+        margin: 0px 5px 5px 0px;
+    }
+
+    .rounded-image {
+        border-radius: 5px;
+        border: 1px solid black;
+        height: 78px;
+        width: 78px;
+        object-fit:cover;
+        position: relative;
+        top:0;
+        left:0;
+        padding: 2px;
+    }
+
+    .remove-pic {
+        height:20px;
+        width: 20px;
+        margin: 2px 0 0 2px;
+        top: 0;
+        left:0;
+        position: absolute;
+        border:1px solid transparent;
+        border-radius: 20px;
+        background-color: red;
+        opacity: 0.4;
+    }
+
+    .remove-pic:hover {
+        cursor: pointer;
+        opacity: 1;
     }
 
     .natpis

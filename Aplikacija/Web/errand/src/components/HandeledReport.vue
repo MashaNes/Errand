@@ -45,15 +45,18 @@
             <span v-if="isSerbian" class="naziv"> Slike: </span>
             <span v-else class="naziv"> Photos: </span>
             <div class="photo-list">
-                <div v-for="(picture,index) in report.pictures" :key="index" class="photo">
-                    <img :src="'data:;base64,' + picture.picture" class="photo1">
+                <div v-for="(picture,index) in pictures" :key="index" class="photo" @click="expandPicture(index)">
+                    <img :src="picture.src" class="photo1">
                 </div> 
             </div>
         </div>
+        <LightBox :media="pictures" v-if="pictureExpanded" 
+                  :startAt="clickedPicture" @onClosed="pictureExpanded = false"></LightBox>
     </div>
 </template>
 
 <script>
+import LightBox from 'vue-image-lightbox'
 export default {
     props:
     {
@@ -63,12 +66,37 @@ export default {
             required: true
         }
     },
+    data()
+    {
+        return{
+            clickedPicture: null,
+            pictureExpanded: false
+        }
+    },
     computed:
     {
         isSerbian()
         {
             return this.$store.state.isSerbian
+        },
+        pictures() 
+        {
+            const retValue = []
+            if(this.report.pictures) 
+            {
+                this.report.pictures.forEach(pic => {
+                    retValue.push({
+                        thumb: 'data:;base64,' + pic.picture,
+                        src: 'data:;base64,' + pic.picture
+                    })
+                })
+            }
+            return retValue
         }
+    },
+    components:
+    {
+        LightBox
     },
     methods:
     {
@@ -95,6 +123,11 @@ export default {
                     user: this.report.created_by
                 }
             })
+        },
+        expandPicture(index)
+        {
+            this.clickedPicture = index
+            this.pictureExpanded = true
         }
     }
 }
@@ -190,21 +223,29 @@ export default {
 
     .photo
     {
-        margin:7px;
-        width:70px;
-        height:100px;
-        border:0.5px solid black;
+        margin: 7px;
+        width: fit-content;
+        height: fit-content;
+        border-radius: 5px;
+    }
+
+    .photo1
+    {
+        width: 70px;
+        height: 70px;
+        border-radius: 5px;
+        border: 1px solid grey;
+    }
+
+    .photo1:hover
+    {
+        border: 1px solid black;
+        cursor: pointer;
     }
 
     .clickable:hover
     {
         color: grey
-    }
-
-    .photo1
-    {
-        width:70px;
-        height:100px;
     }
 
     @media only screen and (max-width: 900px)

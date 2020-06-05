@@ -34,6 +34,10 @@
             <span class="image-span">
                 <span class="image-background">
                     <img :src="achievement.icon" height="20" width="20" />
+                    <!-- <img :src="'data:;base64,' + achievement.icon" height="20" width="20" /> -->
+                    <!-- Skinuti komentar kad se pređe na rad sa bazom. Pogledati i komentar u NewAchievement,
+                    u funkciji createAchievement (trenutno 294. linija). Ubaciti v-if za ikonicu, da bi se 
+                    postavila samo ako achievement.icon nije null, ili ispratiti komentar iz NewAchievement. -->
                 </span>
             </span>
         </b-card-footer>
