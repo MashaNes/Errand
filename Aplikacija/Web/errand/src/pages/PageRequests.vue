@@ -178,7 +178,7 @@
                     unrated_created_by : null,
                     unrated_done_by: null
                 }
-                if(this.$store.state.overAuthRequests == null || !this.isOnPageOne)
+                //if(this.$store.state.overAuthRequests == null || !this.isOnPageOne)
                     this.$store.dispatch("fillRequests", {filters: filters, objectToFill: { object:"overAuthRequests", page: 1 }})
             },
             closeModal()
