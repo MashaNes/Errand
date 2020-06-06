@@ -199,6 +199,7 @@ export default {
     getAnotherPortion() {
       if(this.lastPage != this.currentPage)
       {
+        window.scrollTo(0, 0)
         this.$store.dispatch('fillUsersPortion', {
           endpoint: "http://localhost:8000/api/v1/filtered_users/?paginate=true&page=" + this.currentPage,
           sort_rating: true,

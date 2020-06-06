@@ -22,6 +22,7 @@
                         @mouseenter.prevent="onDragEnter"
                         @mouseleave.prevent="onDragLeave"
                         @click="$refs.file.click()"
+                        v-if="achievement.icon == null"
                     >
                         <i v-if="isSerbian" class="natpis"> Klinite da biste dodali ikonicu ili je prevucite ovde </i>
                         <i v-if="!isSerbian" class="natpis"> Click to add an icon or drag and drop it here </i>
@@ -65,7 +66,7 @@
             <div class="dugme-div">
                 <button type="button" class="btn btn-info" @click="showModal = true"
                         :disabled="achievement.name_sr == '' || achievement.name_en == '' || achievement.description_sr == '' || achievement.description_en == ''
-                        || achievement.levels < 1 || achievement.levels > 10 || parseInt(achievement.levels) == NaN">
+                        || achievement.levels < 1 || achievement.levels > 10 || parseInt(achievement.levels) == NaN || achievement.icon == null">
                     <span v-if="isSerbian"> Dalje </span>
                     <span v-else> Next </span>
                 </button>
@@ -298,8 +299,6 @@ export default {
             // } 
             //Skinuti komentar sa ovog dela koda kad se kreiranje prebaci na bazu. 
             //Pogledati i komentar u AchievementAdmin, u HTML delu gde se postavlja ikonica (trenutno 37. linija).
-            //Ubaciti validaciju za ikonicu, da ase zabrani kreiranje dostignuća bez slike,
-            //ili ispratiti komentar iz AchievementAdmin
             //Proveriti da li sve radi!!!
 
             this.$store.state.achievements.push(this.achievement)

@@ -208,6 +208,7 @@
             },
             getAnotherPortion()
             {
+                window.scrollTo(0, 0)
                 const filters = {
                     created_by : null,
                     done_by : null,

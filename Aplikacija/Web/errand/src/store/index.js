@@ -1108,7 +1108,8 @@ export default new Vuex.Store({
                         {
                             this.state.userAdded = true
                             console.log(data)
-                            this.state.createdAuthRequests.results.unshift(data)
+                            if(this.state.createdAuthRequests != null)
+                                this.state.createdAuthRequests.results.unshift(data)
                             const filters = {
                                 created_by : this.state.authUser.id,
                                 done_by : null,
