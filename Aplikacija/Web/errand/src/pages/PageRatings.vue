@@ -1,10 +1,10 @@
 <template>
-  <Spinner v-if="!computedUser || !ratings"/>
+  <Spinner v-if="!userLoaded || !ratings"/>
   <div v-else>
     <div>
       <AchAndRatings 
         :tab="'Ratings'" 
-        :user="computedUser"
+        :user="isMyProfile ? $store.state.authUser : computedUser"
         :ratings="ratings"
         :RequestSelect="RequestSelect"
       />
@@ -30,8 +30,26 @@ export default {
   },
   data() {
     return {
-      computedUser: null,
-      ratings: null
+    }
+  },
+  computed: {
+    isMyProfile() {
+      return this.$route.params.id == this.$store.getters['getAuthUserId']
+    },
+    computedUser() {
+      return this.$store.state.user
+    },
+    ratings() {
+      if(this.isMyProfile)
+        return this.$store.state.authUserRatings
+      else
+        return this.$store.state.userRatings
+    },
+    userLoaded() {
+      if(!this.isMyProfile)
+        return this.computedUser != null
+      else
+        return true
     }
   },
   components: {
@@ -40,47 +58,18 @@ export default {
   },
   methods: {
     changedRoute() {
-      let vm = this
-      this.ratings = null
-      function callBackRatings() {
-        if(vm.$store.state.isDataLoaded)
-        {
-          vm.ratings = vm.$store.state.userRatings
-        }
-        else 
-          setTimeout(callBackRatings, 200)
-      }
-      function callbackUser() {
-        if(vm.$store.state.isDataLoaded)
-        {
-          vm.computedUser = vm.$store.state.user
-          vm.$store.dispatch('fillUserRatings', vm.computedUser.id)
-          callBackRatings()
-        }
-        else 
-          setTimeout(callbackUser, 200)
-      }
+      this.$store.state.userRatings = null
+      const routeId = this.$route.params.id
 
-      if(!this.user)
+      if(!this.user && !this.isMyProfile)
       {
-        const routeId = this.$route.params.id
-        if(routeId == this.$store.getters['getAuthUserId'])
-        {
-          this.computedUser = this.$store.state.authUser
-          vm.$store.dispatch('fillUserRatings', vm.computedUser.id)
-          callBackRatings()
-        }
-        else {
           this.$store.dispatch('getUserInfo', routeId)
-          callbackUser()
-        }
       }
-      else 
-      {
-        this.computedUser = this.user
-        vm.$store.dispatch('fillUserRatings', vm.computedUser.id)
-        callBackRatings()
-      }
+      else if(!this.isMyProfile) 
+        this.$store.state.user = this.user
+
+      if((this.isMyProfile && !this.$store.state.authUserRatings) || (!this.isMyProfile))
+        this.$store.dispatch('fillUserRatings', routeId)
     }
   },
   created() {

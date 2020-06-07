@@ -36,55 +36,75 @@
           <div style="margin-bottom:10px;"> 
             <span v-if="isSerbian">Ocenio/la:</span>
             <span v-else>Rated by:</span>
-            <!-- dodati da se na klik predje na korisnika -->
             <span class ="link-label" @click="goToProfile()"> {{givenBy}} </span>
           </div>
-          <div> 
-            <span v-if="isSerbian">Za zahtev:</span>
-            <span v-else>For request:</span>
-            <!-- dodati da se na klik predje na sam request -->
-            <span class ="link-label"> {{forRequest}} </span>
+          <div>
+            <span
+              v-text="isSerbian ? 'Vidi detalje zahteva' : 'See request details'" 
+              class ="link-label" @click="showModalRequest = true"
+            ></span>
           </div>
         </div>
       </b-card-footer>
+      <ModalRequestInfo 
+        :request="rating.request" :insignificantUser="rating.created_by.id" 
+        @close="showModalRequest = false" @showMore="showMore" v-if="showModalRequest"
+      />
     </b-card>
 </template>
 
 <script>
+import ModalRequestInfo from "@/components/ModalRequestInfo"
 export default {
-    props: {
-      rating: {
-        required: true, 
-        type: Object
-      }
-    },
-    computed: {
-      isSerbian() {
-        return this.$store.state.isSerbian
-      },
-      progressBarVariant() {
-        return this.rating.grade < 2 ? 'danger' : 
-               this.rating.grade < 5 ? 'warning' : 'success'
-      },
-      givenBy() {
-        return this.rating.created_by.first_name + " " + this.rating.created_by.last_name
-      },
-      forRequest() {
-        return this.rating.request.name
-      }
-    },
-    methods: {
-      goToProfile()
-      {
-        this.$router.push({
-          name: "PageViewProfile", 
-          params: {
-            id: this.$store.state.authUser.id, 
-            user: this.$store.state.authUser
-          }
-        })
-      }
+  components: {
+    ModalRequestInfo
+  },
+  props: {
+    rating: {
+      required: true, 
+      type: Object
     }
+  },
+  data() {
+    return {
+      showModalRequest: false
+    }
+  },
+  computed: {
+    isSerbian() {
+      return this.$store.state.isSerbian
+    },
+    progressBarVariant() {
+      return this.rating.grade < 2 ? 'danger' : 
+              this.rating.grade < 5 ? 'warning' : 'success'
+    },
+    givenBy() {
+      return this.rating.created_by.first_name + " " + this.rating.created_by.last_name
+    }
+  },
+  methods: {
+    goToProfile()
+    {
+      const id = this.rating.created_by.id
+      this.$router.push({
+        name: "PageViewProfile", 
+        params: {
+          id: id, 
+          user: id == this.$store.getters['getAuthUserId'] ? this.$store.state.authUser : this.rating.created_by
+        }
+      })
+    },
+    showMore(request) {
+      this.showModalRequest = false
+      this.$router.push({
+        name: "PageViewRequest", 
+        params: {
+          id: request.id, 
+          request: request
+        }
+      })
+    }
+  }
 }
 </script>
 
@@ -147,7 +167,7 @@ export default {
     font-size:18px;
   }
 
-  .link-labe:hover {
+  .link-label:hover {
     cursor: pointer !important;
     text-decoration: underline;
     color:lightseagreen;

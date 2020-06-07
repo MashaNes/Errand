@@ -630,6 +630,7 @@ export default {
   methods: {
     routeChanged() {
       let fetchedById = false
+      this.$store.state.specificRequest = null
       this.$store.state.requestFilteredInfo = {}
       this.$store.state.offers = null
       this.$store.state.edits = null

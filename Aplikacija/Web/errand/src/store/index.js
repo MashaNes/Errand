@@ -25,8 +25,10 @@ export default new Vuex.Store({
         specificRequest: null,
         user: null,
         authUser: null,
-        userAchievements: {},
-        userRatings: {},
+        userAchievements: null,
+        authUserAchievements: null,
+        userRatings: null,
+        authUserRatings: null,
         isSerbian: true,
         allUsers: {},
         logedIn: false,
@@ -325,7 +327,43 @@ export default new Vuex.Store({
         getUserAchievements({commit}, userId) {
             const allAch = fetchAchievements();
             const filteredAch = Object.values(allAch).filter(a => a.user == userId)
-            commit('setUserAchievements', filteredAch)
+            commit('setUserAchievements', {achievements: filteredAch, id: userId})
+
+            //skinuti komentar kad prorade dostignuca
+
+            // this.state.isDataLoaded = false
+            // fetch("http://localhost:8000/api/v1/user_info_filtered/", {
+            //     method: "POST",
+            //     headers:
+            //     {
+            //         "Content-type" : "application/json",
+            //         "Authorization" : "Token " + this.state.token
+            //     },
+            //     body:  JSON.stringify(
+            //     {
+            //         "created_by" : userId,
+            //         "blocked" : false,
+            //         "working_hours" : false,
+            //         "addresses" : false,
+            //         "services" : false,
+            //         "offers" : false,
+            //         "notifications" : false,
+            //         "ratings" : false,
+            //         "benefitlist" : false,
+            //         "achievements" : true,
+            //         "requests" : false
+            //     })
+            // }).then(p => {
+            //     if(p.ok) {
+            //         p.json().then(data => {
+            //             console.log(data)
+            //             commit('setUserAchievements', {achievements: data.achievements, id: userId})
+            //             console.log(this.state.userAchievements)
+            //             this.state.isDataLoaded = true
+            //         })
+            //     }
+            //     else console.log("Error")
+            // })
         },
         fillUserRatings({commit}, userId) {
             this.state.isDataLoaded = false
@@ -354,7 +392,7 @@ export default new Vuex.Store({
                 if(p.ok) {
                     p.json().then(data => {
                         console.log(data)
-                        commit('setUserRatings', data.ratings)
+                        commit('setUserRatings', {ratings: data.ratings, id: userId})
                         console.log(this.state.userRatings)
                         this.state.isDataLoaded = true
                     })
@@ -1165,6 +1203,26 @@ export default new Vuex.Store({
                 }
             }) 
         },
+        getRequestByIdBasic({commit}, requestId) {
+            fetch("http://localhost:8000/api/v1/requests_info/" + requestId, {
+                method: 'GET',
+                headers: {
+                    "Content-type" : "application/json",
+                    "Authorization" : "Token " + this.state.token
+                }
+            }).then(p => {
+                if(p.ok) {
+                    p.json().then(data => {
+                        console.log(data)
+                        let isParticipant = false
+                        this.state.specificRequest = data
+                    })
+                }
+                else {
+                    console.log("Error")
+                }
+            })
+        },
         deleteRequest({commit}, requestId)
         { 
             fetch("http://127.0.0.1:8000/api/v1/request_cancel/",
@@ -1624,11 +1682,17 @@ export default new Vuex.Store({
                 })
             }
         },
-        setUserAchievements(state, achievements) {
-            state.userAchievements = achievements
+        setUserAchievements(state, {achievements, id}) {
+            if(id == state.authUser.id) 
+                state.authUserAchievements = achievements
+            else 
+                state.userAchievements = achievements
         },
-        setUserRatings(state, ratings) {
-            state.userRatings = ratings
+        setUserRatings(state, {ratings, id}) {
+            if(id == state.authUser.id)
+                state.authUserRatings = ratings
+            else
+                state.userRatings = ratings
         },
         setNotAuthUserServices(state, services) {
             state.notAuthUserServices = services
