@@ -68,6 +68,15 @@
         </div>
       </div>
       <Spinner v-if="!$store.state.isDataLoaded" />
+      <!-- <b-pagination 
+        v-model="currentPage" 
+        :total-rows="usersPortion.count" 
+        :per-page="perPage" 
+        align="center"
+        class="pag-top"
+        @input="getAnotherPortion"
+      ></b-pagination> -->
+      <!-- skinuti komentar kad se odradi paginacija, i prepraviti sta treba po tom pitanju -->
       <div v-if="tab=='Achievements' && $store.state.isDataLoaded" class="ach-wrap"> 
         <Achievement 
           v-for="achievement in achievements"
@@ -128,6 +137,8 @@ export default {
   },
   data() {
     return {
+      currentPage: 1,
+      perPage: 10,
       filterValueLower: 1,
       filterValueHigher: 5
     }

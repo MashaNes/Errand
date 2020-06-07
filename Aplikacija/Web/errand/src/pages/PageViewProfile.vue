@@ -59,7 +59,6 @@ export default {
   data() {
     return {
       componentToShow: "Info",
-      //computedUser: null,
       addresses: null
     }
   },
@@ -88,14 +87,7 @@ export default {
     },
     changedRoute() {
       this.$store.state.user = null
-      //fetch-ovati sve korisnikove home adrese
       let vm = this
-      // function callbackUser() {
-      //   if(vm.$store.state.isDataLoaded)
-      //     vm.computedUser = vm.$store.state.user
-      //   else 
-      //     setTimeout(callbackUser, 200)
-      // }
       function callbackAddresses() {
         if(vm.$store.state.userAddresses)
           vm.addresses = vm.$store.state.userAddresses
@@ -108,8 +100,6 @@ export default {
       if(!this.user && !this.isMyProfile)
       {
           this.$store.dispatch('getUserInfo', routeId)
-          //callbackUser()
-          
       }
       else if(!this.isMyProfile) 
         this.$store.state.user = this.user
