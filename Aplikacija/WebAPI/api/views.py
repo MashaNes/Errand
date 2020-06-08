@@ -284,8 +284,31 @@ class UserInfoFilteredViewSet(viewsets.ModelViewSet):
         fulluser = get_object_or_404(self.queryset, pk=request.data['created_by'])
         serializer = serializers.FullUserSerializer(fulluser)
         response = utils.filter_user_info(serializer.data, request.data)
+        _next = None
+        _prev = None
+        _count = len(response)
 
-        return Response(response)
+        if request.GET.get('paginate'):
+            if request.GET.get('page'):
+                page = int(request.GET.get('page'))
+                if page > 1:
+                    _prev = "127.0.0.1:8000/api/v1/user_info_filtered/?paginate=true&page=" \
+                        + str(page-1)
+            else:
+                page = 1
+            if _count > page * 10:
+                _next = "127.0.0.1:8000/api/v1/user_info_filtered/?paginate=true&page=" \
+                    + str(page + 1)
+            response = response[(page-1)*10 : page*10]
+
+        custom_response = {
+            'next' : _next,
+            'previous' : _prev,
+            'count' : _count,
+            'results' : response
+        }
+
+        return Response(custom_response)
 
 # POST filtered_users/
 class FilterUserViewSet(viewsets.ModelViewSet):

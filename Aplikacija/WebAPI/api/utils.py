@@ -204,48 +204,53 @@ def filter_user(queryset, data):
     return new_queryset
 
 def filter_user_info(serializer, data):
-    response = {}
-
     if data['blocked']:
-        response['blocked'] = serializer['blocked']
-        for _r in response['blocked']:
+        response = serializer['blocked']
+        for _r in response:
             _r['picture'] = load_img(_r['picture'])
+        return response
 
     if data['working_hours']:
-        response['working_hours'] = serializer['working_hours']
+        return serializer['working_hours']
 
     if data['addresses']:
-        response['addresses'] = serializer['addresses']
+        return serializer['addresses']
 
     if data['services']:
-        response['services'] = serializer['services']
+        return serializer['services']
 
     if data['offers']:
-        response['offers'] = serializer['offers']
+        response = serializer['offers']
+        for _r in response:
+            _r['created_by']['picture'] = load_img(_r['created_by']['picture'])
+        return response
 
     if data['notifications']:
-        response['notifications'] = serializer['notifications']
+        return serializer['notifications']
 
     if data['ratings']:
-        response['ratings'] = serializer['ratings']
-        for _r in response['ratings']:
+        response = serializer['ratings']
+        for _r in response:
             _r['created_by']['picture'] = load_img(_r['created_by']['picture'])
             _r['rated_user']['picture'] = load_img(_r['rated_user']['picture'])
+        return response
 
     if data['benefitlist']:
-        response['benefitlist'] = serializer['benefitlist']
-        for _r in response['benefitlist']:
+        response = serializer['benefitlist']
+        for _r in response:
             _r['benefit_user']['picture'] = load_img(_r['benefit_user']['picture'])
+        return response
 
     if data['achievements']:
-        response['achievements'] = serializer['achievements']
-        for _r in response['achievements']:
+        response = serializer['achievements']
+        for _r in response:
             _r['icon'] = load_img(_r['icon'])
+        return response
 
     if data['requests']:
-        response['requests'] = serializer['requests']
-
-    return response
+        response = serializer['requests']
+        response = load_pictures_multiple_requests_info(response)
+        return response
 
 def filter_reports(queryset, data):
     new_queryset = list()

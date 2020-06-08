@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'djoser',
     'rest_framework.authtoken',
     'corsheaders',
+    'fcm_django',
 ]
 
 MIDDLEWARE = [
@@ -73,6 +74,13 @@ TEMPLATES = [
         },
     },
 ]
+
+FCM_DJANGO_SETTINGS = {
+        "APP_VERBOSE_NAME": "swe-errand",
+        "FCM_SERVER_KEY": "AAAA6Nyej6k:APA91bHEl9K89n4Bw1LFtGaFkETcweB58p4Sn0U0kV10WFa7wxFL31YDwDilUixW4smrj3d2xAL5aGMSMxQktgmFhBiS1Vl1ZMptmu0n-3x0uh3BKqFqgTejbznQyG5tW1QOcKkSBOcV",
+        "ONE_DEVICE_PER_USER": False,
+        "DELETE_INACTIVE_DEVICES": False,
+}
 
 WSGI_APPLICATION = 'errand.wsgi.application'
 
