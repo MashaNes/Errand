@@ -19,7 +19,7 @@
             <slot name="body">
 
                 <div class="info-wrap">
-                    <span v-if="isSerbian" class="info-span"> 
+                    <span class="info-span"> 
                         <span v-text="isSerbian ? 'Naziv: ' : 'Name: '" class="info-title"></span>
                         <strong> {{computedRequest.name}} </strong> 
                     </span>
@@ -31,20 +31,22 @@
                         <img src="@/assets/failed.svg" v-if="computedRequest.status == 3" class="info-pic-status" />
                     </span>  
                     
-                    <span v-if="isSerbian" class="info-span"> 
+                    <span class="info-span"> 
                         <span v-text="isSerbian ? 'Uloga: ' : 'Role: '" class="info-title"></span> 
                         <strong> {{role}} </strong> 
                     </span>
 
-                    <span v-if="isSerbian" class="info-span"> 
+                    <span class="info-span"> 
                         <span v-text="isSerbian ? 'Zahtevane slike: ' : 'Pictures required: '" class="info-title"></span> 
-                        <strong v-text="computedRequest.picture_required ? 'Da' : 'Ne'"></strong>
+                        <strong v-if="isSerbian" v-text="computedRequest.picture_required ? 'Da' : 'Ne'"></strong>
+                        <strong v-else v-text="computedRequest.picture_required ? 'Yes' : 'No'"></strong>
                         <img src="@/assets/photos.svg" class="info-pic" v-if="computedRequest.picture_required" />
                     </span>
 
-                    <span v-if="isSerbian && computedRequest.picture_required" class="info-span"> 
+                    <span v-if="computedRequest.picture_required" class="info-span"> 
                         <span v-text="isSerbian ? 'Priložene sve zahtevane slike: ' : 'All required pictures taken: '" class="info-title"></span>  
-                        <strong v-text="picturesTaken ? 'Da' : 'Ne'"></strong> 
+                        <strong v-if="isSerbian" v-text="picturesTaken ? 'Da' : 'Ne'"></strong> 
+                        <strong v-else v-text="picturesTaken ? 'Yes' : 'No'"></strong> 
                         <img src="@/assets/happy.png" v-if="picturesTaken" class="info-pic" />
                         <img src="@/assets/sad.png" v-else class="info-pic" />
                     </span>

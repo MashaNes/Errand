@@ -96,7 +96,7 @@
             />
             <span class="list-value">{{ user.email }}</span>
           </b-list-group-item>
-          <b-list-group-item>
+          <b-list-group-item v-if="user.phone && user.phone !=''">
             <img 
               src="@/assets/call.svg" 
               height = "20" 
@@ -192,6 +192,8 @@ export default {
       return this.user.first_name + " " +this.user.last_name
     },
     progressBarVariant() {
+      if(this.user.avg_rating == null)
+        return 'secondary'
       return this.user.avg_rating < 2.5 ? 'danger' : 
              this.user.avg_rating < 4.5 ? 'warning' : 'success'
     },

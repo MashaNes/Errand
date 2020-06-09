@@ -21,7 +21,13 @@
     </div>   
 
     <div class = "content-wrapper">
-      <div class="filter-wrapper" v-if="tab=='Ratings'"> 
+      <Spinner v-if="!$store.state.isDataLoaded" />
+      <b-pagination 
+        v-model="currentPage" :total-rows="tab == 'Achievements' ? achievements.length : ratings.count" 
+        :per-page="perPage" align="center" class="pag-top"
+        @input="getAnotherPortion" v-if="$store.state.isDataLoaded"
+      ></b-pagination>
+      <div class="filter-wrapper" v-if="tab=='Ratings' && $store.state.isDataLoaded && ratings.results.length > 0"> 
         <div class="filter-inner-wrap">
           <span class="filter-span" v-text="isSerbian ? 'Prikaži ocene u opsegu' : 'Show grades in range'"></span>
           <div class="filter-input-and-span">
@@ -67,30 +73,32 @@
           ></span>
         </div>
       </div>
-      <Spinner v-if="!$store.state.isDataLoaded" />
-      <!-- <b-pagination 
-        v-model="currentPage" 
-        :total-rows="usersPortion.count" 
-        :per-page="perPage" 
-        align="center"
-        class="pag-top"
-        @input="getAnotherPortion"
-      ></b-pagination> -->
-      <!-- skinuti komentar kad se odradi paginacija, i prepraviti sta treba po tom pitanju -->
-      <div v-if="tab=='Achievements' && $store.state.isDataLoaded" class="ach-wrap"> 
+      <div v-if="tab=='Achievements' && $store.state.isDataLoaded && achievements.length > 0" class="ach-wrap"> 
         <Achievement 
           v-for="achievement in achievements"
           :key="achievement.id"
           :achievement="achievement"
         />
       </div>
-      <div v-if="tab=='Ratings' && $store.state.isDataLoaded" class="rating-wrap"> 
+      <div v-if="tab=='Ratings' && $store.state.isDataLoaded && ratings.results.length > 0" class="rating-wrap"> 
         <Rating 
-          v-for="rating in ratings"
+          v-for="rating in ratings.results"
           :key="rating.id"
           :rating="rating"
         />
       </div>
+      <span class="no-results" v-if="noResults && user.id != $store.state.authUser.id">
+        <i v-if="tab == 'Achievements'" v-text="isSerbian ? 'Korisnik nema dostignuća za sada.' : 'This user has no achievements yet.'"></i>
+        <i v-if="tab == 'Ratings'" v-text="isSerbian ? 'Korisnik nije bio ocenjivan do sada.' : 'This user has not been rated yet.'"></i>
+      </span>
+      <span class="no-results" v-if="noResults && user.id == $store.state.authUser.id">
+        <i v-if="tab == 'Achievements'" v-text="isSerbian ? 'Za sada nemate dostignuća.' : 'You have no achievements yet.'"></i>
+        <i v-if="tab == 'Ratings'" v-text="isSerbian ? 'Niste bili ocenjivani do sada.' : 'You have not been rated yet.'"></i>
+      </span>
+      <b-pagination 
+        v-model="currentPage" :total-rows="tab == 'Achievements' ? achievements.length : ratings.count" 
+        :per-page="perPage" align="center" class="pag-bottom" v-if="$store.state.isDataLoaded"
+      ></b-pagination>
     </div>
   </div>
 </template>
@@ -121,12 +129,14 @@ export default {
       required: true
     },
     ratings: {
-      type: Array,
+      type: Object,
       required: false
     },
     achievements: {
-      type: Array,
+      type: Array, 
       required: false
+      //prepraviti da bude Object kad se napravi rad sa dostignućima; tad prepraviti u b-pagination 
+      //da za total-rows dobija achievements.count i da v-for obilazi achievements.results
     },
     RequestSelect:
     {
@@ -139,6 +149,7 @@ export default {
     return {
       currentPage: 1,
       perPage: 10,
+      lastPage: 1,
       filterValueLower: 1,
       filterValueHigher: 5
     }
@@ -159,6 +170,12 @@ export default {
     },
     isFilterHigherInvalid() {
       return this.$v.filterValueHigher.$invalid
+    },
+    noResults() {
+      if(this.tab == 'Achievements')
+        return this.achievements.length == 0 //prepraviti na achivements.results.length
+      else
+        return this.ratings.results.length == 0
     }
   },
   methods: {
@@ -174,6 +191,17 @@ export default {
     resetFilterHigher() {
       if(this.filterValueHigher > 5 || this.filterValueHigher < 2 || !this.filterValueHigher || this.filterValueLower >= this.filterValueHigher)
         this.filterValueHigher = 5
+    },
+    getAnotherPortion() {
+      if(this.lastPage != this.currentPage) {
+        window.scrollTo(0, 0)
+        const storeFunction = this.tab == 'Achievements' ? 'getUserAchievements' : 'fillUserRatings'
+        this.$store.dispatch(storeFunction, {
+          userId: this.user.id,
+          endpoint: "http://localhost:8000/api/v1/user_info_filtered/?paginate=true&page=" + this.currentPage
+        })
+        this.lastPage = this.currentPage
+      }
     },
     goToProfile()
     {
@@ -353,6 +381,24 @@ export default {
   .ne-valja
   {
     background-color: rgb(255, 212, 212);
+  }
+
+  .pag-top {
+    margin-bottom: 40px;
+    margin-top: 20px;
+    z-index:0;
+  }
+
+  .pag-bottom {
+    margin: 40px 0 0px 0;
+    z-index:0;
+    padding-bottom: 40px;
+  }
+
+  .no-results {
+    font-weight: bold;
+    font-size: 18px;
+    word-break: break-word;
   }
 
   @media only screen and (max-width:499px)

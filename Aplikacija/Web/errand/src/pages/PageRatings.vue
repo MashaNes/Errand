@@ -68,8 +68,13 @@ export default {
       else if(!this.isMyProfile) 
         this.$store.state.user = this.user
 
-      if((this.isMyProfile && !this.$store.state.authUserRatings) || (!this.isMyProfile))
-        this.$store.dispatch('fillUserRatings', routeId)
+      // if((this.isMyProfile && !this.$store.state.authUserRatings) || (!this.isMyProfile))
+      //skinuti komentar kad se odrade notifikacije, ako bude bilo moguće da se po pristizanju notifikacije
+      //o oceni doda ocena u postojeću kolekciju ocena ulogovanog korisnika, i time izbegnu bespotrebni zahtevi ka bazi
+      this.$store.dispatch('fillUserRatings', {
+        userId: routeId,
+        endpoint: "http://localhost:8000/api/v1/user_info_filtered/?paginate=true"
+      })
     }
   },
   created() {

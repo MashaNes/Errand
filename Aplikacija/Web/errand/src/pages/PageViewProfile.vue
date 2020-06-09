@@ -97,12 +97,13 @@ export default {
       
       const routeId = this.$route.params.id
 
-      if(!this.user && !this.isMyProfile)
+      if(!this.isMyProfile)
       {
-          this.$store.dispatch('getUserInfo', routeId)
+        if(this.user)
+          this.$store.state.user = this.user
+        const onlyRating = !this.user ? false : true
+        this.$store.dispatch('getUserInfo', {userId: routeId, onlyRating: onlyRating, userToSet: this.user})
       }
-      else if(!this.isMyProfile) 
-        this.$store.state.user = this.user
       this.componentToShow = 'Info'
       if(this.isMyProfile) {
         vm.$store.state.userAddresses = null

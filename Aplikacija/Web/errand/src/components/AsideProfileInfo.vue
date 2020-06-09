@@ -26,7 +26,10 @@
         />
         <span>{{user.email}}</span>
       </div>
-      <div :class="[!forWideScreen ? 'info-element' : 'info-element-wide', !forWideScreen ? 'to-hide' : 'to-hide-wide']">
+      <div 
+        :class="[!forWideScreen ? 'info-element' : 'info-element-wide', !forWideScreen ? 'to-hide' : 'to-hide-wide']"
+        v-if="user.phone && user.phone != ''"
+      >
         <img 
           src="@/assets/call.svg" 
           height = "20" 

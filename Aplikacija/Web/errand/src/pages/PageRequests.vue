@@ -73,8 +73,8 @@
                       :textE="'Request successfully created.'"
                       @close="closeModal" />
         <ModalSuccess v-if="success" 
-                      :textS="'Uspešno prijavljen problem sa korisnikom.'" 
-                      :textE="'User successfuly reported.'" 
+                      :textS="textMessageS" 
+                      :textE="textMessageE" 
                       @close="closeModalSuccess" />
     </div>
 </template>
