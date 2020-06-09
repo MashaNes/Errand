@@ -157,7 +157,7 @@ export default new Vuex.Store({
                         p.json().then(data =>
                         {
                             console.log(data)
-                            this.state.usersWithBenefit = data["benefitlist"]
+                            this.state.usersWithBenefit = data.results
                         })
                     }
                     else
@@ -680,7 +680,7 @@ export default new Vuex.Store({
                         p.json().then(data =>
                         {
                             console.log(data)
-                            this.state.userServices = data["services"]
+                            this.state.userServices = data.results
                             this.dispatch("fillServices")
                         })
                     }
@@ -715,7 +715,7 @@ export default new Vuex.Store({
                     if(p.ok) {
                         p.json().then(data => {
                             console.log(data)
-                            commit('setNotAuthUserServices', data.services)
+                            commit('setNotAuthUserServices', data.results)
                             this.state.isDataLoaded = true
                         })
                     }
@@ -1031,7 +1031,10 @@ export default new Vuex.Store({
                         console.log(vm.state.user)
                     })
                 }
-                else console.log("Error")
+                else {
+                    console.log("Error")
+                    console.log(userId)
+                }
             })
         },
         removeBenefit({commit}, id)

@@ -74,7 +74,7 @@ export default {
       if(!this.user)
       {
         const routeId = this.$route.params.id
-        this.$store.dispatch('getUserInfo', routeId)
+        this.$store.dispatch('getUserInfo', {userId: routeId, onlyRating: false, userToSet: this.user})
         callbackUser()
       }
       else 
