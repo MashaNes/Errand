@@ -67,7 +67,10 @@ export default {
         this.$store.state.user = this.user
 
       if((this.isMyProfile && !this.$store.state.authUserAchievements) || (!this.isMyProfile))
-        this.$store.dispatch('getUserAchievements', routeId)
+        this.$store.dispatch('getUserAchievements', {
+          userId: routeId,
+          endpoint: "http://localhost:8000/api/v1/user_info_filtered/?paginate=true"
+        })
     }
   },
   created() {

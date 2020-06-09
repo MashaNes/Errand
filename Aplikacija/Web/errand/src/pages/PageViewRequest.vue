@@ -37,7 +37,7 @@
             </b-button>
           </div>
          
-          <div class="dropdown">
+          <div class="dropdown-and-important ">
             <img v-if="isSerbian && finishedOtherUser && !isRunner && computedRequest.status == 1" 
                  src="@/assets/exclamation.png" class="important-img"
                  v-b-popover.hover.bottom='"Vaš saradnik na ovom zahtevu pokrenuo je proces okončanja zahteva. " + 
@@ -52,9 +52,15 @@
             <b-dropdown id="dropdown-1" variant="info" right class="drop-down">
               <template v-slot:button-content>
                 <span v-text="isSerbian ? 'Akcije' : 'Actions'"></span>
+                <b-badge 
+                  v-if="computedRequest.status == 1 && !isRunner && showView == 'Details' && filteredEdits && filteredEdits.length > 0"
+                  variant="danger" class="big-notification-badge" >{{editsBadge}}</b-badge>
+                <b-badge 
+                  v-if="computedRequest.status == 0 && !isRunner && showView == 'Details' && filteredOffers && filteredOffers.length > 0"
+                  variant="danger" class="big-notification-badge" >{{offersBadge}}</b-badge>
               </template>
               <b-dropdown-item 
-                v-if="computedRequest.status == 1 && !isRunner" 
+                v-if="computedRequest.status == 1 && !isRunner && !computedRequest.finished_created_by" 
                 @click="purpose = 'finish'; showModalAreYouSure = true;"
                 v-b-popover.hover.bottom='isSerbian ? "Kliknite da biste okončali zahtev i označili da je bio uspešan." 
                                                     : "Click to end the request and mark it as successful."'
@@ -89,7 +95,7 @@
               <b-dropdown-item 
                 v-if="computedRequest.status == 0 && !isRunner && showView == 'Details'"
                 :disabled="!filteredOffers || filteredOffers.length == 0" @click="changeViewFromDetails('Offers')"
-                v-b-popover.hover.top="zahteviTekst"
+                v-b-popover.hover.top="ponudeTekst"
               >
                 <img src="@/assets/handshake.png" class="slika-dugme wrench" />
                 <b-badge variant="danger" class="notification-badge" >{{offersBadge}}</b-badge>
@@ -98,7 +104,7 @@
               <b-dropdown-item 
                 v-if="computedRequest.status == 1 && !isRunner && showView == 'Details'"
                 :disabled="!filteredEdits || filteredEdits.length == 0" @click="changeViewFromDetails('Edits')"
-                v-b-popover.hover.top="ponudeTekst" 
+                v-b-popover.hover.top="zahteviTekst" 
               >
                 <img src="@/assets/wrench.svg" class="slika-dugme wrench" />
                 <b-badge variant="danger" class="notification-badge" >{{editsBadge}}</b-badge>
@@ -106,7 +112,7 @@
               </b-dropdown-item>
               
 
-              <b-dropdown-item v-if="isRunner">
+              <b-dropdown-item v-if="isRunner && computedRequest.status == 1">
                 <img src="@/assets/info.svg" class="slika-dugme"/>
                 <span v-if="isSerbian" class="dropdown-runner"> Za pristup akcijama u ulozi izvršioca, skinite Android aplikaciju </span>
                 <span v-else class="dropdown-runner"> For accessing ruuner's actions, download the Android application </span>
@@ -119,12 +125,6 @@
                 <span v-text="isSerbian ? 'Nazad na pregled svih zahteva' : 'Back to all requests'"></span> 
               </b-dropdown-item>
             </b-dropdown>
-            <b-badge 
-              v-if="computedRequest.status == 1 && !isRunner && showView == 'Details' && filteredEdits && filteredEdits.length > 0"
-              variant="danger" class="big-notification-badge" >{{editsBadge}}</b-badge>
-            <b-badge 
-              v-if="computedRequest.status == 0 && !isRunner && showView == 'Details' && filteredOffers && filteredOffers.length > 0"
-              variant="danger" class="big-notification-badge" >{{offersBadge}}</b-badge>
           </div>
         </div>
       </b-card-title>
@@ -241,7 +241,7 @@
         </button>
       </div>
     </b-card>
-    <ModalAreYouSure 
+    <ModalSureScrollable 
       v-if="showModalAreYouSure"
       :naslovS="'Da li ste sigurni?'"
       :naslovE="'Are you sure?'"
@@ -272,7 +272,7 @@ import Spinner from "@/components/Spinner"
 import OfferBox from "@/components/OfferBox"
 import EditBox from "@/components/EditBox"
 import LightBox from 'vue-image-lightbox'
-import ModalAreYouSure from "@/components/ModalAreYouSure"
+import ModalSureScrollable from "@/components/ModalSureScrollable"
 import ModalSuccess from "@/components/ModalSuccess"
 import ModalReportUser from "@/components/ModalReportUser"
 import ModalRateUser from "@/components/ModalRateUser"
@@ -285,7 +285,7 @@ export default {
     OfferBox,
     EditBox,
     LightBox,
-    ModalAreYouSure,
+    ModalSureScrollable,
     ModalSuccess,
     ModalReportUser,
     ModalRateUser
@@ -975,9 +975,9 @@ export default {
     padding-top: 5px;
   }
 
-  #dropdown-1 {
+  /* #dropdown-1 {
     margin-bottom: 15px;
-  }
+  } */
 
   .important-img {
     background-color: green;
@@ -1008,10 +1008,11 @@ export default {
     font-weight: bold;
   }
 
-  .dropdown {
+  .dropdown-and-important {
     display: flex;
     align-items: center;
     flex-wrap: nowrap;
+    margin-bottom: 15px;
   }
 
   .main-title {
@@ -1098,10 +1099,10 @@ export default {
   }
 
   .big-notification-badge {
-    font-size: 60%;
+    font-size: 80%;
     position: relative;
-    top: -22px;
-    right: 8px;
+    top: -19px;
+    left: 34px;
     z-index: 1;
   }
 

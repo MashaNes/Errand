@@ -76,7 +76,7 @@
     <div class="activeUsers" v-if="services != null && isBroadCast"> 
       <button type="button" class="btn btn-danger" @click="showModal = true">
         <span v-if="isSerbian"> Odustani od odabira </span>
-        <span v-else> Abort coosing process </span>
+        <span v-else> Abort choosing process </span>
       </button>
     </div>
     <div class="activeUsers" v-if="services != null"> 
@@ -85,7 +85,7 @@
       <span v-else> Show only active users</span>
     </div>
     <Spinner v-if="!this.$store.state.isDataLoaded"/>
-    <div class="users" v-else>
+    <div class="users" v-else-if="usersPortion.results.length > 0">
       <UserBox
         :user="user"
         v-for="user in usersPortion.results" 
@@ -94,6 +94,9 @@
         :RequestSelect="services != null"
       />
     </div>
+    <span class="no-results" v-else>
+      <i v-text="isSerbian ? 'Nema korisnika koji odgovaraju unetim parametrima za pretragu.' : 'No users fit the specified search parameters.'"></i>
+    </span>
     <b-pagination 
       v-model="currentPage"
       :total-rows="usersPortion.count" 
@@ -463,6 +466,16 @@ export default {
     margin-right: 15px;
     height:20px;
     width:20px;
+  }
+
+  .no-results {
+    font-weight: bold;
+    font-size: 18px;
+    word-break: break-word;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
   }
 
   @media only screen and (max-width:650px)

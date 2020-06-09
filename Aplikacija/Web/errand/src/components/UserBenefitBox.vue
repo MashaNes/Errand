@@ -111,7 +111,7 @@ export default {
         return this.$store.state.isSerbian
       },
       progressBarVariant() {
-        return this.userBenefit == undefined || this.userBenefit.benefit_user.avg_rating == null? 'danger' :
+        return this.userBenefit == undefined || this.userBenefit.benefit_user.avg_rating == null? 'secondary' :
                this.userBenefit.benefit_user.avg_rating < 2.5 ? 'danger' : 
                this.userBenefit.benefit_user.avg_rating < 4.5 ? 'warning' : 'success'
       },

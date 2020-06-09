@@ -166,6 +166,8 @@ export default {
       return this.$store.state.isSerbian
     },
     progressBarVariant() {
+      if(this.offer.created_by.avg_rating == null)
+        return 'secondary'
       return this.offer.created_by.avg_rating < 2.5 ? 'danger' : 
               this.offer.created_by.avg_rating < 4.5 ? 'warning' : 'success'
     },

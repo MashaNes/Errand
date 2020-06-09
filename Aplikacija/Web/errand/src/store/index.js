@@ -324,15 +324,16 @@ export default new Vuex.Store({
         getAllUsers({commit}) {
             commit('setAllUsers', fetchUsers())
         },
-        getUserAchievements({commit}, userId) {
+        getUserAchievements({commit}, {userId, endpoint}) {
+            this.state.isDataLoaded = false
             const allAch = fetchAchievements();
             const filteredAch = Object.values(allAch).filter(a => a.user == userId)
             commit('setUserAchievements', {achievements: filteredAch, id: userId})
-
-            //skinuti komentar kad prorade dostignuca
+            this.state.isDataLoaded = true
+            //skinuti komentar kad prorade dostignuca; obratiti paznju da data ima polja results i count
 
             // this.state.isDataLoaded = false
-            // fetch("http://localhost:8000/api/v1/user_info_filtered/", {
+            // fetch(endpoint, {
             //     method: "POST",
             //     headers:
             //     {
@@ -357,7 +358,7 @@ export default new Vuex.Store({
             //     if(p.ok) {
             //         p.json().then(data => {
             //             console.log(data)
-            //             commit('setUserAchievements', {achievements: data.achievements, id: userId})
+            //             commit('setUserAchievements', {achievements: data, id: userId})
             //             console.log(this.state.userAchievements)
             //             this.state.isDataLoaded = true
             //         })
@@ -365,9 +366,9 @@ export default new Vuex.Store({
             //     else console.log("Error")
             // })
         },
-        fillUserRatings({commit}, userId) {
+        fillUserRatings({commit}, {userId, endpoint}) {
             this.state.isDataLoaded = false
-            fetch("http://localhost:8000/api/v1/user_info_filtered/", {
+            fetch(endpoint, {
                 method: "POST",
                 headers:
                 {
@@ -392,7 +393,7 @@ export default new Vuex.Store({
                 if(p.ok) {
                     p.json().then(data => {
                         console.log(data)
-                        commit('setUserRatings', {ratings: data.ratings, id: userId})
+                        commit('setUserRatings', {ratings: data, id: userId})
                         console.log(this.state.userRatings)
                         this.state.isDataLoaded = true
                     })
@@ -427,7 +428,7 @@ export default new Vuex.Store({
                 if(p.ok) {
                     p.json().then(data => {
                         console.log(data)
-                        commit('setUserAddresses', data.addresses)
+                        commit('setUserAddresses', data.results)
                         console.log(this.state.userAddresses)
                         this.state.isDataLoaded = true
                     })
@@ -887,6 +888,14 @@ export default new Vuex.Store({
                         this.state.onPageOne = false
                         this.state.statistics = null
                         this.state.achievements = null
+                        this.state.userAchievements = null
+                        this.state.authUserAchievements = null
+                        this.state.userRatings = null
+                        this.state.authUserRatings = null
+                        this.state.unratedRequestsCreated = null
+                        this.state.unratedRequestsDoneBy = null
+                        this.state.ratedRequestsCreated = null
+                        this.state.ratedRequestsDoneBy = null
                         Vue.cookie.delete('id');
                         Vue.cookie.delete('token');
                         Vue.cookie.delete('ime');
@@ -998,7 +1007,7 @@ export default new Vuex.Store({
                     }
                 });
         },
-        getUserInfo({commit}, userId) {
+        getUserInfo({commit}, {userId, onlyRating, userToSet}) {
             var vm = this
             this.state.isDataLoaded = false
             fetch("http://localhost:8000/api/v1/users_info/" + userId, {
@@ -1012,7 +1021,12 @@ export default new Vuex.Store({
                 if(p.ok) {
                     p.json().then(data => {
                         console.log(data)
-                        commit('setUser', data)
+                        if(!onlyRating)
+                            commit('setUser', data)
+                        else {
+                            this.state.user = userToSet
+                            this.state.user.avg_rating = data.avg_rating
+                        }
                         vm.state.isDataLoaded = true
                         console.log(vm.state.user)
                     })
