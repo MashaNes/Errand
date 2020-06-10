@@ -1,5 +1,8 @@
 import base64
 import os.path
+
+from datetime import datetime
+from pytz import UTC
 from . import models
 
 # =================== IMAGES ===================
@@ -110,6 +113,7 @@ def load_pictures_request(data):
             load_img(data['rating_working_with']['rated_user']['picture'])
 
     return data
+
 
 # =================== USER ===================
 # ============================================
@@ -287,6 +291,7 @@ def filter_reports(queryset, data):
 
     return new_queryset
 
+
 # ==================== REQUEST ====================
 # =================================================
 def filter_requests(queryset, data):
@@ -395,3 +400,92 @@ def filter_request_info(serializer, data):
             _p['picture'] = load_img(_p['picture'])
 
     return response
+
+
+
+# =================== STATS ===================
+# =============================================
+
+def get_stats():
+    number_of_users = None
+    new_users = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    requests_created = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    finished_requests = list()
+    tasks_per_service = list()
+    user_service_per_service = list()
+    achievements_distribution = list()
+    values = [0, 5, 10, 15, 20, 25, 30, 1000]
+    no_of_users = [0, 0, 0, 0, 0, 0, 0]
+    users_per_grade = [0, 0, 0, 0, 0]
+
+    users = models.User.objects.filter(is_admin=0).all()
+    fullusers = models.FullUser.objects.all()
+    req = models.Request.objects.all()
+    services = models.Service.objects.all()
+
+    date = list()
+    for i in range(12):
+        date.append(UTC.localize(datetime(2020, i+1, 1)))
+
+    # number_of_users
+    number_of_users = users.count()
+
+    # new_users
+    for _u in users:
+        for i in range(11):
+            if _u.date_joined > date[i] and _u.date_joined <= date[i+1]:
+                new_users[i] = new_users[i] + 1
+
+    # requests_created
+    for _r in req:
+        for i in range(11):
+            if _r.time > date[i] and _r.time < date[i+1]:
+                requests_created[i] += 1
+
+    # finished_requests
+    finished_requests.append(models.Request.objects.filter(status=2).count())
+    finished_requests.append(models.Request.objects.filter(status=3).count())
+
+    # tasks_per_service
+    for _ in services:
+        tasks_per_service.append(0)
+
+    for _r in req:
+        for _t in _r.tasklist.all():
+            tasks_per_service[_t.service_type.id-1] += 1
+
+    # user_service_per_service
+    for _ in services:
+        user_service_per_service.append(0)
+
+    for _fu in fullusers:
+        for _s in _fu.services.all():
+            user_service_per_service[_s.service.id-1] += 1
+
+    # achievements_distribution
+    for _fu in fullusers:
+        for i in range(7):
+            if (_fu.user.is_admin == 0 and
+                    _fu.achievements.count() >= values[i] and
+                    _fu.achievements.count() < values[i+1]):
+                no_of_users[i] += 1
+    achievements_distribution = (values[:-1], no_of_users)
+
+    # users_per_grade
+    grade = [1, 1.5, 2.5, 3.5, 4.5, 5]
+
+    for _u in users:
+        for i in range(5):
+            if (_u.avg_rating and _u.avg_rating > grade[i] and
+                    _u.avg_rating <= grade[i+1]):
+                users_per_grade[i] += 1
+
+
+    return (number_of_users,
+            new_users,
+            requests_created,
+            finished_requests,
+            tasks_per_service,
+            user_service_per_service,
+            achievements_distribution,
+            users_per_grade)

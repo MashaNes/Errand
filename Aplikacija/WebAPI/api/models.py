@@ -12,6 +12,13 @@ class Location(models.Model):
 class CheckList(models.Model):
     check_list = models.CharField(max_length=100)
 
+class ConditionNumber(models.Model):
+    condition_number = models.FloatField(default=0)
+
+class Condition(models.Model):
+    condition = models.IntegerField(default=0)
+    condition_numbers = models.ManyToManyField(ConditionNumber)
+
 class WorkingHour(models.Model):
     # 0-mon, 1-tue, ...
     day = models.IntegerField(default=0)
@@ -73,7 +80,8 @@ class Achievement(models.Model):
     description_sr = models.CharField(max_length=256)
     description_en = models.CharField(max_length=256)
     icon = models.ImageField()
-    requirements = models.CharField(max_length=256)
+    levels = models.IntegerField()
+    conditions = models.ManyToManyField(Condition)
 
 class AchievementLevel(models.Model):
     level = models.IntegerField()
@@ -85,12 +93,11 @@ class Benefit(models.Model):
     benefit_user = models.ForeignKey(User, related_name='benefit_user_id',
                                      on_delete=models.CASCADE)
 
-
-
 class Banned(models.Model):
     until = models.DateTimeField()
     comment = models.CharField(max_length=256)
     banned_user = models.ForeignKey(User, on_delete=models.CASCADE)
+    total_bans = models.IntegerField(default=0)
 
 class Request(models.Model):
     STATUS_TYPES = (('pending', 0), ('active', 1),

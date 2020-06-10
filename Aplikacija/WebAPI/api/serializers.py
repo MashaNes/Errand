@@ -60,7 +60,21 @@ class UserSerializer(serializers.ModelSerializer):
                   'status', 'password', 'benefit_discount', 'benefit_requirement')
         extra_kwargs = {'password': {'write_only': True}}
 
+class ConditionNumberSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.ConditionNumber
+        fields = '__all__'
+
+class ConditionSerializer(serializers.ModelSerializer):
+    condition_numbers = ConditionNumberSerializer(many=True)
+    
+    class Meta:
+        model = models.Condition
+        fields = '__all__'
+
 class AchievementSerializer(serializers.ModelSerializer):
+    conditions = ConditionSerializer(many=True)
+
     class Meta:
         model = models.Achievement
         fields = '__all__'

@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from rest_framework import viewsets, generics
 from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.views import ObtainAuthToken
@@ -5,7 +7,7 @@ from rest_framework.response import Response
 
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse
-from django.db import transaction
+from django.utils import timezone
 
 from . import models
 from . import serializers
@@ -29,7 +31,8 @@ __GET___________________________________________________________________________
 
 + GET achievements/{id}				// Returns list of all achievements
 + GET services/{id}                 // Returns list of all types of services
-- GET stats/ (A)		 			// Returns statistics based on filters
++ GET stats/ (A)		 			// Returns statistics based on filters
++ GET requests_other/ (A)           // Returns requests with at least 1 task of type 0 (other)
 + POST reports/ (A)                 // Returns filtered reports
 
 __POST________________________________________________________________________________________
@@ -46,9 +49,9 @@ __POST__________________________________________________________________________
 + POST picture_upload/              // Uploads picture to request or task
 + POST rate_user/ 					// Adds new rating for completed request
 + POST report_create/				// Reports user
-- POST ban_create/ (A)	 			// Bans reported user
++ POST ban_create/ (A)	 			// Bans reported user
 + POST achievement_create/ (A)	 	// Creates new achievement
-+ POST service_type_create/ (A)		// Creates new service type
++ POST service_create/ (A)		    // Creates new service type
 
 __PUT_________________________________________________________________________________________
 + PUT logout/                       // Logout user
@@ -59,8 +62,9 @@ __PUT___________________________________________________________________________
 + PUT address_update/			    // Updates address to addresses
 + PUT working_hours_update/ 		// Updates working hours for user
 + PUT user_service_update/		    // Updates user service for user
++ PUT service_type_update/ (A)      // Updates service type of given task
++ PUT service_update/ (A)           // Updates service
 + PUT report_handle/ (A)            // Handles reported user
-- PUT service_edit/ (A)             // Edits service
 + PUT offer_accept/ 				// Accepts offer for request
 + PUT edit_accept/                  // Accpets edit request
 + PUT request_finish/               // Finishes request
@@ -71,7 +75,6 @@ __DELETE________________________________________________________________________
 + DELETE working_hours_remove/ 		// Removes working hours from user
 + DELETE user_service_remove/ 		// Removes user service from user
 + DELETE block_remove/ 			    // Removes user from blocklist
-- DELETE ban_remove/ (A)	 		// Remove user from banned list
 + DELETE request_cancel/ 			// Cancels request (when pending)
 + DELETE offer_cancel/ 			    // Cancels offer (when not accepted)
 + DELETE edit_cancel/               // Cancels edit request
@@ -88,6 +91,15 @@ class LogIn(ObtainAuthToken):
                                            context={'request':request})
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data['user']
+        fulluser = models.FullUser.objects.get(user=user)
+        if fulluser.ban:
+            if fulluser.ban.until > datetime.now(timezone.utc):
+                custom_response = {
+                    'detail' : 'Your account has been banned.',
+                    'datetime' : fulluser.ban.until
+                }
+                return Response(custom_response)
+
         _s = serializers.UserSerializer(user)
         _s = _s.data
         _s['picture'] = utils.load_img(_s['picture'])
@@ -632,6 +644,38 @@ class ReportCreate(generics.ListCreateAPIView):
 
         return Response(response)
 
+
+# ================= BAN =================
+# POST ban_create/
+class BanCreate(generics.ListCreateAPIView):
+    def create(self, request):
+        admin = models.User.objects.get(id=request.data['created_by'])
+        if not admin.is_admin:
+            return Response({'detail' : 'User is not admin.'})
+
+        user = models.User.objects.get(id=request.data['banned_user'])
+        banned_user = models.FullUser.objects.get(user=user)
+        if banned_user.ban:
+            banned_user.ban.until = request.data['until']
+            banned_user.ban.total_bans = banned_user.ban.total_bans + 1
+            banned_user.ban.save()
+        else:
+            ban = models.Banned(until=request.data['until'],
+                                comment=request.data['comment'],
+                                banned_user=user,
+                                total_bans=1)
+            ban.save()
+            banned_user.ban = ban
+            banned_user.save()
+        token, _ = Token.objects.get_or_create(user=user)
+        if token:
+            user.auth_token.delete()
+            user.status = 0
+            user.save()
+
+        return Response({'detail' : 'success'})
+
+
 # =============== RATE USER ===============
 # POST rate_user/
 class RateUser(generics.ListCreateAPIView):
@@ -695,8 +739,8 @@ class RequestCancel(generics.RetrieveDestroyAPIView):
         rid = request.data['request']
 
         found = False
-        for r in user.requests.all():
-            if r.id == rid:
+        for _r in user.requests.all():
+            if _r.id == rid:
                 found = True
                 break
 
@@ -774,6 +818,42 @@ class FullRequestViewSet(viewsets.ModelViewSet):
         _s = serializer.data
         _s = utils.load_pictures_request(_s)
         return Response(_s)
+
+# GET requests_other/
+class RequestOtherViewSet(viewsets.ModelViewSet):
+    queryset = models.Request.objects.all()
+
+    def list(self, request):
+        self.queryset = models.Request.objects.all()
+        queryset = list()
+
+        for _q in self.queryset:
+            found = False
+            for _t in _q.tasklist.all():
+                if _t.service_type.id == 1:
+                    found = True
+            if found:
+                queryset.append(_q)
+
+        if request.GET.get('paginate'):
+            page = self.paginate_queryset(queryset)
+        else:
+            page = queryset
+
+        serializer = serializers.RequestSerializer(page, many=True)
+
+        if request.GET.get('paginate'):
+            return self.get_paginated_response(serializer.data)
+
+        _s = serializer.data
+        _s = utils.load_pictures_multiple_requests_info(_s)
+
+        custom_response = {
+            'count' : len(_s),
+            'results' : _s
+        }
+
+        return Response(custom_response)
 
 # POST requests_info_filtered/
 class RequestInfoFilteredViewSet(viewsets.ModelViewSet):
@@ -1080,7 +1160,7 @@ class AchievementCreate(generics.ListCreateAPIView):
         else:
             return Response({"detail" : "User is not admin."})
 
-# POST service_type_create/
+# POST service_create/
 class ServiceCreate(generics.ListCreateAPIView):
     def create(self, request):
         created_by = request.data['created_by']
@@ -1092,6 +1172,45 @@ class ServiceCreate(generics.ListCreateAPIView):
             return Response(serializer.data)
         else:
             return Response({"detail" : "User is not admin."})
+
+# PUT service_update/
+class ServiceUpdate(generics.UpdateAPIView):
+    def update(self, request):
+        created_by = request.data['created_by']
+        user = models.User.objects.get(id=created_by)
+        service = models.Service.objects.get(id=request.data['service'])
+
+        if not service:
+            return Response({'detail' : 'Service does not exist.'})
+
+        if user.is_admin:
+            service = parsers.update_service(service, request.data)
+            serializer = serializers.ServiceSerializer(service)
+            return Response(serializer.data)
+        else:
+            return Response({"detail" : "User is not admin."})
+
+# PUT service_task_update/
+class ServiceTaskUpdate(generics.UpdateAPIView):
+    def update(self, request):
+        created_by = request.data['created_by']
+        user = models.User.objects.get(id=created_by)
+        task = models.Task.objects.get(id=request.data['task'])
+        service = models.Service.objects.get(id=request.data['service'])
+
+        if not task:
+            return Response({'detail' : 'Task does not exist.'})
+
+        if not service:
+            return Response({'detail' : 'Service does not exist.'})
+
+        if user.is_admin:
+            task.service_type = service
+            task.save()
+            return Response({'detal' : 'success'})
+        else:
+            return Response({"detail" : "User is not admin."})
+
 
 # POST reports/
 class ReportViewSet(viewsets.ModelViewSet):
@@ -1154,5 +1273,24 @@ class ReportHandle(generics.UpdateAPIView):
             report.status = request.data['status']
             report.save()
             return Response({'detail' : 'success'})
+        else:
+            return Response({'detail' : 'User is not admin.'})
+
+# GET stats/
+class Stats(generics.CreateAPIView):
+    def create(self, request):
+        created_by = request.data['created_by']
+        user = models.User.objects.get(id=created_by)
+
+        if user.is_admin:
+            stats = utils.get_stats()
+            return Response({'number_of_users' : stats[0],
+                             'new_users' : stats[1],
+                             'requests_created' : stats[2],
+                             'finished_requests' : stats[3],
+                             'tasks_per_service' : stats[4],
+                             'user_service_per_service' : stats[5],
+                             'achievements_distribution' : stats[6],
+                             'users_per_grade' : stats[7]})
         else:
             return Response({'detail' : 'User is not admin.'})

@@ -64,7 +64,7 @@
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "Token cfd6e5d73c5ae3403b2769b4287cc993e6569165",
+						"value": "Token e23bc9ea761435c86c696bb13455b30cce4b62b9",
 						"type": "text"
 					},
 					{
@@ -124,7 +124,7 @@
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "Token cfd6e5d73c5ae3403b2769b4287cc993e6569165",
+						"value": "Token e23bc9ea761435c86c696bb13455b30cce4b62b9",
 						"type": "text"
 					},
 					{
@@ -202,7 +202,7 @@
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "Token cfd6e5d73c5ae3403b2769b4287cc993e6569165",
+						"value": "Token e23bc9ea761435c86c696bb13455b30cce4b62b9",
 						"type": "text"
 					}
 				],
@@ -241,7 +241,7 @@
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "Token cfd6e5d73c5ae3403b2769b4287cc993e6569165",
+						"value": "Token e23bc9ea761435c86c696bb13455b30cce4b62b9",
 						"type": "text"
 					}
 				],
@@ -280,7 +280,7 @@
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "Token cfd6e5d73c5ae3403b2769b4287cc993e6569165",
+						"value": "Token e23bc9ea761435c86c696bb13455b30cce4b62b9",
 						"type": "text"
 					}
 				],
@@ -319,7 +319,7 @@
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "Token cfd6e5d73c5ae3403b2769b4287cc993e6569165",
+						"value": "Token e23bc9ea761435c86c696bb13455b30cce4b62b9",
 						"type": "text"
 					}
 				],
@@ -349,7 +349,7 @@
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "Token cfd6e5d73c5ae3403b2769b4287cc993e6569165",
+						"value": "Token e23bc9ea761435c86c696bb13455b30cce4b62b9",
 						"type": "text"
 					}
 				],
@@ -385,7 +385,7 @@
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "Token cfd6e5d73c5ae3403b2769b4287cc993e6569165",
+						"value": "Token e23bc9ea761435c86c696bb13455b30cce4b62b9",
 						"type": "text"
 					}
 				],
@@ -424,13 +424,13 @@
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "Token c59da368fabda9f06c2e9f948eeb6d5437855fcc",
+						"value": "Token e23bc9ea761435c86c696bb13455b30cce4b62b9",
 						"type": "text"
 					}
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\t\"created_by\" : 2,\n\t\"blocked\" : false,\n\t\"working_hours\" : false,\n\t\"addresses\" : false,\n\t\"services\" : true,\n\t\"offers\" : false,\n\t\"notifications\" : false,\n\t\"ratings\" : false,\n\t\"benefitlist\" : false,\n\t\"achievements\" : false,\n\t\"requests\" : false\n}",
+					"raw": "{\n\t\"created_by\" : 5,\n\t\"blocked\" : false,\n\t\"working_hours\" : false,\n\t\"addresses\" : false,\n\t\"services\" : false,\n\t\"offers\" : true,\n\t\"notifications\" : false,\n\t\"ratings\" : false,\n\t\"benefitlist\" : false,\n\t\"achievements\" : false,\n\t\"requests\" : false\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -438,7 +438,7 @@
 					}
 				},
 				"url": {
-					"raw": "127.0.0.1:8000/api/v1/user_info_filtered/",
+					"raw": "127.0.0.1:8000/api/v1/user_info_filtered/?paginate=true",
 					"host": [
 						"127",
 						"0",
@@ -451,6 +451,12 @@
 						"v1",
 						"user_info_filtered",
 						""
+					],
+					"query": [
+						{
+							"key": "paginate",
+							"value": "true"
+						}
 					]
 				}
 			},
@@ -463,7 +469,7 @@
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "Token cfd6e5d73c5ae3403b2769b4287cc993e6569165",
+						"value": "Token e23bc9ea761435c86c696bb13455b30cce4b62b9",
 						"type": "text"
 					}
 				],
@@ -502,7 +508,7 @@
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "Token cfd6e5d73c5ae3403b2769b4287cc993e6569165",
+						"value": "Token e23bc9ea761435c86c696bb13455b30cce4b62b9",
 						"type": "text"
 					}
 				],
@@ -541,7 +547,7 @@
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "Token cfd6e5d73c5ae3403b2769b4287cc993e6569165",
+						"value": "Token e23bc9ea761435c86c696bb13455b30cce4b62b9",
 						"type": "text"
 					}
 				],
@@ -581,7 +587,7 @@
 					{
 						"key": "Authorization",
 						"type": "text",
-						"value": "Token cfd6e5d73c5ae3403b2769b4287cc993e6569165"
+						"value": "Token e23bc9ea761435c86c696bb13455b30cce4b62b9"
 					}
 				],
 				"body": {
@@ -620,7 +626,7 @@
 					{
 						"key": "Authorization",
 						"type": "text",
-						"value": "Token cfd6e5d73c5ae3403b2769b4287cc993e6569165"
+						"value": "Token e23bc9ea761435c86c696bb13455b30cce4b62b9"
 					}
 				],
 				"body": {
@@ -658,7 +664,7 @@
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "Token cfd6e5d73c5ae3403b2769b4287cc993e6569165",
+						"value": "Token e23bc9ea761435c86c696bb13455b30cce4b62b9",
 						"type": "text"
 					}
 				],
@@ -697,7 +703,7 @@
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "Token cfd6e5d73c5ae3403b2769b4287cc993e6569165",
+						"value": "Token e23bc9ea761435c86c696bb13455b30cce4b62b9",
 						"type": "text"
 					}
 				],
@@ -742,7 +748,7 @@
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "Token cfd6e5d73c5ae3403b2769b4287cc993e6569165",
+						"value": "Token e23bc9ea761435c86c696bb13455b30cce4b62b9",
 						"type": "text"
 					}
 				],
@@ -781,7 +787,7 @@
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "Token cfd6e5d73c5ae3403b2769b4287cc993e6569165",
+						"value": "Token e23bc9ea761435c86c696bb13455b30cce4b62b9",
 						"type": "text"
 					}
 				],
@@ -820,7 +826,7 @@
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "Token cfd6e5d73c5ae3403b2769b4287cc993e6569165",
+						"value": "Token e23bc9ea761435c86c696bb13455b30cce4b62b9",
 						"type": "text"
 					}
 				],
@@ -859,7 +865,7 @@
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "Token cfd6e5d73c5ae3403b2769b4287cc993e6569165",
+						"value": "Token e23bc9ea761435c86c696bb13455b30cce4b62b9",
 						"type": "text"
 					}
 				],
@@ -898,7 +904,7 @@
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "Token cfd6e5d73c5ae3403b2769b4287cc993e6569165",
+						"value": "Token e23bc9ea761435c86c696bb13455b30cce4b62b9",
 						"type": "text"
 					}
 				],
@@ -937,7 +943,7 @@
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "Token cfd6e5d73c5ae3403b2769b4287cc993e6569165",
+						"value": "Token e23bc9ea761435c86c696bb13455b30cce4b62b9",
 						"type": "text"
 					}
 				],
@@ -976,7 +982,7 @@
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "Token cfd6e5d73c5ae3403b2769b4287cc993e6569165",
+						"value": "Token e23bc9ea761435c86c696bb13455b30cce4b62b9",
 						"type": "text"
 					}
 				],
@@ -1015,7 +1021,7 @@
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "Token cfd6e5d73c5ae3403b2769b4287cc993e6569165",
+						"value": "Token e23bc9ea761435c86c696bb13455b30cce4b62b9",
 						"type": "text"
 					}
 				],
@@ -1054,7 +1060,7 @@
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "Token cfd6e5d73c5ae3403b2769b4287cc993e6569165",
+						"value": "Token e23bc9ea761435c86c696bb13455b30cce4b62b9",
 						"type": "text"
 					}
 				],
@@ -1093,7 +1099,7 @@
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "Token cfd6e5d73c5ae3403b2769b4287cc993e6569165",
+						"value": "Token e23bc9ea761435c86c696bb13455b30cce4b62b9",
 						"type": "text"
 					}
 				],
@@ -1132,7 +1138,7 @@
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "Token cfd6e5d73c5ae3403b2769b4287cc993e6569165",
+						"value": "Token e23bc9ea761435c86c696bb13455b30cce4b62b9",
 						"type": "text"
 					}
 				],
@@ -1165,13 +1171,52 @@
 			"response": []
 		},
 		{
+			"name": "RequestFinish",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token e23bc9ea761435c86c696bb13455b30cce4b62b9",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"created_by\" : 5,\n\t\"request\" : 1,\n\t\"status\" : 2\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "127.0.0.1:8000/api/v1/request_finish/",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"v1",
+						"request_finish",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "RequestCancel",
 			"request": {
 				"method": "DELETE",
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "Token c59da368fabda9f06c2e9f948eeb6d5437855fcc",
+						"value": "Token e23bc9ea761435c86c696bb13455b30cce4b62b9",
 						"type": "text"
 					}
 				],
@@ -1210,7 +1255,7 @@
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "Token cfd6e5d73c5ae3403b2769b4287cc993e6569165",
+						"value": "Token e23bc9ea761435c86c696bb13455b30cce4b62b9",
 						"type": "text"
 					}
 				],
@@ -1240,7 +1285,7 @@
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "Token cfd6e5d73c5ae3403b2769b4287cc993e6569165",
+						"value": "Token e23bc9ea761435c86c696bb13455b30cce4b62b9",
 						"type": "text"
 					}
 				],
@@ -1264,13 +1309,43 @@
 			"response": []
 		},
 		{
+			"name": "RequestsOther",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token e23bc9ea761435c86c696bb13455b30cce4b62b9",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "127.0.0.1:8000/api/v1/requests_other/",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"v1",
+						"requests_other",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "FilterRequests",
 			"request": {
 				"method": "POST",
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "Token cfd6e5d73c5ae3403b2769b4287cc993e6569165",
+						"value": "Token e23bc9ea761435c86c696bb13455b30cce4b62b9",
 						"type": "text"
 					}
 				],
@@ -1315,7 +1390,7 @@
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "Token cfd6e5d73c5ae3403b2769b4287cc993e6569165",
+						"value": "Token e23bc9ea761435c86c696bb13455b30cce4b62b9",
 						"type": "text"
 					}
 				],
@@ -1354,7 +1429,7 @@
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "Token cfd6e5d73c5ae3403b2769b4287cc993e6569165",
+						"value": "Token e23bc9ea761435c86c696bb13455b30cce4b62b9",
 						"type": "text"
 					}
 				],
@@ -1393,7 +1468,7 @@
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "Token cfd6e5d73c5ae3403b2769b4287cc993e6569165",
+						"value": "Token e23bc9ea761435c86c696bb13455b30cce4b62b9",
 						"type": "text"
 					}
 				],
@@ -1432,7 +1507,7 @@
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "Token cfd6e5d73c5ae3403b2769b4287cc993e6569165",
+						"value": "Token e23bc9ea761435c86c696bb13455b30cce4b62b9",
 						"type": "text"
 					}
 				],
@@ -1471,7 +1546,7 @@
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "Token cfd6e5d73c5ae3403b2769b4287cc993e6569165",
+						"value": "Token e23bc9ea761435c86c696bb13455b30cce4b62b9",
 						"type": "text"
 					}
 				],
@@ -1510,7 +1585,7 @@
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "Token cfd6e5d73c5ae3403b2769b4287cc993e6569165",
+						"value": "Token e23bc9ea761435c86c696bb13455b30cce4b62b9",
 						"type": "text"
 					}
 				],
@@ -1549,7 +1624,7 @@
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "Token cfd6e5d73c5ae3403b2769b4287cc993e6569165",
+						"value": "Token e23bc9ea761435c86c696bb13455b30cce4b62b9",
 						"type": "text"
 					}
 				],
@@ -1582,13 +1657,52 @@
 			"response": []
 		},
 		{
+			"name": "RateUser",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "Token e23bc9ea761435c86c696bb13455b30cce4b62b9"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"created_by\" : 4,\n\t\"rated_user\" : 5,\n\t\"request\" : 1,\n\t\"grade\" : 5,\n\t\"comment\" : \"Preporuka za saradnju.\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "127.0.0.1:8000/api/v1/rate_user/",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"v1",
+						"rate_user",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "PictureUpload",
 			"request": {
 				"method": "POST",
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "Token cfd6e5d73c5ae3403b2769b4287cc993e6569165",
+						"value": "Token e23bc9ea761435c86c696bb13455b30cce4b62b9",
 						"type": "text"
 					}
 				],
@@ -1627,7 +1741,7 @@
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "Token cfd6e5d73c5ae3403b2769b4287cc993e6569165",
+						"value": "Token e23bc9ea761435c86c696bb13455b30cce4b62b9",
 						"type": "text"
 					}
 				],
@@ -1667,12 +1781,12 @@
 					{
 						"key": "Authorization",
 						"type": "text",
-						"value": "Token cfd6e5d73c5ae3403b2769b4287cc993e6569165"
+						"value": "Token e23bc9ea761435c86c696bb13455b30cce4b62b9"
 					}
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\t\"created_by\" : 6,\n\t\"name_sr\":\"Savrsen korisnik\",\n\t\"name_en\":\"Perfect user\",\n\t\"description_sr\":\"Sve zahteve obavio sa maksimalnom ocenom\",\n\t\"description_en\":\"All requests done with maximum rating\",\n\t\"requirements\":\"Pseudo SQL query?\",\n\t\"icon\" : \"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\"\n}",
+					"raw": "{\n\t\"created_by\" : 1,\n\t\"name_sr\" : \"Savrsen korisnik 2\",\n\t\"name_en\" : \"Perfect user 2\",\n\t\"description_sr\" : \" uspesno zavrsenih zahteva i ocena preko \",\n\t\"description_en\" : \" successfully completed requests and an average grade above \",\n\t\"levels\" : 5,\n\t\"conditions\" : [2, 3],\n\t\"condition_numbers\" : [\n\t\t[10, 15, 20, 25, 30],\n\t\t[4.6, 4.7, 4.8, 4.9, 5]\n\t],\n\t\"icon\" : \"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\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -1708,7 +1822,7 @@
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "Token cfd6e5d73c5ae3403b2769b4287cc993e6569165",
+						"value": "Token e23bc9ea761435c86c696bb13455b30cce4b62b9",
 						"type": "text"
 					}
 				],
@@ -1747,7 +1861,7 @@
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "Token cfd6e5d73c5ae3403b2769b4287cc993e6569165",
+						"value": "Token e23bc9ea761435c86c696bb13455b30cce4b62b9",
 						"type": "text"
 					}
 				],
@@ -1780,6 +1894,84 @@
 			"response": []
 		},
 		{
+			"name": "ServiceUpdate",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token e23bc9ea761435c86c696bb13455b30cce4b62b9",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"service\" : 4,\n\t\"created_by\" : 1,\n\t\"service_type_sr\" : \"Setanje ljubimaca\",\n\t\"service_type_en\" : \"Pet walking\",\n\t\"description_sr\" : \"Setanje vasih ljubimaca po parku\",\n\t\"description_en\" : \"Taking your pets for a walk in a park\",\n\t\"picture_required\" : false\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "127.0.0.1:8000/api/v1/service_update/",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"v1",
+						"service_update",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ServiceTaskUpdate",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token e23bc9ea761435c86c696bb13455b30cce4b62b9",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"task\" : 6,\n\t\"service\" : 1,\n\t\"created_by\" : 1\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "127.0.0.1:8000/api/v1/service_task_update/",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"v1",
+						"service_task_update",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "Services",
 			"protocolProfileBehavior": {
 				"disableBodyPruning": true
@@ -1790,7 +1982,7 @@
 					{
 						"key": "Authorization",
 						"type": "text",
-						"value": "Token cfd6e5d73c5ae3403b2769b4287cc993e6569165"
+						"value": "Token e23bc9ea761435c86c696bb13455b30cce4b62b9"
 					}
 				],
 				"body": {
@@ -1822,19 +2014,19 @@
 			"response": []
 		},
 		{
-			"name": "RateUser",
+			"name": "BanCreate",
 			"request": {
 				"method": "POST",
 				"header": [
 					{
 						"key": "Authorization",
-						"type": "text",
-						"value": "Token c59da368fabda9f06c2e9f948eeb6d5437855fcc"
+						"value": "Token e23bc9ea761435c86c696bb13455b30cce4b62b9",
+						"type": "text"
 					}
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\t\"created_by\" : 1,\n\t\"rated_user\" : 2,\n\t\"request\" : 1,\n\t\"grade\" : 5,\n\t\"comment\" : \"Preporuka za saradnju.\"\n}",
+					"raw": "{\n\t\"created_by\" : 1,\n\t\"banned_user\" : 3,\n\t\"until\" : \"2020-06-10 12:11\",\n\t\"comment\" : \"Problem1\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -1842,7 +2034,7 @@
 					}
 				},
 				"url": {
-					"raw": "127.0.0.1:8000/api/v1/rate_user/",
+					"raw": "127.0.0.1:8000/api/v1/ban_create/",
 					"host": [
 						"127",
 						"0",
@@ -1853,7 +2045,7 @@
 					"path": [
 						"api",
 						"v1",
-						"rate_user",
+						"ban_create",
 						""
 					]
 				}
@@ -1861,19 +2053,19 @@
 			"response": []
 		},
 		{
-			"name": "RequestFinish",
+			"name": "Stats",
 			"request": {
-				"method": "PUT",
+				"method": "POST",
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "Token cfd6e5d73c5ae3403b2769b4287cc993e6569165",
+						"value": "Token e23bc9ea761435c86c696bb13455b30cce4b62b9",
 						"type": "text"
 					}
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\t\"created_by\" : 5,\n\t\"request\" : 1,\n\t\"status\" : 2\n}",
+					"raw": "{\n\t\"created_by\" : 1\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -1881,7 +2073,7 @@
 					}
 				},
 				"url": {
-					"raw": "127.0.0.1:8000/api/v1/request_finish/",
+					"raw": "127.0.0.1:8000/api/v1/stats/",
 					"host": [
 						"127",
 						"0",
@@ -1892,7 +2084,7 @@
 					"path": [
 						"api",
 						"v1",
-						"request_finish",
+						"stats",
 						""
 					]
 				}

@@ -9,6 +9,7 @@ router.register(r'users', api_views.FullUserViewSet)
 router.register(r'users_info', api_views.UserViewSet)
 router.register(r'requests', api_views.FullRequestViewSet)
 router.register(r'requests_info', api_views.RequestViewSet)
+router.register(r'requests_other', api_views.RequestOtherViewSet)
 router.register(r'achievements', api_views.AchievementViewSet)
 router.register(r'services', api_views.ServiceViewSet)
 router.register(r'filtered_users', api_views.FilterUserViewSet)
@@ -114,7 +115,9 @@ urlrequest = [
     path('api/v1/picture_upload/', api_views.PictureUpload.as_view(),
          name='picture_upload'),
     path('api/v1/picture_remove/', api_views.PictureRemove.as_view(),
-         name='picture_remove')
+         name='picture_remove'),
+    path('api/v1/ban_create/', api_views.BanCreate.as_view(),
+         name='ban_create'),
 ]
 urlpatterns += urlrequest
 
@@ -122,6 +125,12 @@ urladmin = [
     path('api/v1/achievement_create/', api_views.AchievementCreate.as_view(),
          name='achievement_create'),
     path('api/v1/service_create/', api_views.ServiceCreate.as_view(),
-         name='service_create')
+         name='service_create'),
+    path('api/v1/service_update/', api_views.ServiceUpdate.as_view(),
+         name='service_update'),
+    path('api/v1/service_task_update/', api_views.ServiceTaskUpdate.as_view(),
+         name='service_task_update'),
+    path('api/v1/stats/', api_views.Stats.as_view(),
+         name='stats')
 ]
 urlpatterns += urladmin

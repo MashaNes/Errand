@@ -400,14 +400,25 @@ def create_achievement(data):
                                      name_en=data['name_en'],
                                      description_sr=data['description_sr'],
                                      description_en=data['description_en'],
-                                     icon=icon,
-                                     requirements=data['requirements'])
+                                     levels=data['levels'])
     achievement.save()
     if data['icon']:
         icon = create_picture(data=data['icon'],
                               name='achievements/' + str(achievement.id))
         achievement.icon = icon
         achievement.save()
+
+    for i, _c in enumerate(data['conditions']):
+        cond = models.Condition(condition=_c)
+        cond.save()
+        for _c_num in data['condition_numbers'][i]:
+            cond_num = models.ConditionNumber(condition_number=_c_num)
+            cond_num.save()
+            cond.condition_numbers.add(cond_num)
+        cond.save()
+        achievement.conditions.add(cond)
+    achievement.save()
+
     return achievement
 
 def create_service(data):
@@ -416,6 +427,15 @@ def create_service(data):
                              description_sr=data['description_sr'],
                              description_en=data['description_en'],
                              picture_required=data['picture_required'])
+    service.save()
+    return service
+
+def update_service(service, data):
+    service.service_type_sr = data['service_type_sr']
+    service.service_type_en = data['service_type_en']
+    service.description_sr = data['description_sr']
+    service.description_en = data['description_en']
+    service.picture_required = data['picture_required']
     service.save()
     return service
 
