@@ -292,17 +292,15 @@ export default {
         },
         createAchievement()
         {
-            // if(this.achievement.icon != null) 
-            // {
-            //     const splitted = this.achievement.icon.split(',')
-            //     this.achievement.icon = splitted[1]
-            // } 
-            //Skinuti komentar sa ovog dela koda kad se kreiranje prebaci na bazu. 
-            //Pogledati i komentar u AchievementAdmin, u HTML delu gde se postavlja ikonica (trenutno 37. linija).
-            //Proveriti da li sve radi!!!
+            if(this.achievement.icon != null) 
+            {
+                const splitted = this.achievement.icon.split(',')
+                this.achievement.icon = splitted[1]
+            } 
 
             this.$store.state.achievements.push(this.achievement)
-            //Poslati kreiranje bazi
+            this.$store.dispatch("achievementCreate", this.achievement)
+            this.$store.dispatch("getAllAchievements")
             this.$emit("achievemntCreated")
         },
         pictureSelected(e) 

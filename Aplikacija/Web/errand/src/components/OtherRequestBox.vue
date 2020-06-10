@@ -4,16 +4,16 @@
         <div class="user-data">
             <div class="name">
                 <img src="../assets/requests.svg" class="ikonica" />
-                {{request.created_by.first_name}} {{request.created_by.last_name}}, 
+                <a @click="goToProfileCreated" class="clickable"> {{request.created_by.first_name}} {{request.created_by.last_name}}, </a>
             </div>
-            {{request.created_by.email}}
+            <a @click="goToProfileCreated" class="clickable"> {{request.created_by.email}} </a>
         </div>
         <div class="user-data">
             <div class="name">
                 <img src="../assets/running.svg" class="ikonica" />
-                {{request.working_with.first_name}} {{request.working_with.last_name}}, 
+                <a @click="goToProfileWorking" class="clickable"> {{request.working_with.first_name}} {{request.working_with.last_name}}, </a>
             </div>
-            {{request.working_with.email}}
+            <a @click="goToProfileWorking" class="clickable"> {{request.working_with.email}} </a>
         </div>
         <div class="tagovi">
             <div class="tag" v-for="tag in tags" :key="tag.id">
@@ -84,6 +84,26 @@ export default {
         gotoRequest()
         {
             this.$router.push({ name: 'PageViewRequestAdmin', params: {request: this.request, id: this.request.id, editable: "other"}})
+        },
+        goToProfileCreated()
+        {
+            this.$router.push({
+                name: "PageViewProfile", 
+                params: {
+                    id: this.request.created_by.id, 
+                    user: this.request.created_by
+                }
+            })
+        },
+        goToProfileWorking()
+        {
+            this.$router.push({
+                name: "PageViewProfile", 
+                params: {
+                    id: this.request.working_with.id, 
+                    user: this.request.working_with
+                }
+            })
         }
     }
 }
@@ -191,6 +211,11 @@ export default {
         padding-left: 7px;
         padding-right: 7px;
         font-size: 14px;
+    }
+
+    .clickable:hover
+    {
+        color: grey
     }
 
     @media only screen and (max-width: 900px)

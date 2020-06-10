@@ -189,6 +189,7 @@ export default {
                 console.log(year + "-" + monthString + "-" + dayString + " " + hoursString + ":" + minutesString)
                 console.log(information.sender.comment)
                 console.log(this.report.created_by)
+                this.$store.dispatch("banUser", {user: this.report.created_by.id, date: finalDate, comment: information.sender.comment})
                 //Posalji ka bazi kreiranje bana za report.created_by, information.sender.comment i finalDate
                 //proveriti u kom formatu ide datum
             }
@@ -224,6 +225,7 @@ export default {
                 console.log(year + "-" + monthString + "-" + dayString + " " + hoursString + ":" + minutesString)
                 console.log(information.reported.comment)
                 console.log(this.report.reported_user)
+                this.$store.dispatch("banUser", {user: this.report.reported_user.id, date: finalDateR, comment: information.reported.comment})
                 //Posalji ka bazi kreiranje bana za report.reported_user, information.reported.comment i finalDateR
                 //proveriti u kom formatu ide datum
             }

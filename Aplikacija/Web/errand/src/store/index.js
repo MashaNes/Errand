@@ -192,25 +192,38 @@ export default new Vuex.Store({
                         p.json().then(data =>
                         {
                             console.log(data)
-                            this.state.authUser = data['user']
-                            this.state.logedIn = true
-                            this.state.token = data['token']
-                            this.state.isDataLoaded = true
-                            this.state.isAdmin = data['user']['is_admin']
-                            Vue.cookie.set('token',data['token'], { expires: '1h' });
-                            Vue.cookie.set('id',this.state.authUser.id, { expires: '1h' });
-                            Vue.cookie.set('ime',this.state.authUser.first_name, { expires: '1h' });
-                            Vue.cookie.set('prezime',this.state.authUser.last_name, { expires: '1h' });
-                            Vue.cookie.set('admin',this.state.isAdmin, { expires: '1h' });
-                            if(!this.state.isAdmin)
-                                router.push('/requests')
+                            if(data.detail == "Your account has been banned.")
+                            {
+                                var datum = new Date(data.datetime)
+                                var day = datum.getUTCDate()
+                                var month = datum.getUTCMonth()+1
+                                var year = datum.getUTCFullYear()
+                                this.state.messageToShow = day + "." + month + "." + year + "."
+                                this.state.isDataLoaded = true
+                            }
                             else
-                                router.push("/statistics");
+                            {
+                                this.state.authUser = data['user']
+                                this.state.logedIn = true
+                                this.state.token = data['token']
+                                this.state.isDataLoaded = true
+                                this.state.isAdmin = data['user']['is_admin']
+                                Vue.cookie.set('token',data['token'], { expires: '1h' });
+                                Vue.cookie.set('id',this.state.authUser.id, { expires: '1h' });
+                                Vue.cookie.set('ime',this.state.authUser.first_name, { expires: '1h' });
+                                Vue.cookie.set('prezime',this.state.authUser.last_name, { expires: '1h' });
+                                Vue.cookie.set('admin',this.state.isAdmin, { expires: '1h' });
+                                if(!this.state.isAdmin)
+                                    router.push('/requests')
+                                else
+                                    router.push("/statistics");
+                            }
                         })
                     }
                     else
                     {
                         console.log("Error")
+                        this.state.messageToShow = "wrong"
                         this.state.isDataLoaded = true
                     }
                 });
@@ -1512,7 +1525,24 @@ export default new Vuex.Store({
             commit('openOfferOrEdit', array)
         },
         fillOtherRequests(){
-            this.state.overAuthRequests = fetchRequestsOther()
+            fetch("http://localhost:8000/api/v1/requests_other", {
+                method: 'GET',
+                headers: {
+                    "Content-type" : "application/json",
+                    "Authorization" : "Token " + this.state.token
+                }
+            }).then(p => {
+                if(p.ok) {
+                    p.json().then(data => {
+                        console.log(data)
+                        this.state.overAuthRequests = data.results
+                    })
+                }
+                else {
+                    console.log("Error")
+                    this.state.specificRequest = -1
+                }
+            })
         },
         getRequestByIdAdmin({commit}, requestId) {
             fetch("http://localhost:8000/api/v1/requests/" + requestId, {
@@ -1658,11 +1688,189 @@ export default new Vuex.Store({
         },
         getStatistics()
         {
-            this.state.statistics = fetchStatistics()
+            fetch("http://127.0.0.1:8000/api/v1/stats/",
+            {
+                method: 'POST',
+                headers:
+                {
+                    "Content-type" : "application/json",
+                    "Authorization" : "Token " + this.state.token
+                },
+                body:  JSON.stringify(
+                {
+                    "created_by" : this.state.authUser.id,
+                })
+            }).then( p => 
+                {
+                    if(p.ok)
+                    {
+                        p.json().then(data =>
+                        {
+                            console.log(data)
+                            this.state.statistics = data
+                        })
+                    }
+                    else
+                    {
+                        console.log("Error")
+                    }
+                });
         },
         getAllAchievements()
         {
-            this.state.achievements = fetchAllAchievements()
+            fetch("http://localhost:8000/api/v1/achievements/" , {
+                method: 'GET',
+                headers: {
+                    "Content-type" : "application/json",
+                    "Authorization" : "Token " + this.state.token
+                }
+            }).then(p => {
+                if(p.ok) {
+                    p.json().then(data => {
+                        console.log(data)
+                        this.state.achievements = data.results
+                    })
+                }
+                else {
+                    console.log("Error")
+                    this.state.specificRequest = -1
+                }
+            })
+        },
+        changeTaskService({commit}, payload)
+        {
+            fetch("http://127.0.0.1:8000/api/v1/service_task_update/",
+            {
+                method: 'PUT',
+                headers:
+                {
+                    "Content-type" : "application/json",
+                    "Authorization" : "Token " + this.state.token
+                },
+                body:  JSON.stringify(
+                {
+                    "created_by" : this.state.authUser.id,
+                    "task" : payload.task,
+                    "service" : payload.service
+                })
+            }).then( p => 
+                {
+                    if(p.ok)
+                    {
+                        p.json().then(data =>
+                        {
+                            console.log(data)
+                        })
+                    }
+                    else
+                    {
+                        console.log("Error")
+                    }
+                });
+        },
+        editService({commit}, payload)
+        {
+            fetch("http://127.0.0.1:8000/api/v1/service_update/",
+            {
+                method: 'PUT',
+                headers:
+                {
+                    "Content-type" : "application/json",
+                    "Authorization" : "Token " + this.state.token
+                },
+                body:  JSON.stringify(
+                {
+                    "created_by" : this.state.authUser.id,
+                    "service" : payload.id,
+                    "service_type_sr" : payload.service_type_sr,
+                    "service_type_en" : payload.service_type_en,
+                    "description_sr" : payload.description_sr,
+                    "description_en" : payload.description_en,
+                    "picture_required" : false
+                })
+            }).then( p => 
+                {
+                    if(p.ok)
+                    {
+                        p.json().then(data =>
+                        {
+                            console.log(data)
+                        })
+                    }
+                    else
+                    {
+                        console.log("Error")
+                    }
+                });
+        },
+        achievementCreate({commit}, payload)
+        {
+            fetch("http://127.0.0.1:8000/api/v1/achievement_create/",
+            {
+                method: 'POST',
+                headers:
+                {
+                    "Content-type" : "application/json",
+                    "Authorization" : "Token " + this.state.token
+                },
+                body:  JSON.stringify(
+                {
+                    "created_by" : this.state.authUser.id,
+                    "name_sr" : payload.name_sr,
+                    "name_en" : payload.name_en,
+                    "description_sr" : payload.description_sr,
+                    "description_en" : payload.description_en,
+                    "levels" : payload.levels,
+                    "conditions" : payload.conditions,
+                    "condition_numbers" : payload.condition_numbers,
+                    "icon" : payload.icon
+                })
+            }).then( p => 
+                {
+                    if(p.ok)
+                    {
+                        p.json().then(data =>
+                        {
+                            console.log(data)
+                        })
+                    }
+                    else
+                    {
+                        console.log("Error")
+                    }
+                });
+        },
+        banUser({commit}, payload)
+        {
+            fetch("http://127.0.0.1:8000/api/v1/ban_create/",
+            {
+                method: 'POST',
+                headers:
+                {
+                    "Content-type" : "application/json",
+                    "Authorization" : "Token " + this.state.token
+                },
+                body:  JSON.stringify(
+                {
+                    "created_by" : this.state.authUser.id,
+                    "banned_user" : payload.user,
+                    "until" : payload.date,
+                    "comment" : payload.comment
+                })
+            }).then( p => 
+                {
+                    if(p.ok)
+                    {
+                        p.json().then(data =>
+                        {
+                            console.log(data)
+                        })
+                    }
+                    else
+                    {
+                        console.log("Error")
+                    }
+                });
         }
     },
     mutations:{

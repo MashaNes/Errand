@@ -89,7 +89,7 @@ export default {
             this.service.service_type_en = this.myService.service_type_en
             this.service.description_sr = this.myService.description_sr
             this.service.description_en = this.myService.description_en
-            //poslati edit u bazu
+            this.$store.dispatch("editService", this.service)
             this.isEditing = false
         }
     }

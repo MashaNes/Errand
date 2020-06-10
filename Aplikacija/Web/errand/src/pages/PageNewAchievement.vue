@@ -15,15 +15,15 @@
                 <thead>
                     <tr>
                         <th  class="poravnanje" scope="col"><span v-if="isSerbian">Nivo/Uslovi</span> <span v-else>Level</span></th>
-                        <th  class="poravnanje" scope="col" v-for="(condition,index) in achievementDetails.conditions" :key="condition">
+                        <th  class="poravnanje" scope="col" v-for="(condition,index) in achievementDetails.conditions" :key="condition.id">
                             <span v-b-popover.hover.top="achievementConditions[index]"> {{index + 1}} </span>
                         </th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="(nothing,index) in achievementDetails.condition_numbers[0]" :key="index">
+                    <tr v-for="(nothing,index) in achievementDetails.conditions[0].condition_numbers" :key="index">
                         <td class="poravnanje">{{index + 1}}</td>
-                        <td class="poravnanje" v-for="(nada,number) in achievementDetails.condition_numbers" :key="number"> {{achievementDetails.condition_numbers[number][index]}} </td>
+                        <td class="poravnanje" v-for="(nada,number) in achievementDetails.conditions" :key="number"> {{achievementDetails.conditions[number].condition_numbers[index].condition_number}} </td>
                     </tr>
                 </tbody>
             </table>
@@ -68,7 +68,7 @@ export default {
             this.achievementDetails.conditions.forEach(element =>
             {
                 var rez = ""
-                switch(element)
+                switch(element.condition)
                 {
                     case 1:
                         rez = (this.isSerbian? "Broj kreiranih zahteva" : "Number of created requests")

@@ -71,11 +71,17 @@
                       <span v-if="!isSerbian && isDataLoaded">Login</span>
                       </button>
             </form>
-            <p class = "text-danger upozorenje" v-if="TryLogIn && isDataLoaded && isSerbian">
+            <p class = "text-danger upozorenje" v-if="TryLogIn && isDataLoaded && isSerbian && message == 'wrong'">
               Pogrešan email ili lozinka
             </p>
-            <p class = "text-danger upozorenje" v-if="TryLogIn && isDataLoaded && !isSerbian">
+            <p class = "text-danger upozorenje" v-if="TryLogIn && isDataLoaded && !isSerbian && message == 'wrong'">
               Incorrect email or password
+            </p>
+            <p class = "text-danger upozorenje" v-if="TryLogIn && isDataLoaded && isSerbian && message != 'wrong'">
+              Ovom nalogu je zabranjen pristup do {{message}}
+            </p>
+            <p class = "text-danger upozorenje" v-if="TryLogIn && isDataLoaded && !isSerbian && message != 'wrong'">
+              This account has been banned until {{message}}
             </p>
             <p class = "text-danger upozorenje" v-if="isSerbian">
               Stavke označene sa * su obavezne
@@ -145,6 +151,10 @@
             isLogedIn()
             {
               return this.$store.state.logedIn
+            },
+            message()
+            {
+              return this.$store.state.messageToShow
             }
         },
         methods:

@@ -192,7 +192,7 @@ export default {
                     if(task.id == element.task)
                     {
                         task.service_type = element.category
-                        //poslati promenu bazi
+                        this.$store.dispatch("changeTaskService", {task: task.id, service: element.category.id})
                     }
                 })
             })

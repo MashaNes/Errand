@@ -442,7 +442,7 @@ export default {
             return{
                 series: [{
                     name: (this.isSerbian? "Broj korisnika": "Number of users"),
-                    data: this.statistics.achievement_distribution.no_of_users
+                    data: this.statistics.achievements_distribution[1]
                 }],
                 chartOptions: 
                 {
@@ -584,7 +584,7 @@ export default {
     },
     created()
     {
-        //if(this.$store.state.statistics == null)
+        if(this.$store.state.statistics == null)
             this.$store.dispatch("getStatistics")
         if(this.$store.state.allServices == null)
             this.$store.dispatch("fillServices")

@@ -29,8 +29,7 @@ export default {
     },
     created()
     {
-        if(this.$store.state.overAuthRequests == null) //skloni if
-            this.$store.dispatch("fillOtherRequests")
+        this.$store.dispatch("fillOtherRequests")
         //pagintaion?
         //Nabavljanje jedne po jedne stranice i automatsko nadovezivanje pribavljenih podataka
     }
