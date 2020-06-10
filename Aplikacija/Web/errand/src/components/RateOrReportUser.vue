@@ -10,6 +10,24 @@
       </div>  
     </div>
     <div class="request-side">
+      <nav class="tabovi">
+        <a v-if="tab == 'Requested'" class="navbar-item aktivan" href="#">
+          <span v-if="isSerbian">Zahtevali ste</span>
+          <span v-else>Requested by you</span>
+        </a>
+        <a v-else class="navbar-item" href="#" @click="tabRequested">
+          <span v-if="isSerbian">Zahtevali ste</span>
+          <span v-else>Requested by you</span>
+        </a>
+        <a v-if="tab == 'Runner'" class="navbar-item aktivan" href="#">
+          <span v-if="isSerbian">Izvršavali ste</span>
+          <span v-else>Done by you</span>
+        </a>
+        <a v-else class="navbar-item" href="#" @click="tabRunner">
+          <span v-if="isSerbian">Izvršavali ste</span>
+          <span v-else>Done by you</span>
+        </a>
+      </nav>
       <div class="request-side-top-wrap">
         <div class="request-side-top">
           <div class="report-top">
@@ -23,15 +41,25 @@
           </div>
           <div class="chk-box-div">
             <input type="checkbox" v-model="showAll" class="chk-box" />
-            <span v-if="!showAll" v-text="isSerbian ? 'Prikaži i ocenjene zahteve' : 'Show rated requests too'"></span>
-            <span v-else v-text="isSerbian ? 'Prikaži samo neocenjene zahteve' : 'Show only unrated requests'"></span> 
+            <span v-text="isSerbian ? 'Prikaži i ocenjene zahteve' : 'Show rated requests too'"></span>
           </div>
         </div>
       </div>
       <Spinner v-if="!requests" />
-      <div class="req-wrap" v-else>
+      <!-- <b-pagination 
+        v-if="requests" v-model="currentPage" :total-rows="requests == null ? 1 : requests.count" 
+        :per-page="10" align="center" class="pag-top"  @input="getAnotherPortion"
+      >
+      </b-pagination> -->
+      <div class="req-wrap" v-if="requests">
         <RateOrReportBox v-for="request in requests.results" :key="request.id" :request="request" :user="user" @setMessages="setMessages" />
       </div>
+      <!-- <b-pagination 
+        v-if="requests" v-model="currentPage" 
+        :total-rows="requests == null ? 1 : requests.count" 
+        :per-page="10" align="center" class="pag-bottom" 
+      >
+      </b-pagination> -->
     </div>
     <ModalSuccess v-if="success && messagesSet" :textS="textMessageS" :textE="textMessageE" @close="closeModalSuccess"/>
     <ModalReportUser 
@@ -73,7 +101,13 @@ export default {
       fetchedAll: false,
       textMessageS: "",
       textMessageE: "",
-      messagesSet: false
+      messagesSet: false,
+      tab: "Requested",
+      currentPage: 1,
+      pageRatedDoneBy: 0,
+      pageRatedCreated: 0,
+      pageUnratedDoneBy: 0,
+      pageUnratedCreated: 0
     }
   },
   computed: {
@@ -90,25 +124,19 @@ export default {
       return this.user.firstName + " " +this.user.lastName
     },
     requests() {
-      if(!this.showAll) {
-        if(!this.$store.state.unratedRequestsCreated || !this.$store.state.unratedRequestsDoneBy)
-          return null
-        else {
-          return {
-            count: this.$store.state.unratedRequestsCreated.count + this.$store.state.unratedRequestsDoneBy.count,
-            results: this.$store.state.unratedRequestsCreated.results.concat(this.$store.state.unratedRequestsDoneBy.results)
-          }
+      if(this.tab == 'Requested') {
+        if(this.showAll) {
+          return this.$store.state.ratedRequestsDoneBy
         }
+        else
+          return this.$store.state.unratedRequestsDoneBy
       }
       else {
-        if(!this.$store.state.ratedRequestsCreated || !this.$store.state.ratedRequestsDoneBy)
-            return null
-        else {
-          return {
-            count: this.$store.state.ratedRequestsCreated.count + this.$store.state.ratedRequestsDoneBy.count,
-            results: this.$store.state.ratedRequestsCreated.results.concat(this.$store.state.ratedRequestsDoneBy.results)
-          }
+        if(this.showAll) {
+          return this.$store.state.ratedRequestsCreated
         }
+        else
+          return this.$store.state.unratedRequestsCreated
       }
     },
     success() {
@@ -118,18 +146,8 @@ export default {
   watch: {
     // eslint-disable-next-line no-unused-vars
     showAll(newVal, oldVal) {
-      if(!this.fetchedAll) {
-        if(newVal) {
-          const filtersCreated = {
-            created_by : this.user.id,
-            done_by : this.$store.state.authUser.id,
-            created_or_done_by: null,
-            statuses : [2, 3],
-            unrated_created_by : false,
-            unrated_done_by : null
-          }
-          this.$store.dispatch("fillRequests", {filters: filtersCreated, objectToFill: {object: "ratedRequestsCreated", page: 1}})
-
+      if(newVal) {
+        if(this.tab == 'Requested' && this.pageRatedDoneBy != 1) {
           const filtersDone = {
             created_by : this.$store.state.authUser.id,
             done_by : this.user.id,
@@ -139,8 +157,23 @@ export default {
             unrated_done_by : false
           }
           this.$store.dispatch("fillRequests", {filters: filtersDone, objectToFill: {object: "ratedRequestsDoneBy", page: 1 }})
-          this.fetchedAll = true
+          this.pageRatedDoneBy = 1
+          this.currentPage = 1
         }
+        else if(this.pageRatedCreated !=1) {
+          const filtersCreated = {
+            created_by : this.user.id,
+            done_by : this.$store.state.authUser.id,
+            created_or_done_by: null,
+            statuses : [2, 3],
+            unrated_created_by : false,
+            unrated_done_by : null
+          }
+          this.$store.dispatch("fillRequests", {filters: filtersCreated, objectToFill: {object: "ratedRequestsCreated", page: 1}})
+          this.pageRatedCreated = 1
+          this.currentPage = 1
+        }
+        this.fetchedAll = true
       }
     }
   },
@@ -159,6 +192,73 @@ export default {
         textMessageS: "Uspešno prijavljen problem sa korisnikom.",
         textMessageE: "User successfully reported."
       })
+    },
+    tabRequested() {
+      this.showAll = false
+      if(this.pageUnratedDoneBy != 1) { 
+        const filtersDone = {
+          created_by : this.$store.state.authUser.id,
+          done_by : this.user.id,
+          created_or_done_by: null,
+          statuses : [2, 3],
+          unrated_created_by : null,
+          unrated_done_by : true
+        }
+        this.$store.dispatch("fillRequests", {filters: filtersDone, objectToFill: {object: "unratedRequestsDoneBy", page: 1 }})
+      }
+      this.tab = 'Requested'
+      this.pageUnratedDoneBy = 1
+      this.currentPage = 1
+    },
+    tabRunner() {
+      this.showAll = false
+      if(this.pageUnratedCreated != 1) {
+        const filtersCreated = {
+          created_by : this.user.id,
+          done_by : this.$store.state.authUser.id,
+          created_or_done_by: null,
+          statuses : [2, 3],
+          unrated_created_by : true,
+          unrated_done_by : null
+        }
+        this.$store.dispatch("fillRequests", {filters: filtersCreated, objectToFill: {object: "unratedRequestsCreated", page: 1}})
+      }
+      this.tab = 'Runner'
+      this.pageUnratedCreated = 1
+      this.currentPage = 1
+    },
+    getAnotherPortion() {
+      let unrated_created_by;
+      let unrated_done_by;
+      let toFill;
+      if(this.tab == 'Runner') {
+        unrated_created_by = this.showAll ? false : true
+        unrated_done_by = null
+        toFill = this.showAll ? "ratedRequestsCreated" : "unratedRequestsCreated"
+        if(this.showAll)
+          this.pageRatedCreated = this.currentPage
+        else
+          this.pageUnratedCreated = this.currentPage
+      }
+      else {
+        unrated_created_by = null
+        unrated_done_by = this.showAll ? false : true
+        toFill = this.showAll ? "ratedRequestsDoneBy" : "unratedRequestsDoneBy"
+        if(this.showAll)
+          this.pageUnratedDoneBy = this.currentPage
+        else
+          this.pageUnratedDoneBy = this.currentPage
+      }
+
+      const filters = {
+        created_by: this.tab == 'Runner' ? this.user.id : this.$store.state.authUser.id,
+        done_by: this.tab == 'Runner' ? this.$store.state.authUser.id : this.user,
+        created_or_done_by: null,
+        statuses : [2, 3],
+        unrated_created_by: unrated_created_by,
+        unrated_done_by: unrated_done_by
+      }
+      this.$store.dispatch("fillRequests", {filters: filters, objectToFill:{object: toFill, page: this.currentPage}})
     }
   },
   created() {
@@ -173,16 +273,6 @@ export default {
     //Obratiti pažnju da treba da bude pogodno za rad sa notifikacijama.)
 
     window.scrollTo(0, 0)
-    const filtersCreated = {
-      created_by : this.user.id,
-      done_by : this.$store.state.authUser.id,
-      created_or_done_by: null,
-      statuses : [2, 3],
-      unrated_created_by : true,
-      unrated_done_by : null
-    }
-    this.$store.dispatch("fillRequests", {filters: filtersCreated, objectToFill: {object: "unratedRequestsCreated", page: 1}})
-
     const filtersDone = {
       created_by : this.$store.state.authUser.id,
       done_by : this.user.id,
@@ -192,6 +282,8 @@ export default {
       unrated_done_by : true
     }
     this.$store.dispatch("fillRequests", {filters: filtersDone, objectToFill: {object: "unratedRequestsDoneBy", page: 1 }})
+    this.pageUnratedDoneBy = 1
+    this.currentPage = 1
   }
 }
 </script>
@@ -234,6 +326,37 @@ export default {
     display: flex;
     flex-direction: column;
     align-items: center;
+  }
+
+  .tabovi {
+    background-color: white;
+    padding: 7px;
+    min-height: 50px;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 30px;
+  }
+
+  .navbar-menu {
+    display:flex;
+  }
+
+  .navbar-item {
+    flex-grow: 1;
+    flex-shrink: 1;
+    justify-content: center;
+    font-weight: 400;
+    font-size: 20px;
+    height: 100%;
+    text-align: center;
+  }
+
+  .aktivan {
+    background-color: rgb(233, 233, 233);
+    text-decoration: underline;
   }
 
   .request-side-top-wrap {
@@ -283,6 +406,18 @@ export default {
     width: 18px;
     margin-right: 5px;
     margin-bottom: 3px;
+  }
+
+  .pag-top {
+    margin-bottom: 40px;
+    margin-top: 20px;
+    z-index:0;
+  }
+
+  .pag-bottom {
+    margin: 40px 0 0px 0;
+    z-index:0;
+    padding-bottom: 40px;
   }
 
   @media only screen and (max-width:900px) {
