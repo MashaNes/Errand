@@ -8,6 +8,7 @@ from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse
 from django.utils import timezone
+from fcm_django.models import FCMDevice
 
 from . import models
 from . import serializers
@@ -1294,3 +1295,45 @@ class Stats(generics.CreateAPIView):
                              'users_per_grade' : stats[7]})
         else:
             return Response({'detail' : 'User is not admin.'})
+
+
+# =============== FIREBASE CLOUD MESSAGING ==============
+# =======================================================
+class FCMRegister(generics.CreateAPIView):
+    def create(self, request):
+        user = models.User.objects.get(id=request.data['created_by'])
+        fcm_devices = FCMDevice.objects.filter(user=user).count()
+        if fcm_devices:
+            return Response({'detail' : 'Device already exists.'})
+
+        dev_id = request.data['dev_id']
+        reg_id = request.data['reg_id']
+        fcm_device = FCMDevice(device_id=dev_id,
+                               registration_id=reg_id,
+                               user=user)
+        fcm_device.save()
+        return Response({'fcm' : fcm_device.id})
+
+class FCMTestNotification(generics.CreateAPIView):
+    def create(self, request):
+        notif = models.Notification(title="TEST",
+                                    body=request.data['msg'],
+                                    notification_type=5,
+                                    type_id=0)
+        notif.save()
+
+        if request.data['send_to']:
+            user = models.User.objects.get(id=request.data['send_to'])
+            device = FCMDevice.objects.get(user=user)
+            fulluser = models.FullUser.objects.get(user__id=user.id)
+            fulluser.notifications.add(notif)
+            fulluser.save()
+        else:
+            device = FCMDevice.objects.all()
+            for _d in device:
+                fulluser = models.FullUser.objects.get(user__id=_d.user.id)
+                fulluser.notifications.add(notif)
+                fulluser.save()
+
+        device.send_message(title=notif.title, body=notif.body)
+        return Response({'detail' : 'success'})

@@ -168,7 +168,7 @@ class Offer(models.Model):
 
 class Notification(models.Model):
     NOTIFICATION_TYPES = (('request', 0), ('offer', 1), ('edit_request', 2),
-                          ('rating', 3), ('achievement', 4))
+                          ('rating', 3), ('achievement', 4), ('test', 5))
 
     title = models.CharField(max_length=50)
     body = models.CharField(max_length=256)

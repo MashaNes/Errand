@@ -2090,6 +2090,84 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "FCMRegister",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token e23bc9ea761435c86c696bb13455b30cce4b62b9",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"created_by\" : 3,\n\t\"dev_id\" : 2,\n\t\"reg_id\" : \"1664d8857954\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "127.0.0.1:8000/api/v1/fcm_register/",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"v1",
+						"fcm_register",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "FCMTestNotification",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token e23bc9ea761435c86c696bb13455b30cce4b62b9",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"send_to\" : null,\n\t\"msg\" : \"Test Notification 2\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "127.0.0.1:8000/api/v1/fcm_test_notification/",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"v1",
+						"fcm_test_notification",
+						""
+					]
+				}
+			},
+			"response": []
 		}
 	],
 	"protocolProfileBehavior": {}
