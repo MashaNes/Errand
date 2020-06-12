@@ -65,7 +65,9 @@ export default new Vuex.Store({
         success: false,
         onPageOne: false,
         statistics: null,
-        achievements: null
+        achievements: null,
+        firebaseToken: null,
+        registeredOnFirebase: false
     },
     getters:{
         getAuthUserId(state) {
@@ -629,6 +631,11 @@ export default new Vuex.Store({
                                 this.state.ratedRequestsDoneBy.results[indexRated].rated_working_with = true
                             }
                         }
+                        this.dispatch('testNotification', {
+                            receiver: data.rated_user.id, 
+                            message: "Korisnik " + this.state.authUser.first_name + " " 
+                                    + this.state.authUser.last_name + " Vas je ocenio ocenom " + filters.grade
+                        })
                     })
                 }
                 else {
@@ -909,6 +916,8 @@ export default new Vuex.Store({
                         this.state.unratedRequestsDoneBy = null
                         this.state.ratedRequestsCreated = null
                         this.state.ratedRequestsDoneBy = null
+                        this.state.registeredOnFirebase = false
+                        this.state.firebaseToken = null
                         Vue.cookie.delete('id');
                         Vue.cookie.delete('token');
                         Vue.cookie.delete('ime');
@@ -1871,6 +1880,53 @@ export default new Vuex.Store({
                         console.log("Error")
                     }
                 });
+        },
+        firebaseRegister({commit}, token) {
+            fetch("http://127.0.0.1:8000/api/v1/fcm_register/", {
+                method: 'POST',
+                headers: {
+                    "Content-type" : "application/json",
+                    "Authorization" : "Token " + this.state.token
+                },
+                body:  JSON.stringify( {
+                    "created_by" : this.state.authUser.id,
+                    "dev_id" : 222222333,
+                    "reg_id" : String(token)
+                })
+            }).then(p => {
+                if(p.ok) {
+                    p.json().then(data => {
+                        console.log(data)
+                        console.log("registered with firebase token")
+                        this.state.registeredOnFirebase = true
+                    })
+                }
+                else {
+                    console.log("error")
+                }
+            })
+        },
+        testNotification({commit}, {receiver, message}) {
+            fetch("http://127.0.0.1:8000/api/v1/fcm_test_notification/", {
+                method: 'POST',
+                headers: {
+                    "Content-type" : "application/json",
+                    "Authorization" : "Token " + this.state.token
+                },
+                body:  JSON.stringify( {
+                    "send_to" : receiver,
+                    "msg" : message
+                })
+            }).then(p => {
+                if(p.ok) {
+                    p.json().then(data => {
+                        console.log(data)
+                    })
+                }
+                else {
+                    console.log("error")
+                }
+            })
         }
     },
     mutations:{
