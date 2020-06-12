@@ -238,6 +238,29 @@
             }
             if(this.$store.state.createdAuthRequests == null)
                 this.$store.dispatch("fillRequests", {filters: filters, objectToFill: { object:"createdAuthRequests", page: 1 }})
+
+            let myToken = null;
+            let vm = this;
+
+            if(!this.$store.state.registeredOnFirebase) {
+                this.$messaging.requestPermission()
+                .then(function() {
+                    console.log("this is a notification")
+                    return vm.$messaging.getToken()
+                })
+                .then(function(token) {
+                    console.log(token)
+                    myToken = token
+                    vm.$store.dispatch('firebaseRegister', myToken)
+                })
+                .catch(err => {
+                    console.log(err)
+                })
+
+                this.$messaging.onMessage(function(data) {
+                    console.log(data.notification.body)
+                })
+            }
         }
     }
 </script>
