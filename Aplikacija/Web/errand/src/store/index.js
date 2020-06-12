@@ -1841,6 +1841,7 @@ export default new Vuex.Store({
                         p.json().then(data =>
                         {
                             console.log(data)
+                            this.dispatch("getAllAchievements")
                         })
                     }
                     else

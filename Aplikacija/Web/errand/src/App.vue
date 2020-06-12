@@ -81,7 +81,7 @@ export default {
 
   .page-wrapper
   {
-    min-height: 73vh;
+    min-height: 93vh;
   }
 
   .top-div
@@ -102,5 +102,10 @@ export default {
     width: 100%;
     background-color: white;
     z-index: 1000000000;
+  }
+
+  .input-padding
+  {
+    padding:5px;
   }
 </style>

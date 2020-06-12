@@ -4,22 +4,22 @@
             <img src = "../assets/serbia.svg" class="zastava">
             Naziv:
         </div>
-        <input class="text-div" v-model="newService.service_type_sr" />
+        <input class="text-div input-padding" v-model="newService.service_type_sr" />
         <div class="label-div">
             <img src = "../assets/uk.svg" class="zastava">
             Name:
         </div>
-        <input class="text-div" v-model="newService.service_type_en" />
+        <input class="text-div input-padding" v-model="newService.service_type_en" />
         <div class="label-div">
             <img src = "../assets/serbia.svg" class="zastava">
             Opis:
         </div>
-        <textarea class="text-div" v-model="newService.description_sr"> </textarea>
+        <textarea class="text-div input-padding" v-model="newService.description_sr"> </textarea>
         <div class="label-div">
             <img src = "../assets/uk.svg" class="zastava">
             Description:
         </div>
-        <textarea class="text-div" v-model="newService.description_en"> </textarea>
+        <textarea class="text-div input-padding" v-model="newService.description_en"> </textarea>
         <div class="button-div">
             <button type="button" class="btn btn-danger dugme" @click="odustani">
                 <img src="../assets/failed.svg" class="slika">

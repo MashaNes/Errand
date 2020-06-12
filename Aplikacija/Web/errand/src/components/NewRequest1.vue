@@ -4,12 +4,12 @@
             <span v-if="isSerbian"> <span class="zvezdica">*</span> Naziv: </span>
             <span v-else> <span class="zvezdica">*</span>  Name: </span>
         </div>
-        <input type="text" v-model="myName" @input="NameChanged" class="name">
+        <input type="text" v-model="myName" @input="NameChanged" class="name input-padding">
         <div class="labelDiv">
             <span v-if="isSerbian"> Napomena: </span>
             <span v-else> Note: </span>
         </div>
-        <textarea type="text" v-model="myNote" @input="NoteChanged" class="name" />
+        <textarea type="text" v-model="myNote" @input="NoteChanged" class="name input-padding" />
         <div class="labelDiv">
             <span v-if="isSerbian">  <span class="zvezdica">*</span> Datum i vreme: </span>
             <span v-else>  <span class="zvezdica">*</span> Date and time: </span>

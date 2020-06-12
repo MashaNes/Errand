@@ -8,10 +8,8 @@
                 {{achievement.name_en}}
             </span>
             <span class="image-span">
-                <span class="image-background">
-                    <a @click="details" v-if="!noDetail"><img src="../assets/more.svg" height="7" width="20" v-b-popover.hover.top="popoverText"/></a>
-                    <a @click="close" v-else><img src="../assets/remove.svg" height="20" width="20" v-b-popover.hover.top="popoverText2"/></a>
-                </span>
+                <a @click="details" v-if="!noDetail"><img src="../assets/more.png" height="7" width="20" v-b-popover.hover.top="popoverText"/></a>
+                <a @click="close" v-else><img src="../assets/remove.png" height="20" width="20" v-b-popover.hover.top="popoverText2"/></a>
             </span>
         </b-card-header>
         <b-card-body class="body-goldenrod">
@@ -33,7 +31,6 @@
             </span>
             <span class="image-span">
                 <span class="image-background">
-                    <!-- <img :src="achievement.icon" height="20" width="20" /> -->
                     <img :src="'data:;base64,' + achievement.icon" height="20" width="20" />
                 </span>
             </span>

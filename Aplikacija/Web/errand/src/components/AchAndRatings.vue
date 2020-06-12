@@ -291,7 +291,7 @@ export default {
   .main-wrapper {
     display:flex; 
     flex-direction:row;
-    min-height:73vh;
+    min-height:85vh;
   }
 
   .bordered-container {

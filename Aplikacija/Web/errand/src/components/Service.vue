@@ -11,15 +11,15 @@
             <div class="text-div" v-if="!isEditing">
                 {{service.service_type_sr}}
             </div>
-            <input class="text-div" v-else v-model="myService.service_type_sr" />
+            <input class="text-div input-padding" v-else v-model="myService.service_type_sr" />
             <div class="label-div">
                 <img src = "../assets/uk.svg" class="zastava">
                 Name:
             </div>
-            <div class="text-div" v-if="!isEditing">
+            <div class="text-div " v-if="!isEditing">
                 {{service.service_type_en}}
             </div>
-            <input class="text-div" v-else v-model="myService.service_type_en" />
+            <input class="text-div input-padding" v-else v-model="myService.service_type_en" />
             <div class="label-div">
                 <img src = "../assets/serbia.svg" class="zastava">
                 Opis:
@@ -27,7 +27,7 @@
             <div class="text-div" v-if="!isEditing">
                 {{service.description_sr}}
             </div>
-            <textarea class="text-div" v-else v-model="myService.description_sr"> </textarea>
+            <textarea class="text-div input-padding" v-else v-model="myService.description_sr"> </textarea>
             <div class="label-div">
                 <img src = "../assets/uk.svg" class="zastava">
                 Description:
@@ -35,7 +35,7 @@
             <div class="text-div" v-if="!isEditing">
                 {{service.description_en}}
             </div>
-            <textarea class="text-div" v-else v-model="myService.description_en"> </textarea>
+            <textarea class="text-div input-padding" v-else v-model="myService.description_en"> </textarea>
             <div class="button-div" v-if="isEditing">
                 <button type="button" class="btn btn-danger" @click="odbaciIzmenu">
                     <img src="../assets/failed.svg" class="slika">

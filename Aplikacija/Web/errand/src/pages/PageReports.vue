@@ -22,7 +22,7 @@
                     <div class="pretraga-podatak">
                         <img src="../assets/send.svg" class="ikonica" />:
                         <div class="input-div">
-                            <input type="email" v-model="searchData.sender" class="email-unos"
+                            <input type="email" v-model="searchData.sender" class="email-unos input-padding"
                                    @blur="$v.searchData.sender.$touch()" />
                             <span v-if="isSerbian && $v.searchData.sender.$invalid" class="upozorenje"> Email nije validan</span>
                             <span v-if="!isSerbian && $v.searchData.sender.$invalid" class="upozorenje"> Not a valid email</span>
@@ -33,7 +33,7 @@
                     <div class="pretraga-podatak">
                         <img src="../assets/reports.svg" class="ikonica" />:
                         <div class="input-div">
-                            <input type="email" v-model="searchData.reported" class="email-unos"
+                            <input type="email" v-model="searchData.reported" class="email-unos input-padding"
                                    @blur="$v.searchData.reported.$touch()" />
                             <span v-if="isSerbian && $v.searchData.reported.$invalid" class="upozorenje"> Email nije validan</span>
                             <span v-if="!isSerbian && $v.searchData.reported.$invalid" class="upozorenje"> Not a valid email</span>

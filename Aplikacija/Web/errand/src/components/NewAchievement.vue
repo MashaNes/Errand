@@ -300,7 +300,6 @@ export default {
 
             this.$store.state.achievements.push(this.achievement)
             this.$store.dispatch("achievementCreate", this.achievement)
-            this.$store.dispatch("getAllAchievements")
             this.$emit("achievemntCreated")
         },
         pictureSelected(e) 

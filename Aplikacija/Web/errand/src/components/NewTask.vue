@@ -6,7 +6,7 @@
                 <span v-if="isSerbian"> <span class="zvezdica">*</span> Naziv zadatka: </span>
                 <span v-else> <span class="zvezdica">*</span> Task name: </span>
             </div>
-            <input type="text" v-model="myTask.name" class="name">
+            <input type="text" v-model="myTask.name" class="name input-padding">
             <div class="labelDiv">
                 <span v-if="isSerbian"> <span class="zvezdica">*</span> Tip usluge: </span>
                 <span v-else> <span class="zvezdica">*</span> Service type: </span>
@@ -21,7 +21,7 @@
                 <span v-if="isSerbian"> Opis zadatka: </span>
                 <span v-else> Task description: </span>
             </div>
-            <textarea type="text" v-model="myTask.description" class="name" />
+            <textarea type="text" v-model="myTask.description" class="name input-padding" />
             <div class="labelDiv">
                 <span v-if="isSerbian"> Spisak: </span>
                 <span v-else> Checklist: </span>
@@ -34,7 +34,7 @@
                     </div>
                 </div>
                 <div class="dodavanje-u-spisak">
-                    <input type="text" v-model="inputElement" class="input-polje" />
+                    <input type="text" v-model="inputElement" class="input-polje input-padding" />
                     <button type="button" class="btn btn-primary dugme-checklist" @click="dodajUChecklist">
                         <span v-if="isSerbian">Dodaj u spisak</span>
                         <span v-else>Add to ckecklist</span>
