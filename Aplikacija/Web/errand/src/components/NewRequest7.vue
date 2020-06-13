@@ -65,7 +65,7 @@
                 <span v-else> Taking a picture at the final location is not required </span>
             </div>
         </div>
-        <div class="mapDiv">
+        <div class="mapDiv" v-if="imaAdresa">
             <Map />
         </div>
     </div>
@@ -90,7 +90,8 @@ export default {
     data()
     {
         return{
-            lista: ""
+            lista: "",
+            imaAdresa: false
         }
     },
     computed:
@@ -131,6 +132,7 @@ export default {
         this.request.tasklist.forEach((task, ind) => {
           if(task.address)
           {
+            this.imaAdresa = true
             const newPosition = {
               pos: {
                 lat: task.address.latitude,
@@ -144,6 +146,7 @@ export default {
         })
         if(this.request.destination.name != "" && this.request.destination.latitude && this.request.destination.longitude)
         {
+            this.imaAdresa = true
             const newPosition = {
                 pos: {
                     lat: this.request.destination.latitude,
