@@ -91,11 +91,11 @@ export default {
     dateAndTime() {
       var date = new Date(this.request.time)
       
-      var day = date.getUTCDate()
-      var month = date.getUTCMonth() + 1
-      var year = date.getUTCFullYear()
-      var hours = date.getUTCHours()
-      var minutes = date.getUTCMinutes()
+      var day = date.getDate()
+      var month = date.getMonth()+1
+      var year = date.getFullYear()
+      var hours = date.getHours()
+      var minutes = date.getMinutes()
       
       var monthString = ""
       var hoursString = hours
