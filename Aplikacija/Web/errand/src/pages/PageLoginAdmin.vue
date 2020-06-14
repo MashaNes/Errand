@@ -130,6 +130,10 @@
             isSerbian()
             {
                 return this.$store.state.isSerbian
+            },
+            isDataLoaded()
+            {
+              return this.$store.state.isDataLoaded
             }
         },
         methods:
