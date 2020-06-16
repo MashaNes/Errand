@@ -248,8 +248,9 @@ export default {
 
     .obavestenje
     {
-        width:100%;
-        margin-left:50px;
+        width:90%;
+        margin-left:20px;
+        margin-right: 5px;
         text-align: justify;
         font-size: 12px;
         color:red;
