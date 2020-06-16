@@ -104,6 +104,7 @@ public class RequestsListFragment extends Fragment {
 		adapter = new RequestAdapter(activity, requests);
 		list.setAdapter(adapter);
 		if (requests.size() <= 0) noItems.setVisibility(View.VISIBLE);
+		else noItems.setVisibility(View.GONE);
 
 		list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
@@ -134,6 +135,8 @@ public class RequestsListFragment extends Fragment {
 		loadRequests();
 		Log.e("ERROR", index + " " + requests.size() + " - ");
 		adapter.notifyDataSetChanged();
+		if (requests.size() <= 0) noItems.setVisibility(View.VISIBLE);
+		else noItems.setVisibility(View.GONE);
 	}
 
 	@Override

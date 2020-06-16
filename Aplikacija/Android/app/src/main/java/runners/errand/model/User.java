@@ -20,6 +20,7 @@ public class User {
 		STATUS_NOT_RUNNING = 0,
 		STATUS_RUNNING = 1;
 
+	public boolean selected;
 	private int id, status, benefitRequirements;
 	private String firstName, lastName, email, phone;
 	private String picture_b64;
@@ -39,103 +40,106 @@ public class User {
 
 	public User(@NonNull JSONObject o) {
 		JSONObject user = o.optJSONObject("user");
-		if (user != null) {
-			this.id = user.optInt("id");
-			this.email = user.optString("email");
-			this.firstName = user.optString("first_name");
-			this.lastName = user.optString("last_name");
-			this.phone = user.optString("phone");
-			this.rating = (float) user.optDouble("avg_rating");
-			this.picture_b64 = user.optString("picture");
-			if (picture_b64.contains("data:image/png;base64,")) {
-				picture_b64 = picture_b64.substring(22);
-			} else {
-				picture_bmp = BitmapUtils.decode(picture_b64);
+		if (user == null) {
+			user = o;
+		} else {
+			JSONArray achievements = o.optJSONArray("achievements");
+			if (achievements != null) {
+				for (int i = 0; i < achievements.length(); i++) {
+					JSONObject achievement = achievements.optJSONObject(i);
+					if (achievement != null) this.achievements.add(new Achievement(achievement));
+				}
 			}
-		}
 
-		JSONArray achievements = o.optJSONArray("achievements");
-		if (achievements != null) {
-			for (int i = 0; i < achievements.length(); i++) {
-				JSONObject achievement = achievements.optJSONObject(i);
-				if (achievement != null) this.achievements.add(new Achievement(achievement));
+			JSONArray addresses = o.optJSONArray("addresses");
+			if (addresses != null) {
+				for (int i = 0; i < addresses.length(); i++) {
+					JSONObject address = addresses.optJSONObject(i);
+					if (address != null) this.addresses.add(new Address(address));
+				}
 			}
-		}
 
-		JSONArray addresses = o.optJSONArray("addresses");
-		if (addresses != null) {
-			for (int i = 0; i < addresses.length(); i++) {
-				JSONObject address = addresses.optJSONObject(i);
-				if (address != null) this.addresses.add(new Address(address));
+			JSONArray benefits = o.optJSONArray("benefitlist");
+			if (benefits != null) {
+				for (int i = 0; i < benefits.length(); i++) {
+					JSONObject benefit = benefits.optJSONObject(i);
+					if (benefit != null) this.benefits.add(new Benefit(benefit));
+				}
 			}
-		}
 
-		JSONArray benefits = o.optJSONArray("benefitlist");
-		if (benefits != null) {
-			for (int i = 0; i < benefits.length(); i++) {
-				JSONObject benefit = benefits.optJSONObject(i);
-				if (benefit != null) this.benefits.add(new Benefit(benefit));
+			JSONArray ratings = o.optJSONArray("ratings");
+			if (ratings != null) {
+				for (int i = 0; i < ratings.length(); i++) {
+					JSONObject rating = ratings.optJSONObject(i);
+					if (rating != null) this.ratings.add(new Rating(rating));
+				}
 			}
-		}
 
-		JSONArray ratings = o.optJSONArray("ratings");
-		if (ratings != null) {
-			for (int i = 0; i < ratings.length(); i++) {
-				JSONObject rating = ratings.optJSONObject(i);
-				if (rating != null) this.ratings.add(new Rating(rating));
+			JSONArray requests = o.optJSONArray("requests");
+			if (requests != null) {
+				for (int i = 0; i < requests.length(); i++) {
+					JSONObject request = requests.optJSONObject(i);
+					if (request != null) this.requests.add(new Request(request));
+				}
 			}
-		}
 
-		JSONArray requests = o.optJSONArray("requests");
-		if (requests != null) {
-			for (int i = 0; i < requests.length(); i++) {
-				JSONObject request = requests.optJSONObject(i);
-				if (request != null) this.requests.add(new Request(request));
+			JSONArray notifications = o.optJSONArray("notifications");
+			if (notifications != null) {
+				for (int i = 0; i < notifications.length(); i++) {
+					JSONObject notification = notifications.optJSONObject(i);
+					if (notification != null) this.notifications.add(new Notification(notification));
+				}
 			}
-		}
 
-		JSONArray notifications = o.optJSONArray("notifications");
-		if (notifications != null) {
-			for (int i = 0; i < notifications.length(); i++) {
-				JSONObject notification = notifications.optJSONObject(i);
-				if (notification != null) this.notifications.add(new Notification(notification));
+			JSONArray services = o.optJSONArray("services");
+			if (services != null) {
+				for (int i = 0; i < services.length(); i++) {
+					JSONObject service = services.optJSONObject(i);
+					if (service != null) this.servicePrefs.add(new ServicePrefs(service));
+				}
 			}
-		}
 
-		JSONArray services = o.optJSONArray("services");
-		if (services != null) {
-			for (int i = 0; i < services.length(); i++) {
-				JSONObject service = services.optJSONObject(i);
-				if (service != null) this.servicePrefs.add(new ServicePrefs(service));
+			JSONArray workingHours = o.optJSONArray("working_hours");
+			if (workingHours != null) {
+				for (int i = 0; i < workingHours.length(); i++) {
+					JSONObject workingHour = workingHours.optJSONObject(i);
+					if (workingHour != null) this.workingHours.add(new WorkingHours(workingHour));
+				}
 			}
-		}
 
-		JSONArray workingHours = o.optJSONArray("working_hours");
-		if (workingHours != null) {
-			for (int i = 0; i < workingHours.length(); i++) {
-				JSONObject workingHour = workingHours.optJSONObject(i);
-				if (workingHour != null) this.workingHours.add(new WorkingHours(workingHour));
-			}
-		}
-
-		JSONArray blockedUsers = o.optJSONArray("blocked");
-		if (blockedUsers != null) {
-			for (int i = 0; i < blockedUsers.length(); i++) {
-				JSONObject blockedUser = blockedUsers.optJSONObject(i);
-				if (blockedUser != null) {
-					JSONObject tmp = new JSONObject();
-					try {
-						tmp.put("user", blockedUser);
-						this.blockedUsers.add(new User(tmp));
-					} catch (JSONException e) {
-						e.printStackTrace();
+			JSONArray blockedUsers = o.optJSONArray("blocked");
+			if (blockedUsers != null) {
+				for (int i = 0; i < blockedUsers.length(); i++) {
+					JSONObject blockedUser = blockedUsers.optJSONObject(i);
+					if (blockedUser != null) {
+						JSONObject tmp = new JSONObject();
+						try {
+							tmp.put("user", blockedUser);
+							this.blockedUsers.add(new User(tmp));
+						} catch (JSONException e) {
+							e.printStackTrace();
+						}
 					}
 				}
 			}
+
+			this.benefitDiscount = (float) o.optDouble("benefit_discount");
+			this.benefitRequirements = o.optInt("benefit_requirement");
 		}
 
-		this.benefitDiscount = (float) o.optDouble("benefit_discount");
-		this.benefitRequirements = o.optInt("benefit_requirement");
+		this.id = user.optInt("id");
+		this.status = user.optInt("status");
+		this.email = user.optString("email");
+		this.firstName = user.optString("first_name");
+		this.lastName = user.optString("last_name");
+		this.phone = user.optString("phone");
+		this.rating = (float) user.optDouble("avg_rating");
+		this.picture_b64 = user.optString("picture");
+		if (picture_b64.contains("data:image/png;base64,")) {
+			picture_b64 = picture_b64.substring(22);
+		} else {
+			picture_bmp = BitmapUtils.decode(picture_b64);
+		}
 	}
 
 	public int getId() {

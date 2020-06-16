@@ -7,12 +7,8 @@ import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import java.util.ArrayList;
-
 import runners.errand.MainActivity;
 import runners.errand.R;
-import runners.errand.adapter.AddressSelectItemAdapter;
-import runners.errand.model.Address;
 
 public class ListSelectDialog extends AlertDialog {
 

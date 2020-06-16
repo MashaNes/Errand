@@ -60,6 +60,7 @@ public class TasksFragment extends Fragment {
 			((TextView) v.findViewById(R.id.item_task_number)).setText(String.format(Locale.getDefault(), "%d", i + 1));
 			((TextView) v.findViewById(R.id.item_task_title)).setText(request.getTasks().get(i).getName());
 			((TextView) v.findViewById(R.id.item_task_body)).setText(request.getTasks().get(i).getBody());
+			if (request.getTasks().get(i).getAddress() != null) ((TextView) v.findViewById(R.id.item_task_address)).setText(request.getTasks().get(i).getAddress().getName());
 			((TextView) v.findViewById(R.id.item_task_service)).setText(request.getTasks().get(i).getService().getType());
 			taskListLayout.addView(v);
 		}

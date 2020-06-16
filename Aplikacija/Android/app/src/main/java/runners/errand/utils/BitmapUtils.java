@@ -16,6 +16,8 @@ import java.io.InputStream;
 import runners.errand.R;
 
 public class BitmapUtils {
+	public static final int MARKER_ICON_RED = 0;
+	public static final int MARKER_ICON_GREEN = 1;
 
 	// TODO: encode is for pfp, add stuff for higher quality pics for requests
 
@@ -32,7 +34,13 @@ public class BitmapUtils {
 		return BitmapFactory.decodeByteArray(b, 0, b.length);
 	}
 
-	public static BitmapDescriptor getMapMarkerBitmap(Context context, float density) {
-		return BitmapDescriptorFactory.fromBitmap(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.img_pin), (int) Math.ceil(.7 * 43 * density), (int) Math.ceil(43 * density), false));
+	public static BitmapDescriptor getMapMarkerBitmap(Context context, float density, int icon) {
+		int res;
+		if (icon == MARKER_ICON_GREEN) {
+			res = R.drawable.img_pin_complete;
+		} else {
+			res = R.drawable.img_pin;
+		}
+		return BitmapDescriptorFactory.fromBitmap(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(), res), (int) Math.ceil(.7 * 43 * density), (int) Math.ceil(43 * density), false));
 	}
 }

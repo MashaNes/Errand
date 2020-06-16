@@ -20,7 +20,7 @@ public class Request {
             STATUS_COMPLETED = 3,
             STATUS_CANCELED = 4;
 
-    private int id, status, locationStatus, requestType;
+    private int id, status, locationStatus, requestType, directId;
     private double maxDistance, minRating;
     private Date time;
     private String name, note;
@@ -177,5 +177,13 @@ public class Request {
 
     public void setMinRating(double minRating) {
         this.minRating = minRating;
+    }
+
+    public int getDirectId() {
+        return directId;
+    }
+
+    public void setDirectId(int directId) {
+        this.directId = directId;
     }
 }

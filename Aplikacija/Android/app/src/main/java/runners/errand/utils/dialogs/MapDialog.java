@@ -175,7 +175,7 @@ public class MapDialog extends AlertDialog implements OnMapReadyCallback, Locati
 			mo.title(address.getName());
 			DisplayMetrics metrics = new DisplayMetrics();
 			activity.getWindowManager().getDefaultDisplay().getMetrics(metrics);
-			mo.icon(BitmapUtils.getMapMarkerBitmap(activity, metrics.density));
+			mo.icon(BitmapUtils.getMapMarkerBitmap(activity, metrics.density, BitmapUtils.MARKER_ICON_RED));
 			mo.draggable(true);
 			marker = map.addMarker(mo);
 		}

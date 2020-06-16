@@ -21,7 +21,8 @@ public class Application extends MultiDexApplication {
 //		- Service defaults - DONE
 //		- Working hours
 //		- Benefits
-//	- Profile for other users
+//	- Profile dialog
+//		- Show info - DONE (Needs more customisation for buttons)
 //		- Block user
 //		- Report user
 //	- Requests
@@ -31,7 +32,7 @@ public class Application extends MultiDexApplication {
 //		- On address long click, show full address name in a toast (same as in Profile) - DONE
 //		- Add destination address (optional?) - DONE
 //		- Broadcast - DONE
-//		- Add direct request
+//		- Add direct request - DONE
 //			- Choose weather to show only active users or not
 //		- Check required fields on create
 //		- Create request - DONE
@@ -42,15 +43,11 @@ public class Application extends MultiDexApplication {
 //	- Firebase
 //	- Redesign request item
 //		- Request item for Find requests
-//		- Don't repeat services if multiple tasks have same service
+//		- Don't repeat services if multiple tasks have same service - DONE
 
-// TODO Service:
+// TODO Location Service:
 
-//	- Location service on active
-//	- Bind permanent notification to location service to
-//		keep user notified that they are still active and stop
-//		Doze from killing off the service
-//	- Start service and become active based on working hours using alarms
+//	- Location service on active ??? Maybe not needed, since we're using geofencing for request locations, maybe for distance matrix server can request location through Firebase??
 
 // TODO Links:
 
@@ -60,13 +57,7 @@ public class Application extends MultiDexApplication {
 
 // TODO API:
 
-//	- Request broadcast param
-// 	- Direct request in request_create
 // 	- Filter request by distance & rating
-//	- Filter users by active, distance & rating
-//	- Update user status
-//	- Update user location
-//	- Notifications endpoints
-// 	- Firebase for notifications
-//	- Report user (needs a timeout so people can't spam report)
+//	- Distance matrix
 //	- Update just benefits requirement & discount from user info
+//	- Notifications endpoints????

@@ -66,10 +66,14 @@ public class RequestAdapter extends BaseAdapter {
 
         LinearLayout services = view.findViewById(R.id.item_request_services);
         if (services.getChildCount() > 0) services.removeViews(0, services.getChildCount());
+        ArrayList<Integer> serviceIds = new ArrayList<>();
         for (Task task : request.getTasks()) {
-            View v = LayoutInflater.from(context).inflate(R.layout.item_service, services, false);
-            ((TextView) v.findViewById(R.id.item_request_service)).setText(task.getService().getType());
-            services.addView(v);
+            if (serviceIds.indexOf(task.getService().getId()) == -1) {
+                serviceIds.add(task.getService().getId());
+                View v = LayoutInflater.from(context).inflate(R.layout.item_service, services, false);
+                ((TextView) v.findViewById(R.id.item_request_service)).setText(task.getService().getType());
+                services.addView(v);
+            }
         }
 
         switch (request.getStatus()) {

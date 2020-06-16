@@ -19,6 +19,10 @@
 	<string name="generic_success">Success</string>
 	<string name="generic_enabled">Enabled</string>
 	<string name="generic_disabled">Disabled</string>
+	<string name="generic_active">Active</string>
+	<string name="generic_inactive">Inactive</string>
+	<string name="generic_select">Select</string>
+	<string name="generic_deselect">Deselect</string>
 
 	<string name="autofill_email">emailAddress</string>
 	<string name="autofill_password">password</string>

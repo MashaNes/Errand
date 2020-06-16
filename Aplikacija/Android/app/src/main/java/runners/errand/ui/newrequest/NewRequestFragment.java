@@ -110,7 +110,11 @@ public class NewRequestFragment extends Fragment {
                     netRequest.putParam("min_rating", request.getMinRating());
                     netRequest.putParam("destination", request.getDestination().toJSON());
                     netRequest.putParam("broadcast", request.isBroadcast());
-                    netRequest.putNull("direct_user");
+                    if (request.getDirectId() == -1) {
+                        netRequest.putNull("direct_user");
+                    } else {
+                        netRequest.putParam("direct_user", request.getDirectId());
+                    }
                     JSONArray tasklist = new JSONArray();
                     for (Task task : request.getTasks()) {
                         tasklist.put(task.toJSON());

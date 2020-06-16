@@ -1,6 +1,7 @@
 package runners.errand.ui.requests;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -64,7 +65,13 @@ public class RequestsFragment extends Fragment {
         boolean refresh = false;
         if (savedInstanceState != null) refresh = savedInstanceState.getBoolean("refresh");
         if (refresh) {
-            refresh();
+            refreshLayout.setRefreshing(true);
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    refresh();
+                }
+            }, 500);
         }
 
         return root;

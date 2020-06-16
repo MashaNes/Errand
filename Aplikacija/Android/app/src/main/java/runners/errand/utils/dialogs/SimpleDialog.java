@@ -2,52 +2,25 @@ package runners.errand.utils.dialogs;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.location.Address;
-import android.location.Geocoder;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
-import android.os.Bundle;
 import android.os.Environment;
-import android.os.Message;
-import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
-
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapView;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Locale;
 
 import runners.errand.LoginActivity;
 import runners.errand.MainActivity;
 import runners.errand.R;
-import runners.errand.adapter.UserAdapter;
-import runners.errand.model.Edit;
 import runners.errand.model.Service;
 import runners.errand.model.ServicePrefs;
-import runners.errand.model.User;
-import runners.errand.model.WorkingHours;
 
 public class SimpleDialog {
 	public static void buildMessageDialog(Activity activity, String title, String message, String errorCode, final Runnable runnableOK) {
