@@ -1,9 +1,12 @@
 import base64
 import os.path
 
+from fcm_django.models import FCMDevice
 from datetime import datetime
 from pytz import UTC
+
 from . import models
+from . import parsers
 
 # =================== IMAGES ===================
 # ==============================================
@@ -405,7 +408,6 @@ def filter_request_info(serializer, data):
 
 # =================== STATS ===================
 # =============================================
-
 def get_stats():
     number_of_users = None
     new_users = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
@@ -489,3 +491,101 @@ def get_stats():
             user_service_per_service,
             achievements_distribution,
             users_per_grade)
+
+
+# =================== NOTIFICATION ===================
+# ====================================================
+def send_notification(user, notification):
+    if user:
+        if FCMDevice.objects.get(user=user).count:
+            device = FCMDevice.objects.get(user=user)
+            fulluser = models.FullUser.objects.get(user__id=user.id)
+            fulluser.notifications.add(notification)
+            fulluser.save()
+    else:
+        device = FCMDevice.objects.all()
+        for _d in device:
+            fulluser = models.FullUser.objects.get(user__id=_d.user.id)
+            fulluser.notifications.add(notification)
+            fulluser.save()
+
+    device.send_message(title=notification.title, body=notification.body,
+                        data={'notification_type' : notification.notification_type,
+                              'type_id' : notification.type_id})
+
+
+# =================== ACHIEVEMENT ===================
+# ===================================================
+def check_achievements(user):
+    c = [0, 0, 0, 0, 0, 0, 0, 0, 0]
+
+    c[0] = len(user.requests.all())
+    c[2] = user.user.avg_rating
+    c[5] = len(user.benefitlist.all())
+
+    done_req = list()
+    reqs = models.Request.objects.all()
+    for _r in reqs:
+        if _r.working_with.id == user.user.id:
+            done_req.append(_r)
+
+    services = set()
+    for _r in done_req:
+        if _r.status == 2:
+            c[3] += 1
+        elif _r.status == 3:
+            c[6] += 1
+        for _t in _r.tasklist.all():
+            services.add(_t.service_type.id)
+    c[7] = len(services)
+
+    services.clear()
+    for _r in user.requests.all():
+        if _r.status == 2:
+            c[4] += 1
+        elif _r.status == 3:
+            c[6] += 1
+        for _t in _r.tasklist.all():
+            services.add(_t.service_type.id)
+    c[8] = len(services)
+
+    c[1] = c[3] + c[4]
+
+    achievements = models.Achievement.objects.all()
+    for ach in achievements:
+        level = 1000
+        for cond in ach.conditions.all():
+            lvl = 0
+            for _cn in cond.condition_numbers:
+                if _cn == 7:
+                    if _cn >= c[6]:
+                        lvl += 1
+                elif _cn <= c[cond.codition - 1]:
+                    lvl += 1
+
+            if lvl < level:
+                level = lvl
+
+        if level > 0:
+            achlvl = None
+            for _a in user.achievements.all():
+                if _a.achievement.id == ach.id:
+                    achlvl = _a
+
+            if not achlvl:
+                achlvl = models.AchievementLevel(level=level,
+                                                 achievement=ach,
+                                                 user=user)
+                achlvl.save()
+                user.achievements.add(achlvl)
+                user.save()
+            else:
+                achlvl.level = level
+                achlvl.save()
+
+            # send notification NEW_ACHIEVEMENT
+            # TODO: Change strings (?)
+            title = 'New achievement'
+            body = 'You have unlocked new achievement!'
+            notif = parsers.create_notification(title, body, 4, achlvl.id)
+            send_notification(user.user, notif)

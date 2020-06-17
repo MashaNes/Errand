@@ -2131,6 +2131,45 @@
 			"response": []
 		},
 		{
+			"name": "FCMUnregister",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "Token e23bc9ea761435c86c696bb13455b30cce4b62b9"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"reg_id\" : \"16648857954\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "127.0.0.1:8000/api/v1/fcm_unregister/",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"v1",
+						"fcm_unregister",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "FCMTestNotification",
 			"request": {
 				"method": "POST",

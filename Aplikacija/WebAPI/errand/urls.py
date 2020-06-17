@@ -138,6 +138,8 @@ urlpatterns += urladmin
 urlfcm = [
     path('api/v1/fcm_register/', api_views.FCMRegister.as_view(),
          name='fcm_register'),
+    path('api/v1/fcm_unregister/', api_views.FCMUnregister.as_view(),
+         name='fcm_unregister'),
     path('api/v1/fcm_test_notification/', api_views.FCMTestNotification.as_view(),
          name='fcm_test_notification')
 ]

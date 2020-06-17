@@ -446,9 +446,10 @@ def create_ban(data):
                            banned_user=banned_user)
     return banned
 
-def create_notification(data):
-    notification = models.Notification(title=data['title'],
-                                       body=data['body'],
-                                       notification_type=data['notofication_type'],
-                                       type_id=data['type_id'])
+def create_notification(title, body, notification_type, type_id):
+    notification = models.Notification(title=title,
+                                       body=body,
+                                       notification_type=notification_type,
+                                       type_id=type_id)
+    notification.save()
     return notification
