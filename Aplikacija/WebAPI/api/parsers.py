@@ -5,7 +5,6 @@ from . import models
 
 PIC_PATH = 'db/images/'
 ADMIN_KEY = "hR6s7RPPRtEhQNSL3IT1LwM5XC0J1LcdOvXPFFlk"
-DISTANCE_MATRIX_KEY = "AIzaSyB10Ab2i9Kq_jsM_NX-zM72i9g50N6kR1U"
 
 def create_picture(data, name):
     ext = '.png'

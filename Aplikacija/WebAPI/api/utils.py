@@ -1,5 +1,6 @@
 import base64
 import os.path
+import googlemaps
 
 from fcm_django.models import FCMDevice
 from datetime import datetime
@@ -7,6 +8,9 @@ from pytz import UTC
 
 from . import models
 from . import parsers
+
+
+DISTANCE_MATRIX_KEY = "AIzaSyB10Ab2i9Kq_jsM_NX-zM72i9g50N6kR1U"
 
 # =================== IMAGES ===================
 # ==============================================
@@ -297,6 +301,81 @@ def filter_reports(queryset, data):
 
 # ==================== REQUEST ====================
 # =================================================
+def calc_distance(lon1, lat1, lon2, lat2):
+    gmaps = googlemaps.Client(key=DISTANCE_MATRIX_KEY)
+    dist = gmaps.distance_matrix((lon1, lat1), (lon2, lat2))
+    return dist['rows'][0]['elements'][0]['distance']['value']
+
+def search_requests(queryset, data):
+    new_queryset = list()
+    dir_queryset = list()
+    user = models.User.objects.get(id=data['created_by'])
+
+    for _q in queryset:
+        to_add = True
+
+        if data['direct_user']:
+            if _q.request.direct_user.id != data['created_by']:
+                min_dist = None
+                if _q.destination and _q.destination.longitude and _q.destination.latitude:
+                    min_dist = calc_distance(data['longitude'], data['latitude'],
+                                             _q.destination.longitude, _q.destination.latitude)
+
+                if to_add and min_dist is None:
+                    for _t in _q.requests.tasklist.all():
+                        if _t.address and _t.address.longitude and _t.address.latitude:
+                            dist = calc_distance(data['longitude'], data['latitude'],
+                                                 _t.address.longitude, _t.address.latitude)
+                            if min_dist is None or min_dist > dist:
+                                min_dist = dist
+                _q['dist'] = min_dist
+                dir_queryset.append(_q)
+                continue
+
+        if (not data['no_rating'] and
+                _q.request.created_by.avg_rating < data['min_rating'] and
+                _q.request.created_by.min_rating >= user.avg_rating):
+            to_add = False
+
+        if to_add:
+            for _s in data['services']:
+                found = False
+                for _t in _q.request.tasklist.all():
+                    if _s == _t.service_type.id:
+                        found = True
+                if not found:
+                    to_add = False
+
+        min_dist = None
+        if to_add and _q.destination and _q.destination.longitude and _q.destination.latitude:
+            min_dist = calc_distance(data['longitude'], data['latitude'],
+                                     _q.destination.longitude, _q.destination.latitude)
+
+        if to_add and min_dist is None:
+            for _t in _q.requests.tasklist.all():
+                if _t.address and _t.address.longitude and _t.address.latitude:
+                    dist = calc_distance(data['longitude'], data['latitude'],
+                                         _t.address.longitude, _t.address.latitude)
+                    if min_dist is None or min_dist > dist:
+                        min_dist = dist
+
+        _q['dist'] = min_dist
+
+        if min_dist < data['max_dist']:
+            to_add = False
+
+        if to_add:
+            new_queryset.append(_q)
+
+    queryset = new_queryset
+    new_queryset = list()
+
+    for _q in queryset:
+        new_queryset.append(models.Request.objects.get(id=_q.request.id))
+
+    return new_queryset, dir_queryset
+
+
 def filter_requests(queryset, data):
     new_queryset = list()
 
@@ -510,8 +589,7 @@ def create_notification(notification_type, type_id, first_name=None, last_name=N
                 'type_id' : type_id,
                 'title_sr' : "Direktni zahtev",
                 'title_en' : "Direct request",
-                'body_sr' : f"Korisnik {first_name} {last_name} vam je poslao novi direktan \
-                              zahtev {request}.",
+                'body_sr' : f"Korisnik {first_name} {last_name} vam je poslao novi direktan zahtev {request}.",
                 'body_en' : f"{first_name} {last_name} sent you a new direct request {request}."
             },
             {
@@ -529,10 +607,8 @@ def create_notification(notification_type, type_id, first_name=None, last_name=N
                 'type_id' : type_id,
                 'title_sr' : "Nova ponuda",
                 'title_en' : "New offer",
-                'body_sr' : f"Korisnik {first_name} {last_name} Vam je poslao novu ponudu \
-                              za zahtev \"{request}\".",
-                'body_en' : f"{first_name} {last_name} sent you a new offer for the request \
-                              \"{request}\"."
+                'body_sr' : f"Korisnik {first_name} {last_name} Vam je poslao novu ponudu za zahtev \"{request}\".",
+                'body_en' : f"{first_name} {last_name} sent you a new offer for the request \"{request}\"."
             },
             {
                 'id' : None,
@@ -558,10 +634,8 @@ def create_notification(notification_type, type_id, first_name=None, last_name=N
                 'type_id' : type_id,
                 'title_sr' : "Novi zahtev za izmenom",
                 'title_en' : "New edit request",
-                'body_sr' : f"Korisnik {first_name} {last_name} Vam je poslao novi predlog \
-                              izmene za zahtev \"{request}\".",
-                'body_en' : f"{first_name} {last_name} has requested an edit for the request \
-                              \"{request}\"."
+                'body_sr' : f"Korisnik {first_name} {last_name} Vam je poslao novi predlog izmene za zahtev \"{request}\".",
+                'body_en' : f"{first_name} {last_name} has requested an edit for the request \"{request}\"."
             },
             {
                 'id' : None,
@@ -570,8 +644,7 @@ def create_notification(notification_type, type_id, first_name=None, last_name=N
                 'title_sr' : "Prihvaćena izmena zahteva",
                 'title_en' : "Edit request accepted",
                 'body_sr' : f"Izmena koju ste predložili za zahtev \"{request}\" je prihvaćena.",
-                'body_en' : f"The edit you have made for the request \"{request}\" has been \
-                              accepted."
+                'body_en' : f"The edit you have made for the request \"{request}\" has been accepted."
             },
             {
                 'id' : None,
@@ -580,8 +653,7 @@ def create_notification(notification_type, type_id, first_name=None, last_name=N
                 'title_sr' : "Odbijena izmena zahteva",
                 'title_en' : "Edit request rejected",
                 'body_sr' : f"Izmena koju ste predložili za zahtev \"{request}\" je odbijena.",
-                'body_en' : f"The edit you have made for the request \"{request}\" has been \
-                              rejected."
+                'body_en' : f"The edit you have made for the request \"{request}\" has been rejected."
             },
             {
                 'id' : None,
@@ -607,10 +679,8 @@ def create_notification(notification_type, type_id, first_name=None, last_name=N
                 'type_id' : type_id,
                 'title_sr' : "Zahtev označen kao uspešan",
                 'title_en' : "Request marked as successful",
-                'body_sr' : f"Korisnik sa kojim sarađujete na zahtevu \"{request}\" označio \
-                              je da je on uspešno okončan.",
-                'body_en' : f"The user you are cooperating with on the request \"{request}\" \
-                              has marked is as successful."
+                'body_sr' : f"Korisnik sa kojim sarađujete na zahtevu \"{request}\" označio je da je on uspešno okončan.",
+                'body_en' : f"The user you are cooperating with on the request \"{request}\" has marked is as successful."
             }]
 
     notif = data[notification_type]
@@ -695,12 +765,14 @@ def check_achievements(user):
                 user.achievements.add(achlvl)
                 user.save()
             else:
+                if achlvl.level >= level:
+                    break
                 achlvl.level = level
                 achlvl.save()
 
             # send notification
-            notif_body, notif = create_notification(9, achlvl.id, 
+            notif_body, notif = create_notification(9, achlvl.id,
                                                     achievement_en=ach.name_en,
-                                                    achievement_sr=ach.name_sr, 
+                                                    achievement_sr=ach.name_sr,
                                                     level=achlvl.level)
             send_notification(user, notif, notif_body)

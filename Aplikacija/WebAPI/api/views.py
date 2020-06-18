@@ -766,9 +766,11 @@ class RequestCreate(generics.ListCreateAPIView):
         # send notification req_direct
         if req.direct_user:
             _u2 = models.FullUser.objects.get(user__id=req.direct_user.id)
-            notif_body, notif = utils.create_notification(0, req.id,
-                first_name=user.user.first_name,
-                last_name=user.user.last_name)
+            notif_body, notif = \
+                utils.create_notification(0, req.id,
+                                          first_name=user.user.first_name,
+                                          last_name=user.user.last_name,
+                                          request=req.id)
             utils.send_notification(_u2, notif, notif_body)
 
         utils.check_achievements(user)
@@ -1465,11 +1467,6 @@ class FCMUnregister(generics.DestroyAPIView):
 
 class FCMTestNotification(generics.CreateAPIView):
     def create(self, request):
-        notif = parsers.create_notification("TEST", request.data['msg'], 5, 0)
+        dist = utils.calc_distance(43.329291, 21.916399, 43.369190, 21.916699)
 
-        user = None
-        if request.data['send_to']:
-            user = models.User.objects.get(id=request.data['send_to'])
-        utils.send_notification(user, notif)
-
-        return Response({'detail' : 'success'})
+        return Response({'result' : dist})
