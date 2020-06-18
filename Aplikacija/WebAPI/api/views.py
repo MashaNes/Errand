@@ -53,12 +53,14 @@ __POST__________________________________________________________________________
 + POST ban_create/ (A)	 			// Bans reported user
 + POST achievement_create/ (A)	 	// Creates new achievement
 + POST service_create/ (A)		    // Creates new service type
++ POST fcm_register/                // Registers FCM device
 
 __PUT_________________________________________________________________________________________
 + PUT logout/                       // Logout user
 + PUT user_update/			        // Updates basic user data
 + PUT user_benefit_update/          // Updates user's benefit settings
 + PUT user_status_update/           // Updates user's status
++ PUT user_location_update/         // Updates user's location
 + PUT benefit_update/			    // Updates benefit to benefit list
 + PUT address_update/			    // Updates address to addresses
 + PUT working_hours_update/ 		// Updates working hours for user
@@ -80,6 +82,7 @@ __DELETE________________________________________________________________________
 + DELETE offer_cancel/ 			    // Cancels offer (when not accepted)
 + DELETE edit_cancel/               // Cancels edit request
 + DELETE picture_remove/            // Removes picture
++ DELETE fcm_unregister/            // Removes FCM device
 '''
 
 
@@ -193,6 +196,25 @@ class UserStatusUpdate(generics.UpdateAPIView):
         created_by = request.data['created_by']
         user = models.User.objects.get(id=created_by)
         user.status = request.data['status']
+        user.save()
+
+        return Response({'detail' : 'success'})
+
+# PUT user_location_update/
+class UserLocationUpdate(generics.UpdateAPIView):
+    def update(self, request):
+        created_by = request.data['created_by']
+        user = models.User.objects.get(id=created_by)
+
+        if user.location:
+            user.location.longitude = request.data['longitude']
+            user.location.latitude = request.data['latitude']
+            user.location.save()
+        else:
+            loc = models.Location(longitude=request.data['longitude'],
+                                  latitude=request.data['latitude'])
+            loc.save()
+            user.location = loc
         user.save()
 
         return Response({'detail' : 'success'})
@@ -367,6 +389,10 @@ class BenefitAdd(generics.ListCreateAPIView):
         benefit.save()
         user.benefitlist.add(benefit)
         user.save()
+
+        utils.check_achievements(user)
+        user.refresh_from_db()
+
         serializer = serializers.BenefitSerializer(benefit)
         serializer.data['benefit_user']['picture'] = \
             utils.load_img(serializer.data['benefit_user']['picture'])
@@ -580,6 +606,7 @@ class UserServiceRemove(generics.RetrieveDestroyAPIView):
         return Response({'detail' : 'success'})
 
 
+# !!! REMOVE !!!
 # ================= BLOCK =================
 # POST block_add/
 class BlockAdd(generics.ListCreateAPIView):
@@ -707,12 +734,15 @@ class RateUser(generics.ListCreateAPIView):
 
         rating.refresh_from_db()
 
-        # send notification
-        # TODO: Change strings (?)
-        title = 'New rating: ' + str(rating.grade) + ' stars!'
-        body = 'You have received new rating.'
-        notif = parsers.create_notification(title, body, 3, rating.id)
-        utils.send_notification(user.user, notif)
+        # send notification rating
+        _cb = models.User.objects.get(id=request.data['created_by'])
+        notif_body, notif = utils.create_notification(3, rating.id,
+                                                      first_name=_cb.first_name,
+                                                      last_name=_cb.last_name,
+                                                      rating=rating.grade)
+        utils.send_notification(user, notif, notif_body)
+
+        utils.check_achievements(user)
 
         serializer = serializers.RatingSerializer(rating)
         _r = serializer.data
@@ -733,14 +763,15 @@ class RequestCreate(generics.ListCreateAPIView):
         user.save()
         req.refresh_from_db()
 
-        # send notification
-        # TODO: Change strings (?)
+        # send notification req_direct
         if req.direct_user:
-            _u2 = models.User.objects.get(id=req.direct_user.id)
-            title = 'New request: ' + req.name
-            body = 'You have received new direct request.'
-            notif = parsers.create_notification(title, body, 0, req.id)
-            utils.send_notification(_u2, notif)
+            _u2 = models.FullUser.objects.get(user__id=req.direct_user.id)
+            notif_body, notif = utils.create_notification(0, req.id,
+                first_name=user.user.first_name,
+                last_name=user.user.last_name)
+            utils.send_notification(_u2, notif, notif_body)
+
+        utils.check_achievements(user)
 
         serializer = serializers.RequestSerializer(req)
         _s = serializer.data
@@ -766,16 +797,6 @@ class RequestCancel(generics.RetrieveDestroyAPIView):
         req = models.Request.objects.get(id=rid)
         user.requests.remove(req)
         user.save()
-
-        # send notification
-        # TODO: Change strings (?)
-        if req.working_with:
-            # TODO: Check the right user
-            _u2 = models.User.objects.get(id=req.working_with)
-            title = 'Request canceled: ' + req.name
-            body = 'Request has been canceled.'
-            notif = parsers.create_notification(title, body, 0, req.id)
-            utils.send_notification(_u2, notif)
 
         req.delete()
 
@@ -991,15 +1012,20 @@ class RequestFinish(generics.UpdateAPIView):
                 user2.benefitlist.add(ben)
                 user2.save()
 
-        # send notification
-        # TODO: Change strings (?)
-        title = 'Request finished!'
-        body = 'Request has been finished.'
-        notif = parsers.create_notification(title, body, 0, req.id)
+        # send notification req_failed OR req_success
+        if request.data['status'] == 2:
+            _t = 10
+        elif request.data['status'] == 3:
+            _t = 1
+        notif_body, notif = utils.create_notification(_t, req.id,
+                                                      request=req.request.name)
         if request.data['created_by'] == uid1:
-            utils.send_notification(user2, notif)
+            utils.send_notification(user2, notif, notif_body)
         else:
-            utils.send_notification(user1, notif)
+            utils.send_notification(user1, notif, notif_body)
+
+        utils.check_achievements(user1)
+        utils.check_achievements(user2)
 
         return Response({'detail' : 'success'})
 
@@ -1014,14 +1040,13 @@ class OfferCreate(generics.ListCreateAPIView):
 
         offer.refresh_from_db()
 
-        _u2 = models.User.objects.get(id=offer.request.created_by.id)
-
-        # send notification
-        # TODO: Change strings (?)
-        title = 'New offer!'
-        body = 'You have received new offer.'
-        notif = parsers.create_notification(title, body, 1, offer.id)
-        utils.send_notification(_u2, notif)
+        # send notification offer_created
+        _u2 = models.FullUser.objects.get(user__id=offer.request.created_by.id)
+        notif_body, notif = utils.create_notification(2, offer.request.id,
+                                                      request=offer.request.name,
+                                                      first_name=user.user.first_name,
+                                                      last_name=user.user.last_name)
+        utils.send_notification(_u2, notif, notif_body)
 
         serializer = serializers.OfferSerializer(offer)
         serializer.data['created_by']['picture'] = \
@@ -1043,13 +1068,11 @@ class OfferAccept(generics.UpdateAPIView):
         if not req:
             return Response({'detail' : 'Offer cannot be accepted.'})
 
-        # send notification
-        # TODO: Change strings (?)
-        _u2 = models.User.objects.get(id=req.request.accepted_offer.created_by.id)
-        title = 'Offer accepted!'
-        body = 'Your offer has been accepted.'
-        notif = parsers.create_notification(title, body, 1, request.data['offer'])
-        utils.send_notification(_u2, notif)
+        # send notification offer_accepted
+        _u2 = models.FullUser.objects.get(id=req.request.accepted_offer.created_by.id)
+        notif_body, notif = utils.create_notification(3, req.request.id,
+                                                      request=req.request.name)
+        utils.send_notification(_u2, notif, notif_body)
 
         serializer = serializers.FullRequestSerializer(req)
         _s = serializer.data
@@ -1064,13 +1087,11 @@ class OfferCancel(generics.RetrieveDestroyAPIView):
         if models.Offer.objects.filter(pk=rid).exists():
             offer = models.Offer.objects.get(id=rid)
             if offer.created_by != request.data['created_by']:
-                # send notification OFFER_REJECTED
-                # TODO: Change strings (?)
-                _u2 = models.User.objects.get(id=offer.created_by.id)
-                title = 'Offer rejected!'
-                body = 'Your offer has been rejected.'
-                notif = parsers.create_notification(title, body, 3, offer.id)
-                utils.send_notification(_u2, notif)
+                # send notification offer_rejected
+                _u2 = models.FullUser.objects.get(id=offer.created_by.id)
+                notif_body, notif = utils.create_notification(4, offer.request.id,
+                                                              request=offer.request.name)
+                utils.send_notification(_u2, notif, notif_body)
 
             offer.edit.delete()
             offer.delete()
@@ -1085,12 +1106,14 @@ class EditCreate(generics.ListCreateAPIView):
         edit = parsers.create_edit(request.data)
         serializer = serializers.EditSerializer(edit)
 
-        # send notification
-        # TODO: Change strings (?)
-        title = 'New edit request!'
-        body = 'You have received new edit request.'
-        notif = parsers.create_notification(title, body, 2, edit.id)
-        utils.send_notification(edit.working_with, notif)
+        # send notification edit_created
+        user = models.User.objects.get(id=request.data['created_by'])
+        _u2 = models.FullUser.objects.get(user__id=edit.working_with.id)
+        notif_body, notif = utils.create_notification(5, edit.request_edit.request.id,
+                                                      request=edit.request_edit.request.name,
+                                                      first_name=user.first_name,
+                                                      last_name=user.last_name)
+        utils.send_notification(_u2, notif, notif_body)
 
         return Response(serializer.data)
 
@@ -1109,12 +1132,11 @@ class EditAccept(generics.UpdateAPIView):
         if not req:
             return Response({'detail' : 'Edit cannot be accepted.'})
 
-        # send notification
-        # TODO: Change strings (?)
-        title = 'Edit request accepted!'
-        body = 'Your edit request has been accepted.'
-        notif = parsers.create_notification(title, body, 2, edit.id)
-        utils.send_notification(edit.working_with, notif)
+        # send notification edit_accepted
+        _u2 = models.FullUser.objects.get(user__id=edit.working_with.id)
+        notif_body, notif = utils.create_notification(6, edit.request_edit.request.id,
+                                                      request=edit.request_edit.request.name)
+        utils.send_notification(_u2, notif, notif_body)
 
         serializer = serializers.FullRequestSerializer(req)
         _s = serializer.data
@@ -1129,17 +1151,16 @@ class EditCancel(generics.RetrieveDestroyAPIView):
         if models.Edit.objects.filter(pk=rid).exists():
             edit = models.Edit.objects.get(id=rid)
 
-            # send notification EDIT CANCELED
-            # TODO: Change strings (?)
             if edit.created_by != request.data['created_by']:
                 _u2 = edit.created_by
             else:
                 _u2 = edit.working_with
 
-            title = 'Edit rejected!'
-            body = 'Edit has been rejected.'
-            notif = parsers.create_notification(title, body, 2, edit.id)
-            utils.send_notification(_u2, notif)
+            # send notification edit_rejected
+            _u2 = models.FullUser.objects.get(user__id=_u2.id)
+            notif_body, notif = utils.create_notification(7, edit.request_edit.request.id,
+                                                          request=edit.request_edit.request.name)
+            utils.send_notification(_u2, notif, notif_body)
 
             edit.request_edit.delete()
             return Response({'detail' : 'success'})
@@ -1420,14 +1441,13 @@ class Stats(generics.CreateAPIView):
 class FCMRegister(generics.CreateAPIView):
     def create(self, request):
         user = models.User.objects.get(id=request.data['created_by'])
-        fcm_devices = FCMDevice.objects.filter(user=user).count()
+        reg_id = request.data['reg_id']
+        fcm_devices = FCMDevice.objects.filter(registration_id=reg_id).count()
+
         if fcm_devices:
             return Response({'detail' : 'Device already exists.'})
 
-        dev_id = request.data['dev_id']
-        reg_id = request.data['reg_id']
-        fcm_device = FCMDevice(device_id=dev_id,
-                               registration_id=reg_id,
+        fcm_device = FCMDevice(registration_id=reg_id,
                                user=user)
         fcm_device.save()
         return Response({'fcm' : fcm_device.id})

@@ -495,24 +495,135 @@ def get_stats():
 
 # =================== NOTIFICATION ===================
 # ====================================================
-def send_notification(user, notification):
+def send_notification(user, notification, notification_body):
     if user:
-        if FCMDevice.objects.get(user=user).count:
-            device = FCMDevice.objects.get(user=user)
-            fulluser = models.FullUser.objects.get(user__id=user.id)
-            fulluser.notifications.add(notification)
-            fulluser.save()
-    else:
-        device = FCMDevice.objects.all()
-        for _d in device:
-            fulluser = models.FullUser.objects.get(user__id=_d.user.id)
-            fulluser.notifications.add(notification)
-            fulluser.save()
+        devices = FCMDevice.objects.filter(user=user.user).all()
+        user.notifications.add(notification)
+        user.save()
+        devices.send_message(data=notification_body)
 
-    device.send_message(title=notification.title, body=notification.body,
-                        data={'notification_type' : notification.notification_type,
-                              'type_id' : notification.type_id})
+def create_notification(notification_type, type_id, first_name=None, last_name=None, request=None,
+                        rating=None, achievement_sr=None, achievement_en=None, level=None):
+    data = [{
+                'id' : None,
+                'notification_type' : 0,
+                'type_id' : type_id,
+                'title_sr' : "Direktni zahtev",
+                'title_en' : "Direct request",
+                'body_sr' : f"Korisnik {first_name} {last_name} vam je poslao novi direktan \
+                              zahtev {request}.",
+                'body_en' : f"{first_name} {last_name} sent you a new direct request {request}."
+            },
+            {
+                'id' : None,
+                'notification_type' : 1,
+                'type_id' : type_id,
+                'title_sr' : "Neuspešno završen zahtev",
+                'title_en' : "Request failed",
+                'body_sr' : f"Zahtev \"{request}\" je neuspešno završen.",
+                'body_en' : f"Request \"{request}\" has failed."
+            },
+            {
+                'id' : None,
+                'notification_type' : 2,
+                'type_id' : type_id,
+                'title_sr' : "Nova ponuda",
+                'title_en' : "New offer",
+                'body_sr' : f"Korisnik {first_name} {last_name} Vam je poslao novu ponudu \
+                              za zahtev \"{request}\".",
+                'body_en' : f"{first_name} {last_name} sent you a new offer for the request \
+                              \"{request}\"."
+            },
+            {
+                'id' : None,
+                'notification_type' : 3,
+                'type_id' : type_id,
+                'title_sr' : "Ponuda prihvaćena",
+                'title_en' : "Offer accepted",
+                'body_sr' : f"Vaša ponuda za zahtev \"{request}\" je prihvaćena.",
+                'body_en' : f"Your offer for the request \"{request}\" has been accepted."
+            },
+            {
+                'id' : None,
+                'notification_type' : 4,
+                'type_id' : type_id,
+                'title_sr' : "Ponuda odbijena",
+                'title_en' : "Offer rejected",
+                'body_sr' : f"Vaša ponuda za zahtev \"{request}\" je odbijena.",
+                'body_en' : f"Your offer for request \"{request}\" has been rejected."
+            },
+            {
+                'id' : None,
+                'notification_type' : 5,
+                'type_id' : type_id,
+                'title_sr' : "Novi zahtev za izmenom",
+                'title_en' : "New edit request",
+                'body_sr' : f"Korisnik {first_name} {last_name} Vam je poslao novi predlog \
+                              izmene za zahtev \"{request}\".",
+                'body_en' : f"{first_name} {last_name} has requested an edit for the request \
+                              \"{request}\"."
+            },
+            {
+                'id' : None,
+                'notification_type' : 6,
+                'type_id' : type_id,
+                'title_sr' : "Prihvaćena izmena zahteva",
+                'title_en' : "Edit request accepted",
+                'body_sr' : f"Izmena koju ste predložili za zahtev \"{request}\" je prihvaćena.",
+                'body_en' : f"The edit you have made for the request \"{request}\" has been \
+                              accepted."
+            },
+            {
+                'id' : None,
+                'notification_type' : 7,
+                'type_id' : type_id,
+                'title_sr' : "Odbijena izmena zahteva",
+                'title_en' : "Edit request rejected",
+                'body_sr' : f"Izmena koju ste predložili za zahtev \"{request}\" je odbijena.",
+                'body_en' : f"The edit you have made for the request \"{request}\" has been \
+                              rejected."
+            },
+            {
+                'id' : None,
+                'notification_type' : 8,
+                'type_id' : type_id,
+                'title_sr' : "Nova ocena",
+                'title_en' : "New rating",
+                'body_sr' : f"Korisnik {first_name} {last_name} Vas je ocenio ocenom {rating}.",
+                'body_en' : f"{first_name} {last_name} has rated you with grade {rating}."
+            },
+            {
+                'id' : None,
+                'notification_type' : 9,
+                'type_id' : type_id,
+                'title_sr' : "Novo dostignuće",
+                'title_en' : "New achievement",
+                'body_sr' : f"Postali ste {achievement_sr} {level}. nivoa.",
+                'body_en' : f"You have become {achievement_en} of level {level}."
+            },
+            {
+                'id' : None,
+                'notification_type' : 10,
+                'type_id' : type_id,
+                'title_sr' : "Zahtev označen kao uspešan",
+                'title_en' : "Request marked as successful",
+                'body_sr' : f"Korisnik sa kojim sarađujete na zahtevu \"{request}\" označio \
+                              je da je on uspešno okončan.",
+                'body_en' : f"The user you are cooperating with on the request \"{request}\" \
+                              has marked is as successful."
+            }]
 
+    notif = data[notification_type]
+    notification = models.Notification(title_sr=notif['title_sr'],
+                                       title_en=notif['title_en'],
+                                       body_sr=notif['body_sr'],
+                                       body_en=notif['body_en'],
+                                       notification_type=notification_type,
+                                       type_id=type_id)
+    notification.save()
+    notif['id'] = notification.id
+
+    return notif, notification
 
 # =================== ACHIEVEMENT ===================
 # ===================================================
@@ -520,13 +631,16 @@ def check_achievements(user):
     c = [0, 0, 0, 0, 0, 0, 0, 0, 0]
 
     c[0] = len(user.requests.all())
-    c[2] = user.user.avg_rating
+    if user.user.avg_rating:
+        c[2] = user.user.avg_rating
+    else:
+        c[2] = 0
     c[5] = len(user.benefitlist.all())
 
     done_req = list()
     reqs = models.Request.objects.all()
     for _r in reqs:
-        if _r.working_with.id == user.user.id:
+        if _r.working_with == user.user.id:
             done_req.append(_r)
 
     services = set()
@@ -556,11 +670,12 @@ def check_achievements(user):
         level = 1000
         for cond in ach.conditions.all():
             lvl = 0
-            for _cn in cond.condition_numbers:
+            for _cn in cond.condition_numbers.all():
+                _cn = _cn.condition_number
                 if _cn == 7:
                     if _cn >= c[6]:
                         lvl += 1
-                elif _cn <= c[cond.codition - 1]:
+                elif _cn <= c[cond.condition - 1]:
                     lvl += 1
 
             if lvl < level:
@@ -575,7 +690,7 @@ def check_achievements(user):
             if not achlvl:
                 achlvl = models.AchievementLevel(level=level,
                                                  achievement=ach,
-                                                 user=user)
+                                                 user=user.user)
                 achlvl.save()
                 user.achievements.add(achlvl)
                 user.save()
@@ -583,9 +698,9 @@ def check_achievements(user):
                 achlvl.level = level
                 achlvl.save()
 
-            # send notification NEW_ACHIEVEMENT
-            # TODO: Change strings (?)
-            title = 'New achievement'
-            body = 'You have unlocked new achievement!'
-            notif = parsers.create_notification(title, body, 4, achlvl.id)
-            send_notification(user.user, notif)
+            # send notification
+            notif_body, notif = create_notification(9, achlvl.id, 
+                                                    achievement_en=ach.name_en,
+                                                    achievement_sr=ach.name_sr, 
+                                                    level=achlvl.level)
+            send_notification(user, notif, notif_body)

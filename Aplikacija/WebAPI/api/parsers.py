@@ -5,6 +5,7 @@ from . import models
 
 PIC_PATH = 'db/images/'
 ADMIN_KEY = "hR6s7RPPRtEhQNSL3IT1LwM5XC0J1LcdOvXPFFlk"
+DISTANCE_MATRIX_KEY = "AIzaSyB10Ab2i9Kq_jsM_NX-zM72i9g50N6kR1U"
 
 def create_picture(data, name):
     ext = '.png'
@@ -445,11 +446,3 @@ def create_ban(data):
                            comment=data['comment'],
                            banned_user=banned_user)
     return banned
-
-def create_notification(title, body, notification_type, type_id):
-    notification = models.Notification(title=title,
-                                       body=body,
-                                       notification_type=notification_type,
-                                       type_id=type_id)
-    notification.save()
-    return notification

@@ -167,11 +167,15 @@ class Offer(models.Model):
     edit = models.ForeignKey(RequestEdit, null=True, on_delete=models.SET_NULL)
 
 class Notification(models.Model):
-    NOTIFICATION_TYPES = (('request', 0), ('offer', 1), ('edit_request', 2),
-                          ('rating', 3), ('achievement', 4), ('test', 5))
+    NOTIFICATION_TYPES = (('req_direct', 0), ('req_failed', 1), ('offer_created', 2),
+                          ('offer_accepted', 3), ('offer_canceled', 4), ('edit_created', 5),
+                          ('edit_accepted', 6), ('edit_canceled', 7), ('rating', 8),
+                          ('achievement', 9), ('req_success', 10))
 
-    title = models.CharField(max_length=50)
-    body = models.CharField(max_length=256)
+    title_sr = models.CharField(max_length=50, null=True)
+    body_sr = models.CharField(max_length=256, null=True)
+    title_en = models.CharField(max_length=50, null=True)
+    body_en = models.CharField(max_length=256, null=True)
     notification_type = models.IntegerField(choices=NOTIFICATION_TYPES)
     timestamp = models.DateTimeField(default=now)
     type_id = models.IntegerField()

@@ -35,7 +35,9 @@ urluser = [
     path('api/v1/user_status_update/', api_views.UserStatusUpdate.as_view(),
          name='user_status_update'),
     path('api/v1/user_benefit_update/', api_views.UserBenefitUpdate.as_view(),
-         name='user_benefit_update')
+         name='user_benefit_update'),
+    path('api/v1/user_location_update/', api_views.UserLocationUpdate.as_view(),
+         name='user_location_update'),
 ]
 urlpatterns += urluser
 
