@@ -274,6 +274,45 @@
 			"response": []
 		},
 		{
+			"name": "UserLocationUpdate",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "Token e23bc9ea761435c86c696bb13455b30cce4b62b9"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"created_by\" : 3,\n\t\"longitude\" : 43.319185,\n\t\"latitude\" : 21.973395\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "127.0.0.1:8000/api/v1/user_location_update/",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"v1",
+						"user_location_update",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "UserBenefitUpdate",
 			"request": {
 				"method": "PUT",
@@ -573,84 +612,6 @@
 						"api",
 						"v1",
 						"benefit_remove",
-						""
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "BlockAdd",
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Authorization",
-						"type": "text",
-						"value": "Token e23bc9ea761435c86c696bb13455b30cce4b62b9"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n\t\"created_by\":3,\n\t\"blocked\":4\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "127.0.0.1:8000/api/v1/block_add/",
-					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
-					],
-					"port": "8000",
-					"path": [
-						"api",
-						"v1",
-						"block_add",
-						""
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "BlockRemove",
-			"request": {
-				"method": "DELETE",
-				"header": [
-					{
-						"key": "Authorization",
-						"type": "text",
-						"value": "Token e23bc9ea761435c86c696bb13455b30cce4b62b9"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n\t\"created_by\" : 3,\n\t\"blocked\" : 4\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "127.0.0.1:8000/api/v1/block_remove/",
-					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
-					],
-					"port": "8000",
-					"path": [
-						"api",
-						"v1",
-						"block_remove",
 						""
 					]
 				}
