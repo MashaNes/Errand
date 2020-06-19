@@ -1,3 +1,4 @@
+import sys
 import base64
 import os.path
 import googlemaps
@@ -307,40 +308,50 @@ def calc_distance(lon1, lat1, lon2, lat2):
     return dist['rows'][0]['elements'][0]['distance']['value']
 
 def search_requests(queryset, data):
-    new_queryset = list()
-    dir_queryset = list()
-    user = models.User.objects.get(id=data['created_by'])
+    broadcast_queryset = list()
+    direct_queryset = list()
+    bdist = list()
+    ddist = list()
+    user = models.FullUser.objects.get(user__id=data['created_by'])
 
     for _q in queryset:
         to_add = True
 
-        if data['direct_user']:
-            if _q.request.direct_user.id != data['created_by']:
-                min_dist = None
-                if _q.destination and _q.destination.longitude and _q.destination.latitude:
-                    min_dist = calc_distance(data['longitude'], data['latitude'],
-                                             _q.destination.longitude, _q.destination.latitude)
+        if _q.direct_user and _q.direct_user.id == data['created_by']:
+            min_dist = None
+            if _q.destination and _q.destination.longitude and _q.destination.latitude:
+                min_dist = calc_distance(data['longitude'], data['latitude'],
+                                         _q.destination.longitude, _q.destination.latitude)
 
-                if to_add and min_dist is None:
-                    for _t in _q.requests.tasklist.all():
-                        if _t.address and _t.address.longitude and _t.address.latitude:
-                            dist = calc_distance(data['longitude'], data['latitude'],
-                                                 _t.address.longitude, _t.address.latitude)
-                            if min_dist is None or min_dist > dist:
-                                min_dist = dist
-                _q['dist'] = min_dist
-                dir_queryset.append(_q)
-                continue
+            if min_dist is None:
+                for _t in _q.tasklist.all():
+                    if _t.address and _t.address.longitude and _t.address.latitude:
+                        dist = calc_distance(data['longitude'], data['latitude'],
+                                             _t.address.longitude, _t.address.latitude)
+                        if min_dist is None or min_dist > dist:
+                            min_dist = dist
 
-        if (not data['no_rating'] and
-                _q.request.created_by.avg_rating < data['min_rating'] and
-                _q.request.created_by.min_rating >= user.avg_rating):
+            if min_dist is None:
+                min_dist = sys.maxsize
+
+            ddist.append(min_dist)
+            direct_queryset.append(_q)
+            continue
+
+        if (not data['no_rating'] and _q.created_by.avg_rating is None):
             to_add = False
 
         if to_add:
+            if ((_q.created_by.avg_rating and
+                 _q.created_by.avg_rating < data['min_rating']) or
+                    (user.user.avg_rating and
+                     user.user.avg_rating < _q.min_rating)):
+                to_add = False
+
+        if to_add and data['services']:
             for _s in data['services']:
                 found = False
-                for _t in _q.request.tasklist.all():
+                for _t in _q.tasklist.all():
                     if _s == _t.service_type.id:
                         found = True
                 if not found:
@@ -352,28 +363,24 @@ def search_requests(queryset, data):
                                      _q.destination.longitude, _q.destination.latitude)
 
         if to_add and min_dist is None:
-            for _t in _q.requests.tasklist.all():
+            for _t in _q.tasklist.all():
                 if _t.address and _t.address.longitude and _t.address.latitude:
                     dist = calc_distance(data['longitude'], data['latitude'],
                                          _t.address.longitude, _t.address.latitude)
                     if min_dist is None or min_dist > dist:
                         min_dist = dist
+                        print(min_dist)
 
-        _q['dist'] = min_dist
-
-        if min_dist < data['max_dist']:
+        if min_dist and (min_dist > data['max_dist'] or min_dist > _q.max_dist):
             to_add = False
+        if min_dist is None:
+            min_dist = sys.maxsize
 
         if to_add:
-            new_queryset.append(_q)
+            broadcast_queryset.append(_q)
+            bdist.append(min_dist)
 
-    queryset = new_queryset
-    new_queryset = list()
-
-    for _q in queryset:
-        new_queryset.append(models.Request.objects.get(id=_q.request.id))
-
-    return new_queryset, dir_queryset
+    return direct_queryset, broadcast_queryset, ddist, bdist
 
 
 def filter_requests(queryset, data):
@@ -764,15 +771,20 @@ def check_achievements(user):
                 achlvl.save()
                 user.achievements.add(achlvl)
                 user.save()
-            else:
-                if achlvl.level >= level:
-                    break
+
+                # send notification
+                notif_body, notif = create_notification(9, achlvl.id,
+                                                        achievement_en=ach.name_en,
+                                                        achievement_sr=ach.name_sr,
+                                                        level=achlvl.level)
+                send_notification(user, notif, notif_body)
+            elif achlvl.level < level:
                 achlvl.level = level
                 achlvl.save()
 
-            # send notification
-            notif_body, notif = create_notification(9, achlvl.id,
-                                                    achievement_en=ach.name_en,
-                                                    achievement_sr=ach.name_sr,
-                                                    level=achlvl.level)
-            send_notification(user, notif, notif_body)
+                # send notification
+                notif_body, notif = create_notification(9, achlvl.id,
+                                                        achievement_en=ach.name_en,
+                                                        achievement_sr=ach.name_sr,
+                                                        level=achlvl.level)
+                send_notification(user, notif, notif_body)

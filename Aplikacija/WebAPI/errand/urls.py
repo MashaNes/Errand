@@ -15,6 +15,7 @@ router.register(r'services', api_views.ServiceViewSet)
 router.register(r'filtered_users', api_views.FilterUserViewSet)
 router.register(r'user_info_filtered', api_views.UserInfoFilteredViewSet)
 router.register(r'filtered_requests', api_views.FilterRequestViewSet)
+router.register(r'search_requests', api_views.SearchRequestViewSet)
 router.register(r'request_info_filtered', api_views.RequestInfoFilteredViewSet)
 router.register(r'reports', api_views.ReportViewSet)
 

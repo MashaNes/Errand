@@ -1345,6 +1345,45 @@
 			"response": []
 		},
 		{
+			"name": "SearchRequests",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "Token e23bc9ea761435c86c696bb13455b30cce4b62b9"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"created_by\" : 5,\n\t\"services\" : [2, 3],\n\t\"min_rating\" : 3.8,\n\t\"no_rating\" : true,\n\t\"max_dist\" : 2000,\n\t\"longitude\" : 43.327190,\n\t\"latitude\" : 21.903399\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "127.0.0.1:8000/api/v1/search_requests/",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"v1",
+						"search_requests",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "RequestInfoFiltered",
 			"request": {
 				"method": "POST",

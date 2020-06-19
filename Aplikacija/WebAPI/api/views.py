@@ -736,7 +736,7 @@ class RateUser(generics.ListCreateAPIView):
 
         # send notification rating
         _cb = models.User.objects.get(id=request.data['created_by'])
-        notif_body, notif = utils.create_notification(3, rating.id,
+        notif_body, notif = utils.create_notification(8, rating.id,
                                                       first_name=_cb.first_name,
                                                       last_name=_cb.last_name,
                                                       rating=rating.grade)
@@ -944,6 +944,42 @@ class FilterRequestViewSet(viewsets.ModelViewSet):
 
         return Response(custom_response)
 
+# POST search_requests/
+class SearchRequestViewSet(viewsets.ModelViewSet):
+    queryset = models.FullRequest.objects.all()
+
+    def create(self, request):
+        self.queryset = models.Request.objects.all().order_by('-id')
+        direct, broadcast, ddist, bdist = utils.search_requests(self.queryset, request.data)
+
+        direct_serializer = serializers.RequestSerializer(direct, many=True)
+        broadcast_serializer = serializers.RequestSerializer(broadcast, many=True)
+
+        _d = direct_serializer.data
+        _d = utils.load_pictures_multiple_requests_info(_d)
+        _b = broadcast_serializer.data
+        _b = utils.load_pictures_multiple_requests_info(_b)
+
+        for direct, dist in zip(_d, ddist):
+            direct.update({'dist' : dist})
+
+        _d = sorted(_d, key=lambda x: x['dist'])
+        # _d.sort(key=lambda x: x.dist, reverse=True)
+        # _b.sort(key=lambda x: x.dist, reverse=True)
+
+        for bcast, dist in zip(_b, bdist):
+            bcast.update({'dist' : dist})
+        
+        _b = sorted(_b, key=lambda x: x['dist'])
+
+        custom_response = {
+            'count' : len(_d) + len(_b),
+            'direct' : _d,
+            'broadcast' : _b
+        }
+
+        return Response(custom_response)
+
 # PUT request_finish/
 class RequestFinish(generics.UpdateAPIView):
     def update(self, request):
@@ -977,8 +1013,8 @@ class RequestFinish(generics.UpdateAPIView):
             req.request.save()
 
         # automatic adding to benefitlist
-        uid1 = req.request.working_with
-        uid2 = req.request.created_by
+        uid1 = req.request.working_with.id
+        uid2 = req.request.created_by.id
         user1 = models.FullUser.objects.get(user__id=uid1)
         user2 = models.FullUser.objects.get(user__id=uid2)
 
@@ -992,11 +1028,11 @@ class RequestFinish(generics.UpdateAPIView):
 
         if found1 == 0 or found2 == 0:
             count = 0
-            for _r in user1.requests:
+            for _r in user1.requests.all():
                 if (_r.status == 2 and _r.working_with.id == uid2):
                     count += 1
 
-            for _r in user2.requests:
+            for _r in user2.requests.all():
                 if (_r.status == 2 and _r.working_with.id == uid1):
                     count += 1
 
@@ -1071,7 +1107,7 @@ class OfferAccept(generics.UpdateAPIView):
             return Response({'detail' : 'Offer cannot be accepted.'})
 
         # send notification offer_accepted
-        _u2 = models.FullUser.objects.get(id=req.request.accepted_offer.created_by.id)
+        _u2 = models.FullUser.objects.get(id=req.accepted_offer.created_by.id)
         notif_body, notif = utils.create_notification(3, req.request.id,
                                                       request=req.request.name)
         utils.send_notification(_u2, notif, notif_body)
@@ -1095,7 +1131,8 @@ class OfferCancel(generics.RetrieveDestroyAPIView):
                                                               request=offer.request.name)
                 utils.send_notification(_u2, notif, notif_body)
 
-            offer.edit.delete()
+            if offer.edit:
+                offer.edit.delete()
             offer.delete()
 
             return Response({'detail' : 'success'})
@@ -1446,7 +1483,7 @@ class FCMRegister(generics.CreateAPIView):
         reg_id = request.data['reg_id']
         fcm_devices = FCMDevice.objects.filter(registration_id=reg_id).count()
 
-        if fcm_devices:
+        if fcm_devices > 0:
             return Response({'detail' : 'Device already exists.'})
 
         fcm_device = FCMDevice(registration_id=reg_id,
