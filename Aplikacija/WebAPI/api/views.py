@@ -1504,6 +1504,6 @@ class FCMUnregister(generics.DestroyAPIView):
 
 class FCMTestNotification(generics.CreateAPIView):
     def create(self, request):
-        dist = utils.calc_distance(43.329291, 21.916399, 43.369190, 21.916699)
+        dist = utils.calc_distance(43.31752396, 21.89941025, 43.32719, 21.903399)
 
         return Response({'result' : dist})

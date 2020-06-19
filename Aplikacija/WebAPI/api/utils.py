@@ -305,7 +305,10 @@ def filter_reports(queryset, data):
 def calc_distance(lon1, lat1, lon2, lat2):
     gmaps = googlemaps.Client(key=DISTANCE_MATRIX_KEY)
     dist = gmaps.distance_matrix((lon1, lat1), (lon2, lat2))
-    return dist['rows'][0]['elements'][0]['distance']['value']
+    if dist['rows'][0]['elements'][0]['status'] == 'OK':
+        return dist['rows'][0]['elements'][0]['distance']['value']
+    else:
+        return sys.maxsize
 
 def search_requests(queryset, data):
     broadcast_queryset = list()
