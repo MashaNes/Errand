@@ -52,7 +52,7 @@
                     <span v-text="isSerbian ? 'Oceni korisnika' : 'Rate user'"></span>
                   </b-dropdown-item>
                   <b-dropdown-item 
-                    v-if="computedRequest.status == 1 && !isRunner"
+                    v-if="computedRequest.status == 1 && !isRunner && !computedRequest.finished_created_by"
                     @click="purpose = 'cancel'; showModalAreYouSure = true;"
                     v-b-popover.hover.bottom='isSerbian ? "Kliknite da biste prekinuli zahtev i označili da je bio neuspešan." 
                                                         : "Click to end the request and mark it as successful."' 
@@ -81,7 +81,7 @@
                     <span class="notification-span" v-text="isSerbian ? 'Vidi ponude' : 'See offers'"></span>
                   </b-dropdown-item>
                   <b-dropdown-item 
-                    v-if="computedRequest.status == 1 && !isRunner && showView == 'Details'"
+                    v-if="computedRequest.status == 1 && !isRunner && showView == 'Details' && !computedRequest.finished_created_by && !computedRequest.finished_working_with"
                     :disabled="!filteredEdits || filteredEdits.length == 0" @click="changeViewFromDetails('Edits')"
                     v-b-popover.hover.top="zahteviTekst" 
                   >
