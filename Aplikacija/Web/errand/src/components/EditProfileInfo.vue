@@ -9,19 +9,13 @@
         </div>
         <div class="media-center">
           <p class="image is-128x128"
-            @drop.prevent="onDrop"
-            @dragenter.prevent="onDragEnter"
-            @dragleave.prevent="onDragLeave" 
-            @dragover.prevent
-            @mouseenter.prevent="onDragEnter"
-            @mouseleave.prevent="onDragLeave"
+            @drop.prevent="onDrop" @dragenter.prevent="onDragEnter" @dragleave.prevent="onDragLeave" 
+            @dragover.prevent @mouseenter.prevent="onDragEnter" @mouseleave.prevent="onDragLeave"
             @click="$refs.file.click()"
           >
             <img class="rounded-image" :src="newPicture ? 'data:;base64,'+ picture : require('../assets/no-picture.png')">
             <img 
-              v-show="isDragged" 
-              :class="['rounded-image', 'semi-transparent']" 
-              src="@/assets/camera.png"
+              v-show="isDragged" :class="['rounded-image', 'semi-transparent']" src="@/assets/camera.png"
             >
           </p>
         </div>
@@ -32,69 +26,39 @@
         <div style="display:flex; flex-direction:column; align-items:center">
             <input type="file" ref="file" style="display: none" accept="image/*" @change="pictureSelected"/>
           <div>
-            <label 
-              style="margin-top: 15px;" 
-              class = "register-label" v-if="isSerbian"> Ime: </label>
-            <label 
-              style="margin-top: 15px;" 
-              class = "register-label" v-else> Name: </label>
+            <label style="margin-top: 15px;" class = "register-label" v-if="isSerbian"> Ime: </label>
+            <label style="margin-top: 15px;" class = "register-label" v-else> Name: </label>
             <div class="field">
               <input
-                v-if="isSerbian" 
-                class="input is-medium"
-                type="text"
-                placeholder="Ime"
-                @blur="$v.changedUser.first_name.$touch()"
-                v-model="changedUser.first_name"
+                v-if="isSerbian" class="input is-medium" type="text" placeholder="Ime" 
+                @blur="$v.changedUser.first_name.$touch()" v-model="changedUser.first_name"
               >
               <input
-                v-else 
-                class="input is-medium"
-                type="text"
-                placeholder="Name"
-                @blur="$v.changedUser.first_name.$touch()"
-                v-model="changedUser.first_name"
+                v-else class="input is-medium" type="text" placeholder="Name"
+                @blur="$v.changedUser.first_name.$touch()" v-model="changedUser.first_name"
               >
             </div>
             <div v-if="$v.changedUser.first_name.$error" class = "form-error">
-              <span 
-                v-if="!$v.changedUser.first_name.required"
-                class = "help is-danger"
-              > 
+              <span v-if="!$v.changedUser.first_name.required" class = "help is-danger"> 
                 <span v-if="isSerbian">Morate uneti ime</span>
                 <span v-else>Name is required </span>  
               </span>
             </div>
 
-            <label 
-              style="margin-top: 15px;" 
-              class = "register-label" v-if="isSerbian"> Prezime: </label>
-            <label 
-              style="margin-top: 15px;" 
-              class = "register-label" v-else> Last name: </label>
+            <label style="margin-top: 15px;" class = "register-label" v-if="isSerbian"> Prezime: </label>
+            <label style="margin-top: 15px;" class = "register-label" v-else> Last name: </label>
             <div class="field">
               <input 
-                v-if="isSerbian"
-                class="input is-medium"
-                type="text"
-                placeholder="Prezime"
-                @blur="$v.changedUser.last_name.$touch()"
-                v-model="changedUser.last_name"
+                v-if="isSerbian" class="input is-medium" type="text" placeholder="Prezime"
+                @blur="$v.changedUser.last_name.$touch()" v-model="changedUser.last_name"
               >
               <input 
-                v-else
-                class="input is-medium"
-                type="text"
-                placeholder="Last name"
-                @blur="$v.changedUser.last_name.$touch()"
-                v-model="changedUser.last_name"
+                v-else class="input is-medium" type="text" placeholder="Last name"
+                @blur="$v.changedUser.last_name.$touch()" v-model="changedUser.last_name"
               >
             </div>
             <div v-if="$v.changedUser.last_name.$error" class = "form-error">
-              <span 
-                v-if="!$v.changedUser.last_name.required"
-                class = "help is-danger"
-              > 
+              <span v-if="!$v.changedUser.last_name.required" class = "help is-danger"> 
                 <span v-if="isSerbian">Morate uneti prezime</span>
                 <span v-else>Last name is required </span>  
               </span>
@@ -105,38 +69,50 @@
       <div class="personal-info">
         <b-list-group >
           <b-list-group-item class="l-group-title">
-            <span v-if="isSerbian"
-              class="info-title" 
-            > Lični podaci </span>
-            <span v-else
-              class="info-title" 
-            > Personal info </span>
+            <span v-if="isSerbian" class="info-title" > Lični podaci </span>
+            <span v-else class="info-title" > Personal info </span>
 
             <div class="l-group-btns">
-              <b-button 
-                :disabled="isFormInvalid"
-                class="button is-primary title-btn"
-                @click="openModalSave = true"
-              >
+              <b-button :disabled="isFormInvalid" class="button is-primary title-btn" @click="openModalSave = true">
                 <strong v-if="isSerbian">Sačuvaj izmene</strong>
                 <strong v-else>Save changes</strong>
               </b-button>
-              <b-button 
-                class="button is-primary title-btn"
-                @click="openModalCancel = true"
-              >
+              <b-button class="button is-primary title-btn" @click="openModalCancel = true">
                 <strong v-if="isSerbian">Odbaci izmene</strong>
                 <strong v-else>Dismiss changes</strong>
               </b-button>
             </div>
           </b-list-group-item>
           <b-list-group-item>
-            <img 
-              src="@/assets/call.svg" 
-              height = "20" 
-              width = "20"
-              
-            />
+            <span v-text="isSerbian ? 'Nova lozinka' : 'New password'"></span>
+            <div class="pass-and-warning">
+              <input 
+                class="input is-medium input-full" type="password" :placeholder="isSerbian ? 'Lozinka' : 'Password'" 
+                autocomplete="new-password" v-model="newPassword" @blur="$v.newPassword.$touch()"
+              >
+              <span v-if = "!$v.newPassword.minLength" class = "help is-danger">
+                <span v-text="isSerbian ? 'Lozinka mora biti duga makar 6 karaktera' 
+                                        : 'Password must be at least 6 characters long'">  
+                </span>
+              </span>
+            </div>
+          </b-list-group-item>
+          <b-list-group-item v-if="newPassword.length > 0">
+            <span v-text="isSerbian ? 'Potvrda lozinke' : 'Password confirmation'"></span>
+            <div class="pass-and-warning">
+              <input 
+                class="input is-medium input-full" type="password" :placeholder="isSerbian ? 'Potvrda lozinke' : 'Password confirmation'" 
+                autocomplete="off" v-model="confirmPassword" @blur="$v.confirmPassword.$touch()"
+              >
+              <span v-if = "!$v.confirmPassword.sameAs" class = "help is-danger">
+                <span v-text="isSerbian ? 'Potvrda lozninke mora biti ista kao i lozinka' 
+                                        : 'Password conformation needs to be the same as the password'">  
+                </span>
+              </span>
+            </div>
+          </b-list-group-item>
+          <b-list-group-item>
+            <img src="@/assets/call.svg" height = "20" width = "20"/>
             <div class="list-value">
               <div class = "control">
                 <div class="flex-row-elements">
@@ -147,12 +123,7 @@
             
           </b-list-group-item>
           <b-list-group-item>
-            <img 
-              src="@/assets/address.svg" 
-              height = "20" 
-              width = "20"
-              
-            />
+            <img src="@/assets/address.svg" height = "20" width = "20"/>
             <div class="list-value">
               <div class="address over-flow" v-for="(a, ind) in firstAddresses" :key="ind">
                 <img src="@/assets/remove.svg" height="15" width="15" class="acc-or-remove-icon" @click="removeAddress(ind)">
@@ -164,11 +135,8 @@
               </div>
               <div class="field flex-row-elements">
                 <b-button 
-                  class="button is-primary"
-                  style="font-weight: bold;"
-                  v-text="isSerbian ? 'Dodaj adresu' : 'Add an address'"
-                  v-if="!showMapView"
-                  @click="showAddrMap"
+                  class="button is-primary" style="font-weight: bold;" v-if="!showMapView"
+                  v-text="isSerbian ? 'Dodaj adresu' : 'Add an address'" @click="showAddrMap"
                 ></b-button>
               </div>
             </div>
@@ -178,10 +146,9 @@
     </div>
     <div class="map-wrap" :class="showMapView ? 'visible' : 'invisible'">
       <AddAddressMap 
-        :HasCloseButton="true" 
+        :HasCloseButton="true" @close="handleMapClosing" 
         :StartingAddress="{name: 'Sokogradska 9, Sokobanja', latitude: 43.639696, longitude: 21.878703}"  
-        @close="handleMapClosing" 
-      />
+        />
     </div>
     <ModalAreYouSure 
       :naslovS="'Sačuvaj izmene'" 
@@ -201,7 +168,7 @@
 </template>
 
 <script>
-import {required} from "vuelidate/lib/validators"
+import {required, minLength, sameAs} from "vuelidate/lib/validators"
 import VuePhoneNumberInput from 'vue-phone-number-input';
 import 'vue-phone-number-input/dist/vue-phone-number-input.css';
 import AddAddressMap from "@/components/AddAddressMap"
@@ -241,14 +208,18 @@ export default {
       pictureChanged: false,
       openModalSave: false,
       openModalCancel: false,
-      savingChanges: false
+      savingChanges: false,
+      newPassword: "",
+      confirmPassword: ""
     }
   },
   validations: {
     changedUser: {
       last_name: { required },
       first_name: { required }
-    }
+    },
+    newPassword: { minLength: minLength(6) },
+    confirmPassword: {sameAs: sameAs("newPassword")}
   },
   computed: {
     isSerbian() {
@@ -269,7 +240,11 @@ export default {
       return this.changedAddresses.length
     },
     isFormInvalid(){
-      return this.$v.changedUser.$invalid
+      if(this.$v.changedUser.$invalid)
+        return true
+      if(this.newPassword.length > 0 && (this.$v.newPassword.$invalid || this.$v.confirmPassword.$invalid))
+        return true
+      return false
     },
     firstAddresses() {
       const lastIndex = this.changedAddresses.length;
@@ -362,10 +337,9 @@ export default {
         }
       })
 
-
-
       this.$store.state.authUser = this.changedUser
-      this.$store.dispatch('editUser', this.pictureChanged)
+      const password = this.newPassword == "" ? null : this.newPassword 
+      this.$store.dispatch('editUser', {pictureChanged: this.pictureChanged, password: password})
 
       let vm = this
       function callback() {
@@ -622,6 +596,11 @@ export default {
 
   .map-wrap {
     padding-bottom: 100px;
+  }
+
+  .pass-and-warning {
+    margin-left: 20px;
+    width: 100%;
   }
 
 @media only screen and (max-width: 750px)

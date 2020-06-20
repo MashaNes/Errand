@@ -501,7 +501,7 @@ export default new Vuex.Store({
                 }
             })
         },
-        editUser({commit}, pictureChanged) {
+        editUser({commit}, {pictureChanged, password}) {
             fetch('http://localhost:8000/api/v1/user_update/', {
                 method: 'PUT',
                 headers: {
@@ -513,7 +513,7 @@ export default new Vuex.Store({
                     "email": this.state.authUser.email,
                     "first_name": this.state.authUser.first_name,
                     "last_name": this.state.authUser.last_name,
-                    "password": null,
+                    "password": password,
                     "phone": this.state.authUser.phone,
                     "picture": pictureChanged ? this.state.authUser.picture : null,
                     "min_rating": this.state.authUser.min_rating,
