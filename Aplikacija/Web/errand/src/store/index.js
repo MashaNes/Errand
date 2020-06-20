@@ -67,7 +67,8 @@ export default new Vuex.Store({
         statistics: null,
         achievements: null,
         firebaseToken: null,
-        registeredOnFirebase: false
+        registeredOnFirebase: false,
+        firebaseOnMessageFunction: null
     },
     getters:{
         getAuthUserId(state) {
@@ -631,11 +632,6 @@ export default new Vuex.Store({
                                 this.state.ratedRequestsDoneBy.results[indexRated].rated_working_with = true
                             }
                         }
-                        this.dispatch('testNotification', {
-                            receiver: data.rated_user.id, 
-                            message: "Korisnik " + this.state.authUser.first_name + " " 
-                                    + this.state.authUser.last_name + " Vas je ocenio ocenom " + filters.grade
-                        })
                     })
                 }
                 else {
@@ -875,6 +871,10 @@ export default new Vuex.Store({
         },
         logoutUser()
         {
+            //const tokenCopy = this.state.token
+            //const firebaseTokenCopy = this.state.firebaseToken
+            //this.dispatch('unregisterFromFirebase', {token: tokenCopy, firebaseToken: firebaseTokenCopy})
+
             fetch("http://127.0.0.1:8000/api/v1/logout/",
             {
                 method: 'PUT',
@@ -918,6 +918,8 @@ export default new Vuex.Store({
                         this.state.ratedRequestsDoneBy = null
                         this.state.registeredOnFirebase = false
                         this.state.firebaseToken = null
+                        this.state.firebaseOnMessageFunction = null
+                        
                         Vue.cookie.delete('id');
                         Vue.cookie.delete('token');
                         Vue.cookie.delete('ime');
@@ -1883,6 +1885,7 @@ export default new Vuex.Store({
                 });
         },
         firebaseRegister({commit}, token) {
+            this.state.firebaseToken = token
             fetch("http://127.0.0.1:8000/api/v1/fcm_register/", {
                 method: 'POST',
                 headers: {
@@ -1891,7 +1894,7 @@ export default new Vuex.Store({
                 },
                 body:  JSON.stringify( {
                     "created_by" : this.state.authUser.id,
-                    "dev_id" : 222222333,
+                    "dev_id" : null,
                     "reg_id" : String(token)
                 })
             }).then(p => {
@@ -1900,6 +1903,29 @@ export default new Vuex.Store({
                         console.log(data)
                         console.log("registered with firebase token")
                         this.state.registeredOnFirebase = true
+                    })
+                }
+                else {
+                    console.log("error")
+                }
+            })
+        },
+        unregisterFromFirebase({commit}) {
+            this.state.firebaseOnMessageFunction()
+            fetch("http://127.0.0.1:8000/api/v1/fcm_unregister/", {
+                method: 'DELETE',
+                headers: {
+                    "Content-type" : "application/json",
+                    "Authorization" : "Token " + this.state.token
+                },
+                body:  JSON.stringify( {
+                    "reg_id" : this.state.firebaseToken
+                })
+            }).then(p => {
+                if(p.ok) {
+                    p.json().then(data => {
+                        console.log(data)
+                        this.dispatch('logoutUser')
                     })
                 }
                 else {

@@ -257,8 +257,11 @@
                     console.log(err)
                 })
 
-                this.$messaging.onMessage(function(data) {
-                    console.log(data.notification.body)
+                // eslint-disable-next-line no-unused-vars
+                this.$store.state.firebaseOnMessageFunction = this.$messaging.onMessage(function(data) {
+                    // eslint-disable-next-line no-debugger
+                    //debugger
+                    console.log(data)
                 })
             }
         }

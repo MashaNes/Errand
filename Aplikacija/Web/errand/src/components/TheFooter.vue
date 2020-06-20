@@ -148,6 +148,10 @@
       {
         this.$store.state.logedIn = false
         this.$router.push('/');
+        if(this.isAdmin)
+            this.$store.dispatch("logoutUser")
+        else
+            this.$store.dispatch("unregisterFromFirebase")  
       },
       goToProfile()
       {

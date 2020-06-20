@@ -17,3 +17,10 @@ var config = {
 firebase.initializeApp(config);
 
 let messaging = firebase.messaging();
+messaging.setBackgroundMessageHandler(function(payload) {
+    const title = "New notification / Nova notifikacija"
+    const options = {
+        body: payload
+    }
+    return self.registration.showNotification(title, options)
+})
