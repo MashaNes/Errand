@@ -256,7 +256,8 @@ def filter_user_info(serializer, data):
     if data['achievements']:
         response = serializer['achievements']
         for _r in response:
-            _r['icon'] = load_img(_r['icon'])
+            _r['achievement']['icon'] = load_img(_r['achievement']['icon'])
+            _r['user']['picture'] = load_img(_r['user']['picture'])
         return response
 
     if data['requests']:
