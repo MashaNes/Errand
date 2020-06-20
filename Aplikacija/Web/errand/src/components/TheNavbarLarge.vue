@@ -175,7 +175,10 @@ export default {
       {
         this.$store.state.logedIn = false
         this.$router.push('/')
-        this.$store.dispatch("logoutUser")        
+        if(this.isAdmin)
+            this.$store.dispatch("logoutUser")
+        else
+            this.$store.dispatch("unregisterFromFirebase")        
       },
       goToProfile()
       {
