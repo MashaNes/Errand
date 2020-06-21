@@ -38,6 +38,14 @@ export default {
       this.$store.state.authUser = this.user
       this.$store.state.logedIn = true
       this.$store.state.isAdmin = this.$cookie.get('admin')
+      if(!this.$store.state.isAdmin || this.$store.state.isAdmin == "false") 
+      {
+        this.$store.state.firebaseToken = this.$cookie.get('firebaseToken')
+        this.$store.state.registeredOnFirebase = true
+        this.$store.state.firebaseOnMessageFunction = this.$messaging.onMessage(function(data) {
+          console.log(data)
+        })
+      }
       this.user.token = this.$cookie.get('token');
       this.user.id = this.$cookie.get('id');
       this.$store.dispatch("getUserById", this.user)
