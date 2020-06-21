@@ -1885,6 +1885,7 @@ export default new Vuex.Store({
                 });
         },
         firebaseRegister({commit}, token) {
+            Vue.cookie.set('firebaseToken', token, { expires: '1h' })
             this.state.firebaseToken = token
             fetch("http://127.0.0.1:8000/api/v1/fcm_register/", {
                 method: 'POST',
@@ -1979,7 +1980,7 @@ export default new Vuex.Store({
                     }
                 })
             }
-            if(state.overAuthRequests) {
+            if(state.overAuthRequests && state.overAuthRequests.results) {
                 state.overAuthRequests.results.map(req => {
                     if(req.created_by && req.created_by.id == user.id) {
                         req.created_by = user

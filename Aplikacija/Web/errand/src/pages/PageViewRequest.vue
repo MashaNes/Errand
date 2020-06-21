@@ -8,26 +8,18 @@
             <div class="title-start">
               <span style="margin-right: 10px;">{{computedRequest.name}}</span>
               <div class="dropdown-and-important ">
-                <img v-if="isSerbian && finishedOtherUser && !isRunner && computedRequest.status == 1" 
+                <img v-if="(finishedOtherUser || finishedThisUser) && computedRequest.status == 1" 
                     src="@/assets/exclamation.png" class="important-img"
-                    v-b-popover.hover.bottom='"Vaš saradnik na ovom zahtevu pokrenuo je proces okončanja zahteva. " + 
-                                                "Izaberite opciju \"Uspešno okončaj zahtev\" u akcijama kako biste dovršili ovaj " 
-                                                + "proces i označili uspešan kraj saradnje."'/>
-                <img v-if="!isSerbian && finishedOtherUser && !isRunner && computedRequest.status == 1"
+                    v-b-popover.hover.bottom='popoverText'/>
+                <!-- <img v-if="!isSerbian && finishedOtherUser && !isRunner && computedRequest.status == 1"
                     src="@/assets/exclamation.png" class="important-img"
-                    v-b-popover.hover.bottom='"Your partner in this request has started the procces of ending the request. " + 
-                                                "Choose the \"Successfully end request\" option in the actions dropdown " +  
-                                                "to finish the process and mark the collaboration as successful."'/>
+                    v-b-popover.hover.bottom='popoverText'/>
                 <img v-if="isSerbian && finishedThisUser && !isRunner && computedRequest.status == 1" 
                     src="@/assets/exclamation.png" class="important-img"
-                    v-b-popover.hover.bottom='"Pokrenuli ste proces okončanja zahteva. " + 
-                                              "Da bi se ovaj proces dovršio i da bi zahtev bio označen kao uspešan, morate sačekati " 
-                                                + "da Vaš saradnik na ovom zahtevu potvrdi uspešno okončanje."'/>
+                    v-b-popover.hover.bottom='popoverText'/>
                 <img v-if="!isSerbian && finishedThisUser && !isRunner && computedRequest.status == 1"
                     src="@/assets/exclamation.png" class="important-img"
-                    v-b-popover.hover.bottom='"You have started the process of ending the request. " + 
-                                                "In order for this proccess to finish and mark the collaboration as successful, you must wait " +  
-                                                "for your partner to confirm the successful ending of this request."'/>
+                    v-b-popover.hover.bottom='popoverText'/> -->
                 <b-dropdown id="dropdown-1" variant="info" right class="drop-down">
                   <template v-slot:button-content>
                     <span v-text="isSerbian ? 'Akcije' : 'Actions'"></span>
@@ -493,6 +485,48 @@ export default {
       if(!this.computedRequest.created_by || this.computedRequest.created_by.id == this.$store.state.authUser.id)
         return false
       else return true
+    },
+    popoverText() {
+      if(this.finishedThisUser) {
+        if(this.isSerbian)
+          return "Pokrenuli ste proces okončanja zahteva. " + 
+                 "Da bi se ovaj proces dovršio i da bi zahtev bio označen kao uspešan, morate sačekati " 
+                 + "da Vaš saradnik na ovom zahtevu potvrdi uspešno okončanje."
+        else
+          return "You have started the process of ending the request. " + 
+                 "In order for this proccess to finish and mark the collaboration as successful, you must wait " +  
+                 "for your partner to confirm the successful ending of this request."
+      }
+
+      else if(this.finishedOtherUser) {
+        if(!this.isRunner) {
+          if(this.isSerbian) {
+              return "Vaš saradnik na ovom zahtevu pokrenuo je proces okončanja zahteva. " + 
+                    "Izaberite opciju \"Uspešno okončaj zahtev\" u akcijama kako biste dovršili ovaj " 
+                    + "proces i označili uspešan kraj saradnje."
+          }
+          else {
+              return "Your partner in this request has started the procces of ending the request. " + 
+                  "Choose the \"Successfully end request\" option in the actions dropdown " +  
+                  "to finish the process and mark the collaboration as successful."
+          }
+        }
+        else {
+          if(this.isSerbian) {
+            return "Vaš saradnik na ovom zahtevu pokrenuo je proces okončanja zahteva. " + 
+                    "Da biste dovršili ovaj proces i označili uspešan kraj saradnje kao izvršilac, " +
+                    "morate preuzeti Android aplikaciju."
+          }
+          else {
+            return "Your partner in this request has started the procces of ending the request. " + 
+                  "To finish the process and, as a runner in this requests, mark the collaboration as successful, " + 
+                  "you have to download the Android application."
+          }
+        }
+      }
+
+      else return ""
+
     },
     paymentType() {
       let returnValue = ""
