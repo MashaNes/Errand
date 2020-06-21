@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:background="@color/colorWhite"
+	android:padding="8dp"
+	android:orientation="vertical">
+
+	<TextView
+		android:id="@+id/dialog_edit_benefits_name"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:textSize="@dimen/text_medium"
+		android:textColor="@color/colorBlack"/>
+
+	<LinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="28dp"
+		android:layout_marginTop="12dp"
+		android:orientation="horizontal"
+		android:background="@drawable/edit_text_login">
+
+		<TextView
+			android:id="@+id/dialog_edit_benefits_label"
+			android:text="@string/settings_runner_benefits_benefit"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			style="@style/TextView.Service"
+			android:layout_marginStart="8dp"
+			android:layout_marginLeft="8dp"/>
+
+		<EditText
+			android:id="@+id/dialog_edit_benefits_amount"
+			android:inputType="numberDecimal"
+			android:layout_width="0dp"
+			android:layout_height="match_parent"
+			android:layout_weight="1"
+			style="@style/EditText.Login"
+			android:paddingStart="8dp"
+			android:paddingEnd="8dp"
+			android:importantForAutofill="no"
+			tools:ignore="NestedWeights" />
+	</LinearLayout>
+
+	<androidx.constraintlayout.widget.ConstraintLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_marginTop="12dp">
+
+		<Button
+			android:id="@+id/dialog_button_positive"
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:layout_marginEnd="8dp"
+			android:text="@string/generic_save"
+			style="?android:attr/borderlessButtonStyle"
+			app:layout_constraintStart_toStartOf="parent"
+			app:layout_constraintEnd_toStartOf="@id/dialog_button_negative"
+			tools:ignore="MissingConstraints,RtlCompat" />
+
+		<Button
+			android:id="@+id/dialog_button_negative"
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:layout_marginStart="8dp"
+			android:text="@string/generic_cancel"
+			style="?android:attr/borderlessButtonStyle"
+			app:layout_constraintEnd_toEndOf="parent"
+			app:layout_constraintStart_toEndOf="@id/dialog_button_positive"
+			android:layout_marginLeft="8dp"
+			tools:ignore="MissingConstraints" />
+	</androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>

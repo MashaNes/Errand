@@ -25,9 +25,10 @@ public class SettingsFragment extends Fragment {
 
         MainActivity activity = ((MainActivity) getActivity());
         if (activity == null) return root;
+        activity.setFragment(this);
 
         fragments.clear();
-        for (int i = 0; i < 3; i++)
+        for (int i = 0; i < 2; i++)
             fragments.add(new SettingsListFragment(i));
 
         ViewPager pager = root.findViewById(R.id.view_pager);
@@ -39,8 +40,7 @@ public class SettingsFragment extends Fragment {
 
         activity.setupTabs(pager, new int[] {
                 R.drawable.ic_notifications_white,
-                R.drawable.ic_walk,
-                R.drawable.ic_block
+                R.drawable.ic_settings_white
         });
 
         return root;

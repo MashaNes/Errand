@@ -23,7 +23,7 @@ public class NetRequest {
 	public void success() {}
 	public void error() {}
 
-	protected NetRequest(String url, String type) {
+	public NetRequest(String url, String type) {
 		this.url = url;
 		this.type = type;
 	}

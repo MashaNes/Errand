@@ -50,9 +50,11 @@ public class RatingAdapter extends BaseAdapter {
 
 		Rating rating = ratings.get(position);
 
-		((TextView) view.findViewById(R.id.rating_name)).setText(rating.getName());
+		String name = rating.getUser().getFirstName() + " " + rating.getUser().getLastName();
+		((TextView) view.findViewById(R.id.rating_name)).setText(name);
+		((ImageView) view.findViewById(R.id.rating_image)).setImageBitmap(rating.getUser().getPicture_bmp());
 
-		if (rating.getComment().isEmpty()) {
+		if (rating.getComment() == null || rating.getComment().isEmpty()) {
 			view.findViewById(R.id.rating_comment).setVisibility(View.GONE);
 		} else {
 			view.findViewById(R.id.rating_comment).setVisibility(View.VISIBLE);

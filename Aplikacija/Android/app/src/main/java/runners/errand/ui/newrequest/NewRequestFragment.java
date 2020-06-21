@@ -13,8 +13,6 @@ import androidx.viewpager.widget.ViewPager;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 
@@ -23,10 +21,6 @@ import runners.errand.R;
 import runners.errand.adapter.CustomPagerAdapter;
 import runners.errand.model.Request;
 import runners.errand.model.Task;
-import runners.errand.model.User;
-import runners.errand.ui.profile.AchievementsFragment;
-import runners.errand.ui.profile.InfoFragment;
-import runners.errand.ui.profile.RatingsFragment;
 import runners.errand.utils.dialogs.SimpleDialog;
 import runners.errand.utils.net.NetManager;
 import runners.errand.utils.net.NetRequest;
@@ -42,6 +36,7 @@ public class NewRequestFragment extends Fragment {
 
         final MainActivity activity = ((MainActivity) getActivity());
         if (activity == null) return root;
+        activity.setFragment(this);
 
         fragments.clear();
         fragments.add(new NR1Fragment());
@@ -141,5 +136,9 @@ public class NewRequestFragment extends Fragment {
         } else {
             fab.setImageDrawable(getResources().getDrawable(R.drawable.ic_goto_white));
         }
+    }
+
+    void addressChanged() {
+        ((NR3Fragment) fragments.get(2)).loadDirect();
     }
 }

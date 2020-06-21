@@ -34,6 +34,7 @@ public class ProfileFragment extends Fragment {
 
 		MainActivity activity = ((MainActivity) getActivity());
         if (activity == null) return root;
+		activity.setFragment(this);
 
 		fragments.clear();
         fragments.add(new InfoFragment());

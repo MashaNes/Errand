@@ -16,6 +16,12 @@ public class Benefit {
 		if (user != null) this.user = new User(user);
 	}
 
+	public Benefit(int id, User user, double discount) {
+		this.id = id;
+		this.user = user;
+		this.discount = discount;
+	}
+
 	public int getId() {
 		return id;
 	}
@@ -26,5 +32,13 @@ public class Benefit {
 
 	public double getDiscount() {
 		return discount;
+	}
+
+	public void setDiscount(double discount) {
+		this.discount = discount;
+	}
+
+	public void setId(int id) {
+		this.id = id;
 	}
 }

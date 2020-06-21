@@ -1,18 +1,129 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
-	xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:tools="http://schemas.android.com/tools"
 	android:layout_width="match_parent"
-	android:layout_height="match_parent">
-
-	<TimePicker
-		android:visibility="gone"
-		android:layout_width="match_parent"
-		android:layout_height="match_parent"/>
+	android:layout_height="match_parent"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	android:padding="8dp"
+	android:orientation="vertical">
 
 	<LinearLayout
 		android:layout_width="match_parent"
-		android:layout_height="wrap_content">
-
-
+		android:layout_height="wrap_content"
+		android:orientation="horizontal">
+		<TextView
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_weight="1"
+			android:textColor="@color/colorBlack"
+			android:gravity="center_horizontal"
+			android:text="From"/>
+		<TextView
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_weight="1"
+			android:textColor="@color/colorBlack"
+			android:gravity="center_horizontal"
+			android:text="Until"/>
 	</LinearLayout>
-</FrameLayout>
+
+	<LinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:orientation="horizontal"
+		android:baselineAligned="false">
+
+		<LinearLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:orientation="horizontal"
+			android:layout_gravity="start"
+			android:layout_weight="1"
+			android:gravity="center_horizontal">
+
+			<NumberPicker
+				android:id="@+id/dialog_time_from_hours"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:descendantFocusability="blocksDescendants"
+				android:focusable="false" />
+
+			<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text=":"
+				android:padding="1dp"
+				android:textColor="@color/colorBlack"
+				android:layout_gravity="center_vertical"
+				tools:ignore="HardcodedText" />
+
+			<NumberPicker
+				android:id="@+id/dialog_time_from_minutes"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:descendantFocusability="blocksDescendants"
+				android:focusable="false"/>
+		</LinearLayout>
+
+		<LinearLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:orientation="horizontal"
+			android:layout_gravity="end"
+			android:layout_weight="1"
+			android:gravity="center_horizontal">
+
+			<NumberPicker
+				android:id="@+id/dialog_time_until_hours"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:descendantFocusability="blocksDescendants"
+				android:focusable="false"/>
+
+			<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text=":"
+				android:textColor="@color/colorBlack"
+				android:padding="1dp"
+				android:layout_gravity="center"
+				tools:ignore="HardcodedText" />
+
+			<NumberPicker
+				android:id="@+id/dialog_time_until_minutes"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:descendantFocusability="blocksDescendants"
+				android:focusable="false"/>
+		</LinearLayout>
+	</LinearLayout>
+
+	<androidx.constraintlayout.widget.ConstraintLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_marginTop="12dp">
+
+		<Button
+			android:id="@+id/dialog_button_positive"
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:layout_marginEnd="8dp"
+			android:text="@string/generic_save"
+			style="?android:attr/borderlessButtonStyle"
+			app:layout_constraintStart_toStartOf="parent"
+			app:layout_constraintEnd_toStartOf="@id/dialog_button_negative"
+			tools:ignore="MissingConstraints,RtlCompat" />
+
+		<Button
+			android:id="@+id/dialog_button_negative"
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:layout_marginStart="8dp"
+			android:text="@string/generic_cancel"
+			style="?android:attr/borderlessButtonStyle"
+			app:layout_constraintEnd_toEndOf="parent"
+			app:layout_constraintStart_toEndOf="@id/dialog_button_positive"
+			android:layout_marginLeft="8dp"
+			tools:ignore="MissingConstraints" />
+	</androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>

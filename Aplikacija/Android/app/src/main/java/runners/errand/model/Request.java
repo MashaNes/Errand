@@ -15,24 +15,23 @@ import java.util.Locale;
 public class Request {
     public static final int
             STATUS_PENDING = 0,
-            STATUS_PAUSED = 1,
-            STATUS_ACTIVE = 2,
-            STATUS_COMPLETED = 3,
-            STATUS_CANCELED = 4;
+            STATUS_ACTIVE = 1,
+            STATUS_COMPLETED = 2,
+            STATUS_CANCELED = 3;
 
-    private int id, status, locationStatus, requestType, directId;
+    private int id, status, locationStatus, requestType, dist, directId;
     private double maxDistance, minRating;
     private Date time;
     private String name, note;
-    private boolean pictureRequired;
-    private boolean broadcast;
+    private boolean pictureRequired, ratedCreatedBy, ratedWorkingWith, finishedCreatedBy, finishedWorkingWith;
+    private boolean broadcast = true;
     private Service service;
     private Address destination;
     private ArrayList<String> pictures = new ArrayList<>();
     private ArrayList<Task> tasks = new ArrayList<>();
     private ArrayList<Offer> offers = new ArrayList<>();
-    private Offer acceptedOffer;
-    private User createdBy;
+    private Offer acceptedOffer, myOffer;
+    private User createdBy, workingWith, direct;
     private Rating rating;
 
     public Request() {};
@@ -75,6 +74,12 @@ public class Request {
             }
         }
 
+        JSONObject workingWith = o.optJSONObject("working_with");
+        if (workingWith != null) this.workingWith = new User(workingWith);
+
+        JSONObject directUser = o.optJSONObject("direct_user");
+        if (directUser != null) this.direct = new User(directUser);
+
         JSONObject rating = o.optJSONObject("rating");
         if (rating != null) this.rating = new Rating(rating);
 
@@ -93,10 +98,15 @@ public class Request {
 
         this.pictureRequired = o.optBoolean("picture_required");
         this.broadcast = o.optBoolean("broadcast");
+        this.ratedCreatedBy = o.optBoolean("rated_created_by");
+        this.ratedWorkingWith = o.optBoolean("rated_working_with");
+        this.finishedCreatedBy = o.optBoolean("finished_created_by");
+        this.finishedWorkingWith = o.optBoolean("finished_working_with");
         this.note = o.optString("note");
         this.requestType = o.optInt("request_type");
         this.maxDistance = o.optDouble("max_dist");
         this.minRating = o.optDouble("min_rating");
+        this.dist = o.optInt("dist");
     }
 
     public int getId() {
@@ -179,11 +189,91 @@ public class Request {
         this.minRating = minRating;
     }
 
+    public int getDist() {
+        return dist;
+    }
+
+    public void setDist(int dist) {
+        this.dist = dist;
+    }
+
+    public ArrayList<Offer> getOffers() {
+        return offers;
+    }
+
+    public void setOffers(ArrayList<Offer> offers) {
+        this.offers = offers;
+    }
+
+    public Offer getAcceptedOffer() {
+        return acceptedOffer;
+    }
+
+    public void setAcceptedOffer(Offer acceptedOffer) {
+        this.acceptedOffer = acceptedOffer;
+    }
+
+    public User getWorkingWith() {
+        return workingWith;
+    }
+
+    public void setWorkingWith(User workingWith) {
+        this.workingWith = workingWith;
+    }
+
+    public User getDirect() {
+        return direct;
+    }
+
+    public void setDirect(User direct) {
+        this.direct = direct;
+    }
+
     public int getDirectId() {
         return directId;
     }
 
     public void setDirectId(int directId) {
         this.directId = directId;
+    }
+
+    public Offer getMyOffer() {
+        return myOffer;
+    }
+
+    public void setMyOffer(Offer myOffer) {
+        this.myOffer = myOffer;
+    }
+
+    public boolean isRatedCreatedBy() {
+        return ratedCreatedBy;
+    }
+
+    public void setRatedCreatedBy(boolean ratedCreatedBy) {
+        this.ratedCreatedBy = ratedCreatedBy;
+    }
+
+    public boolean isRatedWorkingWith() {
+        return ratedWorkingWith;
+    }
+
+    public void setRatedWorkingWith(boolean ratedWorkingWith) {
+        this.ratedWorkingWith = ratedWorkingWith;
+    }
+
+    public boolean isFinishedCreatedBy() {
+        return finishedCreatedBy;
+    }
+
+    public void setFinishedCreatedBy(boolean finishedCreatedBy) {
+        this.finishedCreatedBy = finishedCreatedBy;
+    }
+
+    public boolean isFinishedWorkingWith() {
+        return finishedWorkingWith;
+    }
+
+    public void setFinishedWorkingWith(boolean finishedWorkingWith) {
+        this.finishedWorkingWith = finishedWorkingWith;
     }
 }

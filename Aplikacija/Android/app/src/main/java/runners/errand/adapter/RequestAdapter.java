@@ -77,7 +77,6 @@ public class RequestAdapter extends BaseAdapter {
         }
 
         switch (request.getStatus()) {
-            case Request.STATUS_PAUSED:
             case Request.STATUS_PENDING:
                 image.setImageResource(R.drawable.ic_status_pending);
                 image.setContentDescription(context.getString(R.string.image_cd_request_status) + ": pending");

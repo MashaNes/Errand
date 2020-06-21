@@ -1,6 +1,7 @@
 package runners.errand.ui.notifications;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,15 +21,15 @@ import runners.errand.model.Notification;
 import runners.errand.ui.profile.ProfileFragment;
 
 public class NotificationsListFragment extends Fragment {
-	private static final String
-			SIS_KEY_INDEX = "runners.errand.ui.notifications.index";
+	private static final String SIS_KEY_INDEX = "runners.errand.ui.notifications.index";
 
 	private MainActivity activity;
-
+	private NotificationAdapter adapter;
+	private ListView list;
 	private int index;
     private String title;
 
-	private ArrayList<Notification> notifications;
+	private ArrayList<Notification> notifications = new ArrayList<>();
 
     public NotificationsListFragment() {
         // Required empty public constructor
@@ -62,23 +63,9 @@ public class NotificationsListFragment extends Fragment {
 
         ((TextView) root.findViewById(R.id.page_title)).setText(title);
 
-		if (notifications == null) {
-			notifications = new ArrayList<>();
-			// TODO: Notification categories
-			for (Notification n : activity.getUser().getNotifications()) {
-				if (index == 0 && n.getCategory() == 0)
-					notifications.add(n);
-				else if (index == 1 && n.getCategory() == 1)
-					notifications.add(n);
-				else if (index == 2 && n.getCategory() >= 2)
-					notifications.add(n);
-			}
-		}
-
-		ListView list = root.findViewById(R.id.list_view);
-		final NotificationAdapter adapter = new NotificationAdapter(activity, notifications);
+		list = root.findViewById(R.id.list_view);
+		adapter = new NotificationAdapter(activity, notifications);
         list.setAdapter(adapter);
-        if (notifications.size() <= 0) list.setVisibility(View.GONE);
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -88,14 +75,7 @@ public class NotificationsListFragment extends Fragment {
 				Bundle args = new Bundle();
 
 				switch (n.getCategory()) {
-					case Notification.CATEGORY_OFFER_ACCEPTED:
-					case Notification.CATEGORY_OFFER_DECLINED:
-					case Notification.CATEGORY_OFFER_DIRECT_REQUEST:
-					case Notification.CATEGORY_REQUEST_SUCCESS:
-					case Notification.CATEGORY_REQUEST_FAILURE:
-						// TODO: Get request id from notification and open request fragment
-						break;
-					case Notification.CATEGORY_NEW_RATING:
+					case Notification.CATEGORY_RATING:
 						args.putInt(ProfileFragment.ARG_KEY_TAB_SELECT, 1);
 						activity.navigateTo(R.id.nav_page_profile, args);
 						break;
@@ -107,6 +87,8 @@ public class NotificationsListFragment extends Fragment {
 			}
 		});
 
+		loadData();
+
         return root;
     }
 
@@ -114,5 +96,20 @@ public class NotificationsListFragment extends Fragment {
 	public void onSaveInstanceState(@NonNull Bundle outState) {
 		outState.putInt(SIS_KEY_INDEX, index);
 		super.onSaveInstanceState(outState);
+	}
+
+	public void loadData() {
+		Log.e("BR", index + "");
+		notifications.clear();
+		for (Notification n : activity.getUser().getNotifications()) {
+			if (index == 0 && (n.getCategory() == 2 || n.getCategory() == 5))
+				notifications.add(n);
+			else if (index == 1 && (n.getCategory() == 0 || n.getCategory() == 3 || n.getCategory() == 4 || n.getCategory() == 6 || n.getCategory() == 7))
+				notifications.add(n);
+			else if (index == 2 && (n.getCategory() == 1 || n.getCategory() == 8 || n.getCategory() == 9 || n.getCategory() == 10))
+				notifications.add(n);
+		}
+		adapter.notifyDataSetChanged();
+		if (notifications.size() <= 0) list.setVisibility(View.GONE);
 	}
 }

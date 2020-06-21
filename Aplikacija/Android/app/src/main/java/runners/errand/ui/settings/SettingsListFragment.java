@@ -1,6 +1,7 @@
 package runners.errand.ui.settings;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,11 +23,13 @@ import java.util.Locale;
 import runners.errand.MainActivity;
 import runners.errand.R;
 import runners.errand.adapter.SettingsAdapter;
+import runners.errand.model.Benefit;
 import runners.errand.model.Notification;
 import runners.errand.model.Service;
 import runners.errand.model.ServicePrefs;
 import runners.errand.model.Setting;
 import runners.errand.model.WorkingHours;
+import runners.errand.utils.Alarms;
 import runners.errand.utils.PreferenceManager;
 import runners.errand.utils.dialogs.SimpleDialog;
 import runners.errand.utils.net.NetManager;
@@ -91,18 +94,25 @@ public class SettingsListFragment extends Fragment {
 		title.setText(R.string.settings_notifications);
 
 		settings.add(new Setting(
-				Notification.CATEGORY_NEW_RATING,
-				getString(R.string.settings_notifications_new_rating),
-				getString(R.string.settings_notifications_new_rating_desc),
-				PreferenceManager.KEY_NEW_RATING,
-				getNotificationSettingDrawableId(PreferenceManager.KEY_NEW_RATING)));
+				Notification.CATEGORY_REQUEST_DIRECT,
+				getString(R.string.settings_notifications_request_direct),
+				getString(R.string.settings_notifications_request_direct_desc),
+				PreferenceManager.KEY_REQUEST_DIRECT,
+				getNotificationSettingDrawableId(PreferenceManager.KEY_REQUEST_DIRECT)));
 
 		settings.add(new Setting(
-				Notification.CATEGORY_ACHIEVEMENT,
-				getString(R.string.settings_notifications_achievement),
-				getString(R.string.settings_notifications_achievement_desc),
-				PreferenceManager.KEY_ACHIEVEMENT,
-				getNotificationSettingDrawableId(PreferenceManager.KEY_ACHIEVEMENT)));
+				Notification.CATEGORY_REQUEST_FAILED,
+				getString(R.string.settings_notifications_request_failed),
+				getString(R.string.settings_notifications_request_failed_desc),
+				PreferenceManager.KEY_REQUEST_FAILED,
+				getNotificationSettingDrawableId(PreferenceManager.KEY_REQUEST_FAILED)));
+
+		settings.add(new Setting(
+				Notification.CATEGORY_OFFER_CREATED,
+				getString(R.string.settings_notifications_offer_created),
+				getString(R.string.settings_notifications_offer_created_desc),
+				PreferenceManager.KEY_OFFER_CREATED,
+				getNotificationSettingDrawableId(PreferenceManager.KEY_OFFER_CREATED)));
 
 		settings.add(new Setting(
 				Notification.CATEGORY_OFFER_ACCEPTED,
@@ -112,25 +122,46 @@ public class SettingsListFragment extends Fragment {
 				getNotificationSettingDrawableId(PreferenceManager.KEY_OFFER_ACCEPTED)));
 
 		settings.add(new Setting(
-				Notification.CATEGORY_OFFER_DECLINED,
-				getString(R.string.settings_notifications_offer_declined),
-				getString(R.string.settings_notifications_offer_declined_desc),
-				PreferenceManager.KEY_OFFER_DECLINED,
-				getNotificationSettingDrawableId(PreferenceManager.KEY_OFFER_DECLINED)));
+				Notification.CATEGORY_OFFER_CANCELED,
+				getString(R.string.settings_notifications_offer_canceled),
+				getString(R.string.settings_notifications_offer_canceled_desc),
+				PreferenceManager.KEY_OFFER_CANCELED,
+				getNotificationSettingDrawableId(PreferenceManager.KEY_OFFER_CANCELED)));
 
 		settings.add(new Setting(
-				Notification.CATEGORY_OFFER_REQUEST_CANCELED,
-				getString(R.string.settings_notifications_offer_request_canceled),
-				getString(R.string.settings_notifications_offer_request_canceled_desc),
-				PreferenceManager.KEY_OFFER_REQUEST_CANCELED,
-				getNotificationSettingDrawableId(PreferenceManager.KEY_OFFER_REQUEST_CANCELED)));
+				Notification.CATEGORY_EDIT_CREATED,
+				getString(R.string.settings_notifications_edit_created),
+				getString(R.string.settings_notifications_edit_created_desc),
+				PreferenceManager.KEY_EDIT_CREATED,
+				getNotificationSettingDrawableId(PreferenceManager.KEY_EDIT_CREATED)));
 
 		settings.add(new Setting(
-				Notification.CATEGORY_OFFER_DIRECT_REQUEST,
-				getString(R.string.settings_notifications_request_direct),
-				getString(R.string.settings_notifications_request_direct_desc),
-				PreferenceManager.KEY_OFFER_DIRECT_REQUEST,
-				getNotificationSettingDrawableId(PreferenceManager.KEY_OFFER_DIRECT_REQUEST)));
+				Notification.CATEGORY_EDIT_ACCEPTED,
+				getString(R.string.settings_notifications_edit_accepted),
+				getString(R.string.settings_notifications_edit_accepted_desc),
+				PreferenceManager.KEY_EDIT_ACCEPTED,
+				getNotificationSettingDrawableId(PreferenceManager.KEY_EDIT_ACCEPTED)));
+
+		settings.add(new Setting(
+				Notification.CATEGORY_EDIT_CANCELED,
+				getString(R.string.settings_notifications_edit_canceled),
+				getString(R.string.settings_notifications_edit_canceled_desc),
+				PreferenceManager.KEY_EDIT_CANCELED,
+				getNotificationSettingDrawableId(PreferenceManager.KEY_EDIT_CANCELED)));
+
+		settings.add(new Setting(
+				Notification.CATEGORY_RATING,
+				getString(R.string.settings_notifications_rating),
+				getString(R.string.settings_notifications_rating_desc),
+				PreferenceManager.KEY_RATING,
+				getNotificationSettingDrawableId(PreferenceManager.KEY_RATING)));
+
+		settings.add(new Setting(
+				Notification.CATEGORY_ACHIEVEMENT,
+				getString(R.string.settings_notifications_achievement),
+				getString(R.string.settings_notifications_achievement_desc),
+				PreferenceManager.KEY_ACHIEVEMENT,
+				getNotificationSettingDrawableId(PreferenceManager.KEY_ACHIEVEMENT)));
 
 		settings.add(new Setting(
 				Notification.CATEGORY_REQUEST_SUCCESS,
@@ -139,12 +170,7 @@ public class SettingsListFragment extends Fragment {
 				PreferenceManager.KEY_REQUEST_SUCCESS,
 				getNotificationSettingDrawableId(PreferenceManager.KEY_REQUEST_SUCCESS)));
 
-		settings.add(new Setting(
-				Notification.CATEGORY_REQUEST_FAILURE,
-				getString(R.string.settings_notifications_request_failure),
-				getString(R.string.settings_notifications_request_failure_desc),
-				PreferenceManager.KEY_REQUEST_FAILURE,
-				getNotificationSettingDrawableId(PreferenceManager.KEY_REQUEST_FAILURE)));
+
 
 		list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
@@ -196,7 +222,7 @@ public class SettingsListFragment extends Fragment {
 
 		list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
-			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+			public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
 				switch (othersPage) {
 					case 0:
 						// Main page
@@ -229,17 +255,55 @@ public class SettingsListFragment extends Fragment {
 						});
 						break;
 					case 2:
-						// Working hours item click
+						WorkingHours hours = activity.getUser().getWorkingHours(position);
+						boolean update = true;
+						if (hours == null) {
+							update = false;
+							hours = new WorkingHours(position);
+						}
+						final boolean finalUpdate = update;
+						final WorkingHours finalHours = hours;
+						SimpleDialog.buildEditWorkingHoursDialog(activity, finalHours, new Runnable() {
+							@Override
+							public void run() {
+								if (finalUpdate) {
+									apiUpdateWorkingHours(finalHours);
+								} else {
+									apiAddWorkingHours(finalHours);
+								}
+							}
+						});
 						break;
 					case 3:
-						// Benefits item click
+						if (position == 0) {
+							final AutoBenefit autoBenefit;
+							if (Float.isNaN(activity.getUser().getBenefitDiscount())) {
+								autoBenefit = new AutoBenefit(3, 0.2f);
+							} else {
+								autoBenefit = new AutoBenefit(activity.getUser().getBenefitRequirements(), activity.getUser().getBenefitDiscount());
+							}
+							SimpleDialog.buildEditAutoBenefitDialog(activity, autoBenefit, new Runnable() {
+								@Override
+								public void run() {
+									apiUpdateAutoBenefit(autoBenefit);
+								}
+							});
+						} else {
+							final Benefit benefit = activity.getUser().getBenefits().get(position - 1);
+							SimpleDialog.buildEditBenefitDialog(activity, benefit, new Runnable() {
+								@Override
+								public void run() {
+									apiUpdateBenefit(benefit, position - 1);
+								}
+							});
+						}
 						break;
 				}
 			}
 		});
 		list.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
 			@Override
-			public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+			public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
 				switch (othersPage) {
 					case 1:
 						Service service = activity.getServices().get(position);
@@ -260,12 +324,30 @@ public class SettingsListFragment extends Fragment {
 						}
 						break;
 					case 2:
-						// Delete working hours
+						final WorkingHours hours = activity.getUser().getWorkingHours(position);
+						SimpleDialog.buildSelectDialog(activity, getString(R.string.settings_runner_hours_clear), getString(R.string.settings_runner_hours_clear_desc), getString(R.string.generic_yes), getString(R.string.generic_no), new Runnable() {
+							@Override
+							public void run() {
+								apiDeleteWorkingHours(hours);
+							}
+						}, null);
 						break;
 					case 3:
-						// First item is user info benefits requirement & discount for auto add
-						if (position > 0) {
-							// Remove item from benefits
+						if (position == 0) {
+							SimpleDialog.buildSelectDialog(activity, getString(R.string.settings_runner_benefits_clear), getString(R.string.settings_runner_benefits_clear_desc), getString(R.string.generic_yes), getString(R.string.generic_no), new Runnable() {
+								@Override
+								public void run() {
+									apiUpdateAutoBenefit(new AutoBenefit(-1, -1));
+								}
+							}, null);
+						} else {
+							final Benefit benefit = activity.getUser().getBenefits().get(position - 1);
+							SimpleDialog.buildSelectDialog(activity, getString(R.string.settings_runner_benefits_clear), getString(R.string.settings_runner_benefits_clear_desc), getString(R.string.generic_yes), getString(R.string.generic_no), new Runnable() {
+								@Override
+								public void run() {
+									apiDeleteBenefit(benefit, position - 1);
+								}
+							}, null);
 						}
 						break;
 				}
@@ -367,13 +449,6 @@ public class SettingsListFragment extends Fragment {
 					R.drawable.ic_edit));
 		}
 
-		list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-			@Override
-			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				SimpleDialog.buildEditWorkingHoursDialog(activity);
-			}
-		});
-
 		adapter.notifyDataSetChanged();
 	}
 
@@ -388,13 +463,17 @@ public class SettingsListFragment extends Fragment {
 
 		String body = getString(R.string.settings_runner_benefits_auto_desc);
 		body += "\n";
-		body += getString(R.string.settings_runner_benefits_discount);
-		body += ": ";
-		body += activity.getUser().getBenefitDiscount();
-		body += "\n";
-		body += getString(R.string.settings_runner_benefits_requirement);
-		body += ": ";
-		body += activity.getUser().getBenefitRequirements();
+		if (Float.isNaN(activity.getUser().getBenefitDiscount())) {
+			body += getString(R.string.settings_runner_benefits_not_setup);
+		} else {
+			body += getString(R.string.settings_runner_benefits_discount);
+			body += ": ";
+			body += activity.getUser().getBenefitDiscount();
+			body += "\n";
+			body += getString(R.string.settings_runner_benefits_requirement);
+			body += ": ";
+			body += activity.getUser().getBenefitRequirements();
+		}
 		settings.add(new Setting(
 				-1,
 				getString(R.string.settings_runner_benefits_auto),
@@ -402,7 +481,14 @@ public class SettingsListFragment extends Fragment {
 				null,
 				R.drawable.ic_edit));
 
-		// TODO
+		for (Benefit benefit : activity.getUser().getBenefits()) {
+			settings.add(new Setting(
+					benefit.getId(),
+					benefit.getUser().getFirstName() + " " + benefit.getUser().getLastName(),
+					getString(R.string.settings_runner_benefits_discount) + ": " + benefit.getDiscount(),
+					null,
+					R.drawable.ic_edit));
+		}
 
 		adapter.notifyDataSetChanged();
 	}
@@ -500,5 +586,166 @@ public class SettingsListFragment extends Fragment {
 		netRequest.putParam("created_by", activity.getUser().getId());
 		netRequest.putParam("service", prefs.getId());
 		NetManager.add(netRequest);
+	}
+
+	private void apiUpdateBenefit(final Benefit benefit, final int position) {
+		NetRequest netRequest = new NetRequest(NetManager.getApiServer() + NetManager.API_BENEFIT_UPDATE, NetManager.PUT) {
+			@Override
+			public void success() {
+				super.success();
+				activity.getUser().getBenefits().set(position, benefit);
+				loadBenefitSettings();
+			}
+
+			@Override
+			public void error() {
+				super.error();
+				SimpleDialog.buildMessageDialog(activity, getString(R.string.error), getString(R.string.error_generic_api), "", null);
+			}
+		};
+		netRequest.putParam("created_by", activity.getUser().getId());
+		netRequest.putParam("benefit", benefit.getId());
+		netRequest.putParam("discount", benefit.getDiscount());
+		NetManager.add(netRequest);
+	}
+
+	private void apiDeleteBenefit(final Benefit benefit, final int position) {
+		NetRequest netRequest = new NetRequest(NetManager.getApiServer() + NetManager.API_BENEFIT_REMOVE, NetManager.DELETE) {
+			@Override
+			public void success() {
+				super.success();
+				activity.getUser().getBenefits().remove(position);
+				loadBenefitSettings();
+			}
+
+			@Override
+			public void error() {
+				super.error();
+				SimpleDialog.buildMessageDialog(activity, getString(R.string.error), getString(R.string.error_generic_api), "", null);
+			}
+		};
+		netRequest.putParam("created_by", activity.getUser().getId());
+		netRequest.putParam("benefit_user", benefit.getUser().getId());
+		NetManager.add(netRequest);
+	}
+
+	private void apiUpdateAutoBenefit(final AutoBenefit autoBenefit) {
+		NetRequest netRequest = new NetRequest(NetManager.getApiServer() + NetManager.API_BENEFIT_AUTO, NetManager.PUT) {
+			@Override
+			public void success() {
+				super.success();
+				if (autoBenefit.req == -1) {
+					activity.getUser().setBenefitDiscount(Float.NaN);
+					activity.getUser().setBenefitRequirements(0);
+				} else {
+					activity.getUser().setBenefitDiscount(autoBenefit.disc);
+					activity.getUser().setBenefitRequirements(autoBenefit.req);
+				}
+				loadBenefitSettings();
+			}
+
+			@Override
+			public void error() {
+				super.error();
+				SimpleDialog.buildMessageDialog(activity, getString(R.string.error), getString(R.string.error_generic_api), "", null);
+			}
+		};
+		netRequest.putParam("created_by", activity.getUser().getId());
+		if (autoBenefit.req == -1) {
+			netRequest.putNull("benefit_discount");
+			netRequest.putNull("benefit_requirement");
+		} else {
+			netRequest.putParam("benefit_discount", autoBenefit.disc);
+			netRequest.putParam("benefit_requirement", autoBenefit.req);
+		}
+		NetManager.add(netRequest);
+	}
+
+	private void apiAddWorkingHours(final WorkingHours hours) {
+		NetRequest netRequest = new NetRequest(NetManager.getApiServer() + NetManager.API_WORKING_HOURS_ADD, NetManager.POST) {
+			@Override
+			public void success() {
+				super.success();
+				try {
+					JSONObject o = new JSONObject(getResult().getMsg());
+					hours.setId(o.optInt("id"));
+					activity.getUser().getWorkingHours().add(hours);
+					loadWorkingHoursSettings();
+					Alarms.add(activity, hours);
+				} catch (JSONException e) {
+					e.printStackTrace();
+					SimpleDialog.buildMessageDialog(activity, getString(R.string.error), getString(R.string.error_generic_api), "", null);
+				}
+			}
+
+			@Override
+			public void error() {
+				super.error();
+				SimpleDialog.buildMessageDialog(activity, getString(R.string.error), getString(R.string.error_generic_api), "", null);
+			}
+		};
+		netRequest.putParam("created_by", activity.getUser().getId());
+		netRequest.putParam("day", hours.getDay());
+		netRequest.putParam("work_from", hours.getFrom());
+		netRequest.putParam("work_until", hours.getUntil());
+		NetManager.add(netRequest);
+	}
+
+	private void apiUpdateWorkingHours(final WorkingHours hours) {
+		NetRequest netRequest = new NetRequest(NetManager.getApiServer() + NetManager.API_WORKING_HOURS_UPDATE, NetManager.PUT) {
+			@Override
+			public void success() {
+				super.success();
+				for (WorkingHours h : activity.getUser().getWorkingHours()) {
+					if (h.getDay() == hours.getDay()) h = hours;
+				}
+				Alarms.remove(activity, hours);
+				Alarms.add(activity, hours);
+				loadWorkingHoursSettings();
+			}
+
+			@Override
+			public void error() {
+				super.error();
+				SimpleDialog.buildMessageDialog(activity, getString(R.string.error), getString(R.string.error_generic_api), "", null);
+			}
+		};
+		netRequest.putParam("created_by", activity.getUser().getId());
+		netRequest.putParam("working_hours", hours.getId());
+		netRequest.putParam("day", hours.getDay());
+		netRequest.putParam("work_from", hours.getFrom());
+		netRequest.putParam("work_until", hours.getUntil());
+		NetManager.add(netRequest);
+	}
+
+	private void apiDeleteWorkingHours(final WorkingHours hours) {
+		NetRequest netRequest = new NetRequest(NetManager.getApiServer() + NetManager.API_WORKING_HOURS_REMOVE, NetManager.DELETE) {
+			@Override
+			public void success() {
+				super.success();
+				activity.getUser().getWorkingHours().remove(hours);
+				Alarms.remove(activity, hours);
+				loadWorkingHoursSettings();
+			}
+
+			@Override
+			public void error() {
+				super.error();
+				SimpleDialog.buildMessageDialog(activity, getString(R.string.error), getString(R.string.error_generic_api), "", null);
+			}
+		};
+		netRequest.putParam("created_by", activity.getUser().getId());
+		netRequest.putParam("working_hours", hours.getId());
+		NetManager.add(netRequest);
+	}
+
+	public static class AutoBenefit {
+		public int req;
+		public float disc;
+
+		private AutoBenefit(int req, float disc) {
+			this.req = req;
+			this.disc = disc;
+		}
 	}
 }

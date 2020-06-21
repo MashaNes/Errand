@@ -13,15 +13,17 @@ public class PreferenceManager {
 	public static final String KEY_SERVER_IP = "runners.errand.utils.PreferenceManager.KEY_SERVER_IP";
 
 	public static final String GROUP_SETTINGS = "runners.errand.utils.PreferenceManager.GROUP_SETTINGS";
-	public static final String KEY_NEW_RATING = "runners.errand.utils.PreferenceManager.KEY_NEW_RATING";
-	public static final String KEY_ACHIEVEMENT = "runners.errand.utils.PreferenceManager.KEY_ACHIEVEMENT";
+	public static final String KEY_REQUEST_DIRECT = "runners.errand.utils.PreferenceManager.KEY_REQUEST_DIRECT";
+	public static final String KEY_REQUEST_FAILED = "runners.errand.utils.PreferenceManager.KEY_REQUEST_FAILED";
+	public static final String KEY_OFFER_CREATED = "runners.errand.utils.PreferenceManager.KEY_OFFER_CREATED";
 	public static final String KEY_OFFER_ACCEPTED = "runners.errand.utils.PreferenceManager.KEY_OFFER_ACCEPTED";
-	public static final String KEY_OFFER_DECLINED = "runners.errand.utils.PreferenceManager.KEY_OFFER_DECLINED";
-	public static final String KEY_OFFER_REQUEST_CANCELED = "runners.errand.utils.PreferenceManager.KEY_OFFER_REQUEST_CANCELED";
-	public static final String KEY_OFFER_DIRECT_REQUEST = "runners.errand.utils.PreferenceManager.KEY_OFFER_DIRECT_REQUEST";
+	public static final String KEY_OFFER_CANCELED = "runners.errand.utils.PreferenceManager.KEY_OFFER_CANCELED";
+	public static final String KEY_EDIT_CREATED = "runners.errand.utils.PreferenceManager.KEY_EDIT_CREATED";
+	public static final String KEY_EDIT_ACCEPTED = "runners.errand.utils.PreferenceManager.KEY_EDIT_ACCEPTED";
+	public static final String KEY_EDIT_CANCELED = "runners.errand.utils.PreferenceManager.KEY_EDIT_CANCELED";
+	public static final String KEY_RATING = "runners.errand.utils.PreferenceManager.KEY_RATING";
+	public static final String KEY_ACHIEVEMENT = "runners.errand.utils.PreferenceManager.KEY_ACHIEVEMENT";
 	public static final String KEY_REQUEST_SUCCESS = "runners.errand.utils.PreferenceManager.KEY_REQUEST_SUCCESS";
-	public static final String KEY_REQUEST_FAILURE = "runners.errand.utils.PreferenceManager.KEY_REQUEST_FAILURE";
-	public static final String KEY_REQUEST_DIRECT_REJECTED = "runners.errand.utils.PreferenceManager.KEY_REQUEST_DIRECT_REJECTED";
 
 	public static void putString(Context context, String group, String key, String value) {
 		SharedPreferences.Editor editor = context.getSharedPreferences(group, Context.MODE_PRIVATE).edit();

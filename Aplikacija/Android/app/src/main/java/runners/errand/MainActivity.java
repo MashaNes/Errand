@@ -2,17 +2,21 @@ package runners.errand;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.location.Criteria;
 import android.location.LocationManager;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -26,18 +30,25 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 import androidx.viewpager.widget.ViewPager;
 
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.tabs.TabLayout;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
+import com.google.firebase.messaging.RemoteMessage;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -45,16 +56,20 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
+import runners.errand.firebase.MessagingService;
+import runners.errand.model.Notification;
+import runners.errand.model.Offer;
+import runners.errand.model.Request;
 import runners.errand.model.Service;
 import runners.errand.model.User;
+import runners.errand.services.LocationService;
+import runners.errand.ui.notifications.NotificationsFragment;
+import runners.errand.ui.requests.RequestsFragment;
 import runners.errand.utils.Static;
 import runners.errand.utils.dialogs.SimpleDialog;
-import runners.errand.utils.PreferenceManager;
 import runners.errand.utils.net.NetManager;
 import runners.errand.utils.net.NetRequest;
 import runners.errand.utils.net.NetResult;
-
-import static android.app.Notification.EXTRA_NOTIFICATION_ID;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 	public static final int PERMISSION_LOCATION = 0, PERMISSION_STORAGE = 1;
@@ -66,6 +81,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private DrawerLayout drawer;
     private TabLayout tabs;
 	private Toolbar toolbar;
+	private Fragment fragment;
+	private String fcmToken;
+
+	private MenuItem statusMenuItem;
 
 	private Activity activity;
 	public boolean active = false;
@@ -130,6 +149,57 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // toolbar.setNavigationIcon(R.drawable.ic_achievements);
 
 		user = Static.user;
+//		loadOfferRequests();
+
+		FirebaseInstanceId.getInstance().getInstanceId()
+				.addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
+					@Override
+					public void onComplete(@NonNull Task<InstanceIdResult> task) {
+						if (!task.isSuccessful() || task.getResult() == null) {
+							Log.w("FCM", "getInstanceId failed", task.getException());
+							return;
+						}
+
+						// Get new Instance ID token
+						fcmToken = task.getResult().getToken();
+
+						NetRequest netRequest = new NetRequest(NetManager.getApiServer() + NetManager.API_FCM_REGISTER, NetManager.POST);
+						netRequest.putParam("created_by", Static.user.getId());
+						netRequest.putParam("dev_id", 123);
+						netRequest.putParam("reg_id", fcmToken);
+						NetManager.add(netRequest);
+					}
+				});
+
+		// Location service broadcast receiver
+		LocalBroadcastManager.getInstance(this).registerReceiver(new BroadcastReceiver() {
+			@Override
+			public void onReceive(Context context, Intent intent) {
+				int newStatus = intent.getIntExtra(LocationService.ACTION_BROADCAST_EXTRA_STATUS, User.STATUS_NOT_RUNNING);
+				if (newStatus != user.getStatus()) {
+					user.setStatus(newStatus);
+					updateMenuItemRun(false, false);
+				}
+			}
+		}, new IntentFilter(LocationService.ACTION_BROADCAST_STATUS_CHANGED));
+
+		// Notification broadcast receiver
+		LocalBroadcastManager.getInstance(this).registerReceiver(new BroadcastReceiver() {
+			@Override
+			public void onReceive(Context context, Intent intent) {
+				user.getNotifications().add(0, new Notification(
+						intent.getIntExtra(MessagingService.NOTIFICATION_EXTRA_ID, -1),
+						intent.getIntExtra(MessagingService.NOTIFICATION_EXTRA_TYPE_ID, -1),
+						intent.getIntExtra(MessagingService.NOTIFICATION_EXTRA_CATEGORY, -1),
+						intent.getStringExtra(MessagingService.NOTIFICATION_EXTRA_TITLE),
+						intent.getStringExtra(MessagingService.NOTIFICATION_EXTRA_BODY),
+						intent.getStringExtra(MessagingService.NOTIFICATION_EXTRA_TIME)
+				));
+				if (fragment instanceof NotificationsFragment) {
+					((NotificationsFragment) fragment).loadData();
+				}
+			}
+		}, new IntentFilter(MessagingService.ACTION_BROADCAST_NOTIFICATION));
     }
 
 	@Override
@@ -167,12 +237,25 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 			navigationView.setCheckedItem(item.getItemId());
 			navController.navigate(item.getItemId());
 		} else {
-			NetManager.clearToken(activity);
-			Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
-			intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-			startActivity(intent);
-		}
+			NetRequest netRequest = new NetRequest(NetManager.getApiServer() + NetManager.API_FCM_UNREGISTER, NetManager.DELETE) {
+				@Override
+				public void success() {
+					super.success();
+					NetManager.clearToken(activity);
+					stopService(new Intent(activity, LocationService.class));
+					Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+					intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+					startActivity(intent);
+				}
 
+				@Override
+				public void error() {
+					super.error();
+				}
+			};
+			netRequest.putParam("reg_id", fcmToken);
+			NetManager.add(netRequest);
+		}
         return false;
     }
 
@@ -236,35 +319,63 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 				permissionsRun(new Runnable() {
 					@Override
 					public void run() {
-						LocationManager locationManager = (LocationManager) activity.getSystemService(Context.LOCATION_SERVICE);
-						if (locationManager != null) {
-							String provider = locationManager.getBestProvider(new Criteria(), true);
-							if (provider != null && (provider.equals(LocationManager.GPS_PROVIDER) || provider.equals(LocationManager.NETWORK_PROVIDER))) {
-								Log.e("LM", provider);
-								user.setStatus(user.getStatus() == User.STATUS_RUNNING ? User.STATUS_NOT_RUNNING : User.STATUS_RUNNING);
-								updateMenuItemRun(item);
-								return;
+						if (user.getStatus() == User.STATUS_RUNNING) {
+							user.setStatus(User.STATUS_NOT_RUNNING);
+							updateMenuItemRun(true, true);
+						} else {
+							LocationManager locationManager = (LocationManager) activity.getSystemService(Context.LOCATION_SERVICE);
+							if (locationManager != null) {
+								String provider = locationManager.getBestProvider(new Criteria(), true);
+								if (provider != null && (provider.equals(LocationManager.GPS_PROVIDER) || provider.equals(LocationManager.NETWORK_PROVIDER))) {
+									Log.e("LM", provider);
+									user.setStatus(User.STATUS_RUNNING);
+									updateMenuItemRun(true, true);
+									return;
+								}
 							}
+							SimpleDialog.buildMessageDialog(activity, getString(R.string.error), getString(R.string.error_location_required), "lm/MA-L", null);
 						}
-						SimpleDialog.buildMessageDialog(activity, getString(R.string.error), getString(R.string.error_location_required), "lm/MA-L", null);
 					}
 				});
 				return false;
             }
         });
-
-        updateMenuItemRun(menu.getItem(0));
+		statusMenuItem = menu.getItem(0);
+        updateMenuItemRun(false, true);
         return true;
     }
 
-    private void updateMenuItemRun(MenuItem item) {
-        if (user.getStatus() == User.STATUS_RUNNING) {
-            item.getIcon().setColorFilter(new PorterDuffColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.colorGreen), PorterDuff.Mode.MULTIPLY));
-            item.setTitle(R.string.action_run_stop);
-        } else {
-            item.getIcon().clearColorFilter();
-            item.setTitle(R.string.action_run_start);
-        }
+	private boolean isMyServiceRunning() {
+		ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+		if (manager != null) {
+			for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+				if (LocationRequest.class.getName().equals(service.service.getClassName())) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+    private void updateMenuItemRun(boolean update, boolean service) {
+    	if (statusMenuItem == null) return;
+    	if (update) {
+			apiSetStatus(statusMenuItem, user.getStatus());
+		} else {
+			if (user.getStatus() == User.STATUS_RUNNING) {
+				statusMenuItem.getIcon().setColorFilter(new PorterDuffColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.colorGreen), PorterDuff.Mode.MULTIPLY));
+				statusMenuItem.setTitle(R.string.action_run_stop);
+				if (!isMyServiceRunning() && service) {
+					Intent intent = new Intent(this, LocationService.class);
+					intent.putExtra("id", user.getId());
+					startService(intent);
+				}
+			} else {
+				statusMenuItem.getIcon().clearColorFilter();
+				statusMenuItem.setTitle(R.string.action_run_start);
+				stopService(new Intent(this, LocationService.class));
+			}
+		}
     }
 
     @Override
@@ -320,6 +431,103 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		NetManager.add(netRequest);
 	}
 
+	private void apiSetStatus(final MenuItem item, int status) {
+    	NetRequest netRequest = new NetRequest(NetManager.getApiServer() + NetManager.API_USER_STATUS_UPDATE, NetManager.PUT) {
+			@Override
+			public void success() {
+				try {
+					if (new JSONObject(getResult().getMsg()).optString("detail").equals("success")) {
+						updateMenuItemRun(false, true);
+					}
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+				super.success();
+			}
+
+			@Override
+			public void error() {
+				super.error();
+			}
+		};
+    	netRequest.putParam("created_by", user.getId());
+    	netRequest.putParam("status", status);
+    	NetManager.add(netRequest);
+	}
+
+	public void loadOfferRequests() {
+    	NetRequest netRequest = new NetRequest(NetManager.getApiServer() + NetManager.API_USERS_INFO_FILTERED, NetManager.POST) {
+			@Override
+			public void success() {
+				super.success();
+				try {
+					JSONObject o = new JSONObject(getResult().getMsg());
+					JSONArray results = o.optJSONArray("results");
+					if (results != null) {
+						user.getOffers().clear();
+						for (int i = 0; i < results.length(); i++) {
+							user.getOffers().add(new Offer(results.optJSONObject(i)));
+						}
+						user.getRunning().clear();
+						Log.e("OFFERS", user.getOffers().size() + "");
+						for (int i = 0; i < user.getOffers().size(); i++) {
+							apiGetRequest(user.getOffers().get(i), i == user.getOffers().size() - 1);
+						}
+					}
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+			}
+
+			@Override
+			public void error() {
+				super.error();
+			}
+		};
+    	netRequest.putParam("created_by", user.getId());
+		netRequest.putParam("blocked", false);
+		netRequest.putParam("working_hours", false);
+		netRequest.putParam("addresses", false);
+		netRequest.putParam("services", false);
+		netRequest.putParam("offers", true);
+		netRequest.putParam("notifications", false);
+		netRequest.putParam("ratings", false);
+		netRequest.putParam("benefitlist", false);
+		netRequest.putParam("achievements", false);
+		netRequest.putParam("requests", false);
+    	NetManager.add(netRequest);
+	}
+
+	private void apiGetRequest(final Offer offer, final boolean last) {
+		Log.e("OFFERS", "Request: " + offer.getRequest() + ", " + last);
+    	NetRequest netRequest = new NetRequest(NetManager.getApiServer() + NetManager.API_REQUESTS + offer.getRequest() + "/", NetManager.GET) {
+			@Override
+			public void success() {
+				super.success();
+				try {
+					JSONObject o = new JSONObject(getResult().getMsg());
+					JSONObject request = o.optJSONObject("request");
+					if (request != null) {
+						Request r = new Request(request);
+						r.setMyOffer(offer);
+						user.getRunning().add(r);
+					}
+					if (last && fragment instanceof RequestsFragment) {
+						((RequestsFragment) fragment).loadData();
+					}
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+			}
+
+			@Override
+			public void error() {
+				super.error();
+			}
+		};
+    	NetManager.add(netRequest);
+	}
+
     public ArrayList<Service> getServices() { return services; }
 
     public void navigateTo(int id) {
@@ -329,4 +537,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 	public void navigateTo(int id, Bundle args) {
 		navController.navigate(id, args);
 	}
+
+	public void setFragment(Fragment fragment) { this.fragment = fragment; }
 }

@@ -1,5 +1,6 @@
 package runners.errand.ui.requests;
 
+import android.media.audiofx.LoudnessEnhancer;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -21,6 +22,7 @@ import runners.errand.R;
 import runners.errand.adapter.RequestAdapter;
 import runners.errand.model.Request;
 import runners.errand.ui.request.RequestFragment;
+import runners.errand.utils.Static;
 
 public class RequestsListFragment extends Fragment {
 	private static final String SIS_KEY_INDEX = "runners.errand.ui.requests.index";
@@ -111,6 +113,7 @@ public class RequestsListFragment extends Fragment {
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				Bundle bundle = new Bundle();
 				bundle.putInt(RequestFragment.ARG_KEY_REQUEST_ID, requests.get(position).getId());
+				Static.request = requests.get(position);
 				activity.navigateTo(R.id.nav_page_request, bundle);
 				activity.setTitle(R.string.menu_requests);
 			}
@@ -122,9 +125,13 @@ public class RequestsListFragment extends Fragment {
     private void loadRequests() {
 		requests.clear();
 		for (Request r : activity.getUser().getRequests()) {
-			if (index == 0 && r.getStatus() <= Request.STATUS_ACTIVE && r.getCreatedBy().getId() == activity.getUser().getId())
+			if (index == 0 && r.getStatus() <= Request.STATUS_ACTIVE)
 				requests.add(r);
-			if (index == 1 && r.getStatus() <= Request.STATUS_ACTIVE && r.getCreatedBy().getId() != activity.getUser().getId())
+			if (index == 2 && r.getStatus() > Request.STATUS_ACTIVE)
+				requests.add(r);
+		}
+		for (Request r : activity.getUser().getRunning()) {
+			if (index == 1 && r.getStatus() <= Request.STATUS_ACTIVE)
 				requests.add(r);
 			if (index == 2 && r.getStatus() > Request.STATUS_ACTIVE)
 				requests.add(r);
@@ -133,7 +140,6 @@ public class RequestsListFragment extends Fragment {
 
     void dataSetChanged() {
 		loadRequests();
-		Log.e("ERROR", index + " " + requests.size() + " - ");
 		adapter.notifyDataSetChanged();
 		if (requests.size() <= 0) noItems.setVisibility(View.VISIBLE);
 		else noItems.setVisibility(View.GONE);

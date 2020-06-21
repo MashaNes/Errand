@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "1000133791657",
+    "firebase_url": "https://swe-errand.firebaseio.com",
+    "project_id": "swe-errand",
+    "storage_bucket": "swe-errand.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1000133791657:android:a83a45f9652cb5f04fbeb8",
+        "android_client_info": {
+          "package_name": "runners.errand"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1000133791657-78bml02b97co614umd1hhi842c3r2fcv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCyd570B5TNoMSX87QoMdbopc-IQaUyuvM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1000133791657-78bml02b97co614umd1hhi842c3r2fcv.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

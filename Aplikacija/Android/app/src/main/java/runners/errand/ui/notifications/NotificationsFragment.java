@@ -24,6 +24,7 @@ public class NotificationsFragment extends Fragment {
 
 		MainActivity activity = ((MainActivity) getActivity());
         if (activity == null) return root;
+        activity.setFragment(this);
 
         fragments.clear();
         for (int i = 0; i < 3; i++)
@@ -43,5 +44,11 @@ public class NotificationsFragment extends Fragment {
         });
 
         return root;
+    }
+
+    public void loadData() {
+	    for (Fragment fragment : fragments) {
+            ((NotificationsListFragment) fragment).loadData();
+        }
     }
 }

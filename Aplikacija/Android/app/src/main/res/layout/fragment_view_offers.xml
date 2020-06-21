@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:orientation="vertical"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent">
+
+	<TextView
+		android:id="@+id/page_title"
+		android:text="@string/request_tab_view_offers"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		style="@style/TextView.Header"/>
+
+	<TextView
+		android:id="@+id/no_offers"
+		android:visibility="gone"
+		android:text="@string/no_requests"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:textAlignment="center"
+		android:padding="16dp"
+		android:gravity="center_horizontal"
+		android:textSize="16sp"/>
+
+	<ListView
+		android:id="@+id/list_offers"
+		android:layout_weight="1"
+		android:layout_width="match_parent"
+		android:layout_height="0dp"/>
+
+	<Button
+		android:id="@+id/find_requests_status_cancel"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		style="?android:attr/borderlessButtonStyle"
+		android:layout_gravity="center"
+		android:text="@string/generic_cancel" />
+</LinearLayout>

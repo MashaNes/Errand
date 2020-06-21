@@ -15,49 +15,26 @@ public class Application extends MultiDexApplication {
 
 // TODO:
 
-// 	- Request
-//		- Show destination - DONE
-//	- Settings
-//		- Service defaults - DONE
-//		- Working hours
-//		- Benefits
-//	- Profile dialog
-//		- Show info - DONE (Needs more customisation for buttons)
-//		- Block user
-//		- Report user
-//	- Requests
-//		- Refresh on pull down - DONE
-//		- Refresh on load if bundle "refresh" is true - DONE?
-//	- Create request
-//		- On address long click, show full address name in a toast (same as in Profile) - DONE
-//		- Add destination address (optional?) - DONE
-//		- Broadcast - DONE
-//		- Add direct request - DONE
-//			- Choose weather to show only active users or not
-//		- Check required fields on create
-//		- Create request - DONE
-//	- Find request
-//		- Tab 1: Filter
-//		- Tab 2: Broadcast
-//		- Tab 3: Direct
-//	- Firebase
-//	- Redesign request item
-//		- Request item for Find requests
-//		- Don't repeat services if multiple tasks have same service - DONE
-
-// TODO Location Service:
-
-//	- Location service on active ??? Maybe not needed, since we're using geofencing for request locations, maybe for distance matrix server can request location through Firebase??
-
-// TODO Links:
-
-//	- Showing notifications https://developer.android.com/training/notify-user/build-notification
-//	- Firebase https://firebase.google.com/docs/android/setup
-//	- Doze https://developer.android.com/training/monitoring-device-state/doze-standby
+// 	- Request:
+//		- Upload pictures
+//	- Register required fields ?
+//	- Check required fields on create ?
+// 	- Unregister firebase token on logout ?
+//	- Achievements ?
+//	- Calculate payment based on kilometers traveled and time spent
+// 	- Make notifications open all the stuff, send nav id and tab index in bundle extra thing
 
 // TODO API:
 
-// 	- Filter request by distance & rating
-//	- Distance matrix
-//	- Update just benefits requirement & discount from user info
-//	- Notifications endpoints????
+//	- Search requests:
+//		- No route by distance matrix in api = don't return it
+//		- Should not return ones that user has already sent an offer to or have status > 0
+//		- Not getting any broadcast requests, maybe distance calc problem, direct request has max int distance even tho the lat and lng values seem correct
+//	- Filter users:
+//		- Return distance from requests addresses
+//	- Notifications:
+//		- Direct request has request_id instead of request_name.
+//	- Request:
+//		- Start request (Runner has to manually start request changing status to active because of distance and time measuring for per payment types), accepting an offer still sets working_with and accepted_offer, also starting location needs to be set with this endpoint
+//		- Change location_status to int array for tracking order of tasks with location completed for per km payment type (for per hour user existing time field that isn't used anymore)
+// 	- Add estimated time to complete to offers?

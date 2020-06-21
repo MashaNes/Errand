@@ -1,8 +1,9 @@
 <resources>
 	<string name="app_name">Errand</string>
 
-	<string name="google_api_key">AIzaSyDCQIiJU1NFcdJF0gSqCsQ9FRtPP-OgL34</string>
-	
+	<string name="default_notification_channel_id" translatable="false">9s8hrf7hf2uh7</string>
+	<string name="default_notification_channel_name" translatable="false">Errand</string>
+
 	<string name="navigation_drawer_open">Open navigation drawer</string>
 	<string name="navigation_drawer_close">Close navigation drawer</string>
 
@@ -10,7 +11,7 @@
 	<string name="action_run_stop">Stop running</string>
 
 	<string name="generic_loading">Loading…</string>
-	<string name="generic_ok">OK</string>
+	<string name="generic_ok" translatable="false">OK</string>
 	<string name="generic_yes">Yes</string>
 	<string name="generic_no">No</string>
 	<string name="generic_save">Save</string>
@@ -23,14 +24,18 @@
 	<string name="generic_inactive">Inactive</string>
 	<string name="generic_select">Select</string>
 	<string name="generic_deselect">Deselect</string>
+	<string name="generic_unrated">Unrated</string>
+	<string name="generic_search">Search</string>
+	<string name="generic_rate">Rate</string>
+	<string name="generic_complete">Complete</string>
 
-	<string name="autofill_email">emailAddress</string>
-	<string name="autofill_password">password</string>
-	<string name="autofill_new_password">newPassword</string>
-	<string name="autofill_name">personGivenName</string>
-	<string name="autofill_lastname">personFamilyName</string>
-	<string name="autofill_address">postalAddress</string>
-	<string name="autofill_phone">phone</string>
+	<string name="autofill_email" translatable="false">emailAddress</string>
+	<string name="autofill_password" translatable="false">password</string>
+	<string name="autofill_new_password" translatable="false">newPassword</string>
+	<string name="autofill_name" translatable="false">personGivenName</string>
+	<string name="autofill_lastname" translatable="false">personFamilyName</string>
+	<string name="autofill_address" translatable="false">postalAddress</string>
+	<string name="autofill_phone" translatable="false">phone</string>
 
 	<string name="login_email">Email</string>
 	<string name="login_pass">Password</string>
@@ -87,7 +92,9 @@
 
 	<string name="request_tab_info">Info</string>
 	<string name="request_tab_map">Map</string>
-	<string name="request_tab_messages">Messages</string>
+	<string name="request_tab_send_offer">Send Offer</string>
+	<string name="request_tab_view_offers">View Offers</string>
+	<string name="request_tab_status">Status</string>
 	<string name="request_tab_offers">Offers</string>
 	<string name="request_info_name">Name</string>
 	<string name="request_info_name_hint">" Name"</string>
@@ -96,6 +103,25 @@
 	<string name="request_info_service">Service</string>
 	<string name="request_info_service_hint">" Service"</string>
 	<string name="request_info_picture_saved">Picture successfully saved to local storage.</string>
+	<string name="request_send_offer_created_by">Created by:</string>
+	<string name="request_send_offer_running">Running:</string>
+	<string name="request_send_offer_offer">Offer:</string>
+	<string name="request_send_offer_edit">Request a change:</string>
+	<string name="request_send_offer_send">Send offer</string>
+	<string name="request_offer_item_payment">"Payment: "</string>
+	<string name="request_send_offer_offer_by">Offer by:</string>
+	<string name="request_send_offer_edit_request">Edit request:</string>
+	<string name="request_offer_accept">Accept offer</string>
+	<string name="request_offer_reject">Reject offer</string>
+	<string name="request_offer_reject_desc">Do you really want to reject this offer?</string>
+	<string name="no_offers">You don\'t have any offers yet.</string>
+	<string name="offer_sent">Offer successfully sent.</string>
+	<string name="marked_as_finished">has marked the request as completed.</string>
+	<string name="request_complete">Complete</string>
+	<string name="request_complete_desc">You can\'t undo this action. Do you really want to mark this request as complete? It will be completed once everyone has marked it as complete.</string>
+	<string name="request_cancel">Cancel</string>
+	<string name="request_cancel_desc">You can\'t undo this action. Do you really want to cancel this request? It will immediately canceled.</string>
+	<string name="rate_comment">Comment</string>
 
 	<string name="newrequest_tab_info">Info</string>
 	<string name="newrequest_tab_tasks">Tasks</string>
@@ -106,7 +132,7 @@
 	<string name="newrequest_info_note_hint">" Note"</string>
 	<string name="newrequest_info_max_distance">Max distance</string>
 	<string name="newrequest_info_max_distance_hint">" Maximum distance"</string>
-	<string name="newrequest_info_max_distance_info">Maximum distance (in meters) of a Runner from the addresses specified in this requests tasks that can send you offers for this request.</string>
+	<string name="newrequest_info_max_distance_info">Maximum distance (in meters) of a Runner from the addresses specified in this request that can send you offers for this request.</string>
 	<string name="newrequest_info_min_rating">Min rating</string>
 	<string name="newrequest_info_min_rating_hint">" Minimum rating"</string>
 	<string name="newrequest_info_min_rating_info">Minimum rating of a Runner that can send offers for this request.</string>
@@ -126,11 +152,21 @@
 	<string name="newrequest_task_address_default">Select an address</string>
 	<string name="newrequest_task_address_other">Other</string>
 	<string name="newrequest_task_address_other_desc">Choose an address that isn\'t saved to your account.</string>
-	<string name="newrequest_offers_broadcast">Broadcast</string>
-	<string name="newrequest_offers_broadcast_hint">" Broadcast"</string>
+	<string name="newrequest_offers_broadcast" translatable="false">Broadcast</string>
+	<string name="newrequest_offers_broadcast_hint" translatable="false">" Broadcast"</string>
 	<string name="newrequest_offers_broadcast_info">Broadcasting requests will allow others to see them and send you offers.</string>
 	<string name="newrequest_offers_direct_info">You can send requests directly to Runners you prefer, they\'ll be notified and able to send you an offer.</string>
-	<string name="newrequest_offers_direct_add">Add a Runner</string>
+	<string name="newrequest_offers_direct_add" translatable="false">Add a Runner</string>
+	<string name="newrequest_offers_direct_active_only">Active only</string>
+	<string name="newrequest_offers_direct_sort_by">Sort by</string>
+	<string name="newrequest_offers_direct_sort_by_rating">Rating</string>
+	<string name="newrequest_offers_direct_sort_by_disctance">Distance</string>
+
+	<string name="find_requests_tab_filter">Filter</string>
+	<string name="find_requests_tab_broadcast" translatable="false">Broadcast</string>
+	<string name="find_requests_tab_direct">Direct</string>
+	<string name="find_requests_service_filter_desc">Here you can filter by services present in the request. Having no services added to the filter will show all requests regardless of services specified in them.</string>
+	<string name="find_requests_service_filter_add">Add service</string>
 
 	<string name="notifications_tab_requested">Requested</string>
 	<string name="notifications_tab_running">Running</string>
@@ -138,24 +174,30 @@
 	<string name="no_notifications">You don\'t have any notifications in this category.</string>
 	
 	<string name="settings_notifications">Notifications</string>
-	<string name="settings_notifications_new_rating">New rating</string>
-	<string name="settings_notifications_new_rating_desc">Receive a push notification every time someone rates your account.</string>
-	<string name="settings_notifications_achievement">Achievement</string>
-	<string name="settings_notifications_achievement_desc">Receive a push notification every time you unlock a new achievement.</string>
+	<string name="settings_notifications_request_direct">Direct request</string>
+	<string name="settings_notifications_request_direct_desc">Receive a push notification every time someone sends you a direct request.</string>
+	<string name="settings_notifications_request_failed">Request failed</string>
+	<string name="settings_notifications_request_failed_desc">Receive a push notification every time a request fails.</string>
+	<string name="settings_notifications_offer_created">New offer</string>
+	<string name="settings_notifications_offer_created_desc">Receive a push notification every time someone sends you a new offer.</string>
 	<string name="settings_notifications_offer_accepted">Offer accepted</string>
 	<string name="settings_notifications_offer_accepted_desc">Receive a push notification every time someone accepts your offer.</string>
-	<string name="settings_notifications_offer_declined">Offer declined</string>
-	<string name="settings_notifications_offer_declined_desc">Receive a push notification every time someone declines your offer.</string>
-	<string name="settings_notifications_offer_request_canceled">Request canceled</string>
-	<string name="settings_notifications_offer_request_canceled_desc">Receive a push notification every time someone cancels a request that has your offer accepted.</string>
-	<string name="settings_notifications_request_direct">Direct request</string>
-	<string name="settings_notifications_request_direct_desc">Allow people to send you push notifications about request they would like you to send an offer for.</string>
-	<string name="settings_notifications_request_success">Successful request</string>
-	<string name="settings_notifications_request_success_desc">Receive a push notification every time one of your requests is completed successfully.</string>
-	<string name="settings_notifications_request_failure">Failed request</string>
-	<string name="settings_notifications_request_failure_desc">Receive a push notification every time one of your requests fails to complete.</string>
+	<string name="settings_notifications_offer_canceled">Offer rejected</string>
+	<string name="settings_notifications_offer_canceled_desc">Receive a push notification every time someone rejects your offer.</string>
+	<string name="settings_notifications_edit_created">New edit request</string>
+	<string name="settings_notifications_edit_created_desc">Receive a push notification every time someone sends you a new edit request.</string>
+	<string name="settings_notifications_edit_accepted">Edit request accepted</string>
+	<string name="settings_notifications_edit_accepted_desc">Receive a push notification every time someone accepts your edit request.</string>
+	<string name="settings_notifications_edit_canceled">Edit request rejected</string>
+	<string name="settings_notifications_edit_canceled_desc">Receive a push notification every time someone rejects your edit request.</string>
+	<string name="settings_notifications_rating">New rating</string>
+	<string name="settings_notifications_rating_desc">Receive a push notification every time someone rates your account.</string>
+	<string name="settings_notifications_achievement">New achievement</string>
+	<string name="settings_notifications_achievement_desc">Receive a push notification every time you unlock a new achievement.</string>
+	<string name="settings_notifications_request_success">Request marked as successful</string>
+	<string name="settings_notifications_request_success_desc">Receive a push notification every time a request is successfully completed.</string>
 	<string name="settings_blocked">Blocked users</string>
-	<string name="settings_runner">Runner settings</string>
+	<string name="settings_runner">Settings</string>
 	<string name="settings_runner_service_defaults">Service defaults</string>
 	<string name="settings_runner_service_defaults_desc">Set default pricing and filtering by maximum distance and minimum rating for each available service type.</string>
 	<string name="settings_runner_service_defaults_no_defaults">You don\'t have any preferences saved for this service type.</string>
@@ -183,11 +225,22 @@
 	<string name="settings_runner_benefits_auto_desc">Automatically add users that you\'ve worked with required number of times to the benefits list with a set discount.</string>
 	<string name="settings_runner_benefits_discount">Discount</string>
 	<string name="settings_runner_benefits_requirement">Requirement</string>
+	<string name="settings_runner_benefits_not_setup">Not yet setup.</string>
+	<string name="settings_runner_benefits_add">Add</string>
+	<string name="settings_runner_benefits_add_desc">Add a new beneficiary.</string>
+	<string name="settings_runner_benefits_benefit">Benefit</string>
+	<string name="settings_runner_benefits_clear">Remove</string>
+	<string name="settings_runner_benefits_clear_desc">Do you want to remove this user from your benefits list?</string>
+	<string name="settings_runner_hours_clear">Clear working hours</string>
+	<string name="settings_runner_hours_clear_desc">Do you want to clear working hours for this day?</string>
 
 	<string name="payment_type_fixed">Fixed</string>
 	<string name="payment_type_per_hour">Per hour</string>
 	<string name="payment_type_per_kilometer">Per kilometer</string>
 	<string name="payment_type_unknown">Unknown</string>
+
+	<string name="report">Report</string>
+	<string name="report_reason">Reason</string>
 
 	<string name="image_cd_add">Add</string>
 	<string name="image_cd_logout">Logout</string>
@@ -216,11 +269,12 @@
 	<string name="error_bottom_item">You can\'t move the item that is at the bottom of the task-list further down.</string>
 	<string name="error_address">Failed to locate given address.</string>
 	<string name="error_user_update">Failed to update profile details.</string>
+	<string name="error_hours">Ending time needs to be after starting time.</string>
 
 	<string name="permissions">Permissions</string>
-	<string name="permissions_location_runner">Permissions for location access need to be granted in order to use this application as a Runner (send offers to requests and fulfil them) and detecting your current location instead of needing to type in an address.\n\nWould you like to grand location access permission to Errand?</string>
+	<string name="permissions_location_runner">Permissions for location access need to be granted in order to use this application as a Runner (send offers to requests and fulfil them) and detecting your current location instead of needing to type in an address.  Would you like to grand location access permission to Errand?</string>
 	<string name="permissions_location_map_dialog">Permissions for location access need to be granted in order to detect your current location. You can grant Errand this permission on the settings page.</string>
 
-	<string name="debug_server_ip">Server IP</string>
-	<string name="debug_server_ip_set">Server IP was successfully set to \'%1$s\'.</string>
+	<string name="debug_server_ip" translatable="false">Server IP</string>
+	<string name="debug_server_ip_set" translatable="false">Server IP was successfully set to \'%1$s\'.</string>
 </resources>

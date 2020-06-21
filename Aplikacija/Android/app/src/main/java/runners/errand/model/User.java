@@ -21,7 +21,7 @@ public class User {
 		STATUS_RUNNING = 1;
 
 	public boolean selected;
-	private int id, status, benefitRequirements;
+	private int id, status, benefitRequirements, distance = 123;
 	private String firstName, lastName, email, phone;
 	private String picture_b64;
 	private Bitmap picture_bmp;
@@ -31,6 +31,7 @@ public class User {
 	private ArrayList<Benefit> benefits = new ArrayList<>();
 	private ArrayList<Rating> ratings = new ArrayList<>();
 	private ArrayList<Request> requests = new ArrayList<>();
+	private ArrayList<Request> running = new ArrayList<>();
 	private ArrayList<Offer> offers = new ArrayList<>();
 	private ArrayList<Request> history = new ArrayList<>();
 	private ArrayList<Notification> notifications = new ArrayList<>();
@@ -87,7 +88,7 @@ public class User {
 			if (notifications != null) {
 				for (int i = 0; i < notifications.length(); i++) {
 					JSONObject notification = notifications.optJSONObject(i);
-					if (notification != null) this.notifications.add(new Notification(notification));
+					if (notification != null) this.notifications.add(0, new Notification(notification));
 				}
 			}
 
@@ -107,6 +108,14 @@ public class User {
 				}
 			}
 
+			JSONArray offers = o.optJSONArray("offers");
+			if (offers != null) {
+				for (int i = 0; i < offers.length(); i++) {
+					JSONObject offer = offers.optJSONObject(i);
+					if (offer != null) this.offers.add(new Offer(offer));
+				}
+			}
+
 			JSONArray blockedUsers = o.optJSONArray("blocked");
 			if (blockedUsers != null) {
 				for (int i = 0; i < blockedUsers.length(); i++) {
@@ -122,9 +131,6 @@ public class User {
 					}
 				}
 			}
-
-			this.benefitDiscount = (float) o.optDouble("benefit_discount");
-			this.benefitRequirements = o.optInt("benefit_requirement");
 		}
 
 		this.id = user.optInt("id");
@@ -140,6 +146,8 @@ public class User {
 		} else {
 			picture_bmp = BitmapUtils.decode(picture_b64);
 		}
+		this.benefitDiscount = (float) user.optDouble("benefit_discount");
+		this.benefitRequirements = user.optInt("benefit_requirement");
 	}
 
 	public int getId() {
@@ -234,6 +242,12 @@ public class User {
 		return workingHours;
 	}
 
+	public WorkingHours getWorkingHours(int day) {
+		for (WorkingHours h : workingHours)
+			if (h.getDay() == day) return h;
+		return null;
+	}
+
 	public ArrayList<User> getBlockedUsers() {
 		return blockedUsers;
 	}
@@ -268,5 +282,45 @@ public class User {
 
 	public void setAddresses(ArrayList<Address> addresses) {
 		this.addresses = addresses;
+	}
+
+	public int getDistance() {
+		return distance;
+	}
+
+	public void setDistance(int distance) {
+		this.distance = distance;
+	}
+
+	public ArrayList<Benefit> getBenefits() {
+		return benefits;
+	}
+
+	public void setBenefits(ArrayList<Benefit> benefits) {
+		this.benefits = benefits;
+	}
+
+	public ArrayList<Request> getRunning() {
+		return running;
+	}
+
+	public void setRunning(ArrayList<Request> running) {
+		this.running = running;
+	}
+
+	public ArrayList<Offer> getOffers() {
+		return offers;
+	}
+
+	public void setOffers(ArrayList<Offer> offers) {
+		this.offers = offers;
+	}
+
+	public void setBenefitRequirements(int benefitRequirements) {
+		this.benefitRequirements = benefitRequirements;
+	}
+
+	public void setBenefitDiscount(float benefitDiscount) {
+		this.benefitDiscount = benefitDiscount;
 	}
 }

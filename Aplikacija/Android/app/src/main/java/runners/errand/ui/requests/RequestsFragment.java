@@ -2,6 +2,7 @@ package runners.errand.ui.requests;
 
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,6 +36,7 @@ public class RequestsFragment extends Fragment {
 
         activity = (MainActivity) getActivity();
         if (activity == null) return root;
+        activity.setFragment(this);
 
         refreshLayout = ((SwipeRefreshLayout) root);
 
@@ -62,23 +64,26 @@ public class RequestsFragment extends Fragment {
             }
         });
 
-        boolean refresh = false;
-        if (savedInstanceState != null) refresh = savedInstanceState.getBoolean("refresh");
-        if (refresh) {
-            refreshLayout.setRefreshing(true);
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    refresh();
-                }
-            }, 500);
-        }
+        refresh();
+
+//        boolean refresh = false;
+//        if (savedInstanceState != null) refresh = savedInstanceState.getBoolean("refresh");
+//        if (refresh) {
+//            refreshLayout.setRefreshing(true);
+//            new Handler().postDelayed(new Runnable() {
+//                @Override
+//                public void run() {
+//                    refresh();
+//                }
+//            }, 500);
+//        }
 
         return root;
     }
 
     private void refresh() {
-        NetRequest netRequest = new NetRequest(NetManager.getApiServer() + NetManager.API_REQUESTS, NetManager.GET) {
+	    activity.loadOfferRequests();
+        NetRequest netRequest = new NetRequest(NetManager.getApiServer() + NetManager.API_FILTERED_REQUESTS, NetManager.POST) {
             @Override
             public void success() {
                 try {
@@ -87,12 +92,10 @@ public class RequestsFragment extends Fragment {
                     if (data != null) {
                         activity.getUser().getRequests().clear();
                         for (int i = 0; i < data.length(); i++) {
-                            JSONObject request = data.optJSONObject(i).optJSONObject("request");
-                            if (request != null) activity.getUser().getRequests().add(new Request(request));
+                            JSONObject request = data.optJSONObject(i);
+                            if (request != null) activity.getUser().getRequests().add(0, new Request(request));
                         }
-                        for (Fragment fragment : getChildFragmentManager().getFragments()) {
-                            ((RequestsListFragment) fragment).dataSetChanged();
-                        }
+                        loadData();
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -107,6 +110,18 @@ public class RequestsFragment extends Fragment {
                 super.error();
             }
         };
+        netRequest.putParam("created_by", activity.getUser().getId());
+        netRequest.putNull("done_by");
+        netRequest.putNull("created_or_done_by");
+        netRequest.putNull("statuses");
+        netRequest.putParam("unrated_created_by", true);
+        netRequest.putParam("unrated_done_by", true);
         NetManager.add(netRequest);
+    }
+
+    public void loadData() {
+        for (Fragment fragment : getChildFragmentManager().getFragments()) {
+            ((RequestsListFragment) fragment).dataSetChanged();
+        }
     }
 }

@@ -55,7 +55,11 @@ public class UserAdapter extends BaseAdapter {
 
 		((TextView) view.findViewById(R.id.item_user_name)).setText(user.getName());
 		if (user.getPicture_bmp() != null) ((ImageView) view.findViewById(R.id.item_user_image)).setImageBitmap(user.getPicture_bmp());
-		((TextView) view.findViewById(R.id.item_user_rating)).setText(String.format(Locale.getDefault(), "%.1f", user.getRating()));
+		if (Float.isNaN(user.getRating())) {
+			((TextView) view.findViewById(R.id.item_user_rating)).setText(context.getString(R.string.generic_unrated));
+		} else {
+			((TextView) view.findViewById(R.id.item_user_rating)).setText(String.format(Locale.getDefault(), "%.1f", user.getRating()));
+		}
 		if (user.getStatus() == 0) {
 			((TextView) view.findViewById(R.id.item_user_active)).setText(R.string.generic_inactive);
 			((ImageView) view.findViewById(R.id.item_user_active_drawable)).setImageDrawable(context.getResources().getDrawable(R.drawable.ic_inactive));

@@ -1,6 +1,5 @@
 package runners.errand.utils.net;
 
-import android.Manifest;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -19,7 +18,6 @@ import java.net.URL;
 import java.util.ArrayList;
 
 import runners.errand.BuildConfig;
-import runners.errand.R;
 import runners.errand.utils.PreferenceManager;
 
 public class NetManager extends AsyncTask<NetRequest, String, NetRequest> {
@@ -31,12 +29,14 @@ public class NetManager extends AsyncTask<NetRequest, String, NetRequest> {
 
 	public static final String API_AUTH = API_BASE + "login/";
 	public static final String API_USERS = API_BASE + "users/";
-	public static final String API_USERS_INFO = API_BASE + "users_info/";
+	public static final String API_USERS_INFO_FILTERED = API_BASE + "user_info_filtered/";
 	public static final String API_USER_CREATE = API_BASE + "user_create/";
 	public static final String API_USER_UPDATE = API_BASE + "user_update/";
+	public static final String API_FILTERED_REQUESTS = API_BASE + "filtered_requests/";
 	public static final String API_REQUESTS = API_BASE + "requests/";
 	public static final String API_REQUESTS_INFO = API_BASE + "requests_info/";
 	public static final String API_REQUEST_CREATE = API_BASE + "request_create/";
+	public static final String API_SEARCH_REQUESTS = API_BASE + "search_requests/";
 	public static final String API_ADDRESS_ADD = API_BASE + "address_add/";
 	public static final String API_ADDRESS_UPDATE = API_BASE + "address_update/";
 	public static final String API_ADDRESS_REMOVE = API_BASE + "address_remove/";
@@ -45,6 +45,25 @@ public class NetManager extends AsyncTask<NetRequest, String, NetRequest> {
 	public static final String API_USER_SERVICES_UPDATE = API_BASE + "user_service_update/";
 	public static final String API_USER_SERVICES_REMOVE = API_BASE + "user_service_remove/";
 	public static final String API_FILTER_USERS = API_BASE + "filtered_users/";
+	public static final String API_USER_STATUS_UPDATE = API_BASE + "user_status_update/";
+	public static final String API_USER_LOCATION_UPDATE = API_BASE + "user_location_update/";
+	public static final String API_FCM_REGISTER = API_BASE + "fcm_register/";
+	public static final String API_FCM_UNREGISTER = API_BASE + "fcm_unregister/";
+	public static final String API_BENEFIT_ADD = API_BASE + "benefit_add/";
+	public static final String API_BENEFIT_UPDATE = API_BASE + "benefit_update/";
+	public static final String API_BENEFIT_REMOVE = API_BASE + "benefit_remove/";
+	public static final String API_BENEFIT_AUTO = API_BASE + "user_benefit_update/";
+	public static final String API_REPORT = API_BASE + "report_create/";
+	public static final String API_WORKING_HOURS_ADD = API_BASE + "working_hours_add/";
+	public static final String API_WORKING_HOURS_REMOVE = API_BASE + "working_hours_remove/";
+	public static final String API_WORKING_HOURS_UPDATE = API_BASE + "working_hours_update/";
+	public static final String API_OFFER_CREATE = API_BASE + "offer_create/";
+	public static final String API_OFFER_ACCEPT = API_BASE + "offer_accept/";
+	public static final String API_OFFER_CANCEL = API_BASE + "offer_cancel/";
+	public static final String API_REQUEST_INFO_FILTERED = API_BASE + "request_info_filtered/";
+	public static final String API_REQUEST_CANCEL = API_BASE + "request_cancel/";
+	public static final String API_REQUEST_FINISH = API_BASE + "request_finish/";
+	public static final String API_RATE = API_BASE + "rate_user/";
 
 	public static final String POST = "POST";
 	public static final String GET = "GET";

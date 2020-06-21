@@ -102,7 +102,8 @@ public class NR1Fragment extends Fragment {
 			}
 		});
 
-		final View destination = root.findViewById(R.id.newrequest_info_destination_et);
+		final TextView destination = root.findViewById(R.id.newrequest_info_destination_et);
+		if (parent.getRequest().getDestination() != null) destination.setText(parent.getRequest().getDestination().getName());
 		destination.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -126,6 +127,7 @@ public class NR1Fragment extends Fragment {
 									super.positive(dialog);
 									if (getAddress() != null) {
 										parent.getRequest().setDestination(getAddress());
+										parent.addressChanged();
 										((TextView) destination).setText(getAddress().getName());
 									}
 								}

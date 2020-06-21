@@ -11,15 +11,17 @@ public class Offer {
 			PAYMENT_TYPE_PH = 2,
 			PAYMENT_TYPE_FIXED_PLUS = 3;
 
-	private int id, createdBy, paymentType, request, paymentAmount;
+	private int id, paymentType, request, paymentAmount;
+	private User createdBy;
 	private Edit edit;
 
 	public Offer(@NonNull JSONObject o) {
 		this.id = o.optInt("id");
-		this.createdBy = o.optInt("created_by");
+		JSONObject createdBy = o.optJSONObject("created_by");
+		if (createdBy != null) this.createdBy = new User(createdBy);
 		this.paymentType = o.optInt("payment_type");
-		this.request = o.optInt("payment_ammount");
-		this.paymentAmount = o.optInt("request");
+		this.paymentAmount = o.optInt("payment_ammount");
+		this.request = o.optInt("request");
 		JSONObject edit = o.optJSONObject("edit");
 		if (edit != null) this.edit = new Edit(edit);
 	}
@@ -28,7 +30,7 @@ public class Offer {
 		return id;
 	}
 
-	public int getCreatedBy() {
+	public User getCreatedBy() {
 		return createdBy;
 	}
 

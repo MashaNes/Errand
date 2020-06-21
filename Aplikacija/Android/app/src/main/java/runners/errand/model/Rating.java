@@ -6,68 +6,64 @@ import androidx.annotation.NonNull;
 
 import org.json.JSONObject;
 
-// firstName, lastName and picture are part of the User model in the DB
-// where createdBy represents that users id,
-// however, they are in this class because the whole User object won't be needed most of the time
-// and it would be better get them as part of the API call fetching the Rating data.
 public class Rating {
-	private int id, grade, ratingUser, ratedUser, request;
-	private String comment, firstName, lastName;
-	private Image picture;
+	private int id, grade, ratedUser, request;
+	private String comment;
+	private User user;
 
 	public Rating(@NonNull JSONObject o) {
-
-	}
-
-	public Rating(int id, int grade, int ratingUser, int ratedUser, int request, String comment, String firstName, String lastName, Image picture) {
-		this.id = id;
-		this.grade = grade;
-		this.ratingUser = ratingUser;
-		this.ratedUser = ratedUser;
-		this.request = request;
-		this.comment = comment;
-		this.firstName = firstName;
-		this.lastName = lastName;
-		this.picture = picture;
+		this.id = o.optInt("id");
+		this.grade = (int) o.optDouble("grade");
+		JSONObject user = o.optJSONObject("created_by");
+		if (user != null) this.user = new User(user);
+		this.comment = o.optString("comment");
 	}
 
 	public int getId() {
 		return id;
 	}
 
+	public void setId(int id) {
+		this.id = id;
+	}
+
 	public int getGrade() {
 		return grade;
 	}
 
-	public int getRatingUser() {
-		return ratingUser;
+	public void setGrade(int grade) {
+		this.grade = grade;
 	}
 
 	public int getRatedUser() {
 		return ratedUser;
 	}
 
+	public void setRatedUser(int ratedUser) {
+		this.ratedUser = ratedUser;
+	}
+
 	public int getRequest() {
 		return request;
+	}
+
+	public void setRequest(int request) {
+		this.request = request;
 	}
 
 	public String getComment() {
 		return comment;
 	}
 
-	public String getFirstName() {
-		return firstName;
+	public void setComment(String comment) {
+		this.comment = comment;
 	}
 
-	public String getLastName() {
-		return lastName;
+	public User getUser() {
+		return user;
 	}
 
-	public String getName() {
-		return firstName + " " + lastName;
-	}
-
-	public Image getPicture() {
-		return picture;
+	public void setUser(User user) {
+		this.user = user;
 	}
 }

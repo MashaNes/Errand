@@ -8,15 +8,36 @@
 	android:layout_width="match_parent"
 	android:layout_height="match_parent">
 
-	<de.hdodenhof.circleimageview.CircleImageView
-		android:id="@+id/dialog_profile_picture"
-		android:layout_gravity="center_horizontal"
-		android:src="@drawable/ic_face"
-		app:civ_circle_background_color="@color/colorLightGrey"
-		android:layout_width="96dp"
-		android:layout_height="96dp"
-		android:layout_marginBottom="12dp"
-		app:civ_border_width="0dp"/>
+	<FrameLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content">
+
+		<de.hdodenhof.circleimageview.CircleImageView
+			android:id="@+id/dialog_profile_picture"
+			android:layout_gravity="center_horizontal"
+			android:src="@drawable/ic_face"
+			app:civ_circle_background_color="@color/colorLightGrey"
+			android:layout_width="96dp"
+			android:layout_height="96dp"
+			android:layout_marginBottom="12dp"
+			app:civ_border_width="0dp"/>
+
+		<ImageView
+			android:id="@+id/dialog_profile_report"
+			android:layout_width="28dp"
+			android:layout_height="28dp"
+			android:layout_gravity="end"
+			android:src="@drawable/ic_report"/>
+
+		<ImageView
+			android:id="@+id/dialog_profile_benefit"
+			android:layout_width="28dp"
+			android:layout_height="28dp"
+			android:layout_marginEnd="32dp"
+			android:layout_marginRight="32dp"
+			android:layout_gravity="end"
+			android:src="@drawable/ic_benefit"/>
+	</FrameLayout>
 
 	<LinearLayout
 		android:layout_width="match_parent"
