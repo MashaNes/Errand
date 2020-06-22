@@ -18,71 +18,75 @@ from . import utils
 '''
 Endpoints:
 __GET_________________________________________________________________________________________
-+ GET users_info/{id} 				// Returns only basic user data
-+ GET users/{id} 					// Returns full user data
-+ POST filtered_users/ 				// Returns users based on filters
-+ POST user_info_filtered           // Returns users info based on filters
-+ GET get_cookie/{id}    			// Returns only basic user data
++ GET users_info/{id} 				    // Returns only basic user data
++ GET users/{id} 					    // Returns full user data
++ POST filtered_users/ 				    // Returns users based on filters
++ POST user_info_filtered               // Returns users info based on filters
++ GET get_cookie/{id}    			    // Returns only basic user data
 
-+ GET requests_info/{id} 			// Returns only basic request data
-+ GET requests/{id} 				// Returns full request data (including offers and rating)
-+ POST filtered_requests/ 			// Returns requests based on filters
-+ POST requests_info_filtered/      // Returns requests info based on filters
-- POST requests_search/             // Returns avaliable requests based on your filters
++ GET requests_info/{id} 			    // Returns only basic request data
++ GET requests/{id} 				    // Returns full request data (including offers and rating)
++ POST filtered_requests/ 			    // Returns requests based on filters
++ POST requests_info_filtered/          // Returns requests info based on filters
++ POST requests_search/                 // Returns avaliable requests based on your filters
 
-+ GET achievements/{id}				// Returns list of all achievements
-+ GET services/{id}                 // Returns list of all types of services
-+ GET stats/ (A)		 			// Returns statistics based on filters
-+ GET requests_other/ (A)           // Returns requests with at least 1 task of type 0 (other)
-+ POST reports/ (A)                 // Returns filtered reports
++ GET achievements/{id}				    // Returns list of all achievements
++ GET services/{id}                     // Returns list of all types of services
++ GET stats/ (A)		 			    // Returns statistics based on filters
++ GET requests_other/ (A)               // Returns requests with at least 1 task of type 0 (other)
++ GET notification/{id}                 // Returns notification with id
++ GET unseen_notifications/{user_id}    // Returns number of unseen notifications
++ POST reports/ (A)                     // Returns filtered reports
 
-__POST________________________________________________________________________________________
-+ POST login/                       // Login as some user
-+ POST user_create/					// Creates new user
-+ POST benefit_add/					// Adds new user to benefit list
-+ POST address_add/					// Adds new address to addresses
-+ POST working_hours_add/ 			// Adds new working hours for user
-+ POST user_service_add/			// Adds new user service for user
-+ POST block_add/			        // Adds new user to blocklist
-+ POST offer_create/ 				// Creates offer for request
-+ POST edit_create/                 // Creates edit request
-+ POST request_create/ 				// Creates request
-+ POST picture_upload/              // Uploads picture to request or task
-+ POST rate_user/ 					// Adds new rating for completed request
-+ POST report_create/				// Reports user
-+ POST ban_create/ (A)	 			// Bans reported user
-+ POST achievement_create/ (A)	 	// Creates new achievement
-+ POST service_create/ (A)		    // Creates new service type
-+ POST fcm_register/                // Registers FCM device
+__POST____________________________________________________________________________________________
++ POST login/                           // Login as some user
++ POST user_create/					    // Creates new user
++ POST benefit_add/					    // Adds new user to benefit list
++ POST address_add/					    // Adds new address to addresses
++ POST working_hours_add/ 			    // Adds new working hours for user
++ POST user_service_add/			    // Adds new user service for user
++ POST block_add/			            // Adds new user to blocklist
++ POST offer_create/ 				    // Creates offer for request
++ POST edit_create/                     // Creates edit request
++ POST request_create/ 				    // Creates request
++ POST picture_upload/                  // Uploads picture to request or task
++ POST rate_user/ 					    // Adds new rating for completed request
++ POST report_create/				    // Reports user
++ POST ban_create/ (A)	 			    // Bans reported user
++ POST achievement_create/ (A)	 	    // Creates new achievement
++ POST service_create/ (A)		        // Creates new service type
++ POST fcm_register/                    // Registers FCM device
 
-__PUT_________________________________________________________________________________________
-+ PUT logout/                       // Logout user
-+ PUT user_update/			        // Updates basic user data
-+ PUT user_benefit_update/          // Updates user's benefit settings
-+ PUT user_status_update/           // Updates user's status
-+ PUT user_location_update/         // Updates user's location
-+ PUT benefit_update/			    // Updates benefit to benefit list
-+ PUT address_update/			    // Updates address to addresses
-+ PUT working_hours_update/ 		// Updates working hours for user
-+ PUT user_service_update/		    // Updates user service for user
-+ PUT service_type_update/ (A)      // Updates service type of given task
-+ PUT service_update/ (A)           // Updates service
-+ PUT report_handle/ (A)            // Handles reported user
-+ PUT offer_accept/ 				// Accepts offer for request
-+ PUT edit_accept/                  // Accpets edit request
-+ PUT request_finish/               // Finishes request
+__PUT_____________________________________________________________________________________________
++ PUT logout/                           // Logout user
++ PUT user_update/			            // Updates basic user data
++ PUT user_benefit_update/              // Updates user's benefit settings
++ PUT user_status_update/               // Updates user's status
++ PUT user_location_update/             // Updates user's location
++ PUT benefit_update/			        // Updates benefit to benefit list
++ PUT address_update/			        // Updates address to addresses
++ PUT working_hours_update/ 		    // Updates working hours for user
++ PUT user_service_update/		        // Updates user service for user
++ PUT service_type_update/ (A)          // Updates service type of given task
++ PUT service_update/ (A)               // Updates service
++ PUT report_handle/ (A)                // Handles reported user
++ PUT offer_accept/ 				    // Accepts offer for request
++ PUT edit_accept/                      // Accpets edit request
++ PUT request_finish/                   // Finishes request
++ PUT notification_flags_update/        // Updates notification flags (seen, opened)
++ PUT request_start/                    // Starts request
 
-__DELETE______________________________________________________________________________________
-+ DELETE benefit_remove/ 			// Removes user from benefit list
-+ DELETE address_remove/ 			// Removes address from user
-+ DELETE working_hours_remove/ 		// Removes working hours from user
-+ DELETE user_service_remove/ 		// Removes user service from user
-+ DELETE block_remove/ 			    // Removes user from blocklist
-+ DELETE request_cancel/ 			// Cancels request (when pending)
-+ DELETE offer_cancel/ 			    // Cancels offer (when not accepted)
-+ DELETE edit_cancel/               // Cancels edit request
-+ DELETE picture_remove/            // Removes picture
-+ DELETE fcm_unregister/            // Removes FCM device
+__DELETE__________________________________________________________________________________________
++ DELETE benefit_remove/ 			    // Removes user from benefit list
++ DELETE address_remove/ 			    // Removes address from user
++ DELETE working_hours_remove/ 		    // Removes working hours from user
++ DELETE user_service_remove/ 		    // Removes user service from user
++ DELETE block_remove/ 			        // Removes user from blocklist
++ DELETE request_cancel/ 			    // Cancels request (when pending)
++ DELETE offer_cancel/ 			        // Cancels offer (when not accepted)
++ DELETE edit_cancel/                   // Cancels edit request
++ DELETE picture_remove/                // Removes picture
++ DELETE fcm_unregister/                // Removes FCM device
 '''
 
 
@@ -739,7 +743,8 @@ class RateUser(generics.ListCreateAPIView):
         notif_body, notif = utils.create_notification(8, rating.id,
                                                       first_name=_cb.first_name,
                                                       last_name=_cb.last_name,
-                                                      rating=rating.grade)
+                                                      rating=rating.grade,
+                                                      working_with=_cb.id)
         utils.send_notification(user, notif, notif_body)
 
         utils.check_achievements(user)
@@ -770,7 +775,8 @@ class RequestCreate(generics.ListCreateAPIView):
                 utils.create_notification(0, req.id,
                                           first_name=user.user.first_name,
                                           last_name=user.user.last_name,
-                                          request=req.id)
+                                          request=req.name,
+                                          working_with=user.user.id)
             utils.send_notification(_u2, notif, notif_body)
 
         utils.check_achievements(user)
@@ -779,6 +785,19 @@ class RequestCreate(generics.ListCreateAPIView):
         _s = serializer.data
         _s = utils.load_pictures_request_info(_s)
         return Response(serializer.data)
+
+# POST request_start/
+class RequestStart(generics.UpdateAPIView):
+    def update(self, request):
+        req = models.Request.objects.get(id=request.data['request'])
+        req.timestamp = request.data['timestamp']
+        loc = models.Location(latitude=request.data['location']['latitude'],
+                              longitude=request.data['location']['longitude'])
+        loc.save()
+        req.location = loc
+        req.save()
+
+        return Response({'detail' : 'success'})
 
 # DELETE request_cancel/
 class RequestCancel(generics.RetrieveDestroyAPIView):
@@ -969,7 +988,7 @@ class SearchRequestViewSet(viewsets.ModelViewSet):
 
         for bcast, dist in zip(_b, bdist):
             bcast.update({'dist' : dist})
-        
+
         _b = sorted(_b, key=lambda x: x['dist'])
 
         custom_response = {
@@ -1083,7 +1102,8 @@ class OfferCreate(generics.ListCreateAPIView):
         notif_body, notif = utils.create_notification(2, offer.request.id,
                                                       request=offer.request.name,
                                                       first_name=user.user.first_name,
-                                                      last_name=user.user.last_name)
+                                                      last_name=user.user.last_name,
+                                                      working_with=user.user.id)
         utils.send_notification(_u2, notif, notif_body)
 
         serializer = serializers.OfferSerializer(offer)
@@ -1151,7 +1171,8 @@ class EditCreate(generics.ListCreateAPIView):
         notif_body, notif = utils.create_notification(5, edit.request_edit.request.id,
                                                       request=edit.request_edit.request.name,
                                                       first_name=user.first_name,
-                                                      last_name=user.last_name)
+                                                      last_name=user.last_name,
+                                                      working_with=user.id)
         utils.send_notification(_u2, notif, notif_body)
 
         return Response(serializer.data)
@@ -1173,8 +1194,8 @@ class EditAccept(generics.UpdateAPIView):
 
         # send notification edit_accepted
         _u2 = models.FullUser.objects.get(user__id=edit.working_with.id)
-        notif_body, notif = utils.create_notification(6, edit.request_edit.request.id,
-                                                      request=edit.request_edit.request.name)
+        notif_body, notif = utils.create_notification(6, req.request.id,
+                                                      request=req.request.name)
         utils.send_notification(_u2, notif, notif_body)
 
         serializer = serializers.FullRequestSerializer(req)
@@ -1258,6 +1279,49 @@ class PictureRemove(generics.RetrieveDestroyAPIView):
             return Response({'detail' : 'success'})
         else:
             return Response({'detail' : 'Picture does not exist.'})
+
+# PUT notification_flags_update/
+class NotificationFlagsUpdate(generics.UpdateAPIView):
+    def update(self, request):
+        notif = models.Notification.objects.get(id=request.data['id'])
+
+        if request.data['seen']:
+            notif.seen = True
+            notif.save()
+
+        if request.data['opened']:
+            notif.opened = True
+            notif.save()
+
+        return Response({'detail' : 'success'})
+
+# GET notification/{id}
+class NotificationViewSet(viewsets.ModelViewSet):
+    queryset = models.Notification.objects.all()
+    def list(self, request):
+        pass
+
+    def retrieve(self, request, pk):
+        queryset = models.Notification.objects.all()
+        notif = get_object_or_404(queryset, pk=pk)
+        serializer = serializers.NotificationSerializer(notif)
+        return Response(serializer.data)
+
+# GET unseen_notifications/{id}
+class UnseenNotificationsViewSet(viewsets.ModelViewSet):
+    queryset = models.FullUser.objects.all()
+    def list(self, request):
+        pass
+
+    def retrieve(self, request, pk):
+        queryset = models.FullUser.objects.all()
+        user = get_object_or_404(queryset, pk=pk)
+        count = 0
+        for _n in user.notifications.all():
+            if not _n.seen:
+                count += 1
+        return Response({'count' : count})
+
 
 # ================= ACHIEVEMENTS =================
 # GET achievements/{id}

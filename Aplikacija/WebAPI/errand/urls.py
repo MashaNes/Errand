@@ -18,6 +18,8 @@ router.register(r'filtered_requests', api_views.FilterRequestViewSet)
 router.register(r'search_requests', api_views.SearchRequestViewSet)
 router.register(r'request_info_filtered', api_views.RequestInfoFilteredViewSet)
 router.register(r'reports', api_views.ReportViewSet)
+router.register(r'notification', api_views.NotificationViewSet)
+router.register(r'unseen_notifications', api_views.UnseenNotificationsViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -97,6 +99,8 @@ urlpatterns += urlblocked
 urlrequest = [
     path('api/v1/request_create/', api_views.RequestCreate.as_view(),
          name='request_create'),
+    path('api/v1/request_start/', api_views.RequestStart.as_view(),
+         name='request_start'),
     path('api/v1/request_cancel/', api_views.RequestCancel.as_view(),
          name='request_cancel'),
     path('api/v1/request_finish/', api_views.RequestFinish.as_view(),
@@ -144,6 +148,8 @@ urlfcm = [
     path('api/v1/fcm_unregister/', api_views.FCMUnregister.as_view(),
          name='fcm_unregister'),
     path('api/v1/fcm_test_notification/', api_views.FCMTestNotification.as_view(),
-         name='fcm_test_notification')
+         name='fcm_test_notification'),
+    path('api/v1/notification_flags_update/', api_views.NotificationFlagsUpdate.as_view(),
+         name='notification_flags_update')
 ]
 urlpatterns += urlfcm

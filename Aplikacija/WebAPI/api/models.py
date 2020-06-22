@@ -125,6 +125,10 @@ class Request(models.Model):
                                      on_delete=models.SET_NULL)
     direct_user = models.ForeignKey(User, null=True, related_name='direct_user',
                                     on_delete=models.CASCADE)
+    location = models.ForeignKey(Location, null=True, on_delete=models.SET_NULL,
+                                 default=None)
+    timestamp = models.DateTimeField(default=None, null=True)
+    price = models.FloatField(default=0)
 
 class RequestEdit(models.Model):
     time = models.DateTimeField(null=True, blank=True)
@@ -179,6 +183,9 @@ class Notification(models.Model):
     notification_type = models.IntegerField(choices=NOTIFICATION_TYPES)
     timestamp = models.DateTimeField(default=now)
     type_id = models.IntegerField()
+    working_with = models.IntegerField(default=0)
+    seen = models.BooleanField(default=False)
+    opened = models.BooleanField(default=False)
 
 class FullUser(models.Model):
     user = models.ForeignKey(User, related_name='user_id', on_delete=models.CASCADE)

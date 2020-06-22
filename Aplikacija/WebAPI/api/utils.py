@@ -13,6 +13,15 @@ from . import parsers
 
 DISTANCE_MATRIX_KEY = "AIzaSyB10Ab2i9Kq_jsM_NX-zM72i9g50N6kR1U"
 
+def calc_distance(lon1, lat1, lon2, lat2):
+    gmaps = googlemaps.Client(key=DISTANCE_MATRIX_KEY)
+    # dist = gmaps.distance_matrix((lon1, lat1), (lon2, lat2))
+    dist = gmaps.distance_matrix((lat1, lon1), (lat2, lon2))
+    if dist['rows'][0]['elements'][0]['status'] == 'OK':
+        return dist['rows'][0]['elements'][0]['distance']['value']
+    else:
+        return None
+
 # =================== IMAGES ===================
 # ==============================================
 def load_img(img_path):
@@ -164,17 +173,38 @@ def filter_user(queryset, data):
                 to_add = False
 
         if to_add and data['services']:
+            min_max_dist1 = None
             for _s in data['services']:
+                if min_max_dist1 is None or _s['max_dist'] < min_max_dist1:
+                    min_max_dist1 = _s['max_dist']
                 found = False
                 if _s['id'] == 1:
                     found = True
-                for _q_s in _q.services.all():
-                    # TODO: Filter against location
-                    if (_s['id'] == _q_s.service.id and _s['max_dist'] >= _q_s.max_dist):
-                        if data['no_rating'] or _s['min_rating'] <= _q.user.avg_rating:
-                            found = True
-                            break
+                else:
+                    for _q_s in _q.services.all():
+                        if (_s['id'] == _q_s.service.id): # and _s['max_dist'] >= _q_s.max_dist
+                            if (data['no_rating'] or (_q.user.avg_rating and
+                                    _s['min_rating'] <= _q.user.avg_rating)):
+                                found = True
+                                break
                 to_add = found
+
+        if to_add and data['locations']:
+            min_max_dist2 = None
+            for _q_s in _q.services.all():
+                if min_max_dist2 is None or min_max_dist2 > _q_s.max_dist:
+                    min_max_dist2 = _q_s.max_dist
+
+            min_dist = None
+            for _l in data['locations']:
+                dist = calc_distance(_q.location.longitude, _q.location.latitude,
+                                     _l['longitude'], _l['latitude'])
+                if min_dist is None or min_dist > dist:
+                    min_dist = dist
+
+            if (min_dist is None or min_max_dist1 is None or min_max_dist2 is None or
+                    min_dist > min_max_dist1 or min_dist > min_max_dist2):
+                to_add = False
 
         if to_add and data['name']:
             found = False
@@ -303,14 +333,6 @@ def filter_reports(queryset, data):
 
 # ==================== REQUEST ====================
 # =================================================
-def calc_distance(lon1, lat1, lon2, lat2):
-    gmaps = googlemaps.Client(key=DISTANCE_MATRIX_KEY)
-    dist = gmaps.distance_matrix((lon1, lat1), (lon2, lat2))
-    if dist['rows'][0]['elements'][0]['status'] == 'OK':
-        return dist['rows'][0]['elements'][0]['distance']['value']
-    else:
-        return sys.maxsize
-
 def search_requests(queryset, data):
     broadcast_queryset = list()
     direct_queryset = list()
@@ -320,6 +342,9 @@ def search_requests(queryset, data):
 
     for _q in queryset:
         to_add = True
+
+        if _q.status > 0:
+            to_add = False
 
         if _q.direct_user and _q.direct_user.id == data['created_by']:
             min_dist = None
@@ -335,12 +360,10 @@ def search_requests(queryset, data):
                         if min_dist is None or min_dist > dist:
                             min_dist = dist
 
-            if min_dist is None:
-                min_dist = sys.maxsize
-
-            ddist.append(min_dist)
-            direct_queryset.append(_q)
-            continue
+            if min_dist:
+                ddist.append(min_dist)
+                direct_queryset.append(_q)
+                continue
 
         if (not data['no_rating'] and _q.created_by.avg_rating is None):
             to_add = False
@@ -592,12 +615,13 @@ def send_notification(user, notification, notification_body):
         user.save()
         devices.send_message(data=notification_body)
 
-def create_notification(notification_type, type_id, first_name=None, last_name=None, request=None,
-                        rating=None, achievement_sr=None, achievement_en=None, level=None):
+def create_notification(notification_type, type_id, working_with=0, first_name=None, last_name=None,
+                        request=None, rating=None, achievement_sr=None, achievement_en=None, level=None):
     data = [{
                 'id' : None,
                 'notification_type' : 0,
                 'type_id' : type_id,
+                'working_with' : working_with,
                 'title_sr' : "Direktni zahtev",
                 'title_en' : "Direct request",
                 'body_sr' : f"Korisnik {first_name} {last_name} vam je poslao novi direktan zahtev {request}.",
@@ -607,6 +631,7 @@ def create_notification(notification_type, type_id, first_name=None, last_name=N
                 'id' : None,
                 'notification_type' : 1,
                 'type_id' : type_id,
+                'working_with' : working_with,
                 'title_sr' : "Neuspešno završen zahtev",
                 'title_en' : "Request failed",
                 'body_sr' : f"Zahtev \"{request}\" je neuspešno završen.",
@@ -616,6 +641,7 @@ def create_notification(notification_type, type_id, first_name=None, last_name=N
                 'id' : None,
                 'notification_type' : 2,
                 'type_id' : type_id,
+                'working_with' : working_with,
                 'title_sr' : "Nova ponuda",
                 'title_en' : "New offer",
                 'body_sr' : f"Korisnik {first_name} {last_name} Vam je poslao novu ponudu za zahtev \"{request}\".",
@@ -625,6 +651,7 @@ def create_notification(notification_type, type_id, first_name=None, last_name=N
                 'id' : None,
                 'notification_type' : 3,
                 'type_id' : type_id,
+                'working_with' : working_with,
                 'title_sr' : "Ponuda prihvaćena",
                 'title_en' : "Offer accepted",
                 'body_sr' : f"Vaša ponuda za zahtev \"{request}\" je prihvaćena.",
@@ -634,6 +661,7 @@ def create_notification(notification_type, type_id, first_name=None, last_name=N
                 'id' : None,
                 'notification_type' : 4,
                 'type_id' : type_id,
+                'working_with' : working_with,
                 'title_sr' : "Ponuda odbijena",
                 'title_en' : "Offer rejected",
                 'body_sr' : f"Vaša ponuda za zahtev \"{request}\" je odbijena.",
@@ -643,6 +671,7 @@ def create_notification(notification_type, type_id, first_name=None, last_name=N
                 'id' : None,
                 'notification_type' : 5,
                 'type_id' : type_id,
+                'working_with' : working_with,
                 'title_sr' : "Novi zahtev za izmenom",
                 'title_en' : "New edit request",
                 'body_sr' : f"Korisnik {first_name} {last_name} Vam je poslao novi predlog izmene za zahtev \"{request}\".",
@@ -652,6 +681,7 @@ def create_notification(notification_type, type_id, first_name=None, last_name=N
                 'id' : None,
                 'notification_type' : 6,
                 'type_id' : type_id,
+                'working_with' : working_with,
                 'title_sr' : "Prihvaćena izmena zahteva",
                 'title_en' : "Edit request accepted",
                 'body_sr' : f"Izmena koju ste predložili za zahtev \"{request}\" je prihvaćena.",
@@ -661,6 +691,7 @@ def create_notification(notification_type, type_id, first_name=None, last_name=N
                 'id' : None,
                 'notification_type' : 7,
                 'type_id' : type_id,
+                'working_with' : working_with,
                 'title_sr' : "Odbijena izmena zahteva",
                 'title_en' : "Edit request rejected",
                 'body_sr' : f"Izmena koju ste predložili za zahtev \"{request}\" je odbijena.",
@@ -670,6 +701,7 @@ def create_notification(notification_type, type_id, first_name=None, last_name=N
                 'id' : None,
                 'notification_type' : 8,
                 'type_id' : type_id,
+                'working_with' : working_with,
                 'title_sr' : "Nova ocena",
                 'title_en' : "New rating",
                 'body_sr' : f"Korisnik {first_name} {last_name} Vas je ocenio ocenom {rating}.",
@@ -679,19 +711,21 @@ def create_notification(notification_type, type_id, first_name=None, last_name=N
                 'id' : None,
                 'notification_type' : 9,
                 'type_id' : type_id,
+                'working_with' : working_with,
                 'title_sr' : "Novo dostignuće",
                 'title_en' : "New achievement",
-                'body_sr' : f"Postali ste {achievement_sr} {level}. nivoa.",
-                'body_en' : f"You have become {achievement_en} of level {level}."
+                'body_sr' : f"Dodeljeno Vam je dostignuće \"{achievement_sr}\" {level}. nivoa.",
+                'body_en' : f"You have been awarded an achievemen \"{achievement_en}\" of level {level}."
             },
             {
                 'id' : None,
                 'notification_type' : 10,
                 'type_id' : type_id,
+                'working_with' : working_with,
                 'title_sr' : "Zahtev označen kao uspešan",
                 'title_en' : "Request marked as successful",
                 'body_sr' : f"Korisnik sa kojim sarađujete na zahtevu \"{request}\" označio je da je on uspešno okončan.",
-                'body_en' : f"The user you are cooperating with on the request \"{request}\" has marked is as successful."
+                'body_en' : f"The user you are cooperating with on the request \"{request}\" has marked it as successful."
             }]
 
     notif = data[notification_type]
@@ -700,6 +734,7 @@ def create_notification(notification_type, type_id, first_name=None, last_name=N
                                        body_sr=notif['body_sr'],
                                        body_en=notif['body_en'],
                                        notification_type=notification_type,
+                                       working_with=working_with,
                                        type_id=type_id)
     notification.save()
     notif['id'] = notification.id

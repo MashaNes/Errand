@@ -286,7 +286,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\t\"created_by\" : 3,\n\t\"longitude\" : 43.319185,\n\t\"latitude\" : 21.973395\n}",
+					"raw": "{\n\t\"created_by\" : 3,\n\t\"latitude\" : 43.319185,\n\t\"longitude\" : 21.973395\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -424,13 +424,13 @@
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "Token e23bc9ea761435c86c696bb13455b30cce4b62b9",
-						"type": "text"
+						"type": "text",
+						"value": "Token e23bc9ea761435c86c696bb13455b30cce4b62b9"
 					}
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\t\"created_by\" : 3,\n\t\"sort_rating\" : true,\n\t\"sort_rating_asc\" : false,\n\t\"rating_limit_up\" : 4.9,\n\t\"rating_limit_down\" : 3.9,\n\t\"services\" : [\n\t\t{\n\t\t\t\"id\" : 1,\n\t\t\t\"min_rating\" : 3.5,\n\t\t\t\"max_dist\" : 100\n\t\t}\n\t],\n\t\"no_rating\" : true,\n\t\"name\" : \"\",\n\t\"not_in_benefit\" : false,\n\t\"active\" : true\n}",
+					"raw": "{\n\t\"created_by\" : 3,\n\t\"sort_rating\" : true,\n\t\"sort_rating_asc\" : false,\n\t\"rating_limit_up\" : 4.9,\n\t\"rating_limit_down\" : 3.9,\n\t\"services\" : [\n\t\t{\n\t\t\t\"id\" : 1,\n\t\t\t\"min_rating\" : 3.5,\n\t\t\t\"max_dist\" : 100\n\t\t}\n\t],\n\t\"no_rating\" : true,\n\t\"name\" : \"\",\n\t\"not_in_benefit\" : false,\n\t\"active\" : true,\n\t\"locations\" : [\n\t\t{\n\t\t\t\"latitude\" : 123,\n\t\t\t\"longitude\" : 123\n\t\t}\n\t]\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -469,7 +469,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\t\"created_by\" : 5,\n\t\"blocked\" : false,\n\t\"working_hours\" : false,\n\t\"addresses\" : false,\n\t\"services\" : false,\n\t\"offers\" : true,\n\t\"notifications\" : false,\n\t\"ratings\" : false,\n\t\"benefitlist\" : false,\n\t\"achievements\" : false,\n\t\"requests\" : false\n}",
+					"raw": "{\n\t\"created_by\" : 5,\n\t\"blocked\" : false,\n\t\"working_hours\" : false,\n\t\"addresses\" : false,\n\t\"services\" : false,\n\t\"offers\" : false,\n\t\"notifications\" : true,\n\t\"ratings\" : false,\n\t\"benefitlist\" : false,\n\t\"achievements\" : false,\n\t\"requests\" : false\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -1125,6 +1125,45 @@
 						"api",
 						"v1",
 						"request_create",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "RequestStart",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token e23bc9ea761435c86c696bb13455b30cce4b62b9",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"request\" : 38,\n\t\"timestamp\" : \"2020-06-25 18:00\",\n\t\"location\" : {\n\t\t\"latitude\" : 43.319185,\n\t\t\"longitude\" : 21.913395\n\t}\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "127.0.0.1:8000/api/v1/request_start/",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"v1",
+						"request_start",
 						""
 					]
 				}
@@ -2203,6 +2242,129 @@
 						"v1",
 						"fcm_test_notification",
 						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "NotificationFlagsUpdate",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token e23bc9ea761435c86c696bb13455b30cce4b62b9",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"id\" : 36,\n\t\"seen\" : true,\n\t\"opened\" : false\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "127.0.0.1:8000/api/v1/notification_flags_update/",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"v1",
+						"notification_flags_update",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Notification",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "Token e23bc9ea761435c86c696bb13455b30cce4b62b9"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "127.0.0.1:8000/api/v1/notification/52",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"v1",
+						"notification",
+						"52"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "UnseenNotifications",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "Token e23bc9ea761435c86c696bb13455b30cce4b62b9"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "127.0.0.1:8000/api/v1/unseen_notifications/5",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"v1",
+						"unseen_notifications",
+						"5"
 					]
 				}
 			},

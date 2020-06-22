@@ -7,6 +7,11 @@ class PictureSerializer(serializers.ModelSerializer):
         model = models.Picture
         fields = '__all__'
 
+class LocationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Location
+        fields = '__all__'
+
 class WorkingHourSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.WorkingHour
@@ -108,6 +113,7 @@ class RequestSerializer(serializers.ModelSerializer):
     destination = AddressSerializer()
     tasklist = TaskSerializer(many=True)
     pictures = PictureSerializer(many=True)
+    location = LocationSerializer()
 
     class Meta:
         model = models.Request
