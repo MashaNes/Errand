@@ -127,7 +127,7 @@ export default {
             ids.push(this.notification.id)
             this.$store.dispatch("setNotificationFlag", {ids : ids, opened: true, seen: false})
 
-            if(this.notification.notification_type == 1 || this.notification.notification_type == 3 || this.notification.notification_type == 6 || this.notification.notification_type == 7 || this.notification.notification_type == 10)
+            if(this.notification.notification_type == 1 || this.notification.notification_type == 6 || this.notification.notification_type == 7 || this.notification.notification_type == 10)
                 this.$router.push({ name: "PageViewRequest", params: { id: this.notification.type_id }})
             else if(this.notification.notification_type == 8)
                 this.$router.push({ name: "PageRatings", params: { id: this.$store.state.authUser.id, user: this.$store.state.authUser }})
