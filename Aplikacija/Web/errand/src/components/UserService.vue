@@ -130,7 +130,7 @@ export default {
                     return "po satu"
                 else if(this.userService.payment_type == 1)
                     return "po kilometru"
-                else if(this.userService.payment_type == 1)
+                else if(this.userService.payment_type == 2)
                     return "fiksna"
                 else
                     return "početna"
@@ -141,7 +141,7 @@ export default {
                     return "per hour"
                 else if(this.userService.payment_type == 1)
                     return "per kilometer"
-                else if(this.userService.payment_type == 1)
+                else if(this.userService.payment_type == 2)
                     return "fixed"
                 else
                     return "starting"

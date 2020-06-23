@@ -1,38 +1,21 @@
 <template>
-    <b-card 
-      no-body
-    >
-
-      <b-card-header 
-        header-bg-variant = "dark"
-        header-text-variant = "white"
-        align="center"
-      >
+    <b-card no-body>
+      <b-card-header  header-bg-variant = "dark" header-text-variant = "white" align="center">
         <span v-if="isSerbian">
-          {{achievement.achievement.name.serbian}}
+          {{achievement.achievement.name_sr}}
         </span>
         <span v-else>
-          {{achievement.achievement.name.english}}
+          {{achievement.achievement.name_sr}}
         </span>
       </b-card-header>
-
-      <b-card-body 
-        :class="(achievement.level >= 4) ? 'body-golden' : 
-        (achievement.level > 2) ? 'body-silver' : 'body-goldenrod'">
+      <b-card-body :class="(achievement.level >= 4) ? 'body-golden' : 
+         (achievement.level > 2) ? 'body-silver' : 'body-goldenrod'">
         <b-card-text>
-          <span v-if="isSerbian" >
-            {{achievement.achievement.description.serbian}}
-          </span>
-          <span v-else> 
-            {{achievement.achievement.description.english}}
-          </span>
+          <span> {{description}} </span>
         </b-card-text>
       </b-card-body>
 
-      <b-card-footer
-        footer-bg-variant = "dark"
-        footer-text-variant = "white"
-      >
+      <b-card-footer footer-bg-variant = "dark" footer-text-variant = "white">
         <span v-if="isSerbian">
           Nivo: {{achievement.level}}
         </span>
@@ -40,11 +23,7 @@
           Level: {{achievement.level}}
         </span>
         <span class="image-span">
-          <img 
-            :src="achievement.achievement.icon"
-            height="20"
-            width="20"
-          />
+          <img :src="'data:;base64,' + body.icon" height="20" width="20"/>
         </span>
       </b-card-footer>
     </b-card>
@@ -61,6 +40,21 @@ export default {
     computed: {
       isSerbian() {
         return this.$store.state.isSerbian
+      },
+      body() {
+        return this.achievement.achievement
+      },
+      description() {
+        let returnText = ""
+        returnText += this.body.conditions[0].condition_numbers[this.achievement.level - 1].condition_number + " "
+        if(this.isSerbian) {
+          returnText += this.body.description_sr
+        }
+        else
+          returnText += this.body.description_en
+        if(this.body.conditions.length > 1)
+            returnText += " " + this.body.conditions[1].condition_numbers[this.achievement.level - 1].condition_number
+        return returnText
       }
     }
 }
