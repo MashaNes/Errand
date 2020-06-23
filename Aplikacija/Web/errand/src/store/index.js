@@ -69,7 +69,10 @@ export default new Vuex.Store({
         achievements: null,
         firebaseToken: null,
         registeredOnFirebase: false,
-        firebaseOnMessageFunction: null
+        firebaseOnMessageFunction: null,
+        notificationNumber: -1,
+        notifications: null,
+        moreNotifications: false
     },
     getters:{
         getAuthUserId(state) {
@@ -947,6 +950,9 @@ export default new Vuex.Store({
                         this.state.registeredOnFirebase = false
                         this.state.firebaseToken = null
                         this.state.firebaseOnMessageFunction = null
+                        this.state.notificationNumber = -1
+                        this.state.notifications = null
+                        this.state.moreNotifications = false
                         
                         Vue.cookie.delete('id');
                         Vue.cookie.delete('token');
@@ -2008,6 +2014,77 @@ export default new Vuex.Store({
                     console.log("error")
                 }
             })
+        },
+        getNotificationNumber()
+        {
+            fetch("http://localhost:8000/api/v1/unseen_notifications/" + this.state.authUser.id, {
+                method: 'GET',
+                headers: {
+                    "Content-type" : "application/json",
+                    "Authorization" : "Token " + this.state.token
+                }
+            }).then(p => {
+                if(p.ok) {
+                    p.json().then(data => {
+                        console.log(data)
+                        this.state.notificationNumber = data.count
+                    })
+                }
+                else {
+                    console.log("Error")
+                }
+            })
+        },
+        getNotifications({commit}, page)
+        {
+            this.state.isDataLoaded = false
+            fetch("http://127.0.0.1:8000/api/v1/user_info_filtered/?paginate=true&page=" + page,
+            {
+                method: 'POST',
+                headers:
+                {
+                    "Content-type" : "application/json",
+                    "Authorization" : "Token " + this.state.token
+                },
+                body:  JSON.stringify(
+                {
+                    "created_by" : this.state.authUser.id,
+                    "blocked" : false,
+                    "working_hours" : false,
+                    "addresses" : false,
+                    "services" : false,
+                    "offers" : false,
+                    "notifications" : true,
+                    "ratings" : false,
+                    "benefitlist" : false,
+                    "achievements" : false,
+                    "requests" : false
+                })
+            }).then( p => 
+                {
+                    if(p.ok)
+                    {
+                        p.json().then(data =>
+                        {
+                            console.log(data)
+                            if(page == 1)
+                                this.state.notifications = data.results
+                            else
+                                this.state.notifications = this.state.notifications.concat(data.results)
+
+                            if(data.next == null)
+                                this.state.moreNotifications = false
+                            else
+                                this.state.moreNotifications = true
+                            this.state.isDataLoaded = true
+                        })
+                    }
+                    else
+                    {
+                        console.log("Error")
+                        this.state.isDataLoaded = true
+                    }
+                });
         }
     },
     mutations:{

@@ -4,10 +4,10 @@
       <div class = "footer-main">
         <div class="divLista deo" v-if="isLogedIn">
           <ul class="lista" v-if="!isAdmin">
-            <!--<router-link>-->
+           <router-link :to="'/notifications'">
               <li class="stavka-navigacije" v-if="isSerbian"> Obaveštenja </li>
               <li class="stavka-navigacije" v-else> Notifications </li>
-            <!--</router-link>-->
+            </router-link>
             <router-link :to="goToProfile()" >
               <li class="stavka-navigacije" v-if="isSerbian"> Profil </li>
               <li class="stavka-navigacije" v-else> Profile </li>

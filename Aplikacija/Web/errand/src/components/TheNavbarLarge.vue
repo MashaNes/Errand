@@ -15,16 +15,14 @@
                     <a class="nav-link svetli" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <img  class = "slika" src = "../assets/menu.svg">
                     </a>
-                    <span class = "kruzic"></span>
+                    <span class = "kruzic" v-if="notificationNumber > 0"></span>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink" v-if="!isAdmin">
-                        <a class="dropdown-item">
-                            <div>
-                                <img src = "../assets/notifications.svg">
-                                <span class = "brojka"> 3 </span>
-                                <span v-if="isSerbian" class = "ikonica"> Obaveštenja </span>
-                                <span v-else class = "ikonica"> Notifications </span>
-                            </div>
-                        </a>
+                        <router-link :to="'/notifications'" class="dropdown-item">
+                            <img src = "../assets/notifications.svg">
+                            <span class = "brojka" v-if="notificationNumber > 0"> {{notificationNumber}} </span>
+                            <span v-if="isSerbian" class = "ikonica"> Obaveštenja </span>
+                            <span v-else class = "ikonica"> Notifications </span>
+                        </router-link>
                         <router-link :to = "'/newRequest'" class="dropdown-item">
                             <img src = "../assets/add.svg">
                             <span v-if="isSerbian" class = "ikonica"> Novi zahtev </span>
@@ -35,7 +33,7 @@
                             <span v-if="isSerbian" class = "ikonica"> Zahtevi </span>
                             <span v-else class = "ikonica"> Requests </span>
                         </router-link>
-                        <router-link :to = "goToUsers()" class="dropdown-item">
+                        <router-link :to="goToUsers()" class="dropdown-item">
                             <img src = "../assets/search.svg">
                             <span v-if="isSerbian" class = "ikonica"> Pretraži korisnike </span>
                             <span v-else class = "ikonica"> Search for users </span>
@@ -161,6 +159,10 @@ export default {
       isAdmin()
       {
           return this.$store.state.isAdmin
+      },
+      notificationNumber()
+      {
+          return this.$store.state.notificationNumber
       }
     },
     methods:
