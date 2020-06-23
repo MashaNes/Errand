@@ -135,6 +135,11 @@ export default {
     {
       type:Array,
       required: false
+    },
+    locationsList:
+    {
+      type: Array,
+      required: false
     }
   },
   components: {
@@ -188,6 +193,13 @@ export default {
       else
         return this.servicesList
     },
+    locations()
+    {
+      if(this.locationsList == undefined)
+        return null
+      else
+        return this.locationsList
+    },
     isBroadCast()
     {
       return this.$store.state.requestInCreation.broadcast
@@ -210,6 +222,7 @@ export default {
           rating_limit_up: this.showUnrated ? null : parseInt(String(this.filterRatingHigher)),
           rating_limit_down: this.showUnrated ? null : parseInt(String(this.filterRatingLower)),
           services: this.services,
+          locations: this.locations,
           no_rating: this.showUnrated,
           name: this.filterName,
           not_in_benefit: this.$route.params.benefitList == "benefit",
@@ -240,6 +253,7 @@ export default {
         rating_limit_up: this.showUnrated ? null : parseInt(String(this.filterRatingHigher)),
         rating_limit_down: this.showUnrated ? null : parseInt(String(this.filterRatingLower)),
         services: this.services,
+        locations: this.locations,
         no_rating: this.showUnrated,
         name: this.filterName,
         not_in_benefit: this.$route.params.benefitList == "benefit",
@@ -255,6 +269,7 @@ export default {
         rating_limit_up: null,
         rating_limit_down: null,
         services: this.services,
+        locations: this.locations,
         no_rating: true,
         name: "",
         not_in_benefit: this.$route.params.benefitList == "benefit",
@@ -269,6 +284,7 @@ export default {
         rating_limit_up: null,
         rating_limit_down: null,
         services: this.services,
+        locations: this.locations,
         no_rating: true,
         name: "",
         not_in_benefit: this.$route.params.benefitList == "benefit",
@@ -284,6 +300,7 @@ export default {
         rating_limit_up: null,
         rating_limit_down: null,
         services: this.services,
+        locations: this.locations,
         no_rating: true,
         name: "",
         not_in_benefit: this.$route.params.benefitList == "benefit",
@@ -298,7 +315,8 @@ export default {
     //   sort_rating_asc: true,
     //   rating_limit_up: null,
     //   rating_limit_down: null,
-    //   services: null,
+    //   services: this.services,
+    //   locations: this.locations,
     //   no_rating: true,
     //   name: "",
     //   not_in_benefit: this.benefitList,

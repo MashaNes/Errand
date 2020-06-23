@@ -23,7 +23,9 @@
           Level: {{achievement.level}}
         </span>
         <span class="image-span">
-          <img :src="'data:;base64,' + body.icon" height="20" width="20"/>
+          <span class="image-background">
+            <img :src="'data:;base64,' + body.icon" height="20" width="20"/>
+          </span>
         </span>
       </b-card-footer>
     </b-card>
@@ -46,7 +48,7 @@ export default {
       },
       description() {
         let returnText = ""
-        returnText += this.body.conditions[0].condition_numbers[this.achievement.level - 1].condition_number + " "
+        returnText += this.body.conditions[0].condition_numbers[this.achievement.level - 1].condition_number
         if(this.isSerbian) {
           returnText += this.body.description_sr
         }
@@ -106,6 +108,15 @@ export default {
 
   .body-goldenrod {
     background-color: rgb(216, 166, 41);
+  }
+
+  .image-background
+  {
+      background-color:white;
+      padding:3px;
+      border-radius: 5px;
+      padding-bottom:5px;
+      height:fit-content;
   }
 
   @media only screen and (max-width:650px)

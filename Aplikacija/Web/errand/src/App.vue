@@ -33,6 +33,7 @@ export default {
   {
     this.user.first_name = this.$cookie.get('ime');
     this.user.last_name = this.$cookie.get('prezime');
+    var firebase = this.$cookie.get('firebaseToken')
     if(this.user.first_name != null && this.user.last_name != null)
     {
       this.$store.state.authUser = this.user
@@ -49,6 +50,10 @@ export default {
       this.user.token = this.$cookie.get('token');
       this.user.id = this.$cookie.get('id');
       this.$store.dispatch("getUserById", this.user)
+    }
+    else if(firebase != null)
+    {
+      this.$store.dispatch("unregisterLogedoutFromFirebase", {token: this.$cookie.get('token'), firebaseToken: firebase})
     }
   }
 }

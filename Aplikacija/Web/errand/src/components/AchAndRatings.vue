@@ -59,28 +59,28 @@
               type="number" 
               :class="{'filter-input':true, 'ne-valja':isFilterHigherInvalid}" 
               v-model="filterValueHigher"
-              max="6"
-              min="2"
+              max="5"
+              min="1"
               @blur="resetFilterHigher"
             />
-            <b-button class="button is-primary search" @click="searchUsers">
+            <b-button class="button is-primary search" @click="searchUsers" :disabled="isFilterLowerInvalid || isFilterHigherInvalid || !filterValueHigher || !filterValueLower || filterValueLower > filterValueHigher">
               <img class="btn-img" src="@/assets/search.svg">
             </b-button>
           </div>
           <span 
             v-if="isFilterLowerInvalid"
             class="filter-invalid-span" 
-            v-text="isSerbian ? 'Vrednost \'od\' mora biti između 1 i 4' : 'The \'from\' value must be between 1 and 4'"
+            v-text="isSerbian ? 'Vrednost \'od\' mora biti između 1 i 5' : 'The \'from\' value must be between 1 and 5'"
           ></span>
           <span 
             v-if="isFilterHigherInvalid"
             class="filter-invalid-span" 
-            v-text="isSerbian ? 'Vrednost \'do\' mora biti između 2 i 5' : 'The \'to\' value must be between 2 and 5'"
+            v-text="isSerbian ? 'Vrednost \'do\' mora biti između 1 i 5' : 'The \'to\' value must be between 1 and 5'"
           ></span>
           <span 
-            v-if="!isFilterLowerInvalid && !isFilterHigherInvalid && filterValueHigher && filterValueLower && filterValueLower >= filterValueHigher"
+            v-if="!isFilterLowerInvalid && !isFilterHigherInvalid && filterValueHigher && filterValueLower && filterValueLower > filterValueHigher"
             class="filter-invalid-span" 
-            v-text="isSerbian ? 'Vrednost \'od\' mora biti manja od vrednosti \'do\'' : 'The \'from\' value must be lower than the \'to\' value'"
+            v-text="isSerbian ? 'Vrednost \'od\' mora biti manja ili jednaka vrednosti \'do\'' : 'The \'from\' value must be lower or equal to the \'to\' value'"
           ></span>
         </div>
       </div>
@@ -165,16 +165,16 @@ export default {
       perPage: 10,
       lastPage: 1,
       filterValueLower: 1,
-      filterValueHigher: 6,
+      filterValueHigher: 5,
       previousFilterLow: 1,
-      previousFilterHigh: 6,
+      previousFilterHigh: 5,
       realFilterLow: 1,
-      realFilterHigh: 6
+      realFilterHigh: 5
     }
   },
   validations: {
     filterValueLower: {between: between(1, 5)},
-    filterValueHigher: {between: between(2, 6)}
+    filterValueHigher: {between: between(1, 5)}
   },
   computed: {
     fullUserName() {
@@ -210,12 +210,12 @@ export default {
         return null
       const allRatings = this.$store.state.allRatings.results
       
-      let retValue = allRatings.filter(rtg => rtg.grade >= this.realFilterLow && rtg.grade < this.realFilterHigh)
+      let retValue = allRatings.filter(rtg => rtg.grade >= this.realFilterLow && rtg.grade <= this.realFilterHigh)
       retValue = retValue.slice((this.currentPage - 1) * 10, (this.currentPage -1 ) * 10 + 10)
       return retValue
     },
     shouldFilter() {
-      if(this.realFilterLow != 1 || this.realFilterHigh != 6)
+      if(this.realFilterLow != 1 || this.realFilterHigh != 5)
         return true
       return false
     },
@@ -252,7 +252,7 @@ export default {
       if(this.shouldFilter)
         if(this.$store.state.allRatings) {
           const allRtgs = this.$store.state.allRatings.results
-          return allRtgs.filter(rtg => rtg.grade >= this.realFilterLow && rtg.grade < this.realFilterHigh).length
+          return allRtgs.filter(rtg => rtg.grade >= this.realFilterLow && rtg.grade <= this.realFilterHigh).length
         }
         else
           return 1
@@ -260,12 +260,12 @@ export default {
         return this.ratings.count
     },
     resetFilterLower() {
-      if(this.filterValueLower > 5 || this.filterValueLower < 1 || !this.filterValueLower || this.filterValueLower >= this.filterValueHigher)
+      if(this.filterValueLower > 5 || this.filterValueLower < 1 || !this.filterValueLower || this.filterValueLower > this.filterValueHigher)
         this.filterValueLower = 1
     },
     resetFilterHigher() {
-      if(this.filterValueHigher > 6 || this.filterValueHigher < 2 || !this.filterValueHigher || this.filterValueLower >= this.filterValueHigher)
-        this.filterValueHigher = 6
+      if(this.filterValueHigher > 5 || this.filterValueHigher < 1 || !this.filterValueHigher || this.filterValueLower > this.filterValueHigher)
+        this.filterValueHigher = 5
     },
     getAnotherPortion() {
       if(this.lastPage != this.currentPage) {

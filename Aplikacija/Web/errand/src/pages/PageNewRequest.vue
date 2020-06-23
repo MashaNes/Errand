@@ -304,8 +304,23 @@ export default {
                 )
             })
 
+            var locations = []
+            if(this.request.destination.name != "" && this.request.destination.longitude && this.request.destination.latitude)
+                locations.push({latitude : this.request.destination.latitude, longitude: this.request.destination.longitude});
+            else
+            {
+                this.request.tasklist.forEach(element =>
+                {
+                    if(element.address && element.address.name && element.address.longitude && element.address.latitude)
+                        locations.push({latitude: element.address.latitude, longitude: element.address.longitude})
+                })
+            }
+
+            if(locations.length == 0)
+                locations = null
+
             this.$store.state.requestInCreation = this.request
-            this.$router.push({ name: 'PageBrowseUsers', params: {benefitList: "noBenefit", servicesList:this.$store.servicesRequired}})
+            this.$router.push({ name: 'PageBrowseUsers', params: {benefitList: "noBenefit", servicesList:this.$store.servicesRequired, locationsList: locations}})
         }
     },
     created()

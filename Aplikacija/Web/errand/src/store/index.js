@@ -212,7 +212,7 @@ export default new Vuex.Store({
                                 this.state.token = data['token']
                                 this.state.isDataLoaded = true
                                 this.state.isAdmin = data['user']['is_admin']
-                                Vue.cookie.set('token',data['token'], { expires: '1h' });
+                                Vue.cookie.set('token',data['token']);
                                 Vue.cookie.set('id',this.state.authUser.id, { expires: '1h' });
                                 Vue.cookie.set('ime',this.state.authUser.first_name, { expires: '1h' });
                                 Vue.cookie.set('prezime',this.state.authUser.last_name, { expires: '1h' });
@@ -266,7 +266,7 @@ export default new Vuex.Store({
                             this.state.token = data['token']
                             this.state.isDataLoaded = true
                             this.state.isAdmin = false
-                            Vue.cookie.set('token',data['token'], { expires: '1h' });
+                            Vue.cookie.set('token',data['token']);
                             Vue.cookie.set('id',this.state.authUser.id, { expires: '1h' });
                             Vue.cookie.set('ime',this.state.authUser.first_name, { expires: '1h' });
                             Vue.cookie.set('prezime',this.state.authUser.last_name, { expires: '1h' });
@@ -577,6 +577,7 @@ export default new Vuex.Store({
                     "rating_limit_up": filters.rating_limit_up,
                     "rating_limit_down": filters.rating_limit_down,
                     "services": filters.services,
+                    "locations": filters.locations,
                     "no_rating": filters.no_rating,
                     "name": filters.name,
                     "not_in_benefit": filters.not_in_benefit,
@@ -952,6 +953,7 @@ export default new Vuex.Store({
                         Vue.cookie.delete('ime');
                         Vue.cookie.delete('prezime');
                         Vue.cookie.delete('admin');
+                        Vue.cookie.delete('firebaseToken');
                     }
                     else
                     {
@@ -1912,7 +1914,7 @@ export default new Vuex.Store({
                 });
         },
         firebaseRegister({commit}, token) {
-            Vue.cookie.set('firebaseToken', token, { expires: '1h' })
+            Vue.cookie.set('firebaseToken', token)
             this.state.firebaseToken = token
             fetch("http://127.0.0.1:8000/api/v1/fcm_register/", {
                 method: 'POST',
@@ -1954,6 +1956,30 @@ export default new Vuex.Store({
                     p.json().then(data => {
                         console.log(data)
                         this.dispatch('logoutUser')
+                    })
+                }
+                else {
+                    console.log("error")
+                }
+            })
+        },
+        unregisterLogedoutFromFirebase({commit}, payload) {
+            this.state.firebaseOnMessageFunction()
+            fetch("http://127.0.0.1:8000/api/v1/fcm_unregister/", {
+                method: 'DELETE',
+                headers: {
+                    "Content-type" : "application/json",
+                    "Authorization" : "Token " + payload.token
+                },
+                body:  JSON.stringify( {
+                    "reg_id" : payload.firebaseToken
+                })
+            }).then(p => {
+                if(p.ok) {
+                    p.json().then(data => {
+                        console.log(data)
+                        Vue.cookie.delete('firebaseToken');
+                        Vue.cookie.delete('token');
                     })
                 }
                 else {

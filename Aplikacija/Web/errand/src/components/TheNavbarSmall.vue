@@ -16,10 +16,12 @@
                         <a class="nav-link" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <img  class = "slika" src = "../assets/menu.svg">
                         </a>
+                        <span class = "kruzic"></span>
                         <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink"  v-if="!isAdmin">
                             <a class="dropdown-item">
                                 <div>
                                     <img src = "../assets/notifications.svg">
+                                    <span class = "brojka"> 16 </span>
                                     <span v-if="isSerbian" class = "ikonica"> Obaveštenja </span>
                                     <span v-else class = "ikonica"> Notifications </span>
                                 </div>
@@ -301,5 +303,30 @@ export default {
     {
         width:24px;
         height:24px;
+    }
+
+    .brojka
+    {
+        background-color: red;
+        width:fit-content;
+        height:fit-content;
+        color:white;
+        border-radius:10px;
+        padding: 1px;
+        font-weight: 600;
+        font-size: 12px;
+        margin-bottom: 15px;
+        margin-left: -10px;
+        margin-top: -5px;
+    }
+
+    .kruzic
+    {
+        background-color: red;
+        border-radius:10px;
+        margin-left: -23px;
+        margin-top: 9px;
+        height: 12px;
+        width: 12px;
     }
 </style>
