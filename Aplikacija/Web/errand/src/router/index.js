@@ -30,6 +30,7 @@ import PageReports from "@/pages/PageReports"
 import PageUncategorizedTasks from "@/pages/PageUncategorizedTasks"
 import PageViewRequestAdmin from "@/pages/PageViewRequestAdmin"
 import PageNewAchievement from "@/pages/PageNewAchievement"
+import PageNotifications from "@/pages/PageNotifications"
 
 Vue.use(Router)
 
@@ -414,6 +415,23 @@ const router = new Router(
                     if(store.state.logedIn)
                     {
                         if(store.state.isAdmin)
+                            next()
+                        else
+                        next({name: 'PageForbidden'})
+                    }
+                    else
+                        next({name: 'PageNotAuthenticated'})
+                }
+            },
+            {
+                path: "/notifications",
+                name: "PageNotifications",
+                component: PageNotifications,
+                beforeEnter(to,from,next)
+                {
+                    if(store.state.logedIn)
+                    {
+                        if(!store.state.isAdmin)
                             next()
                         else
                         next({name: 'PageForbidden'})

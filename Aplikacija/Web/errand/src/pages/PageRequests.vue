@@ -228,6 +228,10 @@
         },
         created()
         {
+            if(this.$store.state.notificationNumber == -1)
+            {
+                this.$store.dispatch("getNotificationNumber")
+            }
             const filters = {
                 created_by : this.$store.state.authUser.id,
                 done_by : null,

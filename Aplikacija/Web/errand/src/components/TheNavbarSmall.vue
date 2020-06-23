@@ -16,16 +16,14 @@
                         <a class="nav-link" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <img  class = "slika" src = "../assets/menu.svg">
                         </a>
-                        <span class = "kruzic"></span>
+                        <span class = "kruzic" v-if="notificationNumber > 0"></span>
                         <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink"  v-if="!isAdmin">
-                            <a class="dropdown-item">
-                                <div>
-                                    <img src = "../assets/notifications.svg">
-                                    <span class = "brojka"> 16 </span>
-                                    <span v-if="isSerbian" class = "ikonica"> Obaveštenja </span>
-                                    <span v-else class = "ikonica"> Notifications </span>
-                                </div>
-                            </a>
+                            <router-link :to="'/notifications'" class="dropdown-item">
+                                <img src = "../assets/notifications.svg">
+                                <span class = "brojka" v-if="notificationNumber > 0"> {{notificationNumber}} </span>
+                                <span v-if="isSerbian" class = "ikonica"> Obaveštenja </span>
+                                <span v-else class = "ikonica"> Notifications </span>
+                            </router-link>
                             <router-link :to = "goToProfile()" class="dropdown-item">
                                 <img src = "../assets/profile.svg">
                                 <span v-if="isSerbian" class = "ikonica"> Profil </span>
@@ -151,6 +149,10 @@ export default {
       isAdmin()
       {
           return this.$store.state.isAdmin
+      },
+      notificationNumber()
+      {
+          return this.$store.state.notificationNumber
       }
     },
     methods:
