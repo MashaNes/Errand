@@ -3,15 +3,14 @@ import base64
 from django.core.files.base import ContentFile
 from . import models
 
-PREFIX = '../../../'
 PIC_PATH = 'db/images/'
 ADMIN_KEY = "hR6s7RPPRtEhQNSL3IT1LwM5XC0J1LcdOvXPFFlk"
 
 def create_picture(data, name):
     ext = '.png'
     path = PIC_PATH + name + ext
-    if os.path.exists(PREFIX + path):
-        os.remove(PREFIX + path)
+    if os.path.exists(path):
+        os.remove(path)
     img = ContentFile(base64.b64decode(data), name=path)
     return img
 
@@ -406,6 +405,7 @@ def create_achievement(data):
     if data['icon']:
         icon = create_picture(data=data['icon'],
                               name='achievements/' + str(achievement.id))
+        print(icon)
         achievement.icon = icon
         achievement.save()
 

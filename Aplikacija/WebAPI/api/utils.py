@@ -9,7 +9,6 @@ from pytz import UTC
 
 from . import models
 
-PREFIX = '../../../'
 DISTANCE_MATRIX_KEY = "AIzaSyB10Ab2i9Kq_jsM_NX-zM72i9g50N6kR1U"
 
 def calc_distance(lon1, lat1, lon2, lat2):
@@ -26,10 +25,10 @@ def calc_distance(lon1, lat1, lon2, lat2):
 def load_img(img_path):
     base64_string = ""
 
-    if not os.path.exists(PREFIX + img_path):
+    if not os.path.exists(img_path):
         return None
 
-    with open(PREFIX + img_path, 'rb') as img_file:
+    with open(img_path, 'rb') as img_file:
         base64_string = str(base64.b64encode(img_file.read()))
         base64_string = base64_string[2:-1]
     return base64_string
