@@ -8,7 +8,7 @@
             </div>
             <a @click="goToProfileCreated" class="clickable"> {{request.created_by.email}} </a>
         </div>
-        <div class="user-data">
+        <div class="user-data" v-if="request.working_with != null">
             <div class="name">
                 <img src="../assets/running.svg" class="ikonica" />
                 <a @click="goToProfileWorking" class="clickable"> {{request.working_with.first_name}} {{request.working_with.last_name}}, </a>

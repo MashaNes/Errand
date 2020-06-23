@@ -14,8 +14,8 @@
 
         </div>
         <div class="body-div">
-            <div v-if="notification.working_with != 0" class="image is-128x128">
-                <!-- <img class="rounded-image" :src="notification.working_with.picture ? 'data:;base64,' + notification.working_with.picture : require('../assets/no-picture.png')" @click="goToProfile"> -->
+            <div v-if="notification.working_with != null" class="image is-128x128">
+                <img class="rounded-image" :src="notification.working_with.picture ? 'data:;base64,' + notification.working_with.picture : require('../assets/no-picture.png')" @click="goToProfile">
             </div>
             <span v-if="isSerbian"> {{notification.body_sr}} </span>
             <span v-else> {{notification.body_en}} </span>
@@ -114,6 +114,19 @@ export default {
             }
 
             return day + ". " + monthString + " " + year + "." + "  " + hoursString + ":" + minutesString + "h"
+        }
+    },
+    methods:
+    {
+        goToProfile()
+        {
+            this.$router.push({
+                name: "PageViewProfile", 
+                params: {
+                    id: this.notification.working_with.id, 
+                    user: this.notification.working_with
+                }
+            })
         }
     }
 }

@@ -15,10 +15,10 @@
         <b-card-body class="body-goldenrod">
             <b-card-text>
                 <span v-if="isSerbian">
-                    X{{achievement.description_sr}}<span v-if="achievement.conditions.length > 1">Y</span>
+                    {{achievement.description_sr}}
                 </span>
                 <span v-else> 
-                    X{{achievement.description_en}}<span v-if="achievement.conditions.length > 1">Y</span>
+                    {{achievement.description_en}}
                 </span>
             </b-card-text>
         </b-card-body>

@@ -2071,6 +2071,21 @@ export default new Vuex.Store({
                                 this.state.notifications = data.results
                             else
                                 this.state.notifications = this.state.notifications.concat(data.results)
+                            
+                            var ids = []
+                            data.results.forEach(element =>
+                                {
+                                    if(element.seen == false)
+                                    {
+                                        element.seen = true;
+                                        ids.push(element.id)
+                                    }
+                                })
+                            if(ids.length > 0)
+                            {
+                                this.state.notificationNumber -= ids.length
+                                this.dispatch("setNotificationFlag", {ids: ids, seen: true, opened: false})
+                            }
 
                             if(data.next == null)
                                 this.state.moreNotifications = false
@@ -2083,6 +2098,37 @@ export default new Vuex.Store({
                     {
                         console.log("Error")
                         this.state.isDataLoaded = true
+                    }
+                });
+        },
+        setNotificationFlag({commit}, payload)
+        {
+            fetch("http://127.0.0.1:8000/api/v1/notification_flags_update/",
+            {
+                method: 'PUT',
+                headers:
+                {
+                    "Content-type" : "application/json",
+                    "Authorization" : "Token " + this.state.token
+                },
+                body:  JSON.stringify(
+                {
+                    "ids" : payload.ids,
+                    "opened" : payload.opened,
+                    "seen" : payload.seen
+                })
+            }).then( p => 
+                {
+                    if(p.ok)
+                    {
+                        p.json().then(data =>
+                        {
+                            console.log(data)
+                        })
+                    }
+                    else
+                    {
+                        console.log("Error")
                     }
                 });
         }

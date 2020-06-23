@@ -1,13 +1,13 @@
 <template>
-    <div class="notification-wrapper">
+    <a class="notification-wrapper" @click="kliknuto">
         <div class="title-div">
             <span v-if="isSerbian"> {{notification.title_sr}} </span>
             <span v-else> {{notification.title_en}} </span>
         </div>
         <div class="linka"></div>
         <div class="body-div">
-            <div v-if="notification.working_with != 0" class="image is-128x128">
-                <!-- <img class="rounded-image" :src="notification.working_with.picture ? 'data:;base64,' + notification.working_with.picture : require('../assets/no-picture.png')" @click="goToProfile"> -->
+            <div v-if="notification.working_with != null" class="image is-128x128">
+                <img class="rounded-image" :src="notification.working_with.picture ? 'data:;base64,' + notification.working_with.picture : require('../assets/no-picture.png')" @click="goToProfile">
             </div>
             <span v-if="isSerbian"> {{notification.body_sr}} </span>
             <span v-else> {{notification.body_en}} </span>
@@ -16,7 +16,7 @@
             <span v-if="isSerbian"> {{dateAndTime}}</span>
             <span v-else> {{notificationTime  | showTime}}</span>
         </div>
-    </div>
+    </a>
 </template>
 
 <script>
@@ -119,6 +119,17 @@ export default {
                     user: this.notification.working_with
                 }
             })
+        },
+        kliknuto()
+        {
+            if(this.notification.notification_type == 1 || this.notification.notification_type == 6 || this.notification.notification_type == 7 || this.notification.notification_type == 10)
+                this.$router.push({ name: "PageViewRequest", params: { id: this.notification.type_id }})
+            else if(this.notification.notification_type == 8)
+                this.$router.push({ name: "PageRatings", params: { id: this.$store.state.authUser.id, user: this.$store.state.authUser }})
+            else if(this.notification.notification_type == 8)
+                this.$router.push({ name: "PageAchievements", params: { id: this.$store.state.authUser.id, user: this.$store.state.authUser }})
+            else if(this.notification.notification_type == 2 || this.notification.notification_type == 5)
+                this.$router.push({ name: "PageViewRequest", params: { id: this.notification.type_id }})
         }
     }
 }
