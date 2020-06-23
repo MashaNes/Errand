@@ -428,7 +428,10 @@ def search_requests(queryset, data):
                                 print("min_dist2: " + str(min_dist))
                 if min_dist and (min_dist > data['max_dist'] or min_dist > _q.max_dist):
                     to_add = False
-            if to_add and min_dist:
+                if to_add and min_dist:
+                    broadcast_queryset.append(_q)
+                    bdist.append(min_dist)
+            elif to_add:
                 broadcast_queryset.append(_q)
                 bdist.append(min_dist)
 
