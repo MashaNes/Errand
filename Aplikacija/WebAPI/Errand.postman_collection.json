@@ -430,7 +430,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\t\"created_by\" : 3,\n\t\"sort_rating\" : true,\n\t\"sort_rating_asc\" : false,\n\t\"rating_limit_up\" : 4.9,\n\t\"rating_limit_down\" : 3.9,\n\t\"services\" : [\n\t\t{\n\t\t\t\"id\" : 1,\n\t\t\t\"min_rating\" : 3.5,\n\t\t\t\"max_dist\" : 100\n\t\t}\n\t],\n\t\"no_rating\" : true,\n\t\"name\" : \"\",\n\t\"not_in_benefit\" : false,\n\t\"active\" : true,\n\t\"locations\" : [\n\t\t{\n\t\t\t\"latitude\" : 123,\n\t\t\t\"longitude\" : 123\n\t\t}\n\t]\n}",
+					"raw": "{\n\t\"created_by\" : 4,\n\t\"sort_rating\" : true,\n\t\"sort_rating_asc\" : false,\n\t\"rating_limit_up\" : 4.9,\n\t\"rating_limit_down\" : 3.4,\n\t\"services\" : [\n\t\t{\n\t\t\t\"id\" : 2,\n\t\t\t\"min_rating\" : 3.5,\n\t\t\t\"max_dist\" : 10000\n\t\t}\n\t],\n\t\"no_rating\" : true,\n\t\"name\" : \"\",\n\t\"not_in_benefit\" : false,\n\t\"active\" : false,\n\t\"locations\" : [\n\t\t{\n\t\t\t\"latitude\" : 43.319185,\n\t\t\t\"longitude\" : 21.974395\n\t\t}\n\t]\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -793,7 +793,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\t\"created_by\" : 5,\n\t\"address\" : 5,\n\t\"name\" : \"Dragise Cvetkovica 60\",\n\t\"longitude\" : 43.319185,\n\t\"latitude\" : 21.913395,\n\t\"home\" : false,\n\t\"arrived\" : false\n}",
+					"raw": "{\n\t\"created_by\" : 6,\n\t\"address\" : 3,\n\t\"name\" : \"Dragise Cvetkovica 60\",\n\t\"latitude\" : 43.319185,\n\t\"longitude\" : 21.976395,\n\t\"home\" : true,\n\t\"arrived\" : false\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -2293,13 +2293,13 @@
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "Token e23bc9ea761435c86c696bb13455b30cce4b62b9",
-						"type": "text"
+						"type": "text",
+						"value": "Token e23bc9ea761435c86c696bb13455b30cce4b62b9"
 					}
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\t\"id\" : 36,\n\t\"seen\" : true,\n\t\"opened\" : false\n}",
+					"raw": "{\n\t\"ids\" : [54, 55],\n\t\"seen\" : false,\n\t\"opened\" : true\n}",
 					"options": {
 						"raw": {
 							"language": "json"

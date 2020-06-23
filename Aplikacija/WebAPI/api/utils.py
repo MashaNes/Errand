@@ -3,6 +3,7 @@ import os.path
 import googlemaps
 
 from fcm_django.models import FCMDevice
+from django.utils import timezone
 from datetime import datetime
 from pytz import UTC
 
@@ -65,7 +66,8 @@ def load_pictures_user(data):
 
     if data['achievements']:
         for _d in data['achievements']:
-            _d['icon'] = load_img(_d['icon'])
+            if _d['achievement']['icon']:
+                _d['achievement']['icon'] = load_img(_d['achievement']['icon'])
 
     if data['requests']:
         data['requests'] = load_pictures_multiple_requests_info(data['requests'])
@@ -155,55 +157,15 @@ def filter_user(queryset, data):
 
     for _q in queryset:
         to_add = True
+        if _q.ban:
+            if _q.ban.until > datetime.now(timezone.utc):
+                to_add = False
+
         if user.id == _q.id or _q.user.is_admin:
             to_add = False
 
-        # found = False
-        # if to_add:
-        #     for _b in user.blocked.all():
-        #         if _b.id == _q.user.id:
-        #             found = True
-        #             break
-        #     to_add = not found
-
         if data['active']:
             if _q.user.status == 0:
-                to_add = False
-        else:
-            pass # TODO: Implement
-
-        if to_add and data['services']:
-            min_max_dist1 = None
-            for _s in data['services']:
-                if min_max_dist1 is None or _s['max_dist'] < min_max_dist1:
-                    min_max_dist1 = _s['max_dist']
-                found = False
-                if _s['id'] == 1:
-                    found = True
-                else:
-                    for _q_s in _q.services.all():
-                        if (_s['id'] == _q_s.service.id): # and _s['max_dist'] >= _q_s.max_dist
-                            if (data['no_rating'] or (_q.user.avg_rating and
-                                    _s['min_rating'] <= _q.user.avg_rating)):
-                                found = True
-                                break
-                to_add = found
-
-        if to_add and data['locations']:
-            min_max_dist2 = None
-            for _q_s in _q.services.all():
-                if min_max_dist2 is None or min_max_dist2 > _q_s.max_dist:
-                    min_max_dist2 = _q_s.max_dist
-
-            min_dist = None
-            for _l in data['locations']:
-                dist = calc_distance(_q.location.longitude, _q.location.latitude,
-                                     _l['longitude'], _l['latitude'])
-                if min_dist is None or min_dist > dist:
-                    min_dist = dist
-
-            if (min_dist is None or min_max_dist1 is None or min_max_dist2 is None or
-                    min_dist > min_max_dist1 or min_dist > min_max_dist2):
                 to_add = False
 
         if to_add and data['name']:
@@ -232,6 +194,55 @@ def filter_user(queryset, data):
 
             if to_add and data['rating_limit_down']:
                 if _q.user.avg_rating < data['rating_limit_down']:
+                    to_add = False
+
+        if to_add and data['services']:
+            for _s in data['services']:
+                found = False
+                if _s['id'] == 1:
+                    found = True
+                else:
+                    for _q_s in _q.services.all():
+                        if (_s['id'] == _q_s.service.id):
+                            if (data['no_rating'] or (_q.user.avg_rating and
+                                    _s['min_rating'] <= _q.user.avg_rating)):
+                                found = True
+                                break
+                to_add = found
+
+        # CALCULATE DISTANCE
+        if to_add and data['locations']:
+            min_max_dist1 = None
+            min_max_dist2 = None
+
+            for _s in data['services']:
+                if min_max_dist1 is None or _s['max_dist'] < min_max_dist1:
+                    min_max_dist1 = _s['max_dist']
+
+                for _q_s in _q.services.all():
+                    if (_q_s.service.id == _s['id'] and
+                        (min_max_dist2 is None or _q_s.max_dist < min_max_dist2)):
+                        min_max_dist2 = _q_s.max_dist
+
+
+            min_dist = None
+            if _q.user.status == 1:
+                lon = _q.user.location.longitude
+                lat = _q.user.location.latitude
+            else:
+                for addr in _q.addresses.all():
+                    if addr.home:
+                        lon = addr.longitude
+                        lat = addr.latitude
+
+            if lon and lat:
+                for _l in data['locations']:
+                    dist = calc_distance(lon, lat, _l['longitude'], _l['latitude'])
+                    if dist and (min_dist is None or min_dist > dist):
+                        min_dist = dist
+
+                if (min_dist is None or min_max_dist1 is None or min_max_dist2 is None or
+                        min_dist > min_max_dist1 or min_dist > min_max_dist2):
                     to_add = False
 
         if to_add:

@@ -1056,6 +1056,7 @@ class RequestFinish(generics.UpdateAPIView):
 
                 if (req.accepted_offer.payment_type == "1" and
                         req.request.location and
+                        request.data['location'] and
                         request.data['location']['longitude'] and
                         request.data['location']['latitude']):
                     lon1 = req.request.location.longitude
@@ -1347,17 +1348,21 @@ class PictureRemove(generics.RetrieveDestroyAPIView):
 # PUT notification_flags_update/
 class NotificationFlagsUpdate(generics.UpdateAPIView):
     def update(self, request):
-        notif = models.Notification.objects.get(id=request.data['id'])
+        if request.data['ids']:
+            for nid in request.data['ids']:
+            # nid = request.data['ids']
+                notif = models.Notification.objects.get(id=nid)
 
-        if request.data['seen']:
-            notif.seen = True
-            notif.save()
+                if request.data['seen']:
+                    notif.seen = True
+                    notif.save()
 
-        if request.data['opened']:
-            notif.opened = True
-            notif.save()
+                if request.data['opened']:
+                    notif.opened = True
+                    notif.save()
 
-        return Response({'detail' : 'success'})
+            return Response({'detail' : 'success'})
+        return Response({'detail' : 'failed'})
 
 # GET notification/{id}
 class NotificationViewSet(viewsets.ModelViewSet):
