@@ -29,6 +29,7 @@ export default new Vuex.Store({
         authUserAchievements: null,
         userRatings: null,
         authUserRatings: null,
+        allRatings: null,
         isSerbian: true,
         allUsers: {},
         logedIn: false,
@@ -342,45 +343,38 @@ export default new Vuex.Store({
         },
         getUserAchievements({commit}, {userId, endpoint}) {
             this.state.isDataLoaded = false
-            const allAch = fetchAchievements();
-            const filteredAch = Object.values(allAch).filter(a => a.user == userId)
-            commit('setUserAchievements', {achievements: filteredAch, id: userId})
-            this.state.isDataLoaded = true
-            //skinuti komentar kad prorade dostignuca; obratiti paznju da data ima polja results i count
-
-            // this.state.isDataLoaded = false
-            // fetch(endpoint, {
-            //     method: "POST",
-            //     headers:
-            //     {
-            //         "Content-type" : "application/json",
-            //         "Authorization" : "Token " + this.state.token
-            //     },
-            //     body:  JSON.stringify(
-            //     {
-            //         "created_by" : userId,
-            //         "blocked" : false,
-            //         "working_hours" : false,
-            //         "addresses" : false,
-            //         "services" : false,
-            //         "offers" : false,
-            //         "notifications" : false,
-            //         "ratings" : false,
-            //         "benefitlist" : false,
-            //         "achievements" : true,
-            //         "requests" : false
-            //     })
-            // }).then(p => {
-            //     if(p.ok) {
-            //         p.json().then(data => {
-            //             console.log(data)
-            //             commit('setUserAchievements', {achievements: data, id: userId})
-            //             console.log(this.state.userAchievements)
-            //             this.state.isDataLoaded = true
-            //         })
-            //     }
-            //     else console.log("Error")
-            // })
+            fetch(endpoint, {
+                method: "POST",
+                headers:
+                {
+                    "Content-type" : "application/json",
+                    "Authorization" : "Token " + this.state.token
+                },
+                body:  JSON.stringify(
+                {
+                    "created_by" : userId,
+                    "blocked" : false,
+                    "working_hours" : false,
+                    "addresses" : false,
+                    "services" : false,
+                    "offers" : false,
+                    "notifications" : false,
+                    "ratings" : false,
+                    "benefitlist" : false,
+                    "achievements" : true,
+                    "requests" : false
+                })
+            }).then(p => {
+                if(p.ok) {
+                    p.json().then(data => {
+                        console.log(data)
+                        commit('setUserAchievements', {achievements: data, id: userId})
+                        console.log(this.state.userAchievements)
+                        this.state.isDataLoaded = true
+                    })
+                }
+                else console.log("Error")
+            })
         },
         fillUserRatings({commit}, {userId, endpoint}) {
             this.state.isDataLoaded = false
@@ -412,6 +406,39 @@ export default new Vuex.Store({
                         commit('setUserRatings', {ratings: data, id: userId})
                         console.log(this.state.userRatings)
                         this.state.isDataLoaded = true
+                    })
+                }
+                else console.log("Error")
+            })
+        },
+        fillAllUserRatings({commit}, userId) {
+            fetch("http://localhost:8000/api/v1/user_info_filtered/", {
+                method: "POST",
+                headers:
+                {
+                    "Content-type" : "application/json",
+                    "Authorization" : "Token " + this.state.token
+                },
+                body:  JSON.stringify(
+                {
+                    "created_by" : userId,
+                    "blocked" : false,
+                    "working_hours" : false,
+                    "addresses" : false,
+                    "services" : false,
+                    "offers" : false,
+                    "notifications" : false,
+                    "ratings" : true,
+                    "benefitlist" : false,
+                    "achievements" : false,
+                    "requests" : false
+                })
+            }).then(p => {
+                if(p.ok) {
+                    p.json().then(data => {
+                        console.log(data)
+                        commit('setAllUserRatings', data)
+                        console.log(this.state.allRatings)
                     })
                 }
                 else console.log("Error")
@@ -2002,6 +2029,9 @@ export default new Vuex.Store({
                 state.authUserRatings = ratings
             else
                 state.userRatings = ratings
+        },
+        setAllUserRatings(state, ratings) {
+            state.allRatings = ratings
         },
         setNotAuthUserServices(state, services) {
             state.notAuthUserServices = services

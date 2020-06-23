@@ -21,13 +21,21 @@
     </div>   
 
     <div class = "content-wrapper">
-      <Spinner v-if="!$store.state.isDataLoaded" />
+      <Spinner v-if="(!shouldFilter && !dataLoaded) || (shouldFilter && !$store.state.allRatings)" />
       <b-pagination 
-        v-model="currentPage" :total-rows="tab == 'Achievements' ? achievements.length : ratings.count" 
+        v-model="currentPage" :total-rows="tab == 'Achievements' ? achievements.count : ratingsCount()" 
         :per-page="perPage" align="center" class="pag-top"
-        @input="getAnotherPortion" v-if="$store.state.isDataLoaded"
+        @input="getAnotherPortion" v-if="(!shouldFilter && dataLoaded) || (shouldFilter && $store.state.allRatings)"
       ></b-pagination>
-      <div class="filter-wrapper" v-if="tab=='Ratings' && $store.state.isDataLoaded && ratings.results.length > 0"> 
+      <!-- <div 
+        class="filter-wrapper" 
+        v-if="tab=='Ratings' && ((!shouldFilter && $store.state.isDataLoaded && ratings.results.length > 0) ||
+        (shouldFilter && filteredRatings && filteredRatings.length > 0))"
+      >  -->
+      <div 
+        class="filter-wrapper" 
+        v-if="tab=='Ratings' && shouldShowFilter"
+      > 
         <div class="filter-inner-wrap">
           <span class="filter-span" v-text="isSerbian ? 'Prikaži ocene u opsegu' : 'Show grades in range'"></span>
           <div class="filter-input-and-span">
@@ -39,7 +47,7 @@
               type="number" 
               :class="{'filter-input':true, 'ne-valja':isFilterLowerInvalid}" 
               v-model="filterValueLower"
-              max="4"
+              max="5"
               min="1"
               @blur="resetFilterLower"
             />
@@ -51,10 +59,13 @@
               type="number" 
               :class="{'filter-input':true, 'ne-valja':isFilterHigherInvalid}" 
               v-model="filterValueHigher"
-              max="5"
+              max="6"
               min="2"
               @blur="resetFilterHigher"
             />
+            <b-button class="button is-primary search" @click="searchUsers">
+              <img class="btn-img" src="@/assets/search.svg">
+            </b-button>
           </div>
           <span 
             v-if="isFilterLowerInvalid"
@@ -69,24 +80,29 @@
           <span 
             v-if="!isFilterLowerInvalid && !isFilterHigherInvalid && filterValueHigher && filterValueLower && filterValueLower >= filterValueHigher"
             class="filter-invalid-span" 
-            v-text="isSerbian ? 'Vrednost \'od\' mora biti manja od vrednosti \'do\'' : 'The \'to\' value must be lower than the \'from\' value'"
+            v-text="isSerbian ? 'Vrednost \'od\' mora biti manja od vrednosti \'do\'' : 'The \'from\' value must be lower than the \'to\' value'"
           ></span>
         </div>
       </div>
-      <div v-if="tab=='Achievements' && $store.state.isDataLoaded && achievements.length > 0" class="ach-wrap"> 
+      <div v-if="tab=='Achievements' && dataLoaded && achievements.results.length > 0" class="ach-wrap"> 
         <Achievement 
-          v-for="achievement in achievements"
+          v-for="achievement in achievements.results"
           :key="achievement.id"
           :achievement="achievement"
         />
       </div>
-      <div v-if="tab=='Ratings' && $store.state.isDataLoaded && ratings.results.length > 0" class="rating-wrap"> 
+      <div 
+        v-if="tab=='Ratings' && ((!shouldFilter && dataLoaded && ratings.results.length > 0) || 
+        (shouldFilter && filteredRatings && filteredRatings.length > 0))" class="rating-wrap"> 
         <Rating 
-          v-for="rating in ratings.results"
+          v-for="rating in ratingsCollection"
           :key="rating.id"
           :rating="rating"
         />
       </div>
+      <span class="no-results" v-if="(tab == 'Ratings' && shouldFilter && filteredRatings && filteredRatings.length == 0)">
+        <i v-text="isSerbian ? 'Nema ocena koje odgovaraju unetim granicama.' : 'There are no ratings that fit the entered limits.'"></i>
+      </span>
       <span class="no-results" v-if="noResults && user.id != $store.state.authUser.id">
         <i v-if="tab == 'Achievements'" v-text="isSerbian ? 'Korisnik nema dostignuća za sada.' : 'This user has no achievements yet.'"></i>
         <i v-if="tab == 'Ratings'" v-text="isSerbian ? 'Korisnik nije bio ocenjivan do sada.' : 'This user has not been rated yet.'"></i>
@@ -96,8 +112,8 @@
         <i v-if="tab == 'Ratings'" v-text="isSerbian ? 'Niste bili ocenjivani do sada.' : 'You have not been rated yet.'"></i>
       </span>
       <b-pagination 
-        v-model="currentPage" :total-rows="tab == 'Achievements' ? achievements.length : ratings.count" 
-        :per-page="perPage" align="center" class="pag-bottom" v-if="$store.state.isDataLoaded"
+        v-model="currentPage" :total-rows="tab == 'Achievements' ? achievements.count : ratingsCount()" 
+        :per-page="perPage" align="center" class="pag-bottom" v-if="(!shouldFilter && dataLoaded) || (shouldFilter && $store.state.allRatings)"
       ></b-pagination>
     </div>
   </div>
@@ -133,10 +149,8 @@ export default {
       required: false
     },
     achievements: {
-      type: Array, 
+      type: Object, 
       required: false
-      //prepraviti da bude Object kad se napravi rad sa dostignućima; tad prepraviti u b-pagination 
-      //da za total-rows dobija achievements.count i da v-for obilazi achievements.results
     },
     RequestSelect:
     {
@@ -151,12 +165,16 @@ export default {
       perPage: 10,
       lastPage: 1,
       filterValueLower: 1,
-      filterValueHigher: 5
+      filterValueHigher: 6,
+      previousFilterLow: 1,
+      previousFilterHigh: 6,
+      realFilterLow: 1,
+      realFilterHigh: 6
     }
   },
   validations: {
-    filterValueLower: {between: between(1, 4)},
-    filterValueHigher: {between: between(2, 5)}
+    filterValueLower: {between: between(1, 5)},
+    filterValueHigher: {between: between(2, 6)}
   },
   computed: {
     fullUserName() {
@@ -173,35 +191,106 @@ export default {
     },
     noResults() {
       if(this.tab == 'Achievements')
-        return this.achievements.length == 0 //prepraviti na achivements.results.length
+        return this.achievements ? this.achievements.results.length == 0 : false
+      else {
+        if(!this.shouldFilter)
+          return this.ratings ? this.ratings.results.length == 0 : false
+        else
+          return this.$store.state.allRatings ? false : true
+      }
+    },
+    shouldShowFilter() {
+      if(!this.shouldFilter)
+        return this.ratings ? this.ratings.results.length > 0 : false
       else
-        return this.ratings.results.length == 0
+        return this.$store.state.allRatings ? true : false
+    },
+    filteredRatings() {
+      if(!this.$store.state.allRatings) 
+        return null
+      const allRatings = this.$store.state.allRatings.results
+      
+      let retValue = allRatings.filter(rtg => rtg.grade >= this.realFilterLow && rtg.grade < this.realFilterHigh)
+      retValue = retValue.slice((this.currentPage - 1) * 10, (this.currentPage -1 ) * 10 + 10)
+      return retValue
+    },
+    shouldFilter() {
+      if(this.realFilterLow != 1 || this.realFilterHigh != 6)
+        return true
+      return false
+    },
+    ratingsCollection() {
+      if(this.shouldFilter) 
+        return this.filteredRatings
+      else 
+        return this.ratings.results
+    },
+    
+    dataLoaded() {
+      if(this.tab == "Achievements") {
+        if(this.achievements)
+          return true
+        else return false
+      }
+      else {
+        if(this.ratings) 
+          return true
+        else return false
+      }
     }
   },
   methods: {
     changeTab() {
       if(this.tab === "Ratings")
         this.tab = "Achievements";
-      else this.tab = "Ratings";
+      else {
+       this.tab = "Ratings";
+       this.currentPage = 1
+      }
+    },
+    ratingsCount() {
+      if(this.shouldFilter)
+        if(this.$store.state.allRatings) {
+          const allRtgs = this.$store.state.allRatings.results
+          return allRtgs.filter(rtg => rtg.grade >= this.realFilterLow && rtg.grade < this.realFilterHigh).length
+        }
+        else
+          return 1
+      else
+        return this.ratings.count
     },
     resetFilterLower() {
-      if(this.filterValueLower > 4 || this.filterValueLower < 1 || !this.filterValueLower || this.filterValueLower >= this.filterValueHigher)
+      if(this.filterValueLower > 5 || this.filterValueLower < 1 || !this.filterValueLower || this.filterValueLower >= this.filterValueHigher)
         this.filterValueLower = 1
     },
     resetFilterHigher() {
-      if(this.filterValueHigher > 5 || this.filterValueHigher < 2 || !this.filterValueHigher || this.filterValueLower >= this.filterValueHigher)
-        this.filterValueHigher = 5
+      if(this.filterValueHigher > 6 || this.filterValueHigher < 2 || !this.filterValueHigher || this.filterValueLower >= this.filterValueHigher)
+        this.filterValueHigher = 6
     },
     getAnotherPortion() {
       if(this.lastPage != this.currentPage) {
         window.scrollTo(0, 0)
-        const storeFunction = this.tab == 'Achievements' ? 'getUserAchievements' : 'fillUserRatings'
-        this.$store.dispatch(storeFunction, {
-          userId: this.user.id,
-          endpoint: "http://localhost:8000/api/v1/user_info_filtered/?paginate=true&page=" + this.currentPage
-        })
+        if(!this.shouldFilter) {
+          const storeFunction = this.tab == 'Achievements' ? 'getUserAchievements' : 'fillUserRatings'
+          this.setNullToCollection(this.tab)
+          this.$store.dispatch(storeFunction, {
+            userId: this.user.id,
+            endpoint: "http://localhost:8000/api/v1/user_info_filtered/?paginate=true&page=" + this.currentPage
+          })
+        }
         this.lastPage = this.currentPage
       }
+    },
+    setNullToCollection(collection) {
+      if(collection == 'Achievements') {
+        if(this.user.id == this.$store.state.authUser.id)
+          this.$store.state.authUserAchievements = null
+        else this.$store.state.userAchievements = null
+      }
+      else
+        if(this.user.id == this.$store.state.authUser.id)
+          this.$store.state.authUserRatings = null
+        else this.$store.state.userRatings = null
     },
     goToProfile()
     {
@@ -233,9 +322,23 @@ export default {
           RequestSelect: this.RequestSelect
         }
       }
+    },
+    searchUsers() {
+      this.currentPage = 1
+      this.realFilterLow = parseInt(this.filterValueLower)
+      this.realFilterHigh = parseInt(this.filterValueHigher)
+      if(!this.shouldFilter) {
+        this.lastPage = 0
+        this.getAnotherPortion()
+      }
+    }
+  },
+  created() {
+    if(this.tab == "Ratings") {
+      this.$store.state.allRatings = null
+      this.$store.dispatch('fillAllUserRatings', this.user.id)
     }
   }
-
 }
 </script>
 
@@ -328,6 +431,17 @@ export default {
     width:100%;
     margin-bottom:10px;
     margin-top:10px;
+  }
+
+  .search {
+    height: 30px;
+    width: 30px;
+    padding: 0px;
+  }
+
+  .btn-img {
+    height: 20px;
+    width: 20px;
   }
 
   .content-wrapper {

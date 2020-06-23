@@ -1,5 +1,5 @@
 <template>
-  <Spinner v-if="!userLoaded || !achievements"/>
+  <Spinner v-if="(!userLoaded || !achievements) && !initialFetchDone"/>
   <AchAndRatings 
     :tab="'Achievements'" 
     :user="isMyProfile ? $store.state.authUser : computedUser"
@@ -56,7 +56,8 @@ export default {
   },
   methods: {
     changedRoute() {
-      this.$store.state.userAchievements
+      this.$store.state.userAchievements = null
+      this.$store.state.authUserAchievements = null
       const routeId = this.$route.params.id
 
       if(!this.user && !this.isMyProfile)
@@ -65,12 +66,11 @@ export default {
       }
       else if(!this.isMyProfile) 
         this.$store.state.user = this.user
-
-      if((this.isMyProfile && !this.$store.state.authUserAchievements) || (!this.isMyProfile))
-        this.$store.dispatch('getUserAchievements', {
-          userId: routeId,
-          endpoint: "http://localhost:8000/api/v1/user_info_filtered/?paginate=true"
-        })
+      this.$store.dispatch('getUserAchievements', {
+        userId: routeId,
+        endpoint: "http://localhost:8000/api/v1/user_info_filtered/?paginate=true"
+      })
+      this.initialFetchDone = true
     }
   },
   created() {
