@@ -125,6 +125,8 @@ urlrequest = [
          name='picture_remove'),
     path('api/v1/ban_create/', api_views.BanCreate.as_view(),
          name='ban_create'),
+    path('api/v1/set_arrived/', api_views.SetArrived.as_view(),
+         name='set_arrived'),
 ]
 urlpatterns += urlrequest
 

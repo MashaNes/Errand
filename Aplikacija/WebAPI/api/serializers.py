@@ -151,6 +151,7 @@ class ReportSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class NotificationSerializer(serializers.ModelSerializer):
+    working_with = UserSerializer()
     class Meta:
         model = models.Notification
         fields = '__all__'

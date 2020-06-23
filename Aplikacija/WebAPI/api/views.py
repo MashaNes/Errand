@@ -75,6 +75,7 @@ __PUT___________________________________________________________________________
 + PUT request_finish/                   // Finishes request
 + PUT notification_flags_update/        // Updates notification flags (seen, opened)
 + PUT request_start/                    // Starts request
++ PUT set_arrived/  			        // Set arrived flag to address
 
 __DELETE__________________________________________________________________________________________
 + DELETE benefit_remove/ 			    // Removes user from benefit list
@@ -314,7 +315,7 @@ class FullUserViewSet(viewsets.ModelViewSet):
 
         return Response(_r)
 
-# POST users_info_filtered/id
+# POST user_info_filtered/id
 class UserInfoFilteredViewSet(viewsets.ModelViewSet):
     queryset = models.FullUser.objects.all()
 
@@ -744,7 +745,7 @@ class RateUser(generics.ListCreateAPIView):
                                                       first_name=_cb.first_name,
                                                       last_name=_cb.last_name,
                                                       rating=rating.grade,
-                                                      working_with=_cb.id)
+                                                      working_with=_cb)
         utils.send_notification(user, notif, notif_body)
 
         utils.check_achievements(user)
@@ -776,7 +777,7 @@ class RequestCreate(generics.ListCreateAPIView):
                                           first_name=user.user.first_name,
                                           last_name=user.user.last_name,
                                           request=req.name,
-                                          working_with=user.user.id)
+                                          working_with=user.user)
             utils.send_notification(_u2, notif, notif_body)
 
         utils.check_achievements(user)
@@ -981,15 +982,16 @@ class SearchRequestViewSet(viewsets.ModelViewSet):
 
         for direct, dist in zip(_d, ddist):
             direct.update({'dist' : dist})
-
-        _d = sorted(_d, key=lambda x: x['dist'])
-        # _d.sort(key=lambda x: x.dist, reverse=True)
-        # _b.sort(key=lambda x: x.dist, reverse=True)
-
+        
         for bcast, dist in zip(_b, bdist):
             bcast.update({'dist' : dist})
 
-        _b = sorted(_b, key=lambda x: x['dist'])
+        if request.data['latitude'] and request.data['longitude']:
+            if _d:
+                _d = sorted(_d, key=lambda x: x['dist'])
+
+            if _b:
+                _b = sorted(_b, key=lambda x: x['dist'])
 
         custom_response = {
             'count' : len(_d) + len(_b),
@@ -998,6 +1000,31 @@ class SearchRequestViewSet(viewsets.ModelViewSet):
         }
 
         return Response(custom_response)
+
+# PUT set_arrived/
+class SetArrived(generics.UpdateAPIView):
+    def update(self, request):
+        aid = request.data['address']
+        address = models.Address.objects.get(id=aid)
+        address.arrived = True
+        address.save()
+
+        rid = request.data['request']
+        req = models.FullRequest.objects.get(request__id=rid)
+        if req.accepted_offer.payment_type == "1" and req.request.location:
+            lon1 = req.request.location.longitude
+            lat1 = req.request.location.latitude
+            lon2 = address.longitude
+            lat2 = address.latitude
+
+            dist = utils.calc_distance(lon1, lat1, lon2, lat2)
+            req.request.price += dist
+            req.request.save()
+        req.request.location.latitude = address.latitude
+        req.request.location.longitude = address.longitude
+        req.request.location.save()
+
+        return Response({'detail' : 'success'})
 
 # PUT request_finish/
 class RequestFinish(generics.UpdateAPIView):
@@ -1027,8 +1054,45 @@ class RequestFinish(generics.UpdateAPIView):
                 req.request.finished_working_with = True
                 req.request.save()
 
+                if (req.accepted_offer.payment_type == "1" and
+                        req.request.location and
+                        request.data['location']['longitude'] and
+                        request.data['location']['latitude']):
+                    lon1 = req.request.location.longitude
+                    lat1 = req.request.location.latitude
+                    lon2 = request.data['location']['longitude']
+                    lat2 = request.data['location']['latitude']
+
+                    dist = utils.calc_distance(lon1, lat1, lon2, lat2)
+                    req.request.price += dist
+                    req.request.save()
+
+        price = None
         if req.request.finished_created_by and req.request.finished_working_with:
             req.request.status = 2
+            req.request.save()
+
+            price = req.request.price
+            rate = req.accepted_offer.payment_ammount
+            if req.accepted_offer.payment_type == "1":
+                price = (price / 1000) * rate
+            elif req.accepted_offer.payment_type == "0":
+                duration = datetime.now(timezone.utc) - req.request.timestamp
+                sec = duration.total_seconds()
+                hours = sec // 60 / 60
+                price = rate * hours
+            else:
+                price = rate
+
+            _cb = models.FullUser.objects.get(user__id=req.request.created_by.id)
+            discount = 0.0
+            for _b in _cb.benefitlist.all():
+                if _b.benefit_user.id == req.request.working_with.id:
+                    discount = _b.discount
+                    break
+
+            price = price * (1 - discount)
+            req.request.price = price
             req.request.save()
 
         # automatic adding to benefitlist
@@ -1084,7 +1148,7 @@ class RequestFinish(generics.UpdateAPIView):
         utils.check_achievements(user1)
         utils.check_achievements(user2)
 
-        return Response({'detail' : 'success'})
+        return Response({'price' : price})
 
 # POST offer_create/
 class OfferCreate(generics.ListCreateAPIView):
@@ -1103,7 +1167,7 @@ class OfferCreate(generics.ListCreateAPIView):
                                                       request=offer.request.name,
                                                       first_name=user.user.first_name,
                                                       last_name=user.user.last_name,
-                                                      working_with=user.user.id)
+                                                      working_with=user.user)
         utils.send_notification(_u2, notif, notif_body)
 
         serializer = serializers.OfferSerializer(offer)
@@ -1172,7 +1236,7 @@ class EditCreate(generics.ListCreateAPIView):
                                                       request=edit.request_edit.request.name,
                                                       first_name=user.first_name,
                                                       last_name=user.last_name,
-                                                      working_with=user.id)
+                                                      working_with=user)
         utils.send_notification(_u2, notif, notif_body)
 
         return Response(serializer.data)
@@ -1398,7 +1462,13 @@ class AchievementCreate(generics.ListCreateAPIView):
             achievement = parsers.create_achievement(request.data)
             serializer = serializers.AchievementSerializer(achievement)
             response = serializer.data
-            response['icon'] = utils.load_img(response['icon'])
+            if response['icon']:
+                response['icon'] = utils.load_img(response['icon'])
+
+            users = models.FullUser.objects.all()
+            for _u in users:
+                utils.check_achievements(_u)
+
             return Response(response)
         else:
             return Response({'detail' : 'User is not admin.'})

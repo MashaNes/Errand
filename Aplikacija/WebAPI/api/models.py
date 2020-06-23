@@ -183,7 +183,7 @@ class Notification(models.Model):
     notification_type = models.IntegerField(choices=NOTIFICATION_TYPES)
     timestamp = models.DateTimeField(default=now)
     type_id = models.IntegerField()
-    working_with = models.IntegerField(default=0)
+    working_with = models.ForeignKey(User, null=True, default=None, on_delete=models.SET_NULL)
     seen = models.BooleanField(default=False)
     opened = models.BooleanField(default=False)
 

@@ -63,6 +63,7 @@ __PUT___________________________________________________________________________
 + PUT request_finish/                   // Finishes request
 + PUT notification_flags_update/        // Updates notification flags (seen, opened)
 + PUT request_start/                    // Starts request
++ PUT set_arrived/  			        // Set arrived flag to address
 
 __DELETE__________________________________________________________________________________________
 + DELETE benefit_remove/ 			    // Removes user from benefit list

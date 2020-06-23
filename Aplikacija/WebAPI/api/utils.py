@@ -1,4 +1,3 @@
-import sys
 import base64
 import os.path
 import googlemaps
@@ -8,15 +7,14 @@ from datetime import datetime
 from pytz import UTC
 
 from . import models
-from . import parsers
 
 
 DISTANCE_MATRIX_KEY = "AIzaSyB10Ab2i9Kq_jsM_NX-zM72i9g50N6kR1U"
 
 def calc_distance(lon1, lat1, lon2, lat2):
     gmaps = googlemaps.Client(key=DISTANCE_MATRIX_KEY)
-    # dist = gmaps.distance_matrix((lon1, lat1), (lon2, lat2))
-    dist = gmaps.distance_matrix((lat1, lon1), (lat2, lon2))
+    # dist = gmaps.distance_matrix((lon1, lat1), (lon2, lat2))  # BAD!!
+    dist = gmaps.distance_matrix((lat1, lon1), (lat2, lon2))    # GOOD!!
     if dist['rows'][0]['elements'][0]['status'] == 'OK':
         return dist['rows'][0]['elements'][0]['distance']['value']
     else:
@@ -160,17 +158,19 @@ def filter_user(queryset, data):
         if user.id == _q.id or _q.user.is_admin:
             to_add = False
 
-        found = False
-        if to_add:
-            for _b in user.blocked.all():
-                if _b.id == _q.user.id:
-                    found = True
-                    break
-            to_add = not found
+        # found = False
+        # if to_add:
+        #     for _b in user.blocked.all():
+        #         if _b.id == _q.user.id:
+        #             found = True
+        #             break
+        #     to_add = not found
 
         if data['active']:
             if _q.user.status == 0:
                 to_add = False
+        else:
+            pass # TODO: Implement
 
         if to_add and data['services']:
             min_max_dist1 = None
@@ -268,7 +268,12 @@ def filter_user_info(serializer, data):
         return response
 
     if data['notifications']:
-        return serializer['notifications']
+        response = serializer['notifications']
+        response = sorted(response, key=lambda x: x['id'], reverse=True)
+        for _r in response:
+            if _r['working_with']:
+                _r['working_with']['picture'] = load_img(_r['working_with']['picture'])
+        return response
 
     if data['ratings']:
         response = serializer['ratings']
@@ -346,66 +351,76 @@ def search_requests(queryset, data):
         if _q.status > 0:
             to_add = False
 
-        if _q.direct_user and _q.direct_user.id == data['created_by']:
-            min_dist = None
-            if _q.destination and _q.destination.longitude and _q.destination.latitude:
-                min_dist = calc_distance(data['longitude'], data['latitude'],
-                                         _q.destination.longitude, _q.destination.latitude)
-
-            if min_dist is None:
-                for _t in _q.tasklist.all():
-                    if _t.address and _t.address.longitude and _t.address.latitude:
-                        dist = calc_distance(data['longitude'], data['latitude'],
-                                             _t.address.longitude, _t.address.latitude)
-                        if min_dist is None or min_dist > dist:
-                            min_dist = dist
-
-            if min_dist:
-                ddist.append(min_dist)
-                direct_queryset.append(_q)
-                continue
-
-        if (not data['no_rating'] and _q.created_by.avg_rating is None):
-            to_add = False
-
-        if to_add:
-            if ((_q.created_by.avg_rating and
-                 _q.created_by.avg_rating < data['min_rating']) or
-                    (user.user.avg_rating and
-                     user.user.avg_rating < _q.min_rating)):
+        fullreq = models.FullRequest.objects.get(request__id=_q.id)
+        for _o in fullreq.offers.all():
+            if _o.created_by.id == data['created_by']:
                 to_add = False
 
-        if to_add and data['services']:
-            for _s in data['services']:
-                found = False
-                for _t in _q.tasklist.all():
-                    if _s == _t.service_type.id:
-                        found = True
-                if not found:
+        if to_add and _q.direct_user and _q.direct_user.id == data['created_by']:
+            min_dist = None
+            if data['longitude'] and data['latitude']:
+                if _q.destination and _q.destination.longitude and _q.destination.latitude:
+                    min_dist = calc_distance(data['longitude'], data['latitude'],
+                                             _q.destination.longitude, _q.destination.latitude)
+
+                if min_dist is None:
+                    for _t in _q.tasklist.all():
+                        if _t.address and _t.address.longitude and _t.address.latitude:
+                            dist = calc_distance(data['longitude'], data['latitude'],
+                                                 _t.address.longitude, _t.address.latitude)
+                            if min_dist is None or min_dist > dist:
+                                min_dist = dist
+                if min_dist and (min_dist > data['max_dist'] or min_dist > _q.max_dist):
                     to_add = False
 
-        min_dist = None
-        if to_add and _q.destination and _q.destination.longitude and _q.destination.latitude:
-            min_dist = calc_distance(data['longitude'], data['latitude'],
-                                     _q.destination.longitude, _q.destination.latitude)
+                if to_add and min_dist:
+                    ddist.append(min_dist)
+                    direct_queryset.append(_q)
+            else:
+                ddist.append(min_dist)
+                direct_queryset.append(_q)
+            continue
 
-        if to_add and min_dist is None:
-            for _t in _q.tasklist.all():
-                if _t.address and _t.address.longitude and _t.address.latitude:
-                    dist = calc_distance(data['longitude'], data['latitude'],
-                                         _t.address.longitude, _t.address.latitude)
-                    if min_dist is None or min_dist > dist:
-                        min_dist = dist
-                        print(min_dist)
+        if _q.broadcast:
+            if (not data['no_rating'] and _q.created_by.avg_rating is None):
+                to_add = False
 
-        if min_dist and (min_dist > data['max_dist'] or min_dist > _q.max_dist):
-            to_add = False
-        if min_dist is None:
-            min_dist = sys.maxsize
+            if to_add:
+                if ((_q.created_by.avg_rating and
+                     _q.created_by.avg_rating < data['min_rating']) or
+                        (user.user.avg_rating and
+                         user.user.avg_rating < _q.min_rating)):
+                    to_add = False
 
-        if to_add:
-            broadcast_queryset.append(_q)
-            bdist.append(min_dist)
+            if to_add and data['services']:
+                for _s in data['services']:
+                    found = False
+                    for _t in _q.tasklist.all():
+                        if _s == _t.service_type.id:
+                            found = True
+                    if not found:
+                        to_add = False
+
+            min_dist = None
+            if data['longitude'] and data['latitude']:
+                if to_add and _q.destination and _q.destination.longitude and _q.destination.latitude:
+                    min_dist = calc_distance(data['longitude'], data['latitude'],
+                                             _q.destination.longitude, _q.destination.latitude)
+                    print("min_dist1: " + str(min_dist))
+
+                if to_add and min_dist is None:
+                    for _t in _q.tasklist.all():
+                        if _t.address and _t.address.longitude and _t.address.latitude:
+                            dist = calc_distance(data['longitude'], data['latitude'],
+                                                 _t.address.longitude, _t.address.latitude)
+                            if min_dist is None or min_dist > dist:
+                                min_dist = dist
+                                print("min_dist2: " + str(min_dist))
+                if min_dist and (min_dist > data['max_dist'] or min_dist > _q.max_dist):
+                    to_add = False
+            if to_add and min_dist:
+                broadcast_queryset.append(_q)
+                bdist.append(min_dist)
 
     return direct_queryset, broadcast_queryset, ddist, bdist
 
@@ -621,7 +636,7 @@ def create_notification(notification_type, type_id, working_with=0, first_name=N
                 'id' : None,
                 'notification_type' : 0,
                 'type_id' : type_id,
-                'working_with' : working_with,
+                'working_with' : working_with.id,
                 'title_sr' : "Direktni zahtev",
                 'title_en' : "Direct request",
                 'body_sr' : f"Korisnik {first_name} {last_name} vam je poslao novi direktan zahtev {request}.",
@@ -631,7 +646,7 @@ def create_notification(notification_type, type_id, working_with=0, first_name=N
                 'id' : None,
                 'notification_type' : 1,
                 'type_id' : type_id,
-                'working_with' : working_with,
+                'working_with' : working_with.id,
                 'title_sr' : "Neuspešno završen zahtev",
                 'title_en' : "Request failed",
                 'body_sr' : f"Zahtev \"{request}\" je neuspešno završen.",
@@ -641,7 +656,7 @@ def create_notification(notification_type, type_id, working_with=0, first_name=N
                 'id' : None,
                 'notification_type' : 2,
                 'type_id' : type_id,
-                'working_with' : working_with,
+                'working_with' : working_with.id,
                 'title_sr' : "Nova ponuda",
                 'title_en' : "New offer",
                 'body_sr' : f"Korisnik {first_name} {last_name} Vam je poslao novu ponudu za zahtev \"{request}\".",
@@ -651,7 +666,7 @@ def create_notification(notification_type, type_id, working_with=0, first_name=N
                 'id' : None,
                 'notification_type' : 3,
                 'type_id' : type_id,
-                'working_with' : working_with,
+                'working_with' : working_with.id,
                 'title_sr' : "Ponuda prihvaćena",
                 'title_en' : "Offer accepted",
                 'body_sr' : f"Vaša ponuda za zahtev \"{request}\" je prihvaćena.",
@@ -661,7 +676,7 @@ def create_notification(notification_type, type_id, working_with=0, first_name=N
                 'id' : None,
                 'notification_type' : 4,
                 'type_id' : type_id,
-                'working_with' : working_with,
+                'working_with' : working_with.id,
                 'title_sr' : "Ponuda odbijena",
                 'title_en' : "Offer rejected",
                 'body_sr' : f"Vaša ponuda za zahtev \"{request}\" je odbijena.",
@@ -671,7 +686,7 @@ def create_notification(notification_type, type_id, working_with=0, first_name=N
                 'id' : None,
                 'notification_type' : 5,
                 'type_id' : type_id,
-                'working_with' : working_with,
+                'working_with' : working_with.id,
                 'title_sr' : "Novi zahtev za izmenom",
                 'title_en' : "New edit request",
                 'body_sr' : f"Korisnik {first_name} {last_name} Vam je poslao novi predlog izmene za zahtev \"{request}\".",
@@ -681,7 +696,7 @@ def create_notification(notification_type, type_id, working_with=0, first_name=N
                 'id' : None,
                 'notification_type' : 6,
                 'type_id' : type_id,
-                'working_with' : working_with,
+                'working_with' : working_with.id,
                 'title_sr' : "Prihvaćena izmena zahteva",
                 'title_en' : "Edit request accepted",
                 'body_sr' : f"Izmena koju ste predložili za zahtev \"{request}\" je prihvaćena.",
@@ -691,7 +706,7 @@ def create_notification(notification_type, type_id, working_with=0, first_name=N
                 'id' : None,
                 'notification_type' : 7,
                 'type_id' : type_id,
-                'working_with' : working_with,
+                'working_with' : working_with.id,
                 'title_sr' : "Odbijena izmena zahteva",
                 'title_en' : "Edit request rejected",
                 'body_sr' : f"Izmena koju ste predložili za zahtev \"{request}\" je odbijena.",
@@ -701,7 +716,7 @@ def create_notification(notification_type, type_id, working_with=0, first_name=N
                 'id' : None,
                 'notification_type' : 8,
                 'type_id' : type_id,
-                'working_with' : working_with,
+                'working_with' : working_with.id,
                 'title_sr' : "Nova ocena",
                 'title_en' : "New rating",
                 'body_sr' : f"Korisnik {first_name} {last_name} Vas je ocenio ocenom {rating}.",
@@ -711,7 +726,7 @@ def create_notification(notification_type, type_id, working_with=0, first_name=N
                 'id' : None,
                 'notification_type' : 9,
                 'type_id' : type_id,
-                'working_with' : working_with,
+                'working_with' : working_with.id,
                 'title_sr' : "Novo dostignuće",
                 'title_en' : "New achievement",
                 'body_sr' : f"Dodeljeno Vam je dostignuće \"{achievement_sr}\" {level}. nivoa.",
@@ -721,7 +736,7 @@ def create_notification(notification_type, type_id, working_with=0, first_name=N
                 'id' : None,
                 'notification_type' : 10,
                 'type_id' : type_id,
-                'working_with' : working_with,
+                'working_with' : working_with.id,
                 'title_sr' : "Zahtev označen kao uspešan",
                 'title_en' : "Request marked as successful",
                 'body_sr' : f"Korisnik sa kojim sarađujete na zahtevu \"{request}\" označio je da je on uspešno okončan.",
@@ -783,7 +798,7 @@ def check_achievements(user):
 
     achievements = models.Achievement.objects.all()
     for ach in achievements:
-        level = 1000
+        level = 10000
         for cond in ach.conditions.all():
             lvl = 0
             for _cn in cond.condition_numbers.all():

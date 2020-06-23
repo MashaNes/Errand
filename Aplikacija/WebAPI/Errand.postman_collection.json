@@ -514,7 +514,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\t\"created_by\":5,\n\t\"benefit_user\":3,\n\t\"discount\":\"0.2\"\n}",
+					"raw": "{\n\t\"created_by\":3,\n\t\"benefit_user\":4,\n\t\"discount\":0.2\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -813,6 +813,45 @@
 						"api",
 						"v1",
 						"address_update",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "SetArrived",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token e23bc9ea761435c86c696bb13455b30cce4b62b9",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"request\" : 50,\n\t\"address\" : 110\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "127.0.0.1:8000/api/v1/set_arrived/",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"v1",
+						"set_arrived",
 						""
 					]
 				}
@@ -1144,7 +1183,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\t\"request\" : 38,\n\t\"timestamp\" : \"2020-06-25 18:00\",\n\t\"location\" : {\n\t\t\"latitude\" : 43.319185,\n\t\t\"longitude\" : 21.913395\n\t}\n}",
+					"raw": "{\n\t\"request\" : 51,\n\t\"timestamp\" : \"2020-06-23 14:00\",\n\t\"location\" : {\n\t\t\"longitude\" : 43.319185,\n\t\t\"latitude\" : 21.913395\n\t}\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -1177,13 +1216,13 @@
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "Token e23bc9ea761435c86c696bb13455b30cce4b62b9",
-						"type": "text"
+						"type": "text",
+						"value": "Token e23bc9ea761435c86c696bb13455b30cce4b62b9"
 					}
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\t\"created_by\" : 5,\n\t\"request\" : 1,\n\t\"status\" : 2\n}",
+					"raw": "{\n\t\"created_by\" : 4,\n\t\"request\" : 50,\n\t\"status\" : 2,\n\t\"location\" : {\n\t\t\"longitude\" : 43.316185,\n\t\t\"latitude\" : 21.913995\n\t}\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -1396,7 +1435,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\t\"created_by\" : 5,\n\t\"services\" : [2, 3],\n\t\"min_rating\" : 3.8,\n\t\"no_rating\" : true,\n\t\"max_dist\" : 2000,\n\t\"longitude\" : 43.327190,\n\t\"latitude\" : 21.903399\n}",
+					"raw": "{\n\t\"created_by\" : 4,\n\t\"services\" : [2, 3],\n\t\"min_rating\" : 3.8,\n\t\"no_rating\" : true,\n\t\"max_dist\" : 20000,\n\t\"longitude\" : 43.327190,\n\t\"latitude\" : 21.903399\n}",
 					"options": {
 						"raw": {
 							"language": "json"
