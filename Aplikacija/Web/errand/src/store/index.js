@@ -73,8 +73,7 @@ export default new Vuex.Store({
         notificationNumber: -1,
         notifications: null,
         moreNotifications: false,
-        notificationsPage: 0,
-        firebaseNotification: null
+        notificationsPage: 0
     },
     getters:{
         getAuthUserId(state) {
