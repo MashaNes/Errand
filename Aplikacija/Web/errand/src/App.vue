@@ -29,6 +29,25 @@ export default {
       }
     }
   },
+  computed: {
+    firebaseNotification() {
+      return this.$store.state.firebaseNotification
+    },
+    isSerbian() {
+      return this.$store.state.isSerbian
+    }
+  },
+  watch: {
+    // eslint-disable-next-line no-unused-vars
+    firebaseNotification(newVal, oldVal) {
+      if(newVal!=null && this.$store.state.logedIn && !this.$store.state.isAdmin) {
+        console.log(true)
+        this.$toasted.error(this.isSerbian ? newVal.body_sr : newVal.body_en, {
+          duration: 5000
+        })
+      }
+    }
+  },
   created()
   {
     this.user.first_name = this.$cookie.get('ime');
@@ -41,9 +60,11 @@ export default {
       this.$store.state.isAdmin = this.$cookie.get('admin')
       if(!this.$store.state.isAdmin || this.$store.state.isAdmin == "false") 
       {
+        const store = this.$store
         this.$store.state.firebaseToken = this.$cookie.get('firebaseToken')
         this.$store.state.registeredOnFirebase = true
         this.$store.state.firebaseOnMessageFunction = this.$messaging.onMessage(function(data) {
+          store.dispatch('fillFirebaseNotification', data)
           console.log(data)
         })
       }
@@ -51,7 +72,8 @@ export default {
       this.$store.state.token =  this.$cookie.get('token');
       this.user.id = this.$cookie.get('id');
       this.$store.dispatch("getUserById", this.user)
-      this.$store.dispatch("getNotificationNumber")
+      if(!this.$store.state.isAdmin || this.$store.state.isAdmin == "false")
+        this.$store.dispatch("getNotificationNumber")
     }
     else if(firebase != null)
     {

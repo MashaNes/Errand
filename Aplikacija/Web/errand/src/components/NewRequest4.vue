@@ -7,7 +7,7 @@
             Note: Check all of the information you have provided about the request so far, after making this choice you will no longer have the ability to change them
         </div>
         <div v-if="isSerbian" class="pitanje">
-            Da li želite da se Vaš prikaže svima koji zadovoljavaju navedene kriterijume?
+            Da li želite da se Vaš zahtev prikaže svima koji zadovoljavaju navedene kriterijume?
         </div>
         <div v-else class="pitanje">
             Do you want this request to be shown to all of the users who fit the stated criteria?

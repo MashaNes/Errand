@@ -199,7 +199,7 @@ export default {
             returnValue = "fixed"
           break
         case "3":
-          if(this.isSerbia)
+          if(this.isSerbian)
             returnValue = "početna cena"
           else
             returnValue = "starting price"

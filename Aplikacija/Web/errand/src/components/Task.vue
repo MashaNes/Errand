@@ -69,7 +69,7 @@
                 :key="picture.id"
               />
             </div>
-            <span v-else v-text="isSerbian ? 'Još uvek nije dostavljena nijedna slika' : 'No pictures have been taken so far'"></span>
+            <span v-else v-text="isSerbian ? 'Nije dostavljena nijedna slika' : 'No pictures have been taken'"></span>
           </b-card-text>
         </div>
         <div v-else-if="myRequestStatus == 0 && task.picture_required">

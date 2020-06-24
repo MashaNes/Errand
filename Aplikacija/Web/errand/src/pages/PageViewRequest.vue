@@ -24,10 +24,12 @@
                   <template v-slot:button-content>
                     <span v-text="isSerbian ? 'Akcije' : 'Actions'"></span>
                     <b-badge 
-                      v-if="computedRequest.status == 1 && !isRunner && showView == 'Details' && filteredEdits && filteredEdits.length > 0"
+                      v-if="computedRequest.status == 1 && !isRunner && showView == 'Details' && filteredEdits && filteredEdits.length > 0
+                           && !finishedThisUser && !finishedOtherUser"
                       variant="danger" class="big-notification-badge" >{{editsBadge}}</b-badge>
                     <b-badge 
-                      v-if="computedRequest.status == 0 && !isRunner && showView == 'Details' && filteredOffers && filteredOffers.length > 0"
+                      v-if="computedRequest.status == 0 && !isRunner && showView == 'Details' && filteredOffers && filteredOffers.length > 0
+                           && !finishedThisUser && !finishedOtherUser"
                       variant="danger" class="big-notification-badge" >{{offersBadge}}</b-badge>
                   </template>
                   <b-dropdown-item 
@@ -207,6 +209,7 @@
             </b-card-title>
             <div :class="computedRequest.destination ? 'inner-text' : 'no-info'">
               <span v-if="computedRequest.destination">{{computedRequest.destination.name}}</span>
+              <span v-if="computedRequest.destination" v-text="isSerbian ? 'Obiđena: ' + (computedRequest.destination.arrived ? 'da' : 'ne') : 'Arrived: ' + (computedRequest.destination.arrived ? 'yes' : 'no')"></span>
               <span v-else v-text="isSerbian ? 'Finalno odredište nije navedeno' : 'Final destination was not sepcified'"></span>
             </div>
 
@@ -229,7 +232,7 @@
                     <LightBox :media="pictures" v-if="pictureExpanded" :startAt="clickedPicture" @onClosed="pictureExpanded = false"></LightBox>
                   
                   </div>
-                  <span v-else v-text="isSerbian ? 'Još uvek nije dostavljena nijedna slika' : 'No pictures have been taken so far'"></span>
+                  <span v-else v-text="isSerbian ? 'Nije dostavljena nijedna slika' : 'No pictures have been taken'"></span>
                 </b-card-text>
               </div>
             </b-card-text>

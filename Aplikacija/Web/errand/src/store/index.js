@@ -72,7 +72,9 @@ export default new Vuex.Store({
         firebaseOnMessageFunction: null,
         notificationNumber: -1,
         notifications: null,
-        moreNotifications: false
+        moreNotifications: false,
+        notificationsPage: 0,
+        firebaseNotification: null
     },
     getters:{
         getAuthUserId(state) {
@@ -953,6 +955,7 @@ export default new Vuex.Store({
                         this.state.notificationNumber = -1
                         this.state.notifications = null
                         this.state.moreNotifications = false
+                        this.state.notificationsPage = 0
                         
                         Vue.cookie.delete('id');
                         Vue.cookie.delete('token');
@@ -2131,6 +2134,9 @@ export default new Vuex.Store({
                         console.log("Error")
                     }
                 });
+        },
+        fillFirebaseNotification({commit}, notification) {
+            commit('setFirebaseNotification', notification)
         }
     },
     mutations:{
@@ -2216,6 +2222,9 @@ export default new Vuex.Store({
         },
         openOfferOrEdit(state, array) {
             state.openedOffersOrEdits = [...array]
+        },
+        setFirebaseNotification(state, notification) {
+            state.firebaseNotification = notification
         }
     }
 })
