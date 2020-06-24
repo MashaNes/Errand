@@ -72,7 +72,8 @@ export default new Vuex.Store({
         firebaseOnMessageFunction: null,
         notificationNumber: -1,
         notifications: null,
-        moreNotifications: false
+        moreNotifications: false,
+        notificationsPage: 0
     },
     getters:{
         getAuthUserId(state) {
@@ -953,6 +954,7 @@ export default new Vuex.Store({
                         this.state.notificationNumber = -1
                         this.state.notifications = null
                         this.state.moreNotifications = false
+                        this.state.notificationsPage = 0
                         
                         Vue.cookie.delete('id');
                         Vue.cookie.delete('token');

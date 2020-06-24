@@ -131,7 +131,7 @@ export default {
                 this.$router.push({ name: "PageViewRequest", params: { id: this.notification.type_id }})
             else if(this.notification.notification_type == 8)
                 this.$router.push({ name: "PageRatings", params: { id: this.$store.state.authUser.id, user: this.$store.state.authUser }})
-            else if(this.notification.notification_type == 8)
+            else if(this.notification.notification_type == 9)
                 this.$router.push({ name: "PageAchievements", params: { id: this.$store.state.authUser.id, user: this.$store.state.authUser }})
             else if(this.notification.notification_type == 2 || this.notification.notification_type == 5)
                 this.$router.push({ name: "PageViewRequest", params: { id: this.notification.type_id }})

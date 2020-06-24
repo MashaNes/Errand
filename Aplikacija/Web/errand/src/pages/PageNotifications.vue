@@ -48,7 +48,36 @@
         created()
         {
             if(this.$store.state.notifications == null)
+            {
+                this.$store.state.notificationsPage = 1
                 this.$store.dispatch("getNotifications", 1);
+            }
+            else
+            {
+                var ids = [];
+                this.$store.state.notifications.forEach(element =>
+                {
+                    if(element.seen == false)
+                    {
+                        element.seen = true
+                        ids.push(element.id)
+                    }
+                })
+
+                if(ids.length > 0)
+                {
+                    this.$store.state.notificationNumber -= ids.length
+                    this.$store.dispatch("setNotificationFlag", {ids: ids, seen: true, opened: false})
+                }
+            }
+        },
+        methods:
+        {
+            loadMore()
+            {
+                this.$store.state.notificationsPage = this.$store.state.notificationsPage + 1
+                this.$store.dispatch("getNotifications", this.$store.state.notificationsPage);
+            }
         }
     }
 </script>

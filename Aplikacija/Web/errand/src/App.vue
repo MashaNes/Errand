@@ -51,7 +51,8 @@ export default {
       this.$store.state.token =  this.$cookie.get('token');
       this.user.id = this.$cookie.get('id');
       this.$store.dispatch("getUserById", this.user)
-      this.$store.dispatch("getNotificationNumber")
+      if(!this.$store.state.isAdmin || this.$store.state.isAdmin == "false")
+        this.$store.dispatch("getNotificationNumber")
     }
     else if(firebase != null)
     {
