@@ -2133,6 +2133,9 @@ export default new Vuex.Store({
                         console.log("Error")
                     }
                 });
+        },
+        fillFirebaseNotification({commit}, notification) {
+            commit('setFirebaseNotification', notification)
         }
     },
     mutations:{
@@ -2218,6 +2221,9 @@ export default new Vuex.Store({
         },
         openOfferOrEdit(state, array) {
             state.openedOffersOrEdits = [...array]
+        },
+        setFirebaseNotification(state, notification) {
+            state.firebaseNotification = notification
         }
     }
 })

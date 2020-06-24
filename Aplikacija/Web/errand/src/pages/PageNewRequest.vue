@@ -151,7 +151,7 @@ export default {
         tekstS()
         {
             if(this.kreiraj)
-                return "Da li ste sigurni da želite da kreirate opisani zahtev? Ako odabere opciju kreiranja zahteva bićete obavešteni kada se porces kreiranja okonča."
+                return "Da li ste sigurni da želite da kreirate opisani zahtev? Ako odaberete opciju kreiranja zahteva bićete obavešteni kada se proces kreiranja okonča."
             else
                 return "Da li ste sigurni da želite da odustanete od kreiranja? Svi do sada uneti podaci biće nepovratno odbačeni."
         },

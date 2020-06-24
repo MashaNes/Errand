@@ -61,7 +61,7 @@
       <ModalAreYouSure v-if="showAreYouSure==true"
                          :naslovS="'Odabir korisnika'"
                          :naslovE="'Choosing a user'"
-                         :tekstS="'Da li ste sigurni da želite da odabere ovog korisnika?'"
+                         :tekstS="'Da li ste sigurni da želite da odaberete ovog korisnika?'"
                          :tekstE="'Are you sure you want to choose this user?'"
                          @yes="yes"
                          @close="showAreYouSure = false"/>

@@ -261,10 +261,10 @@
                     console.log(err)
                 })
 
-                // eslint-disable-next-line no-unused-vars
                 this.$store.state.firebaseOnMessageFunction = this.$messaging.onMessage(function(data) {
                     // eslint-disable-next-line no-debugger
-                    //debugger
+                    debugger
+                    vm.$store.dispatch('fillFirebaseNotification', data)
                     console.log(data)
                 })
             }
