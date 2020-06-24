@@ -233,4 +233,15 @@
 	<string name="request_cancel">Prekini zahtev</string>
 	<string name="request_cancel_desc">Ne možete poništiti ovu akciju. Da li stvarno želite da prekinete ovaj zahtev? Biće odmah neuspešno završen.</string>
 	<string name="rate_comment">Komentar</string>
+	<string name="payment_type_fixed_plus">Fiksno plus</string>
+	<string name="find_requests_filter_max_dist">Postavljanje maksimalne distance će koristiti vašu trenutnu lokaciju ukoliko ste aktivni ili kućnu adresu ukoliko niste. U slučaju da niste aktivni i nemate postavljenu kućnu adresu, maksimalna distanca će biti ignorisana.</string>
+	<string name="request_send_offer_direct_request">Direktno:</string>
+	<string name="newrequest_info_time">Vreme</string>
+	<string name="newrequest_info_date">Datum</string>
+	<string name="error_request_not_available">Ovaj zahtev nije na raspolaganju.</string>
+	<string name="generic_start">Start</string>
+	<string name="request_status_total">Konačna cena:</string>
+	<string name="request_status_edit">Izmena:</string>
+	<string name="error_finish_request_location">Vaš nalog mora biti aktivan da bi završili ovaj zahtev.</string>
+	<string name="error_start_request_location">Vaš nalog mora biti aktivan da bi započeli ovaj zahtev.</string>
 </resources>

@@ -18,8 +18,11 @@ import java.util.ArrayList;
 import runners.errand.MainActivity;
 import runners.errand.R;
 import runners.errand.adapter.CustomPagerAdapter;
+import runners.errand.model.Address;
 import runners.errand.model.Request;
 import runners.errand.model.Service;
+import runners.errand.model.User;
+import runners.errand.utils.Static;
 import runners.errand.utils.net.NetManager;
 import runners.errand.utils.net.NetRequest;
 
@@ -109,9 +112,28 @@ public class FindRequestsFragment extends Fragment {
         netRequest.putParam("services", services);
         netRequest.putParam("min_rating", ((FilterFragment) fragments.get(0)).getMinRating());
         netRequest.putParam("no_rating", true);
-        netRequest.putParam("max_dist", ((FilterFragment) fragments.get(0)).getMaxDistance());
-        netRequest.putParam("longitude", 0);
-        netRequest.putParam("latitude", 0);
+        if (activity.getUser().getStatus() == User.STATUS_RUNNING) {
+            netRequest.putParam("max_dist", ((FilterFragment) fragments.get(0)).getMaxDistance());
+            netRequest.putParam("latitude", Static.lat);
+            netRequest.putParam("longitude", Static.lng);
+        } else {
+            Address home = null;
+            for (Address address : activity.getUser().getAddresses()) {
+                if (address.isHome()) {
+                    home = address;
+                    break;
+                }
+            }
+            if (home != null) {
+                netRequest.putParam("max_dist", ((FilterFragment) fragments.get(0)).getMaxDistance());
+                netRequest.putParam("latitude", home.getLat());
+                netRequest.putParam("longitude", home.getLng());
+            } else {
+                netRequest.putNull("max_dist");
+                netRequest.putNull("latitude");
+                netRequest.putNull("longitude");
+            }
+        }
         NetManager.add(netRequest);
     }
 
@@ -119,7 +141,7 @@ public class FindRequestsFragment extends Fragment {
         return activity;
     }
 
-    void navigate(int index) {
-        pager.setCurrentItem(index, true);
+    void navigate() {
+        pager.setCurrentItem(1, true);
     }
 }

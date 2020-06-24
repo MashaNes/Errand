@@ -243,7 +243,7 @@ public class SimpleDialog {
 			@Override
 			public void onClick(View v) {
 				type++;
-				if (type > 2) type = 0;
+				if (type > 3) type = 0;
 				((EditText) dialogView.findViewById(R.id.dialog_edit_service_pref_payment_type)).setText(ServicePrefs.getPaymentTypeString(activity, type));
 			}
 		});

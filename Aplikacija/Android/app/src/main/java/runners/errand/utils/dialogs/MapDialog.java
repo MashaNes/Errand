@@ -3,8 +3,6 @@ package runners.errand.utils.dialogs;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffColorFilter;
 import android.location.Criteria;
 import android.location.Geocoder;
 import android.location.Location;
@@ -16,13 +14,9 @@ import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import androidx.core.content.ContextCompat;
-import androidx.swiperefreshlayout.widget.CircularProgressDrawable;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -33,18 +27,14 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.BaseTransientBottomBar;
-import com.google.android.material.snackbar.Snackbar;
 
-import java.sql.Time;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
 import runners.errand.MainActivity;
 import runners.errand.R;
 import runners.errand.model.Address;
-import runners.errand.utils.BitmapUtils;
+import runners.errand.utils.ImageUtils;
 import runners.errand.utils.LoadingDrawable;
 
 public class MapDialog extends AlertDialog implements OnMapReadyCallback, LocationListener, DialogInterface.OnDismissListener {
@@ -175,7 +165,7 @@ public class MapDialog extends AlertDialog implements OnMapReadyCallback, Locati
 			mo.title(address.getName());
 			DisplayMetrics metrics = new DisplayMetrics();
 			activity.getWindowManager().getDefaultDisplay().getMetrics(metrics);
-			mo.icon(BitmapUtils.getMapMarkerBitmap(activity, metrics.density, BitmapUtils.MARKER_ICON_RED));
+			mo.icon(ImageUtils.getMapMarkerBitmap(activity, metrics.density, ImageUtils.MARKER_ICON_RED));
 			mo.draggable(true);
 			marker = map.addMarker(mo);
 		}

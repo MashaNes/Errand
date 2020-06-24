@@ -1,5 +1,7 @@
 package runners.errand.model;
 
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 
 import org.json.JSONArray;
@@ -33,6 +35,8 @@ public class Request {
     private Offer acceptedOffer, myOffer;
     private User createdBy, workingWith, direct;
     private Rating rating;
+    private double priceLat, priceLng, price;
+    private Date priceTime;
 
     public Request() {};
 
@@ -44,13 +48,17 @@ public class Request {
 
         JSONObject createdBy = o.optJSONObject("created_by");
         if (createdBy != null) {
+            Log.e("TEST", "Created by");
             JSONObject tmp = new JSONObject();
             try {
                 tmp.put("user", createdBy);
                 this.createdBy = new User(tmp);
             } catch (JSONException e) {
+                Log.e("TEST", "JSON Error");
                 e.printStackTrace();
             }
+        } else {
+            Log.e("TEST", "Created by is null");
         }
 
         JSONArray tasks = o.optJSONArray("tasklist");
@@ -86,10 +94,15 @@ public class Request {
         this.name = o.optString("name");
         this.status = o.optInt("status");
         this.locationStatus = o.optInt("location_status");
-        try {
-            this.time = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).parse(o.optString("time").replace("T", " ").substring(0, 19));
-        } catch (ParseException e) {
-            e.printStackTrace();
+
+        if (!o.isNull("time")) {
+            try {
+                this.time = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).parse(o.optString("time").replace("T", " ").substring(0, 19));
+            } catch (ParseException e) {
+                e.printStackTrace();
+                this.time = null;
+            }
+        } else {
             this.time = null;
         }
 
@@ -107,6 +120,28 @@ public class Request {
         this.maxDistance = o.optDouble("max_dist");
         this.minRating = o.optDouble("min_rating");
         this.dist = o.optInt("dist");
+
+        if (!o.isNull("timestamp")) {
+            try {
+                this.priceTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).parse(o.optString("timestamp").replace("T", " ").substring(0, 19));
+            } catch (ParseException e) {
+                e.printStackTrace();
+                this.priceTime = null;
+            }
+        } else {
+            this.priceTime = null;
+        }
+
+        JSONObject priceLocation = o.optJSONObject("location");
+        if (priceLocation != null) {
+            priceLat = priceLocation.optDouble("latitude");
+            priceLng = priceLocation.optDouble("longitude");
+        } else {
+            priceLat = Double.NaN;
+            priceLng = Double.NaN;
+        }
+
+        price = o.optDouble("price");
     }
 
     public int getId() {
@@ -275,5 +310,45 @@ public class Request {
 
     public void setFinishedWorkingWith(boolean finishedWorkingWith) {
         this.finishedWorkingWith = finishedWorkingWith;
+    }
+
+    public void setTime(Date time) {
+        this.time = time;
+    }
+
+    public String getTimeString() {
+        return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(time);
+    }
+
+    public double getPriceLat() {
+        return priceLat;
+    }
+
+    public void setPriceLat(double priceLat) {
+        this.priceLat = priceLat;
+    }
+
+    public double getPriceLng() {
+        return priceLng;
+    }
+
+    public void setPriceLng(double priceLng) {
+        this.priceLng = priceLng;
+    }
+
+    public Date getPriceTime() {
+        return priceTime;
+    }
+
+    public void setPriceTime(Date priceTime) {
+        this.priceTime = priceTime;
+    }
+
+    public double getPrice() {
+        return price;
+    }
+
+    public void setPrice(double price) {
+        this.price = price;
     }
 }

@@ -103,7 +103,6 @@ public class LoginActivity extends AppCompatActivity {
 			}
 		});
 
-		// TODO: Address on sign up?
 		findViewById(R.id.sign_up_address_map).setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {

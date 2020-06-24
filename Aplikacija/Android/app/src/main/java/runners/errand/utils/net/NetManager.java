@@ -63,7 +63,10 @@ public class NetManager extends AsyncTask<NetRequest, String, NetRequest> {
 	public static final String API_REQUEST_INFO_FILTERED = API_BASE + "request_info_filtered/";
 	public static final String API_REQUEST_CANCEL = API_BASE + "request_cancel/";
 	public static final String API_REQUEST_FINISH = API_BASE + "request_finish/";
+	public static final String API_REQUEST_START = API_BASE + "request_start/";
 	public static final String API_RATE = API_BASE + "rate_user/";
+	public static final String API_NOTIFICATIONS_FLAG_UPDATE = API_BASE + "notification_flags_update/";
+	public static final String API_ARRIVED = API_BASE + "set_arrived/";
 
 	public static final String POST = "POST";
 	public static final String GET = "GET";

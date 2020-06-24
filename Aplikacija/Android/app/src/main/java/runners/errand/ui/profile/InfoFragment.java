@@ -31,7 +31,7 @@ import runners.errand.R;
 import runners.errand.model.Achievement;
 import runners.errand.model.Address;
 import runners.errand.model.User;
-import runners.errand.utils.BitmapUtils;
+import runners.errand.utils.ImageUtils;
 import runners.errand.utils.dialogs.MapDialog;
 import runners.errand.utils.dialogs.SimpleDialog;
 import runners.errand.utils.net.NetManager;
@@ -47,9 +47,8 @@ public class InfoFragment extends Fragment {
 	private TextView addAddress, achievements, rating;
 	private String picture_b64 = null;
 	private Bitmap picture_bmp;
-	private ArrayList<Address> addresses;
+	private ArrayList<Address> addresses = new ArrayList<>();
 	private LinearLayout addressLayout;
-	private View.OnClickListener addressClickListener;
 	private boolean editing = false, pictureChanged = false, errorOccurred = false;
 
 	public InfoFragment() {
@@ -134,9 +133,22 @@ public class InfoFragment extends Fragment {
 		rating.setText(ratingValue);
 		achievements.setText(achievementsValue);
 
-		addresses = new ArrayList<>();
-		for (Address address : user.getAddresses())
-			addresses.add(address.clone());
+//		ArrayList<Address> newAddresses = new ArrayList<>();
+//		boolean updateAddresses = false;
+//		for (int i = 0; i < user.getAddresses().size(); i++) {
+//			Address address = user.getAddresses().get(i);
+//			newAddresses.add(address.clone());
+//			if (addresses.size() <= i || !address.equals(addresses.get(i))) {
+//				Log.e("ADDRCMP", i + ": " + address.toJSON().toString() + "; " + (addresses.size() > i ? addresses.get(i).toJSON().toString() : "null"));
+//				updateAddresses = true;
+//			}
+//		}
+//		if (updateAddresses) {
+//			addresses = newAddresses;
+//			fillAddresses();
+//		}
+		addresses.clear();
+		addresses.addAll(user.getAddresses());
 		fillAddresses();
 
 		if (editing && picture_bmp != null) {
@@ -178,7 +190,9 @@ public class InfoFragment extends Fragment {
 	}
 
 	private void fillAddresses() {
+		Log.e("ADDRESS", addresses.size() + " " + addressLayout.getChildCount());
 		addressLayout.removeViews(0, addressLayout.getChildCount());
+		Log.e("ADDRESS-B", addresses.size() + " " + addressLayout.getChildCount());
 
 		for (int i = 0; i < addresses.size(); i++) {
 			final int index = i;
@@ -197,7 +211,7 @@ public class InfoFragment extends Fragment {
 				@Override
 				public boolean onLongClick(View v) {
 					view.performLongClick();
-					return false;
+					return true;
 				}
 			});
 
@@ -206,7 +220,7 @@ public class InfoFragment extends Fragment {
 				@Override
 				public boolean onLongClick(View v) {
 					Toast.makeText(activity, address.getName(), Toast.LENGTH_SHORT).show();
-					return false;
+					return true;
 				}
 			});
 
@@ -218,7 +232,38 @@ public class InfoFragment extends Fragment {
 					fillAddresses();
 				}
 			});
-			if (editing) addressItemRemove.setVisibility(View.VISIBLE);
+
+			final ImageView addressItemHome = view.findViewById(R.id.item_address_home);
+			addressItemHome.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					if (!address.isHome()) {
+						for (int i = 0; i < addresses.size(); i++) {
+							Address a = addresses.get(i);
+							if (a.isHome()) {
+								a.setHome(false);
+								((ImageView) addressLayout.getChildAt(i).findViewById(R.id.item_address_home)).setImageDrawable(getResources().getDrawable(R.drawable.ic_home_outline));
+								break;
+							}
+						}
+						addressItemHome.setImageDrawable(getResources().getDrawable(R.drawable.ic_home_filled));
+						address.setHome(true);
+					} else {
+						addressItemHome.setImageDrawable(getResources().getDrawable(R.drawable.ic_home_outline));
+						address.setHome(false);
+					}
+				}
+			});
+
+			if (editing) {
+				addressItemRemove.setVisibility(View.VISIBLE);
+				addressItemHome.setVisibility(View.VISIBLE);
+			}
+
+			if (address.isHome()) {
+				addressItemHome.setVisibility(View.VISIBLE);
+				addressItemHome.setImageDrawable(getResources().getDrawable(R.drawable.ic_home_filled));
+			}
 
 			addressLayout.addView(view);
 		}
@@ -236,8 +281,8 @@ public class InfoFragment extends Fragment {
 			try {
 				InputStream is = activity.getContentResolver().openInputStream(data.getData());
 				if (is != null) {
-					picture_b64 = BitmapUtils.encode(is);
-					picture_bmp = BitmapUtils.decode(picture_b64);
+					picture_b64 = ImageUtils.encode(is);
+					picture_bmp = ImageUtils.decode(picture_b64);
 					if (picture_bmp != null) {
 						ivPicture.setImageBitmap(picture_bmp);
 						pictureChanged = true;
@@ -262,7 +307,7 @@ public class InfoFragment extends Fragment {
 
 	private void edit() {
 		editing = true;
-		achievementsLayout.setVisibility(View.GONE);
+		//achievementsLayout.setVisibility(View.GONE);
 		ratingLayout.setVisibility(View.GONE);
 		addAddress.setVisibility(View.VISIBLE);
 		ivEdit.setImageDrawable(getResources().getDrawable(R.drawable.ic_save));
@@ -323,6 +368,11 @@ public class InfoFragment extends Fragment {
 		phone.setEnabled(true);
 		for (int i = 0; i < addressLayout.getChildCount(); i++) {
 			addressLayout.getChildAt(i).findViewById(R.id.item_address_remove).setVisibility(View.VISIBLE);
+			if (addresses.get(i).isHome())
+				((ImageView) addressLayout.getChildAt(i).findViewById(R.id.item_address_home)).setImageDrawable(getResources().getDrawable(R.drawable.ic_home_filled));
+			else
+				((ImageView) addressLayout.getChildAt(i).findViewById(R.id.item_address_home)).setImageDrawable(getResources().getDrawable(R.drawable.ic_home_outline));
+			addressLayout.getChildAt(i).findViewById(R.id.item_address_home).setVisibility(View.VISIBLE);
 			addressLayout.getChildAt(i).setOnClickListener(getAddressClickListener(i, addresses.get(i)));
 		}
 	}
@@ -330,7 +380,7 @@ public class InfoFragment extends Fragment {
 	private void tide() {
 		editing = false;
 		addAddress.setVisibility(View.GONE);
-		achievementsLayout.setVisibility(View.VISIBLE);
+//		achievementsLayout.setVisibility(View.VISIBLE);
 		ratingLayout.setVisibility(View.VISIBLE);
 		ivEdit.setImageDrawable(getResources().getDrawable(R.drawable.ic_edit));
 		ivEdit.setContentDescription(getString(R.string.image_cd_edit));
@@ -349,6 +399,7 @@ public class InfoFragment extends Fragment {
 		phone.setEnabled(false);
 		for (int i = 0; i < addressLayout.getChildCount(); i++) {
 			addressLayout.getChildAt(i).findViewById(R.id.item_address_remove).setVisibility(View.GONE);
+			if (!addresses.get(i).isHome()) addressLayout.getChildAt(i).findViewById(R.id.item_address_home).setVisibility(View.GONE);
 			addressLayout.getChildAt(i).setOnClickListener(null);
 		}
 	}
@@ -467,8 +518,8 @@ public class InfoFragment extends Fragment {
 		req.putParam("name", address.getName());
 		req.putParam("longitude", address.getLng());
 		req.putParam("latitude", address.getLat());
-		req.putParam("home", false);
-		req.putParam("arrived", false);
+		req.putParam("home", address.isHome());
+		req.putParam("arrived", address.isArrived());
 		NetManager.add(req);
 	}
 
@@ -503,8 +554,8 @@ public class InfoFragment extends Fragment {
 		req.putParam("name", address.getName());
 		req.putParam("longitude", address.getLng());
 		req.putParam("latitude", address.getLat());
-		req.putParam("home", false);
-		req.putParam("arrived", false);
+		req.putParam("home", address.isHome());
+		req.putParam("arrived", address.isArrived());
 		NetManager.add(req);
 	}
 
@@ -514,7 +565,7 @@ public class InfoFragment extends Fragment {
 			public void success() {
 				try {
 					JSONObject json = new JSONObject(getResult().getMsg());
-					if (!json.optBoolean("success", false)) {
+					if (!json.optString("detail", "").equals("success")) {
 						openUserUpdateErrorDialog("AAD-S");
 						edit();
 					}

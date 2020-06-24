@@ -114,8 +114,8 @@ public class RequestsFragment extends Fragment {
         netRequest.putNull("done_by");
         netRequest.putNull("created_or_done_by");
         netRequest.putNull("statuses");
-        netRequest.putParam("unrated_created_by", true);
-        netRequest.putParam("unrated_done_by", true);
+        netRequest.putNull("unrated_created_by");
+        netRequest.putNull("unrated_done_by");
         NetManager.add(netRequest);
     }
 

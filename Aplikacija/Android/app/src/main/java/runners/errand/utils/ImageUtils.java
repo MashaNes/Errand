@@ -3,6 +3,7 @@ package runners.errand.utils;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.VectorDrawable;
 import android.util.Base64;
 import android.util.Log;
 
@@ -15,11 +16,9 @@ import java.io.InputStream;
 
 import runners.errand.R;
 
-public class BitmapUtils {
+public class ImageUtils {
 	public static final int MARKER_ICON_RED = 0;
 	public static final int MARKER_ICON_GREEN = 1;
-
-	// TODO: encode is for pfp, add stuff for higher quality pics for requests
 
 	public static String encode(InputStream input) {
 		Bitmap bitmap = BitmapFactory.decodeStream(input);

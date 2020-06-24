@@ -41,7 +41,11 @@ public class SendOfferFragment extends Fragment {
 		request = parent.getRequest();
 
 		// Create by
-		((ImageView) root.findViewById(R.id.item_user_image)).setImageBitmap(request.getCreatedBy().getPicture_bmp());
+		if (request.getCreatedBy().getPicture_bmp() != null) {
+			((ImageView) root.findViewById(R.id.item_user_image)).setImageBitmap(request.getCreatedBy().getPicture_bmp());
+		} else {
+			((ImageView) root.findViewById(R.id.item_user_image)).setImageDrawable(getResources().getDrawable(R.drawable.ic_face));
+		}
 		String name = request.getCreatedBy().getFirstName() + " " + request.getCreatedBy().getLastName();
 		((TextView) root.findViewById(R.id.item_user_name)).setText(name);
 		String rating = getString(R.string.generic_unrated);
@@ -61,7 +65,7 @@ public class SendOfferFragment extends Fragment {
 			@Override
 			public void onClick(View v) {
 				paymentType++;
-				if (paymentType > 2) paymentType = 0;
+				if (paymentType > 3) paymentType = 0;
 				((EditText) v).setText(ServicePrefs.getPaymentTypeString(activity, paymentType));
 			}
 		});

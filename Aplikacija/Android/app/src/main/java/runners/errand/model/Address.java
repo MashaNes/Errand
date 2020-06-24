@@ -70,6 +70,10 @@ public class Address {
 		this.name = name;
 	}
 
+	public void setHome(boolean home) {
+		this.home = home;
+	}
+
 	public void copy(Address address) {
 		this.name = address.getName();
 		this.lat = address.getLat();
@@ -84,7 +88,13 @@ public class Address {
 	@Override
 	public boolean equals(@Nullable Object obj) {
 		Address comp = ((Address) obj);
-		return comp != null && comp.getLat() == lat && comp.getLng() == lng && comp.getName().equals(name);
+		return
+				comp != null &&
+				comp.getLat() == lat &&
+				comp.getLng() == lng &&
+				comp.getName().equals(name) &&
+				comp.isHome() == home &&
+				comp.isArrived() == arrived;
 	}
 
 	public JSONObject toJSON() {

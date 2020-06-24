@@ -494,7 +494,6 @@ public class SettingsListFragment extends Fragment {
 	}
 
 	private void loadBlockedSettings() {
-		// TODO: Add blocked to user
 		// activity.getUser().getBlocked();
 
 		title.setText(R.string.settings_blocked);

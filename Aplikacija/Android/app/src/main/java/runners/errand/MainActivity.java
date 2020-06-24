@@ -26,6 +26,7 @@ import android.view.MenuItem;
 import android.view.View;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
@@ -57,6 +58,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 import runners.errand.firebase.MessagingService;
+import runners.errand.geofencing.GeofencingBroadcastReceiver;
 import runners.errand.model.Notification;
 import runners.errand.model.Offer;
 import runners.errand.model.Request;
@@ -65,6 +67,7 @@ import runners.errand.model.User;
 import runners.errand.services.LocationService;
 import runners.errand.ui.notifications.NotificationsFragment;
 import runners.errand.ui.requests.RequestsFragment;
+import runners.errand.utils.PreferenceManager;
 import runners.errand.utils.Static;
 import runners.errand.utils.dialogs.SimpleDialog;
 import runners.errand.utils.net.NetManager;
@@ -142,12 +145,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         navigationView.setNavigationItemSelectedListener(this);
 
-        // TODO: For notification badges
-        // To change a menu icon at runtime
-        // navigationView.getMenu().findItem(R.id.nav_page_notifications).setIcon(R.drawable.ic_achievements);
-        // To change the nav menu icon in the toolbar at runtime
-        // toolbar.setNavigationIcon(R.drawable.ic_achievements);
-
 		user = Static.user;
 //		loadOfferRequests();
 
@@ -191,15 +188,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 						intent.getIntExtra(MessagingService.NOTIFICATION_EXTRA_ID, -1),
 						intent.getIntExtra(MessagingService.NOTIFICATION_EXTRA_TYPE_ID, -1),
 						intent.getIntExtra(MessagingService.NOTIFICATION_EXTRA_CATEGORY, -1),
-						intent.getStringExtra(MessagingService.NOTIFICATION_EXTRA_TITLE),
-						intent.getStringExtra(MessagingService.NOTIFICATION_EXTRA_BODY),
+						intent.getStringExtra(MessagingService.NOTIFICATION_EXTRA_TITLE_EN),
+						intent.getStringExtra(MessagingService.NOTIFICATION_EXTRA_BODY_EN),
+						intent.getStringExtra(MessagingService.NOTIFICATION_EXTRA_TITLE_SR),
+						intent.getStringExtra(MessagingService.NOTIFICATION_EXTRA_BODY_SR),
 						intent.getStringExtra(MessagingService.NOTIFICATION_EXTRA_TIME)
 				));
 				if (fragment instanceof NotificationsFragment) {
 					((NotificationsFragment) fragment).loadData();
+				} else {
+					updateNotificationCount();
 				}
 			}
 		}, new IntentFilter(MessagingService.ACTION_BROADCAST_NOTIFICATION));
+
+		updateNotificationCount();
     }
 
 	@Override
@@ -224,7 +227,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		super.onResume();
 	}
 
-    @Override
+	@Override
+	protected void onStart() {
+		super.onStart();
+//		GeofencingBroadcastReceiver.addGeofence(this, 0, 0, 43.3176378, 21.9250031);
+	}
+
+	@Override
+	protected void onStop() {
+		super.onStop();
+//		GeofencingBroadcastReceiver.removeGeofence(this, 0, 0);
+	}
+
+	@Override
     public boolean onNavigationItemSelected(@NonNull final MenuItem item) {
         new Handler().postDelayed(new Runnable() {
             @Override
@@ -237,32 +252,40 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 			navigationView.setCheckedItem(item.getItemId());
 			navController.navigate(item.getItemId());
 		} else {
-			NetRequest netRequest = new NetRequest(NetManager.getApiServer() + NetManager.API_FCM_UNREGISTER, NetManager.DELETE) {
-				@Override
-				public void success() {
-					super.success();
-					NetManager.clearToken(activity);
-					stopService(new Intent(activity, LocationService.class));
-					Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
-					intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-					startActivity(intent);
-				}
-
-				@Override
-				public void error() {
-					super.error();
-				}
-			};
-			netRequest.putParam("reg_id", fcmToken);
-			NetManager.add(netRequest);
+			apiSetStatus(User.STATUS_NOT_RUNNING);
+			apiFCMUnregister();
 		}
         return false;
     }
 
+    public void updateNotificationCount() {
+		// To change a menu icon at runtime
+//        navigationView.getMenu().findItem(R.id.nav_page_notifications).setIcon(R.drawable.ic_notification_unread);
+		// To change menu item title
+//		navigationView.getMenu().findItem(R.id.nav_page_notifications).setTitle("test");
+		// To change the nav menu icon in the toolbar at runtime
+//		toolbar.setNavigationIcon(R.drawable.ic_menu_unread);
+
+    	int notificationCount = 0;
+    	for (Notification notification : user.getNotifications()) {
+    		if (!notification.isSeen()) notificationCount++;
+		}
+    	if (notificationCount > 0) {
+    		String s = getString(R.string.menu_notifications) + " +" + notificationCount;
+    		navigationView.getMenu().findItem(R.id.nav_page_notifications).setTitle(s);
+		} else {
+			navigationView.getMenu().findItem(R.id.nav_page_notifications).setTitle(R.string.menu_notifications);
+		}
+	}
+
 	public boolean permissionsGranted(int permission) {
     	switch (permission) {
 			case PERMISSION_LOCATION:
-				return ContextCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED;
+				boolean res = ContextCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
+				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+					res = res && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_BACKGROUND_LOCATION) == PackageManager.PERMISSION_GRANTED;
+				}
+				return res;
 			case PERMISSION_STORAGE:
 				return ContextCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
 			default:
@@ -273,7 +296,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 	public boolean permissionsRequireExplanation(int permission) {
     	switch (permission) {
 			case PERMISSION_LOCATION:
-				return ActivityCompat.shouldShowRequestPermissionRationale(activity, Manifest.permission.ACCESS_FINE_LOCATION) || ActivityCompat.shouldShowRequestPermissionRationale(activity, Manifest.permission.ACCESS_COARSE_LOCATION);
+				boolean res = ActivityCompat.shouldShowRequestPermissionRationale(activity, Manifest.permission.ACCESS_FINE_LOCATION);
+				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+					res = res || ActivityCompat.shouldShowRequestPermissionRationale(activity, Manifest.permission.ACCESS_BACKGROUND_LOCATION);
+				}
+				return res;
 			case PERMISSION_STORAGE:
 				return ActivityCompat.shouldShowRequestPermissionRationale(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
 			default:
@@ -284,7 +311,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 	public void permissionsRequest(int permission, int callbackId) {
     	switch (permission) {
 			case PERMISSION_LOCATION:
-				ActivityCompat.requestPermissions(activity, new String[] { Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION }, callbackId);
+				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+					ActivityCompat.requestPermissions(activity, new String[] { Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_BACKGROUND_LOCATION }, callbackId);
+				} else {
+					ActivityCompat.requestPermissions(activity, new String[] { Manifest.permission.ACCESS_FINE_LOCATION }, callbackId);
+				}
 				break;
 			case PERMISSION_STORAGE:
 				ActivityCompat.requestPermissions(activity, new String[] { Manifest.permission.WRITE_EXTERNAL_STORAGE }, callbackId);
@@ -360,7 +391,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private void updateMenuItemRun(boolean update, boolean service) {
     	if (statusMenuItem == null) return;
     	if (update) {
-			apiSetStatus(statusMenuItem, user.getStatus());
+			apiSetStatus(user.getStatus());
 		} else {
 			if (user.getStatus() == User.STATUS_RUNNING) {
 				statusMenuItem.getIcon().setColorFilter(new PorterDuffColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.colorGreen), PorterDuff.Mode.MULTIPLY));
@@ -431,7 +462,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		NetManager.add(netRequest);
 	}
 
-	private void apiSetStatus(final MenuItem item, int status) {
+	private void apiSetStatus(int status) {
     	NetRequest netRequest = new NetRequest(NetManager.getApiServer() + NetManager.API_USER_STATUS_UPDATE, NetManager.PUT) {
 			@Override
 			public void success() {
@@ -528,6 +559,27 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     	NetManager.add(netRequest);
 	}
 
+	private void apiFCMUnregister() {
+		NetRequest netRequest = new NetRequest(NetManager.getApiServer() + NetManager.API_FCM_UNREGISTER, NetManager.DELETE) {
+			@Override
+			public void success() {
+				super.success();
+				NetManager.clearToken(activity);
+				stopService(new Intent(activity, LocationService.class));
+				Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+				intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+				startActivity(intent);
+			}
+
+			@Override
+			public void error() {
+				super.error();
+			}
+		};
+		netRequest.putParam("reg_id", fcmToken);
+		NetManager.add(netRequest);
+	}
+
     public ArrayList<Service> getServices() { return services; }
 
     public void navigateTo(int id) {
@@ -539,4 +591,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 	}
 
 	public void setFragment(Fragment fragment) { this.fragment = fragment; }
+
+	public Fragment getFragment() { return this.fragment; }
 }

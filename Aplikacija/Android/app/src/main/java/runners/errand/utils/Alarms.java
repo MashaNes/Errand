@@ -12,6 +12,8 @@ import runners.errand.model.WorkingHours;
 import runners.errand.services.LocationService;
 
 public class Alarms {
+	private static final int ID_BASE = 100000;
+
 	public static void add(Context context, WorkingHours hours) {
 		AlarmManager manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 		if (manager == null) return;
@@ -37,11 +39,11 @@ public class Alarms {
 		}
 
 		Intent intentStart = new Intent(context, LocationService.class);
-		PendingIntent pendingStart = PendingIntent.getService(context, hours.getId(), intentStart, PendingIntent.FLAG_ONE_SHOT);
+		PendingIntent pendingStart = PendingIntent.getService(context, ID_BASE + hours.getId(), intentStart, PendingIntent.FLAG_ONE_SHOT);
 
 		Intent intentStop = new Intent(context, LocationService.class);
 		intentStop.setAction(LocationService.ACTION_STOP_SERVICE);
-		PendingIntent pendingStop = PendingIntent.getService(context, hours.getId(), intentStop, PendingIntent.FLAG_ONE_SHOT);
+		PendingIntent pendingStop = PendingIntent.getService(context, ID_BASE + hours.getId(), intentStop, PendingIntent.FLAG_ONE_SHOT);
 
 		manager.setRepeating(AlarmManager.RTC_WAKEUP, calFrom.getTimeInMillis(), AlarmManager.INTERVAL_DAY * 7, pendingStart);
 		manager.setRepeating(AlarmManager.RTC_WAKEUP, calUntil.getTimeInMillis(), AlarmManager.INTERVAL_DAY * 7, pendingStop);
@@ -54,11 +56,11 @@ public class Alarms {
 		if (manager == null) return;
 
 		Intent intentStart = new Intent(context, LocationService.class);
-		PendingIntent pendingStart = PendingIntent.getService(context, hours.getId(), intentStart, PendingIntent.FLAG_ONE_SHOT);
+		PendingIntent pendingStart = PendingIntent.getService(context, ID_BASE + hours.getId(), intentStart, PendingIntent.FLAG_ONE_SHOT);
 
 		Intent intentStop = new Intent(context, LocationService.class);
 		intentStop.setAction(LocationService.ACTION_STOP_SERVICE);
-		PendingIntent pendingStop = PendingIntent.getService(context, hours.getId(), intentStop, PendingIntent.FLAG_ONE_SHOT);
+		PendingIntent pendingStop = PendingIntent.getService(context, ID_BASE + hours.getId(), intentStop, PendingIntent.FLAG_ONE_SHOT);
 
 		manager.cancel(pendingStart);
 		manager.cancel(pendingStop);

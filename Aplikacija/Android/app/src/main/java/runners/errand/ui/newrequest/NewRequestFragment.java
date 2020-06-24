@@ -26,6 +26,7 @@ import runners.errand.utils.net.NetManager;
 import runners.errand.utils.net.NetRequest;
 
 public class NewRequestFragment extends Fragment {
+    private MainActivity activity;
     private ArrayList<Fragment> fragments = new ArrayList<>();
     private ViewPager pager;
     private Request request = new Request();
@@ -34,7 +35,7 @@ public class NewRequestFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_newrequest, container, false);
 
-        final MainActivity activity = ((MainActivity) getActivity());
+        activity = ((MainActivity) getActivity());
         if (activity == null) return root;
         activity.setFragment(this);
 
@@ -98,12 +99,20 @@ public class NewRequestFragment extends Fragment {
 
                     netRequest.putParam("created_by", activity.getUser().getId());
                     netRequest.putParam("name", request.getName());
-                    netRequest.putParam("time", "2020-05-15 18:00"); // Not used
+                    netRequest.putParam("time", request.getTimeString());
                     netRequest.putParam("picture_required", false);
                     netRequest.putParam("note", request.getNote());
-                    netRequest.putParam("max_dist", request.getMaxDistance());
+                    if (request.getMaxDistance() == 0) {
+                        netRequest.putNull("max_dist");
+                    } else {
+                        netRequest.putParam("max_dist", request.getMaxDistance());
+                    }
                     netRequest.putParam("min_rating", request.getMinRating());
-                    netRequest.putParam("destination", request.getDestination().toJSON());
+                    if (request.getDestination() != null) {
+                        netRequest.putParam("destination", request.getDestination().toJSON());
+                    } else {
+                        netRequest.putNull("destination");
+                    }
                     netRequest.putParam("broadcast", request.isBroadcast());
                     if (request.getDirectId() == -1) {
                         netRequest.putNull("direct_user");
@@ -139,6 +148,11 @@ public class NewRequestFragment extends Fragment {
     }
 
     void addressChanged() {
-        ((NR3Fragment) fragments.get(2)).loadDirect();
+        ((NR3Fragment) fragments.get(2)).loadDirect(activity);
     }
+
+    MainActivity getMainActivity() { return activity; }
 }
+
+// {"created_by":1,"services":[],"min_rating":2.5,"no_rating":true,"max_dist":600,"latitude":43.317626953125,"longitude":21.92500877380371}
+// {"created_by":1,"services":[],"min_rating":2.5,"no_rating":true,"max_dist":600,"latitude":43.31763458251953,"longitude":21.92500877380371}

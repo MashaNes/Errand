@@ -25,6 +25,7 @@ import runners.errand.adapter.OfferAdapter;
 import runners.errand.model.Offer;
 import runners.errand.model.Request;
 import runners.errand.model.ServicePrefs;
+import runners.errand.model.User;
 import runners.errand.utils.dialogs.ProfileDialog;
 import runners.errand.utils.dialogs.SimpleDialog;
 import runners.errand.utils.net.NetManager;
@@ -53,6 +54,27 @@ public class ViewOffersFragment extends Fragment {
 		adapter = new OfferAdapter(activity, request.getOffers());
 		list.setAdapter(adapter);
 		dateSetChanged();
+
+		if (request.getDirect() != null) {
+			root.findViewById(R.id.request_view_offers_direct).setVisibility(View.VISIBLE);
+			root.findViewById(R.id.item_user_layout).setVisibility(View.VISIBLE);
+			final User user = request.getDirect();
+			if (user.getPicture_bmp() != null) {
+				((ImageView) root.findViewById(R.id.item_user_image)).setImageBitmap(user.getPicture_bmp());
+			} else {
+				((ImageView) root.findViewById(R.id.item_user_image)).setImageDrawable(getResources().getDrawable(R.drawable.ic_face));
+			}
+			String name = user.getFirstName() + " " + user.getLastName();
+			((TextView) root.findViewById(R.id.item_user_name)).setText(name);
+			String rating = Float.isNaN(user.getRating()) ? getString(R.string.generic_unrated) : String.format(Locale.getDefault(), "%.1f", user.getRating());
+			((TextView) root.findViewById(R.id.item_user_rating)).setText(rating);
+			root.findViewById(R.id.item_user_layout).setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					new ProfileDialog(activity, user, "", getString(R.string.generic_close)).show();
+				}
+			});
+		}
 
 		list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override

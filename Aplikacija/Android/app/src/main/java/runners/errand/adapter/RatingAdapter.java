@@ -52,7 +52,11 @@ public class RatingAdapter extends BaseAdapter {
 
 		String name = rating.getUser().getFirstName() + " " + rating.getUser().getLastName();
 		((TextView) view.findViewById(R.id.rating_name)).setText(name);
-		((ImageView) view.findViewById(R.id.rating_image)).setImageBitmap(rating.getUser().getPicture_bmp());
+		if (rating.getUser().getPicture_bmp() != null) {
+			((ImageView) view.findViewById(R.id.rating_image)).setImageBitmap(rating.getUser().getPicture_bmp());
+		} else {
+			((ImageView) view.findViewById(R.id.rating_image)).setImageDrawable(context.getResources().getDrawable(R.drawable.ic_face));
+		}
 
 		if (rating.getComment() == null || rating.getComment().isEmpty()) {
 			view.findViewById(R.id.rating_comment).setVisibility(View.GONE);

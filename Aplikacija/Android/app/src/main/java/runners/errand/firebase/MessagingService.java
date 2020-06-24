@@ -23,6 +23,7 @@ import java.util.Locale;
 
 import runners.errand.LoginActivity;
 import runners.errand.R;
+import runners.errand.geofencing.GeofencingBroadcastReceiver;
 import runners.errand.model.Notification;
 import runners.errand.utils.PreferenceManager;
 
@@ -32,8 +33,10 @@ public class MessagingService extends FirebaseMessagingService {
 	public final static String NOTIFICATION_EXTRA_ID = "runners.errand.firebase.NOTIFICATION_EXTRA_ID";
 	public final static String NOTIFICATION_EXTRA_TYPE_ID = "runners.errand.firebase.NOTIFICATION_EXTRA_TYPE_ID";
 	public final static String NOTIFICATION_EXTRA_CATEGORY = "runners.errand.firebase.NOTIFICATION_EXTRA_CATEGORY";
-	public final static String NOTIFICATION_EXTRA_TITLE = "runners.errand.firebase.NOTIFICATION_EXTRA_TITLE";
-	public final static String NOTIFICATION_EXTRA_BODY = "runners.errand.firebase.NOTIFICATION_EXTRA_BODY";
+	public final static String NOTIFICATION_EXTRA_TITLE_EN = "runners.errand.firebase.NOTIFICATION_EXTRA_TITLE_EN";
+	public final static String NOTIFICATION_EXTRA_BODY_EN = "runners.errand.firebase.NOTIFICATION_EXTRA_BODY_EN";
+	public final static String NOTIFICATION_EXTRA_TITLE_SR = "runners.errand.firebase.NOTIFICATION_EXTRA_TITLE_SR";
+	public final static String NOTIFICATION_EXTRA_BODY_SR = "runners.errand.firebase.NOTIFICATION_EXTRA_BODY_SR";
 	public final static String NOTIFICATION_EXTRA_TIME = "runners.errand.firebase.NOTIFICATION_EXTRA_TIME";
 
 	@Override
@@ -45,28 +48,36 @@ public class MessagingService extends FirebaseMessagingService {
 		int id = Integer.parseInt(remoteMessage.getData().get("id"));
 		int typeId = Integer.parseInt(remoteMessage.getData().get("type_id"));
 		int category = Integer.parseInt(remoteMessage.getData().get("notification_type"));
-		String title = "";
-		String body = "";
 
+		String title_en = remoteMessage.getData().get("title_en");
+		String body_en = remoteMessage.getData().get("body_en");
+		String title_sr = remoteMessage.getData().get("title_sr");
+		String body_sr = remoteMessage.getData().get("body_sr");
 
-		if (Locale.getDefault().getLanguage().equals("sr")) {
-			title = remoteMessage.getData().get("title_sr");
-			body = remoteMessage.getData().get("body_sr");
-		} else {
-			title = remoteMessage.getData().get("title_en");
-			body = remoteMessage.getData().get("body_en");
+		if (category == Notification.CATEGORY_EDIT_ACCEPTED) {
+			// TODO: Api, list of addresses changed with the edit
+//			GeofencingBroadcastReceiver.removeGeofence(this, typeId, addressId);
+//			GeofencingBroadcastReceiver.addGeofence(this, typeId, addressId, lat, lng);
+		} else if (category == Notification.CATEGORY_REQUEST_FAILED || category == Notification.CATEGORY_REQUEST_SUCCESS) {
+			GeofencingBroadcastReceiver.removeGeofence(this, typeId);
 		}
 
 		Intent intent = new Intent(ACTION_BROADCAST_NOTIFICATION);
 		intent.putExtra(NOTIFICATION_EXTRA_ID, id);
 		intent.putExtra(NOTIFICATION_EXTRA_TYPE_ID, typeId);
 		intent.putExtra(NOTIFICATION_EXTRA_CATEGORY, category);
-		intent.putExtra(NOTIFICATION_EXTRA_TITLE, title);
-		intent.putExtra(NOTIFICATION_EXTRA_BODY, body);
+		intent.putExtra(NOTIFICATION_EXTRA_TITLE_EN, title_en);
+		intent.putExtra(NOTIFICATION_EXTRA_BODY_EN, body_en);
+		intent.putExtra(NOTIFICATION_EXTRA_TITLE_SR, title_sr);
+		intent.putExtra(NOTIFICATION_EXTRA_BODY_SR, body_sr);
 		intent.putExtra(NOTIFICATION_EXTRA_TIME, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(new Date(System.currentTimeMillis())));
 		LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
 
-		sendNotification(title, body, typeId, id, category);
+		if (Locale.getDefault().getLanguage().equals("sr")) {
+			sendNotification(title_sr, body_sr, typeId, id, category);
+		} else {
+			sendNotification(title_en, body_en, typeId, id, category);
+		}
 	}
 
 	private void sendNotification(String title, String body, int typeId, int id, int category) {

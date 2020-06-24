@@ -1,20 +1,31 @@
 package runners.errand.ui.newrequest;
 
 import android.app.AlertDialog;
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
+
+import org.w3c.dom.Text;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 
 import runners.errand.MainActivity;
 import runners.errand.R;
@@ -119,7 +130,7 @@ public class NR1Fragment extends Fragment {
 						super.itemSelected(o, index, size);
 						if (index < size -1) {
 							parent.getRequest().setDestination((Address) o);
-							((TextView) destination).setText(((Address) o).getName());
+							destination.setText(((Address) o).getName());
 						} else {
 							MapDialog mapDialog = new MapDialog(activity, null) {
 								@Override
@@ -128,7 +139,7 @@ public class NR1Fragment extends Fragment {
 									if (getAddress() != null) {
 										parent.getRequest().setDestination(getAddress());
 										parent.addressChanged();
-										((TextView) destination).setText(getAddress().getName());
+										destination.setText(getAddress().getName());
 									}
 								}
 
@@ -156,6 +167,94 @@ public class NR1Fragment extends Fragment {
 			public boolean onLongClick(View v) {
 				if (parent.getRequest().getDestination() != null) Toast.makeText(activity, parent.getRequest().getDestination().getName(), Toast.LENGTH_SHORT).show();
 				return true;
+			}
+		});
+
+		if (parent.getRequest().getTime() == null) {
+			Calendar calendar = Calendar.getInstance();
+			calendar.setTimeInMillis(System.currentTimeMillis() + 30 * 60 * 1000); // +30min
+			parent.getRequest().setTime(calendar.getTime());
+		}
+
+		final TextView time = root.findViewById(R.id.newrequest_info_time_et);
+		time.setText(new SimpleDateFormat("HH:mm", Locale.getDefault()).format(parent.getRequest().getTime()));
+		time.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				((View) v.getParent()).callOnClick();
+			}
+		});
+		((View) time.getParent()).setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Calendar calendar = Calendar.getInstance();
+				if (parent.getRequest().getTime() != null) {
+					calendar.setTime(parent.getRequest().getTime());
+				} else {
+					calendar.setTimeInMillis(System.currentTimeMillis());
+				}
+
+				int hour = calendar.get(Calendar.HOUR_OF_DAY);
+				int minute = calendar.get(Calendar.MINUTE);
+
+				TimePickerDialog dialog = new TimePickerDialog(activity, new TimePickerDialog.OnTimeSetListener() {
+					@Override
+					public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+						Calendar calendar = Calendar.getInstance();
+						if (parent.getRequest().getTime() != null) {
+							calendar.setTime(parent.getRequest().getTime());
+						} else {
+							calendar.setTimeInMillis(System.currentTimeMillis());
+						}
+						calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
+						calendar.set(Calendar.MINUTE, minute);
+						parent.getRequest().setTime(calendar.getTime());
+						time.setText(new SimpleDateFormat("HH:mm", Locale.getDefault()).format(parent.getRequest().getTime()));
+					}
+				}, hour, minute, true);
+				dialog.show();
+			}
+		});
+
+		final TextView date = root.findViewById(R.id.newrequest_info_date_et);
+		date.setText(new SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(parent.getRequest().getTime()));
+		date.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				((View) v.getParent()).callOnClick();
+			}
+		});
+		((View) date.getParent()).setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Calendar calendar = Calendar.getInstance();
+				if (parent.getRequest().getTime() != null) {
+					calendar.setTime(parent.getRequest().getTime());
+				} else {
+					calendar.setTimeInMillis(System.currentTimeMillis());
+				}
+
+				int year = calendar.get(Calendar.YEAR);
+				int month = calendar.get(Calendar.MONTH);
+				int day = calendar.get(Calendar.DAY_OF_MONTH);
+
+				DatePickerDialog dialog = new DatePickerDialog(activity, new DatePickerDialog.OnDateSetListener() {
+					@Override
+					public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+						Calendar calendar = Calendar.getInstance();
+						if (parent.getRequest().getTime() != null) {
+							calendar.setTime(parent.getRequest().getTime());
+						} else {
+							calendar.setTimeInMillis(System.currentTimeMillis());
+						}
+						calendar.set(Calendar.YEAR, year);
+						calendar.set(Calendar.MONTH, month);
+						calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+						parent.getRequest().setTime(calendar.getTime());
+						date.setText(new SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(parent.getRequest().getTime()));
+					}
+				}, year, month, day);
+				dialog.show();
 			}
 		});
 

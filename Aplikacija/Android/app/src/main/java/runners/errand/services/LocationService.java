@@ -24,6 +24,7 @@ import org.json.JSONObject;
 
 import runners.errand.model.User;
 import runners.errand.utils.PreferenceManager;
+import runners.errand.utils.Static;
 import runners.errand.utils.net.NetManager;
 import runners.errand.utils.net.NetRequest;
 
@@ -71,7 +72,8 @@ public class LocationService extends Service implements GoogleApiClient.Connecti
 					.addApi(LocationServices.API)
 					.build();
 
-			locationRequest.setInterval(60000);
+//			locationRequest.setSmallestDisplacement(10);
+			locationRequest.setInterval(30000);
 			locationRequest.setFastestInterval(0);
 			locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 			locationClient.connect();
@@ -139,6 +141,8 @@ public class LocationService extends Service implements GoogleApiClient.Connecti
 		netRequest.putParam("created_by", id);
 		netRequest.putParam("latitude", lat);
 		netRequest.putParam("longitude", lng);
+		Static.lat = lat;
+		Static.lng = lng;
 		NetManager.add(netRequest);
 	}
 

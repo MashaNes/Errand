@@ -57,7 +57,11 @@ public class OfferAdapter extends BaseAdapter {
 		User user = offer.getCreatedBy();
 
 		// User
-		((ImageView) view.findViewById(R.id.item_user_image)).setImageBitmap(user.getPicture_bmp());
+		if (user.getPicture_bmp() != null) {
+			((ImageView) view.findViewById(R.id.item_user_image)).setImageBitmap(user.getPicture_bmp());
+		} else {
+			((ImageView) view.findViewById(R.id.item_user_image)).setImageDrawable(context.getResources().getDrawable(R.drawable.ic_face));
+		}
 		String name = user.getFirstName() + " " + user.getLastName();
 		((TextView) view.findViewById(R.id.item_user_name)).setText(name);
 		String rating = Float.isNaN(user.getRating()) ? context.getString(R.string.generic_unrated) : String.format(Locale.getDefault(), "%.1f", user.getRating());

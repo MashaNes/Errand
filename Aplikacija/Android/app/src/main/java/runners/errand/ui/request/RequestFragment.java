@@ -57,7 +57,7 @@ public class RequestFragment extends Fragment {
 		fragments.clear();
 		fragments.add(new TasksFragment());
 		fragments.add(new MapFragment());
-		if (request.getCreatedBy().getId() == activity.getUser().getId()) {
+		if (activity.getUser().getId() == request.getCreatedBy().getId()) {
 			if (request.getStatus() == Request.STATUS_PENDING) {
 				fragments.add(new ViewOffersFragment());
 			} else {

@@ -286,6 +286,7 @@
 			</androidx.constraintlayout.widget.ConstraintLayout>
 
 			<androidx.constraintlayout.widget.ConstraintLayout
+				android:visibility="gone"
 				android:id="@+id/profile_achievement_layout"
 				android:layout_marginTop="12dp"
 				android:clickable="true"

@@ -28,6 +28,7 @@
 	<string name="generic_search">Search</string>
 	<string name="generic_rate">Rate</string>
 	<string name="generic_complete">Complete</string>
+	<string name="generic_start">Start</string>
 
 	<string name="autofill_email" translatable="false">emailAddress</string>
 	<string name="autofill_password" translatable="false">password</string>
@@ -104,6 +105,7 @@
 	<string name="request_info_service_hint">" Service"</string>
 	<string name="request_info_picture_saved">Picture successfully saved to local storage.</string>
 	<string name="request_send_offer_created_by">Created by:</string>
+	<string name="request_send_offer_direct_request">Direct:</string>
 	<string name="request_send_offer_running">Running:</string>
 	<string name="request_send_offer_offer">Offer:</string>
 	<string name="request_send_offer_edit">Request a change:</string>
@@ -122,6 +124,8 @@
 	<string name="request_cancel">Cancel</string>
 	<string name="request_cancel_desc">You can\'t undo this action. Do you really want to cancel this request? It will immediately canceled.</string>
 	<string name="rate_comment">Comment</string>
+	<string name="request_status_total">Total:</string>
+	<string name="request_status_edit">Edit:</string>
 
 	<string name="newrequest_tab_info">Info</string>
 	<string name="newrequest_tab_tasks">Tasks</string>
@@ -130,6 +134,8 @@
 	<string name="newrequest_info_name_hint">" Name"</string>
 	<string name="newrequest_info_note">Note</string>
 	<string name="newrequest_info_note_hint">" Note"</string>
+	<string name="newrequest_info_time">Time</string>
+	<string name="newrequest_info_date">Date</string>
 	<string name="newrequest_info_max_distance">Max distance</string>
 	<string name="newrequest_info_max_distance_hint">" Maximum distance"</string>
 	<string name="newrequest_info_max_distance_info">Maximum distance (in meters) of a Runner from the addresses specified in this request that can send you offers for this request.</string>
@@ -165,6 +171,7 @@
 	<string name="find_requests_tab_filter">Filter</string>
 	<string name="find_requests_tab_broadcast" translatable="false">Broadcast</string>
 	<string name="find_requests_tab_direct">Direct</string>
+	<string name="find_requests_filter_max_dist">Setting max distance will user your current location if you are active and home address if not. If you are not active and don\'t have a home address set, max distance filter will be ignored.</string>
 	<string name="find_requests_service_filter_desc">Here you can filter by services present in the request. Having no services added to the filter will show all requests regardless of services specified in them.</string>
 	<string name="find_requests_service_filter_add">Add service</string>
 
@@ -234,9 +241,10 @@
 	<string name="settings_runner_hours_clear">Clear working hours</string>
 	<string name="settings_runner_hours_clear_desc">Do you want to clear working hours for this day?</string>
 
-	<string name="payment_type_fixed">Fixed</string>
 	<string name="payment_type_per_hour">Per hour</string>
 	<string name="payment_type_per_kilometer">Per kilometer</string>
+	<string name="payment_type_fixed">Fixed</string>
+	<string name="payment_type_fixed_plus">Fixed plus</string>
 	<string name="payment_type_unknown">Unknown</string>
 
 	<string name="report">Report</string>
@@ -270,6 +278,9 @@
 	<string name="error_address">Failed to locate given address.</string>
 	<string name="error_user_update">Failed to update profile details.</string>
 	<string name="error_hours">Ending time needs to be after starting time.</string>
+	<string name="error_request_not_available">This request is not available.</string>
+	<string name="error_finish_request_location">You need to be active in order to complete this request.</string>
+	<string name="error_start_request_location">You need to be active in order to start this request.</string>
 
 	<string name="permissions">Permissions</string>
 	<string name="permissions_location_runner">Permissions for location access need to be granted in order to use this application as a Runner (send offers to requests and fulfil them) and detecting your current location instead of needing to type in an address.  Would you like to grand location access permission to Errand?</string>

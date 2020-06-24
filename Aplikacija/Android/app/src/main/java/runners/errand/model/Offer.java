@@ -5,12 +5,6 @@ import androidx.annotation.NonNull;
 import org.json.JSONObject;
 
 public class Offer {
-	private static final int
-			PAYMENT_TYPE_FIXED = 0,
-			PAYMENT_TYPE_PKM = 1,
-			PAYMENT_TYPE_PH = 2,
-			PAYMENT_TYPE_FIXED_PLUS = 3;
-
 	private int id, paymentType, request, paymentAmount;
 	private User createdBy;
 	private Edit edit;

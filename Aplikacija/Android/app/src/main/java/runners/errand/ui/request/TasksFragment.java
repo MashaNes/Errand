@@ -1,11 +1,8 @@
 package runners.errand.ui.request;
 
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.util.Base64;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,14 +15,13 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.Locale;
 
 import runners.errand.R;
 import runners.errand.adapter.TaskPicturesAdapter;
 import runners.errand.model.Request;
-import runners.errand.utils.BitmapUtils;
+import runners.errand.utils.ImageUtils;
 
 public class TasksFragment extends Fragment {
 
@@ -48,7 +44,10 @@ public class TasksFragment extends Fragment {
 		parent.getMainActivity().getWindowManager().getDefaultDisplay().getMetrics(metrics);
 
 		// Destination
-		((TextView) root.findViewById(R.id.task_destination)).setText(request.getDestination().getName());
+		if (request.getDestination() != null)
+			((TextView) root.findViewById(R.id.task_destination)).setText(request.getDestination().getName());
+
+		((TextView) root.findViewById(R.id.task_time)).setText(request.getTimeString());
 
 		// Note
 		((TextView) root.findViewById(R.id.task_note)).setText(request.getNote());
@@ -100,7 +99,7 @@ public class TasksFragment extends Fragment {
 		for (int i = 0; i < request.getPictures().size(); i++) {
 			if (bitmaps.get(i) != null) continue;
 
-			bitmaps.set(i, BitmapUtils.decode(request.getPictures().get(i)));
+			bitmaps.set(i, ImageUtils.decode(request.getPictures().get(i)));
 			try {
 				picturesAdapter.notifyDataSetChanged();
 			} catch (Exception e) {

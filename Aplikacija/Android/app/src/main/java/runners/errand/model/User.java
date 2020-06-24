@@ -1,9 +1,6 @@
 package runners.errand.model;
 
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.util.Base64;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 
@@ -13,7 +10,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-import runners.errand.utils.BitmapUtils;
+import runners.errand.utils.ImageUtils;
 
 public class User {
 	public static final int
@@ -144,7 +141,7 @@ public class User {
 		if (picture_b64.contains("data:image/png;base64,")) {
 			picture_b64 = picture_b64.substring(22);
 		} else {
-			picture_bmp = BitmapUtils.decode(picture_b64);
+			picture_bmp = ImageUtils.decode(picture_b64);
 		}
 		this.benefitDiscount = (float) user.optDouble("benefit_discount");
 		this.benefitRequirements = user.optInt("benefit_requirement");

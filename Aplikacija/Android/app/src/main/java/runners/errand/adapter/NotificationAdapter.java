@@ -1,6 +1,7 @@
 package runners.errand.adapter;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -53,6 +54,11 @@ public class NotificationAdapter extends BaseAdapter {
     		view = convertView;
 		}
 
+    	if (!notifications.get(position).isOpened()) {
+    		((TextView) view.findViewById(R.id.notification_title)).setTypeface(null, Typeface.BOLD);
+		} else {
+			((TextView) view.findViewById(R.id.notification_title)).setTypeface(null, Typeface.NORMAL);
+		}
 		((TextView) view.findViewById(R.id.notification_title)).setText(notifications.get(position).getTitle());
 		((TextView) view.findViewById(R.id.notification_time)).setText(new SimpleDateFormat("HH:mm dd.MM.yyyy", Locale.getDefault()).format(notifications.get(position).getTime()));
 		((TextView) view.findViewById(R.id.notification_body)).setText(notifications.get(position).getBody());

@@ -1,5 +1,6 @@
 package runners.errand.ui.newrequest;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -50,11 +51,9 @@ public class NR3Fragment extends Fragment {
 	public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 		View root = inflater.inflate(R.layout.fragment_nr3, container, false);
 
-		activity = ((MainActivity) getActivity());
-		if (activity == null) return root;
-
 		parent = ((NewRequestFragment) getParentFragment());
 		if (parent == null) return root;
+		activity = parent.getMainActivity();
 
 		final TextView broadcast = root.findViewById(R.id.newrequest_offers_broadcast);
 		broadcast.setOnClickListener(new View.OnClickListener() {
@@ -118,7 +117,7 @@ public class NR3Fragment extends Fragment {
 		});
 		adapter = new UserAdapter(activity, directUsers);
 		directList.setAdapter(adapter);
-		if (directUsers.isEmpty()) loadDirect();
+		if (directUsers.isEmpty()) loadDirect(activity);
 
 		return root;
 	}
@@ -130,10 +129,11 @@ public class NR3Fragment extends Fragment {
 		} else {
 			directUsers.addAll(directAll);
 		}
-		adapter.notifyDataSetChanged();
+		if (adapter != null) adapter.notifyDataSetChanged();
 	}
 
-	void loadDirect() {
+	void loadDirect(MainActivity activity) {
+		this.activity = activity;
 		NetRequest request = new NetRequest(NetManager.getApiServer() + NetManager.API_FILTER_USERS, NetManager.POST) {
 			@Override
 			public void success() {
@@ -164,11 +164,12 @@ public class NR3Fragment extends Fragment {
 		};
 		request.putParam("created_by", activity.getUser().getId());
 		request.putParam("sort_rating", true);
+		request.putNull("locations");
 		request.putParam("sort_rating_asc", false);
 		request.putParam("rating_limit_up", 6);
-		request.putParam("rating_limit_down", parent.getRequest().getMinRating());
+		request.putParam("rating_limit_down", ((NewRequestFragment) activity.getFragment()).getRequest().getMinRating());
 		JSONArray services = new JSONArray();
-		for (Task task : parent.getRequest().getTasks()) {
+		for (Task task : ((NewRequestFragment) activity.getFragment()).getRequest().getTasks()) {
 			if (task.getService() != null) {
 				int id = task.getService().getId();
 				for (ServicePrefs prefs : activity.getUser().getServicePrefs()) {

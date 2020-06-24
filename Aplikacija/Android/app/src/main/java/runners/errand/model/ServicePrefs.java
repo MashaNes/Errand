@@ -9,9 +9,10 @@ import org.json.JSONObject;
 import runners.errand.R;
 
 public class ServicePrefs {
-	private static final int PAYMENT_TYPE_FIXED = 0;
-	private static final int PAYMENT_TYPE_PER_HOUR = 1;
-	private static final int PAYMENT_TYPE_PER_KM = 2;
+	public static final int PAYMENT_TYPE_PER_HOUR = 0;
+	public static final int PAYMENT_TYPE_PER_KM = 1;
+	public static final int PAYMENT_TYPE_FIXED = 2;
+	public static final int PAYMENT_TYPE_FIXED_PLUS = 3;
 
 	private int id, service, paymentType;
 	private double maxDistance, paymentAmount, minRating;
@@ -57,12 +58,14 @@ public class ServicePrefs {
 
 	public static String getPaymentTypeString(Context context, int paymentType) {
 		switch (paymentType) {
-			case PAYMENT_TYPE_FIXED:
-				return context.getString(R.string.payment_type_fixed);
 			case PAYMENT_TYPE_PER_HOUR:
 				return context.getString(R.string.payment_type_per_hour);
 			case PAYMENT_TYPE_PER_KM:
 				return context.getString(R.string.payment_type_per_kilometer);
+			case PAYMENT_TYPE_FIXED:
+				return context.getString(R.string.payment_type_fixed);
+			case PAYMENT_TYPE_FIXED_PLUS:
+				return context.getString(R.string.payment_type_fixed_plus);
 			default:
 				return context.getString(R.string.payment_type_unknown);
 		}

@@ -23,10 +23,17 @@
 			style="@style/TextView.Header"/>
 	</androidx.constraintlayout.widget.ConstraintLayout>
 
+	<TextView
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_marginTop="12dp"
+		android:layout_marginHorizontal="8dp"
+		android:text="@string/find_requests_filter_max_dist"
+		android:textSize="@dimen/text_small"/>
+
 	<LinearLayout
 		android:layout_width="match_parent"
 		android:layout_height="28dp"
-		android:layout_marginTop="12dp"
 		android:layout_marginHorizontal="8dp"
 		android:orientation="horizontal"
 		android:background="@drawable/edit_text_login">
@@ -78,7 +85,7 @@
 			style="@style/EditText.Login"
 			android:paddingStart="8dp"
 			android:paddingEnd="8dp"
-			android:text="3.5"
+			android:text="2.5"
 			android:importantForAutofill="no"
 			tools:ignore="NestedWeights" />
 	</LinearLayout>

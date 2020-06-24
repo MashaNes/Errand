@@ -37,11 +37,14 @@ public class FilterFragment extends Fragment {
 		if (parent == null) return root;
 		activity = parent.getMainActivity();
 
+		maxDistance = root.findViewById(R.id.find_requests_filter_max_distance);
+		minRating = root.findViewById(R.id.find_requests_filter_min_rating);
+
 		root.findViewById(R.id.find_requests_filter_button).setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				parent.loadRequests();
-				parent.navigate(1);
+				parent.navigate();
 			}
 		});
 		root.findViewById(R.id.find_requests_filter_service_add).setOnClickListener(new View.OnClickListener() {
@@ -93,7 +96,7 @@ public class FilterFragment extends Fragment {
 		if (minRating != null) {
 			return Float.parseFloat(minRating.getText().toString());
 		} else {
-			return 3.5f;
+			return 2.5f;
 		}
 	}
 

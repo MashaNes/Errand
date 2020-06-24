@@ -1,141 +1,184 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView
+	xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:app="http://schemas.android.com/apk/res-auto"
 	xmlns:tools="http://schemas.android.com/tools"
-	android:orientation="vertical"
-	android:layout_width="match_parent"
-	android:layout_height="match_parent">
+	android:layout_height="match_parent"
+	android:layout_width="match_parent">
 
-	<TextView
-		android:id="@+id/page_title"
-		android:text="@string/request_tab_status"
+	<LinearLayout
+		android:orientation="vertical"
 		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		style="@style/TextView.Header"/>
-
-	<TextView
-		android:id="@+id/request_status_text_user"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:paddingHorizontal="8dp"
-		android:paddingTop="8dp"
-		android:text="@string/request_send_offer_created_by"/>
-
-	<androidx.constraintlayout.widget.ConstraintLayout
-		android:id="@+id/item_user_layout"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:padding="8dp">
-
-		<de.hdodenhof.circleimageview.CircleImageView
-			android:id="@+id/item_user_image"
-			app:layout_constraintTop_toTopOf="parent"
-			app:layout_constraintStart_toStartOf="parent"
-			android:src="@drawable/ic_face"
-			android:layout_width="36dp"
-			android:layout_height="36dp"
-			app:civ_border_width="0dp" />
-
-		<ImageView
-			android:visibility="gone"
-			android:id="@+id/item_user_selected"
-			android:layout_width="36dp"
-			android:layout_height="36dp"
-			android:padding="6dp"
-			android:src="@drawable/ic_status_completed"
-			app:layout_constraintEnd_toEndOf="parent"
-			app:layout_constraintTop_toTopOf="parent"/>
+		android:layout_height="wrap_content">
 
 		<TextView
-			android:id="@+id/item_user_name"
-			app:layout_constraintTop_toTopOf="parent"
-			app:layout_constraintStart_toEndOf="@id/item_user_image"
-			app:layout_constraintEnd_toStartOf="@id/item_user_selected"
-			android:paddingStart="8dp"
-			android:paddingLeft="8dp"
-			android:layout_width="0dp"
+			android:id="@+id/page_title"
+			android:text="@string/request_tab_status"
+			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
-			android:lines="1"
-			android:maxLines="1"
-			android:ellipsize="end"
-			android:textColor="@color/colorBlack"
-			tools:ignore="RtlSymmetry" />
+			style="@style/TextView.Header"/>
 
-		<LinearLayout
-			android:id="@+id/item_user_stars"
-			app:layout_constraintBottom_toBottomOf="@id/item_user_image"
-			app:layout_constraintStart_toEndOf="@id/item_user_image"
-			app:layout_constraintEnd_toStartOf="@id/item_user_selected"
-			android:paddingStart="8dp"
-			android:paddingLeft="8dp"
-			android:paddingBottom="2dp"
-			android:layout_width="0dp"
-			android:layout_height="16dp"
-			android:orientation="horizontal"
-			tools:ignore="RtlSymmetry">
+		<TextView
+			android:id="@+id/request_status_text_user"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:paddingHorizontal="8dp"
+			android:paddingTop="8dp"
+			android:text="@string/request_send_offer_created_by"/>
+
+		<androidx.constraintlayout.widget.ConstraintLayout
+			android:id="@+id/item_user_layout"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:padding="8dp">
+
+			<de.hdodenhof.circleimageview.CircleImageView
+				android:id="@+id/item_user_image"
+				app:layout_constraintTop_toTopOf="parent"
+				app:layout_constraintStart_toStartOf="parent"
+				android:src="@drawable/ic_face"
+				android:layout_width="36dp"
+				android:layout_height="36dp"
+				app:civ_border_width="0dp" />
 
 			<ImageView
-				android:id="@+id/item_user_rating_drawable"
-				android:src="@drawable/ic_star_full"
-				android:layout_width="16dp"
-				android:layout_height="16dp"
-				tools:ignore="ContentDescription" />
+				android:visibility="gone"
+				android:id="@+id/item_user_selected"
+				android:layout_width="36dp"
+				android:layout_height="36dp"
+				android:padding="6dp"
+				android:src="@drawable/ic_status_completed"
+				app:layout_constraintEnd_toEndOf="parent"
+				app:layout_constraintTop_toTopOf="parent"/>
 
 			<TextView
-				android:id="@+id/item_user_rating"
-				android:layout_width="wrap_content"
-				android:layout_height="match_parent"
-				android:layout_marginStart="2dp"
-				android:layout_marginLeft="2dp"
-				android:textSize="@dimen/text_small"
-				android:textColor="@color/colorBlack" />
-		</LinearLayout>
-	</androidx.constraintlayout.widget.ConstraintLayout>
+				android:id="@+id/item_user_name"
+				app:layout_constraintTop_toTopOf="parent"
+				app:layout_constraintStart_toEndOf="@id/item_user_image"
+				app:layout_constraintEnd_toStartOf="@id/item_user_selected"
+				android:paddingStart="8dp"
+				android:paddingLeft="8dp"
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"
+				android:lines="1"
+				android:maxLines="1"
+				android:ellipsize="end"
+				android:textColor="@color/colorBlack"
+				tools:ignore="RtlSymmetry" />
 
-	<TextView
-		android:id="@+id/find_requests_status_other_user_completed"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:paddingHorizontal="8dp"
-		android:textColor="@color/colorBlack" />
+			<LinearLayout
+				android:id="@+id/item_user_stars"
+				app:layout_constraintBottom_toBottomOf="@id/item_user_image"
+				app:layout_constraintStart_toEndOf="@id/item_user_image"
+				app:layout_constraintEnd_toStartOf="@id/item_user_selected"
+				android:paddingStart="8dp"
+				android:paddingLeft="8dp"
+				android:paddingBottom="2dp"
+				android:layout_width="0dp"
+				android:layout_height="16dp"
+				android:orientation="horizontal"
+				tools:ignore="RtlSymmetry">
 
-	<TextView
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:paddingHorizontal="8dp"
-		android:paddingTop="8dp"
-		android:text="@string/request_offer_item_payment"/>
+				<ImageView
+					android:id="@+id/item_user_rating_drawable"
+					android:src="@drawable/ic_star_full"
+					android:layout_width="16dp"
+					android:layout_height="16dp"
+					tools:ignore="ContentDescription" />
 
-	<TextView
-		android:id="@+id/item_offer_payment_amount"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:layout_marginHorizontal="8dp"
-		android:layout_marginBottom="16dp"
-		android:textColor="@color/colorBlack"/>
+				<TextView
+					android:id="@+id/item_user_rating"
+					android:layout_width="wrap_content"
+					android:layout_height="match_parent"
+					android:layout_marginStart="2dp"
+					android:layout_marginLeft="2dp"
+					android:textSize="@dimen/text_small"
+					android:textColor="@color/colorBlack" />
+			</LinearLayout>
+		</androidx.constraintlayout.widget.ConstraintLayout>
 
-	<Button
-		android:id="@+id/find_requests_status_complete"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		style="?android:attr/borderlessButtonStyle"
-		android:layout_gravity="center"
-		android:text="@string/generic_complete" />
+		<TextView
+			android:id="@+id/find_requests_status_other_user_completed"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:paddingHorizontal="8dp"
+			android:textColor="@color/colorBlack" />
 
-	<Button
-		android:id="@+id/find_requests_status_cancel"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		style="?android:attr/borderlessButtonStyle"
-		android:layout_gravity="center"
-		android:text="@string/generic_cancel" />
+		<TextView
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:paddingHorizontal="8dp"
+			android:paddingTop="8dp"
+			android:text="@string/request_offer_item_payment"/>
 
-	<Button
-		android:visibility="gone"
-		android:id="@+id/find_requests_status_rate"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		style="?android:attr/borderlessButtonStyle"
-		android:layout_gravity="center"
-		android:text="@string/generic_rate" />
-</LinearLayout>
+		<TextView
+			android:id="@+id/item_offer_payment_amount"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_marginHorizontal="8dp"
+			android:textColor="@color/colorBlack"/>
+
+		<TextView
+			android:id="@+id/item_offer_total_label"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:paddingHorizontal="8dp"
+			android:paddingTop="8dp"
+			android:text="@string/request_status_total"/>
+
+		<TextView
+			android:id="@+id/item_offer_total"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_marginHorizontal="8dp"
+			android:textColor="@color/colorBlack"/>
+
+		<TextView
+			android:id="@+id/item_offer_edit_label"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:paddingHorizontal="8dp"
+			android:paddingTop="8dp"
+			android:text="@string/request_status_edit"/>
+
+		<TextView
+			android:id="@+id/item_offer_edit"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_marginHorizontal="8dp"
+			android:textColor="@color/colorBlack"/>
+
+		<Button
+			android:id="@+id/find_requests_status_start"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			style="?android:attr/borderlessButtonStyle"
+			android:layout_gravity="center"
+			android:text="@string/generic_start" />
+
+		<Button
+			android:id="@+id/find_requests_status_complete"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			style="?android:attr/borderlessButtonStyle"
+			android:layout_gravity="center"
+			android:text="@string/generic_complete" />
+
+		<Button
+			android:id="@+id/find_requests_status_cancel"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			style="?android:attr/borderlessButtonStyle"
+			android:layout_gravity="center"
+			android:text="@string/generic_cancel" />
+
+		<Button
+			android:visibility="visible"
+			android:id="@+id/find_requests_status_rate"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			style="?android:attr/borderlessButtonStyle"
+			android:layout_gravity="center"
+			android:text="@string/generic_rate" />
+	</LinearLayout>
+</ScrollView>
