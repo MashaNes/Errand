@@ -1,6 +1,10 @@
 <template>
     <Spinner v-if="Notifications == null" />
     <div class="page-wrapper" v-else>
+        <div v-if="Notifications.length == 0" class="no-notifications"> 
+            <i v-if="isSerbian"> Trenutno nema notifikacija za prikaz </i>
+            <i v-else> There are currently no notificatinos to show </i>
+        </div>
         <div v-for="notification in Notifications" :key="notification.id" class="notification-div">
             <NotificationAndroid :notification="notification" v-if="notification.notification_type == 0 || notification.notification_type == 3 || notification.notification_type == 4"/>
             <NotificationNew :notification="notification" v-if="notification.notification_type != 0 && notification.notification_type != 3 && notification.notification_type != 4 && notification.opened == false"/>
@@ -43,6 +47,14 @@
             moreNotifications()
             {
                 return this.$store.state.moreNotifications
+            },
+            isSerbian()
+            {
+                return this.$store.state.isSerbian
+            },
+            isDataLoaded()
+            {
+                return this.$store.state.isDataLoaded
             }
         },
         created()
@@ -108,6 +120,15 @@
         flex-direction: column;
         align-items: center;
         margin-top:25px;
+    }
+
+    .no-notifications
+    {
+        margin-top:40px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        font-size: 20px;
     }
 
     @media only screen and (max-width: 450px)

@@ -48,14 +48,18 @@ export default {
       },
       description() {
         let returnText = ""
-        returnText += this.body.conditions[0].condition_numbers[this.achievement.level - 1].condition_number
-        if(this.isSerbian) {
-          returnText += this.body.description_sr
-        }
+        
+        if(this.isSerbian)
+          returnText = this.body.description_sr
         else
-          returnText += this.body.description_en
-        if(this.body.conditions.length > 1)
-            returnText += " " + this.body.conditions[1].condition_numbers[this.achievement.level - 1].condition_number
+          returnText = this.body.description_en
+        
+        this.body.conditions.forEach((element,index) => 
+        {
+          const broj = index + 1
+          returnText = returnText.replace("{" + broj + "}", element.condition_numbers[this.achievement.level - 1].condition_number)
+        })
+        
         return returnText
       }
     }

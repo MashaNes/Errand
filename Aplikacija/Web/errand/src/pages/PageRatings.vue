@@ -71,7 +71,7 @@ export default {
         this.$store.state.user = this.user
       this.$store.dispatch('fillUserRatings', {
         userId: routeId,
-        endpoint: "http://localhost:8000/api/v1/user_info_filtered/?paginate=true",
+        endpoint: "http://" + this.$store.state.host + ":8000/api/v1/user_info_filtered/?paginate=true",
         updateAllRatings: false
       })
 

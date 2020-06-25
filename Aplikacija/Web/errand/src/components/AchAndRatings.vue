@@ -252,7 +252,7 @@ export default {
         //this.setNullToCollection(this.tab)
         this.$store.dispatch('fillUserRatings', {
           userId: this.user.id,
-          endpoint: "http://localhost:8000/api/v1/user_info_filtered/?paginate=true",
+          endpoint: "http://" + this.$store.state.host + ":8000/api/v1/user_info_filtered/?paginate=true",
           updateAllRatings: true
         })
         this.currentPage = 1
@@ -271,7 +271,7 @@ export default {
         //this.setNullToCollection(this.tab)
         this.$store.dispatch('getUserAchievements', {
           userId: this.user.id,
-          endpoint: "http://localhost:8000/api/v1/user_info_filtered/?paginate=true"
+          endpoint: "http://" + this.$store.state.host + ":8000/api/v1/user_info_filtered/?paginate=true"
         })
         this.currentPage = 1
         this.lastPage = 1
@@ -322,13 +322,13 @@ export default {
           if(this.tab == 'Achievements') {
             payload = {
               userId: this.user.id,
-              endpoint: "http://localhost:8000/api/v1/user_info_filtered/?paginate=true&page=" + this.currentPage
+              endpoint: "http://" + this.$store.state.host + ":8000/api/v1/user_info_filtered/?paginate=true&page=" + this.currentPage
             }
           }
           else 
             payload = {
               userId: this.user.id,
-              endpoint: "http://localhost:8000/api/v1/user_info_filtered/?paginate=true&page=" + this.currentPage,
+              endpoint: "http://" + this.$store.state.host + ":8000/api/v1/user_info_filtered/?paginate=true&page=" + this.currentPage,
               updateAllRatings: false
             }
           this.$store.dispatch(storeFunction, payload)

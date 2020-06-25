@@ -216,7 +216,7 @@ export default {
       {
         window.scrollTo(0, 0)
         this.$store.dispatch('fillUsersPortion', {
-          endpoint: "http://localhost:8000/api/v1/filtered_users/?paginate=true&page=" + this.currentPage,
+          endpoint: "http://" + this.$store.state.host + ":8000/api/v1/filtered_users/?paginate=true&page=" + this.currentPage,
           sort_rating: true,
           sort_rating_asc: true,
           rating_limit_up: this.showUnrated ? null : parseInt(String(this.filterRatingHigher)),
@@ -247,7 +247,7 @@ export default {
       this.currentPage = 1
       this.lastPage = 1
       this.$store.dispatch('fillUsersPortion', {
-        endpoint: "http://localhost:8000/api/v1/filtered_users/?paginate=true",
+        endpoint: "http://" + this.$store.state.host + ":8000/api/v1/filtered_users/?paginate=true",
         sort_rating: true,
         sort_rating_asc: true,
         rating_limit_up: this.showUnrated ? null : parseInt(String(this.filterRatingHigher)),
@@ -263,7 +263,7 @@ export default {
     closeModal(){
       this.$store.state.userAdded = false
       this.$store.dispatch('fillUsersPortion', {
-        endpoint: "http://localhost:8000/api/v1/filtered_users/?paginate=true",
+        endpoint: "http://" + this.$store.state.host + ":8000/api/v1/filtered_users/?paginate=true",
         sort_rating: true,
         sort_rating_asc: true,
         rating_limit_up: null,
@@ -278,7 +278,7 @@ export default {
     },
     onCreate() {
         this.$store.dispatch('fillUsersPortion', {
-        endpoint: "http://localhost:8000/api/v1/filtered_users/?paginate=true",
+        endpoint: "http://" + this.$store.state.host + ":8000/api/v1/filtered_users/?paginate=true",
         sort_rating: true,
         sort_rating_asc: true,
         rating_limit_up: null,
@@ -294,7 +294,7 @@ export default {
     PromenaCekiranosi()
     {
       this.$store.dispatch('fillUsersPortion', {
-        endpoint: "http://localhost:8000/api/v1/filtered_users/?paginate=true",
+        endpoint: "http://" + this.$store.state.host + ":8000/api/v1/filtered_users/?paginate=true",
         sort_rating: true,
         sort_rating_asc: true,
         rating_limit_up: null,
@@ -310,7 +310,7 @@ export default {
   },
   created() {
     // this.$store.dispatch('fillUsersPortion', {
-    //   endpoint: "http://localhost:8000/api/v1/filtered_users/?paginate=true",
+    //   endpoint: "http://" + this.$store.state.host + ":8000/api/v1/filtered_users/?paginate=true",
     //   sort_rating: true,
     //   sort_rating_asc: true,
     //   rating_limit_up: null,

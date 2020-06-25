@@ -80,7 +80,8 @@ export default new Vuex.Store({
         newAchievement: null,
         newFinishedRequest: null,
         newRunnerRequest: null,
-        newSuccessfullyFinishedRequest: null
+        newSuccessfullyFinishedRequest: null,
+        host: "localhost" //192.168.0.17
     },
     getters:{
         getAuthUserId(state) {
@@ -100,7 +101,7 @@ export default new Vuex.Store({
         fillRequests({commit}, {filters, objectToFill, dataLoaded}) {
             this.state.isDataLoaded = dataLoaded
             var str = (objectToFill.object == "overAuthRequests" ? "?paginate=true&page=" +  objectToFill.page : "")
-            fetch("http://127.0.0.1:8000/api/v1/filtered_requests/" + str, {
+            fetch("http://" + this.state.host + ":8000/api/v1/filtered_requests/" + str, {
                 method: "POST",
                 headers: {
                     "Content-type" : "application/json",
@@ -146,7 +147,7 @@ export default new Vuex.Store({
         },
         fillUsersWithBenefit()
         {
-            fetch("http://127.0.0.1:8000/api/v1/user_info_filtered/",
+            fetch("http://" + this.state.host + ":8000/api/v1/user_info_filtered/",
             {
                 method: 'POST',
                 headers:
@@ -184,6 +185,7 @@ export default new Vuex.Store({
                     }
                 });
         },
+        
         getUser({commit}, userId) {
             const users = fetchUsers()
             const specificUser = Object.values(users).find(u => u.id == userId)
@@ -191,7 +193,7 @@ export default new Vuex.Store({
         },
         fillAuthUser({commit}, payload) {
             this.state.isDataLoaded = false
-            fetch("http://127.0.0.1:8000/api/v1/login/",
+            fetch("http://" + this.state.host + ":8000/api/v1/login/",
             {
                 method: 'POST',
                 headers:
@@ -249,7 +251,7 @@ export default new Vuex.Store({
         createUser({commit}, payload)
         {
             this.state.isDataLoaded = false
-            fetch("http://127.0.0.1:8000/api/v1/user_create/",
+            fetch("http://" + this.state.host + ":8000/api/v1/user_create/",
             {
                 method: 'POST',
                 headers:
@@ -298,7 +300,7 @@ export default new Vuex.Store({
         createAdminUser({commit}, payload)
         {
             this.state.isDataLoaded = false
-            fetch("http://127.0.0.1:8000/api/v1/user_create/",
+            fetch("http://" + this.state.host + ":8000/api/v1/user_create/",
             {
                 method: 'POST',
                 headers:
@@ -430,7 +432,7 @@ export default new Vuex.Store({
             })
         },
         fillAllUserRatings({commit}, userId) {
-            fetch("http://localhost:8000/api/v1/user_info_filtered/", {
+            fetch("http://" + this.state.host + ":8000/api/v1/user_info_filtered/", {
                 method: "POST",
                 headers:
                 {
@@ -464,7 +466,7 @@ export default new Vuex.Store({
         },
         fillUserAddresses({commit}, userId) {
             this.state.isDataLoaded = false
-            fetch("http://localhost:8000/api/v1/user_info_filtered/", {
+            fetch("http://" + this.state.host + ":8000/api/v1/user_info_filtered/", {
                 method: "POST",
                 headers:
                 {
@@ -498,7 +500,7 @@ export default new Vuex.Store({
             })
         },
         addAddress({commit}, address) {
-            fetch("http://localhost:8000/api/v1/address_add/", {
+            fetch("http://" + this.state.host + ":8000/api/v1/address_add/", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -523,7 +525,7 @@ export default new Vuex.Store({
                 })
         },
         deleteAddress({commit}, addressId) {
-            fetch("http://localhost:8000/api/v1/address_remove/", {
+            fetch("http://" + this.state.host + ":8000/api/v1/address_remove/", {
                 method: "DELETE",
                 headers: {
                     "Content-Type": "application/json",
@@ -547,7 +549,7 @@ export default new Vuex.Store({
             })
         },
         editUser({commit}, {pictureChanged, password}) {
-            fetch('http://localhost:8000/api/v1/user_update/', {
+            fetch('http://' + this.state.host + ':8000/api/v1/user_update/', {
                 method: 'PUT',
                 headers: {
                     "Content-Type": "application/json",
@@ -627,7 +629,7 @@ export default new Vuex.Store({
             commit('setSpecificRequests', filteredRequests)
         },
         addRating({commit}, {filters, isInUnratedCreated}) {
-            fetch('http://localhost:8000/api/v1/rate_user/', {
+            fetch('http://' + this.state.host + ':8000/api/v1/rate_user/', {
                 method: 'POST',
                 headers: {
                     "Content-Type": "application/json",
@@ -686,7 +688,7 @@ export default new Vuex.Store({
             })
         },
         addReport({commit}, filters) {
-            fetch("http://127.0.0.1:8000/api/v1/report_create/", {
+            fetch("http://" + this.state.host + ":8000/api/v1/report_create/", {
                 method: 'POST',
                 headers: {
                     "Content-type" : "application/json",
@@ -713,7 +715,7 @@ export default new Vuex.Store({
         },
         fillUserServices()
         {
-            fetch("http://127.0.0.1:8000/api/v1/user_info_filtered/",
+            fetch("http://" + this.state.host + ":8000/api/v1/user_info_filtered/",
             {
                 method: 'POST',
                 headers:
@@ -754,7 +756,7 @@ export default new Vuex.Store({
         },
         fillNotAuthUserServices({commit}, userId) {
             this.state.isDataLoaded = false
-            fetch("http://127.0.0.1:8000/api/v1/user_info_filtered/", {
+            fetch("http://" + this.state.host + ":8000/api/v1/user_info_filtered/", {
                 method: 'POST',
                 headers: {
                     "Content-type" : "application/json",
@@ -788,7 +790,7 @@ export default new Vuex.Store({
         }, 
         fillServices()
         {
-            fetch("http://127.0.0.1:8000/api/v1/services/",
+            fetch("http://" + this.state.host + ":8000/api/v1/services/",
             {
                 method: 'GET',
                 headers:
@@ -835,7 +837,7 @@ export default new Vuex.Store({
         },
         updateUserInfo()
         {
-            fetch("http://127.0.0.1:8000/api/v1/user_update/",
+            fetch("http://" + this.state.host + ":8000/api/v1/user_update/",
             {
                 method: 'PUT',
                 headers:
@@ -875,7 +877,7 @@ export default new Vuex.Store({
         getUserById({commit}, payload)
         {
             this.state.isDataLoaded = false
-            fetch("http://127.0.0.1:8000/api/v1/users_info/" + payload.id,
+            fetch("http://" + this.state.host + ":8000/api/v1/users_info/" + payload.id,
             {
                 method: 'GET',
                 headers:
@@ -921,7 +923,7 @@ export default new Vuex.Store({
             //const firebaseTokenCopy = this.state.firebaseToken
             //this.dispatch('unregisterFromFirebase', {token: tokenCopy, firebaseToken: firebaseTokenCopy})
 
-            fetch("http://127.0.0.1:8000/api/v1/logout/",
+            fetch("http://" + this.state.host + ":8000/api/v1/logout/",
             {
                 method: 'PUT',
                 headers:
@@ -985,7 +987,7 @@ export default new Vuex.Store({
         },
         updateUserService({commit}, payload)
         {
-            fetch("http://127.0.0.1:8000/api/v1/user_service_update/",
+            fetch("http://" + this.state.host + ":8000/api/v1/user_service_update/",
             {
                 method: 'PUT',
                 headers:
@@ -1019,7 +1021,7 @@ export default new Vuex.Store({
         },
         removeUserService({commit}, id)
         {
-            fetch("http://127.0.0.1:8000/api/v1/user_service_remove/",
+            fetch("http://" + this.state.host + ":8000/api/v1/user_service_remove/",
             {
                 method: 'DELETE',
                 headers:
@@ -1049,7 +1051,7 @@ export default new Vuex.Store({
         },
         addUserService({commit}, payload)
         {
-            fetch("http://127.0.0.1:8000/api/v1/user_service_add/",
+            fetch("http://" + this.state.host + ":8000/api/v1/user_service_add/",
             {
                 method: 'POST',
                 headers:
@@ -1086,7 +1088,7 @@ export default new Vuex.Store({
             var vm = this
             if(userId != this.state.authUser.id)
                 this.state.isDataLoaded = false
-            fetch("http://localhost:8000/api/v1/users_info/" + userId, {
+            fetch("http://" + this.state.host + ":8000/api/v1/users_info/" + userId, {
                 method:"GET",
                 headers: {
                     "Content-Type": "application/json",
@@ -1120,7 +1122,7 @@ export default new Vuex.Store({
         },
         removeBenefit({commit}, id)
         {
-            fetch("http://127.0.0.1:8000/api/v1/benefit_remove/",
+            fetch("http://" + this.state.host + ":8000/api/v1/benefit_remove/",
             {
                 method: 'DELETE',
                 headers:
@@ -1150,7 +1152,7 @@ export default new Vuex.Store({
         },
         updateBenefit({commit}, payload)
         {
-            fetch("http://127.0.0.1:8000/api/v1/benefit_update/",
+            fetch("http://" + this.state.host + ":8000/api/v1/benefit_update/",
             {
                 method: 'PUT',
                 headers:
@@ -1181,7 +1183,7 @@ export default new Vuex.Store({
         },
         addBenefit({commit}, payload)
         {
-            fetch("http://127.0.0.1:8000/api/v1/benefit_add/",
+            fetch("http://" + this.state.host + ":8000/api/v1/benefit_add/",
             {
                 method: 'POST',
                 headers:
@@ -1214,7 +1216,7 @@ export default new Vuex.Store({
         },
         createRequest({commit}, payload)
         {
-            fetch("http://127.0.0.1:8000/api/v1/request_create/",
+            fetch("http://" + this.state.host + ":8000/api/v1/request_create/",
             {
                 method: 'POST',
                 headers:
@@ -1264,7 +1266,7 @@ export default new Vuex.Store({
                 });
         },
         getRequestById({commit}, requestId) {
-            fetch("http://localhost:8000/api/v1/requests/" + requestId, {
+            fetch("http://" + this.state.host + ":8000/api/v1/requests/" + requestId, {
                 method: 'GET',
                 headers: {
                     "Content-type" : "application/json",
@@ -1302,7 +1304,7 @@ export default new Vuex.Store({
             }) 
         },
         getRequestByIdBasic({commit}, requestId) {
-            fetch("http://localhost:8000/api/v1/requests_info/" + requestId, {
+            fetch("http://" + this.state.host + ":8000/api/v1/requests_info/" + requestId, {
                 method: 'GET',
                 headers: {
                     "Content-type" : "application/json",
@@ -1323,7 +1325,7 @@ export default new Vuex.Store({
         },
         deleteRequest({commit}, requestId)
         { 
-            fetch("http://127.0.0.1:8000/api/v1/request_cancel/",
+            fetch("http://" + this.state.host + ":8000/api/v1/request_cancel/",
             {
                 method: 'DELETE',
                 headers:
@@ -1353,7 +1355,7 @@ export default new Vuex.Store({
         },
         fillFilteredRequestInfo({commit}, {filters, requestId, dataLoaded}) {
             this.state.isRequestInfoLoaded = dataLoaded
-            fetch("http://127.0.0.1:8000/api/v1/request_info_filtered/", {
+            fetch("http://" + this.state.host + ":8000/api/v1/request_info_filtered/", {
                 method: "POST",
                 headers: {
                     "Content-type" : "application/json",
@@ -1402,7 +1404,7 @@ export default new Vuex.Store({
             })
         },
         rejectOffer({commit}, offerId) {
-            fetch("http://127.0.0.1:8000/api/v1/offer_cancel/", {
+            fetch("http://" + this.state.host + ":8000/api/v1/offer_cancel/", {
                 method: "DELETE",
                 headers: {
                     "Content-type" : "application/json",
@@ -1422,7 +1424,7 @@ export default new Vuex.Store({
             })
         },
         acceptOffer({commit}, {offerId, requestId}) {
-            fetch("http://127.0.0.1:8000/api/v1/offer_accept/", {
+            fetch("http://" + this.state.host + ":8000/api/v1/offer_accept/", {
                 method: "PUT",
                 headers: {
                     "Content-type" : "application/json",
@@ -1443,7 +1445,7 @@ export default new Vuex.Store({
             })
         },
         rejectEdit({commit}, offerId) {
-            fetch("http://127.0.0.1:8000/api/v1/edit_cancel/", {
+            fetch("http://" + this.state.host + ":8000/api/v1/edit_cancel/", {
                 method: "DELETE",
                 headers: {
                     "Content-type" : "application/json",
@@ -1463,7 +1465,7 @@ export default new Vuex.Store({
             })
         },
         acceptEdit({commit}, {requestId, editId}) {
-            fetch("http://127.0.0.1:8000/api/v1/edit_accept/", {
+            fetch("http://" + this.state.host + ":8000/api/v1/edit_accept/", {
                 method: "PUT",
                 headers: {
                     "Content-type" : "application/json",
@@ -1485,7 +1487,7 @@ export default new Vuex.Store({
         },
         createService({commit}, payload)
         {
-            fetch("http://127.0.0.1:8000/api/v1/service_create/",
+            fetch("http://" + this.state.host + ":8000/api/v1/service_create/",
             {
                 method: 'POST',
                 headers:
@@ -1520,7 +1522,7 @@ export default new Vuex.Store({
         },
         fillActiveReports(){
             //this.state.activeReports = fetchActiveReports()
-            fetch("http://127.0.0.1:8000/api/v1/reports/",
+            fetch("http://" + this.state.host + ":8000/api/v1/reports/",
             {
                 method: 'POST',
                 headers:
@@ -1555,7 +1557,7 @@ export default new Vuex.Store({
         fillHandeledReports({commit}, payload){
             //this.state.handeledReports = fetchHandeledReports()
             this.state.isDataLoaded = false
-            fetch("http://127.0.0.1:8000/api/v1/reports/?paginate=true&page=" + payload.page,
+            fetch("http://" + this.state.host + ":8000/api/v1/reports/?paginate=true&page=" + payload.page,
             {
                 method: 'POST',
                 headers:
@@ -1593,7 +1595,7 @@ export default new Vuex.Store({
             commit('openOfferOrEdit', array)
         },
         fillOtherRequests(){
-            fetch("http://localhost:8000/api/v1/requests_other", {
+            fetch("http://" + this.state.host + ":8000/api/v1/requests_other", {
                 method: 'GET',
                 headers: {
                     "Content-type" : "application/json",
@@ -1613,7 +1615,7 @@ export default new Vuex.Store({
             })
         },
         getRequestByIdAdmin({commit}, requestId) {
-            fetch("http://localhost:8000/api/v1/requests/" + requestId, {
+            fetch("http://" + this.state.host + ":8000/api/v1/requests/" + requestId, {
                 method: 'GET',
                 headers: {
                     "Content-type" : "application/json",
@@ -1633,7 +1635,7 @@ export default new Vuex.Store({
             }) 
         },
         cancelRequest({commit}, request) {
-            fetch("http://localhost:8000/api/v1/request_finish/", {
+            fetch("http://" + this.state.host + ":8000/api/v1/request_finish/", {
                 method: 'PUT',
                 headers: {
                     "Content-type" : "application/json",
@@ -1676,7 +1678,7 @@ export default new Vuex.Store({
             })
         },
         finishRequest({commit}, request) {
-            fetch("http://localhost:8000/api/v1/request_finish/", {
+            fetch("http://" + this.state.host + ":8000/api/v1/request_finish/", {
                 method: 'PUT',
                 headers: {
                     "Content-type" : "application/json",
@@ -1727,7 +1729,7 @@ export default new Vuex.Store({
         },
         handleReport({commit}, payload)
         {
-            fetch("http://127.0.0.1:8000/api/v1/report_handle/",
+            fetch("http://" + this.state.host + ":8000/api/v1/report_handle/",
             {
                 method: 'PUT',
                 headers:
@@ -1758,7 +1760,7 @@ export default new Vuex.Store({
         },
         getStatistics()
         {
-            fetch("http://127.0.0.1:8000/api/v1/stats/",
+            fetch("http://" + this.state.host + ":8000/api/v1/stats/",
             {
                 method: 'POST',
                 headers:
@@ -1788,7 +1790,7 @@ export default new Vuex.Store({
         },
         getAllAchievements()
         {
-            fetch("http://localhost:8000/api/v1/achievements/" , {
+            fetch("http://" + this.state.host + ":8000/api/v1/achievements/" , {
                 method: 'GET',
                 headers: {
                     "Content-type" : "application/json",
@@ -1809,7 +1811,7 @@ export default new Vuex.Store({
         },
         changeTaskService({commit}, payload)
         {
-            fetch("http://127.0.0.1:8000/api/v1/service_task_update/",
+            fetch("http://" + this.state.host + ":8000/api/v1/service_task_update/",
             {
                 method: 'PUT',
                 headers:
@@ -1840,7 +1842,7 @@ export default new Vuex.Store({
         },
         editService({commit}, payload)
         {
-            fetch("http://127.0.0.1:8000/api/v1/service_update/",
+            fetch("http://" + this.state.host + ":8000/api/v1/service_update/",
             {
                 method: 'PUT',
                 headers:
@@ -1875,7 +1877,7 @@ export default new Vuex.Store({
         },
         achievementCreate({commit}, payload)
         {
-            fetch("http://127.0.0.1:8000/api/v1/achievement_create/",
+            fetch("http://" + this.state.host + ":8000/api/v1/achievement_create/",
             {
                 method: 'POST',
                 headers:
@@ -1913,7 +1915,7 @@ export default new Vuex.Store({
         },
         banUser({commit}, payload)
         {
-            fetch("http://127.0.0.1:8000/api/v1/ban_create/",
+            fetch("http://" + this.state.host + ":8000/api/v1/ban_create/",
             {
                 method: 'POST',
                 headers:
@@ -1947,7 +1949,7 @@ export default new Vuex.Store({
             Vue.cookie.set('firebaseToken', token)
             this.state.firebaseToken = token
             this.state.registeredOnFirebase = true
-            fetch("http://127.0.0.1:8000/api/v1/fcm_register/", {
+            fetch("http://" + this.state.host + ":8000/api/v1/fcm_register/", {
                 method: 'POST',
                 headers: {
                     "Content-type" : "application/json",
@@ -1975,7 +1977,7 @@ export default new Vuex.Store({
         unregisterFromFirebase({commit}) {
             if(this.state.firebaseOnMessageFunction != null)
                 this.state.firebaseOnMessageFunction()
-            fetch("http://127.0.0.1:8000/api/v1/fcm_unregister/", {
+            fetch("http://" + this.state.host + ":8000/api/v1/fcm_unregister/", {
                 method: 'DELETE',
                 headers: {
                     "Content-type" : "application/json",
@@ -1999,7 +2001,7 @@ export default new Vuex.Store({
         unregisterLogedoutFromFirebase({commit}, payload) {
             if(this.state.firebaseOnMessageFunction != null)
                 this.state.firebaseOnMessageFunction()
-            fetch("http://127.0.0.1:8000/api/v1/fcm_unregister/", {
+            fetch("http://" + this.state.host + ":8000/api/v1/fcm_unregister/", {
                 method: 'DELETE',
                 headers: {
                     "Content-type" : "application/json",
@@ -2022,7 +2024,7 @@ export default new Vuex.Store({
             })
         },
         testNotification({commit}, {receiver, message}) {
-            fetch("http://127.0.0.1:8000/api/v1/fcm_test_notification/", {
+            fetch("http://" + this.state.host + ":8000/api/v1/fcm_test_notification/", {
                 method: 'POST',
                 headers: {
                     "Content-type" : "application/json",
@@ -2045,7 +2047,7 @@ export default new Vuex.Store({
         },
         getNotificationNumber()
         {
-            fetch("http://localhost:8000/api/v1/unseen_notifications/" + this.state.authUser.id, {
+            fetch("http://" + this.state.host + ":8000/api/v1/unseen_notifications/" + this.state.authUser.id, {
                 method: 'GET',
                 headers: {
                     "Content-type" : "application/json",
@@ -2066,7 +2068,7 @@ export default new Vuex.Store({
         getNotifications({commit}, page)
         {
             this.state.isDataLoaded = false
-            fetch("http://127.0.0.1:8000/api/v1/user_info_filtered/?paginate=true&page=" + page,
+            fetch("http://" + this.state.host + ":8000/api/v1/user_info_filtered/?paginate=true&page=" + page,
             {
                 method: 'POST',
                 headers:
@@ -2131,7 +2133,7 @@ export default new Vuex.Store({
         },
         setNotificationFlag({commit}, payload)
         {
-            fetch("http://127.0.0.1:8000/api/v1/notification_flags_update/",
+            fetch("http://" + this.state.host + ":8000/api/v1/notification_flags_update/",
             {
                 method: 'PUT',
                 headers:
