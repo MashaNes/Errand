@@ -8,6 +8,7 @@ from datetime import datetime
 from pytz import UTC
 
 from . import models
+from . import serializers
 
 DISTANCE_MATRIX_KEY = "AIzaSyB10Ab2i9Kq_jsM_NX-zM72i9g50N6kR1U"
 
@@ -25,7 +26,7 @@ def calc_distance(lon1, lat1, lon2, lat2):
 def load_img(img_path):
     base64_string = ""
 
-    if not os.path.exists(img_path):
+    if not img_path or not os.path.exists(img_path):
         return None
 
     with open(img_path, 'rb') as img_file:
@@ -287,6 +288,7 @@ def filter_user_info(serializer, data):
 
     if data['ratings']:
         response = serializer['ratings']
+        response = sorted(response, key=lambda x: x['id'], reverse=True)
         for _r in response:
             _r['created_by']['picture'] = load_img(_r['created_by']['picture'])
             _r['rated_user']['picture'] = load_img(_r['rated_user']['picture'])
@@ -300,6 +302,7 @@ def filter_user_info(serializer, data):
 
     if data['achievements']:
         response = serializer['achievements']
+        response = sorted(response, key=lambda x: x['id'], reverse=True)
         for _r in response:
             _r['achievement']['icon'] = load_img(_r['achievement']['icon'])
             _r['user']['picture'] = load_img(_r['user']['picture'])
@@ -436,7 +439,6 @@ def search_requests(queryset, data):
                 bdist.append(min_dist)
 
     return direct_queryset, broadcast_queryset, ddist, bdist
-
 
 def filter_requests(queryset, data):
     new_queryset = list()
@@ -643,11 +645,17 @@ def send_notification(user, notification, notification_body):
         user.save()
         devices.send_message(data=notification_body)
 
-def create_notification(notification_type, type_id, working_with=None, first_name=None, last_name=None,
-                        request=None, rating=None, achievement_sr=None, achievement_en=None, level=None):
+def create_notification(notification_type, type_id, working_with=None, address_ids=None,
+                        first_name=None, last_name=None, request=None, rating=None,
+                        achievement_sr=None, achievement_en=None, level=None):
     _ww = None
     if working_with:
         _ww = working_with.id
+    addresses = list()
+    if address_ids:
+        for aid in address_ids:
+            addresses.append(models.Address.objects.get(id=aid))
+
     data = [{
                 'id' : None,
                 'notification_type' : 0,
@@ -706,7 +714,8 @@ def create_notification(notification_type, type_id, working_with=None, first_nam
                 'title_sr' : "Novi zahtev za izmenom",
                 'title_en' : "New edit request",
                 'body_sr' : f"Korisnik {first_name} {last_name} Vam je poslao novi predlog izmene za zahtev \"{request}\".",
-                'body_en' : f"{first_name} {last_name} has requested an edit for the request \"{request}\"."
+                'body_en' : f"{first_name} {last_name} has requested an edit for the request \"{request}\".",
+                'addresses' : serializers.AddressSerializer(addresses, many=True).data
             },
             {
                 'id' : None,
@@ -769,6 +778,7 @@ def create_notification(notification_type, type_id, working_with=None, first_nam
                                        type_id=type_id)
     notification.save()
     notif['id'] = notification.id
+    print(notif)
 
     return notif, notification
 
