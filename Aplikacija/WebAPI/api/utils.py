@@ -781,7 +781,6 @@ def create_notification(notification_type, type_id, working_with=None, address_i
                                        type_id=type_id)
     notification.save()
     notif['id'] = notification.id
-    print(notif)
 
     return notif, notification
 

@@ -378,6 +378,7 @@ def accept_edit(data):
         if edit.request_edit:
             if edit.request_edit.time:
                 request.request.time = edit.request_edit.time
+                request.request.save()
 
             for _t in edit.request_edit.tasks.all():
                 for _ot in request.request.tasklist.all():
