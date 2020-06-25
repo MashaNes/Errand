@@ -1085,10 +1085,10 @@ class RequestFinish(generics.UpdateAPIView):
             else:
                 price = rate
 
-            _cb = models.FullUser.objects.get(user__id=req.request.created_by.id)
+            _cb = models.FullUser.objects.get(user__id=req.request.working_with.id)
             discount = 0.0
             for _b in _cb.benefitlist.all():
-                if _b.benefit_user.id == req.request.working_with.id:
+                if _b.benefit_user.id == req.request.created_by.id:
                     discount = _b.discount
                     break
 
@@ -1230,6 +1230,11 @@ class EditCreate(generics.ListCreateAPIView):
         edit = parsers.create_edit(request.data)
         serializer = serializers.EditSerializer(edit)
 
+        address_ids = list()
+        for _t in request.data['edit']['tasks']:
+            task = models.Task.objects.get(id=_t['task'])
+            address_ids.append(task.address.id)
+
         # send notification edit_created
         user = models.User.objects.get(id=request.data['created_by'])
         _u2 = models.FullUser.objects.get(user__id=edit.working_with.id)
@@ -1237,7 +1242,8 @@ class EditCreate(generics.ListCreateAPIView):
                                                       request=edit.request_edit.request.name,
                                                       first_name=user.first_name,
                                                       last_name=user.last_name,
-                                                      working_with=user)
+                                                      working_with=user,
+                                                      address_ids=address_ids)
         utils.send_notification(_u2, notif, notif_body)
 
         return Response(serializer.data)
@@ -1258,7 +1264,7 @@ class EditAccept(generics.UpdateAPIView):
             return Response({'detail' : 'Edit cannot be accepted.'})
 
         # send notification edit_accepted
-        _u2 = models.FullUser.objects.get(user__id=edit.working_with.id)
+        _u2 = models.FullUser.objects.get(user__id=edit.created_by.id)
         notif_body, notif = utils.create_notification(6, req.request.id,
                                                       request=req.request.name)
         utils.send_notification(_u2, notif, notif_body)
