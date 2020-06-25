@@ -226,6 +226,8 @@ def filter_user(queryset, data):
 
 
             min_dist = None
+            lon = None
+            lat = None
             if _q.user.status == 1:
                 lon = _q.user.location.longitude
                 lat = _q.user.location.latitude
@@ -647,7 +649,7 @@ def send_notification(user, notification, notification_body):
 
 def create_notification(notification_type, type_id, working_with=None, address_ids=None,
                         first_name=None, last_name=None, request=None, rating=None,
-                        achievement_sr=None, achievement_en=None, level=None):
+                        achievement_sr=None, achievement_en=None, level=None, price=None):
     _ww = None
     if working_with:
         _ww = working_with.id
@@ -765,7 +767,8 @@ def create_notification(notification_type, type_id, working_with=None, address_i
                 'title_sr' : "Zahtev označen kao uspešan",
                 'title_en' : "Request marked as successful",
                 'body_sr' : f"Korisnik sa kojim sarađujete na zahtevu \"{request}\" označio je da je on uspešno okončan.",
-                'body_en' : f"The user you are cooperating with on the request \"{request}\" has marked it as successful."
+                'body_en' : f"The user you are cooperating with on the request \"{request}\" has marked it as successful.",
+                'price' : price
             }]
 
     notif = data[notification_type]

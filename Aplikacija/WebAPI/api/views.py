@@ -1139,7 +1139,7 @@ class RequestFinish(generics.UpdateAPIView):
             _t = 10
         elif request.data['status'] == 3:
             _t = 1
-        notif_body, notif = utils.create_notification(_t, req.id,
+        notif_body, notif = utils.create_notification(_t, req.id, price=price,
                                                       request=req.request.name)
         if request.data['created_by'] == uid1:
             utils.send_notification(user2, notif, notif_body)
