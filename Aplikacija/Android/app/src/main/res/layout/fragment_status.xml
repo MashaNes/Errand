@@ -119,21 +119,6 @@
 			android:textColor="@color/colorBlack"/>
 
 		<TextView
-			android:id="@+id/item_offer_total_label"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:paddingHorizontal="8dp"
-			android:paddingTop="8dp"
-			android:text="@string/request_status_total"/>
-
-		<TextView
-			android:id="@+id/item_offer_total"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:layout_marginHorizontal="8dp"
-			android:textColor="@color/colorBlack"/>
-
-		<TextView
 			android:id="@+id/item_offer_edit_label"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
@@ -148,6 +133,27 @@
 			android:layout_marginHorizontal="8dp"
 			android:textColor="@color/colorBlack"/>
 
+		<runners.errand.utils.MyListView
+			android:id="@+id/item_offer_edit_list"
+			android:layout_width="match_parent"
+			android:layout_marginHorizontal="8dp"
+			android:layout_height="wrap_content"/>
+
+		<TextView
+			android:id="@+id/item_offer_total_label"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:paddingHorizontal="8dp"
+			android:paddingTop="8dp"
+			android:text="@string/request_status_total"/>
+
+		<TextView
+			android:id="@+id/item_offer_total"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_marginHorizontal="8dp"
+			android:textColor="@color/colorBlack"/>
+
 		<Button
 			android:id="@+id/find_requests_status_start"
 			android:layout_width="match_parent"
@@ -155,6 +161,22 @@
 			style="?android:attr/borderlessButtonStyle"
 			android:layout_gravity="center"
 			android:text="@string/generic_start" />
+
+		<Button
+			android:id="@+id/find_requests_status_picture"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			style="?android:attr/borderlessButtonStyle"
+			android:layout_gravity="center"
+			android:text="@string/request_send_offer_picture" />
+
+		<Button
+			android:id="@+id/find_requests_status_edit"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			style="?android:attr/borderlessButtonStyle"
+			android:layout_gravity="center"
+			android:text="@string/request_send_offer_request_edit" />
 
 		<Button
 			android:id="@+id/find_requests_status_complete"

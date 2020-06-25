@@ -2,7 +2,9 @@ package runners.errand.ui.request;
 
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,42 +20,55 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.Locale;
 
+import runners.errand.MainActivity;
 import runners.errand.R;
 import runners.errand.adapter.TaskPicturesAdapter;
 import runners.errand.model.Request;
 import runners.errand.utils.ImageUtils;
 
 public class TasksFragment extends Fragment {
-
+	private MainActivity activity;
+	private RequestFragment parent;
 	private Request request;
 	private TaskPicturesAdapter picturesAdapter;
+	private ArrayList<TaskPicturesAdapter> taskPicturesAdapters = new ArrayList<>();
 	private ArrayList<Bitmap> bitmaps = new ArrayList<>();
+	private ArrayList<ArrayList<Bitmap>> taskBitmapList = new ArrayList<>();
+	private TextView destination, time, note;
+	private LinearLayout taskListLayout, pictureLayout;
+	private RecyclerView pictures;
 
 	@Nullable
 	@Override
 	public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 		View root = inflater.inflate(R.layout.fragment_tasks, container, false);
 
-		RequestFragment parent = ((RequestFragment) getParentFragment());
+		parent = ((RequestFragment) getParentFragment());
 		if (parent == null) return root;
+		activity = parent.getMainActivity();
 
 		request = parent.getRequest();
 		if (request == null) return root;
 
+		destination = root.findViewById(R.id.task_destination);
+		time = root.findViewById(R.id.task_time);
+		note = root.findViewById(R.id.task_note);
+		taskListLayout = root.findViewById(R.id.task_list_layout);
+		pictureLayout = root.findViewById(R.id.task_pictures_layout);
+		pictures = root.findViewById(R.id.task_pictures);
+
+		loadData();
+
+		return root;
+	}
+
+	void loadData() {
+		Log.e("TEST", request.getName());
 		DisplayMetrics metrics = new DisplayMetrics();
-		parent.getMainActivity().getWindowManager().getDefaultDisplay().getMetrics(metrics);
-
-		// Destination
-		if (request.getDestination() != null)
-			((TextView) root.findViewById(R.id.task_destination)).setText(request.getDestination().getName());
-
-		((TextView) root.findViewById(R.id.task_time)).setText(request.getTimeString());
-
-		// Note
-		((TextView) root.findViewById(R.id.task_note)).setText(request.getNote());
-
-		// Tasks
-		LinearLayout taskListLayout = root.findViewById(R.id.task_list_layout);
+		activity.getWindowManager().getDefaultDisplay().getMetrics(metrics);
+		if (request.getDestination() != null) destination.setText(request.getDestination().getName());
+		time.setText(request.getTimeString());
+		note.setText(request.getNote());
 		for (int i = 0; i < request.getTasks().size(); i++) {
 			View v = LayoutInflater.from(getContext()).inflate(R.layout.item_task, taskListLayout, false);
 			((TextView) v.findViewById(R.id.item_task_number)).setText(String.format(Locale.getDefault(), "%d", i + 1));
@@ -61,21 +76,48 @@ public class TasksFragment extends Fragment {
 			((TextView) v.findViewById(R.id.item_task_body)).setText(request.getTasks().get(i).getBody());
 			if (request.getTasks().get(i).getAddress() != null) ((TextView) v.findViewById(R.id.item_task_address)).setText(request.getTasks().get(i).getAddress().getName());
 			((TextView) v.findViewById(R.id.item_task_service)).setText(request.getTasks().get(i).getService().getType());
+			if (request.getTasks().get(i).getPictures().size() == 0) {
+				v.findViewById(R.id.item_task_pictures_layout).setVisibility(View.GONE);
+			} else {
+				final RecyclerView recyclerView = v.findViewById(R.id.item_task_pictures);
+				recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), RecyclerView.HORIZONTAL, false));
+				if (taskBitmapList.size() < i + 1) taskBitmapList.add(new ArrayList<Bitmap>());
+				if (taskPicturesAdapters.size() < i + 1) taskPicturesAdapters.add(new TaskPicturesAdapter(activity, taskBitmapList.get(i), metrics.density));
+				recyclerView.setAdapter(taskPicturesAdapters.get(i));
+				if (taskBitmapList.get(i).size() != request.getTasks().get(i).getPictures().size()) {
+					taskBitmapList.get(i).clear();
+					for (int j = 0; j < request.getTasks().get(i).getPictures().size(); j++)
+						taskBitmapList.get(i).add(null);
+					taskPicturesAdapters.get(i).notifyDataSetChanged();
+
+					final int finalI = i;
+					Thread t = new Thread(new Runnable() {
+						@Override
+						public void run() {
+							loadPictures(request.getTasks().get(finalI).getPictures(), taskBitmapList.get(finalI), taskPicturesAdapters.get(finalI), recyclerView);
+						}
+					});
+					t.start();
+					try {
+						t.join();
+						taskPicturesAdapters.get(i).notifyDataSetChanged();
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+			}
 			taskListLayout.addView(v);
 		}
 
 		// Pictures
 		if (request.getPictures().size() == 0) {
-			root.findViewById(R.id.task_pictures_layout).setVisibility(View.GONE);
-			return root;
-
-			//request.getPictures().add(BitmapUtils.encode(parent.getMainActivity(), R.drawable.img_test, BitmapUtils.COMPRESSION_OTHER));
+			pictureLayout.setVisibility(View.GONE);
+			return;
 		}
 
-		RecyclerView pictures = root.findViewById(R.id.task_pictures);
 		LinearLayoutManager picturesLayoutManager = new LinearLayoutManager(getContext(), RecyclerView.HORIZONTAL, false);
 		pictures.setLayoutManager(picturesLayoutManager);
-		picturesAdapter = new TaskPicturesAdapter(parent.getMainActivity(), bitmaps, metrics.density);
+		picturesAdapter = new TaskPicturesAdapter(activity, bitmaps, metrics.density);
 		pictures.setAdapter(picturesAdapter);
 
 		if (bitmaps.size() != request.getPictures().size()) {
@@ -84,28 +126,27 @@ public class TasksFragment extends Fragment {
 				bitmaps.add(null);
 			picturesAdapter.notifyDataSetChanged();
 
-			new Thread(new Runnable() {
+			Thread t = new Thread(new Runnable() {
 				@Override
 				public void run() {
-					loadPictures();
+					loadPictures(request.getPictures(), bitmaps, picturesAdapter, pictures);
 				}
-			}).start();
-		}
-
-		return root;
-	}
-
-	private void loadPictures() {
-		for (int i = 0; i < request.getPictures().size(); i++) {
-			if (bitmaps.get(i) != null) continue;
-
-			bitmaps.set(i, ImageUtils.decode(request.getPictures().get(i)));
+			});
+			t.start();
 			try {
+				t.join();
 				picturesAdapter.notifyDataSetChanged();
-			} catch (Exception e) {
-				// Context changes while thread is running and refuses UI update from old context
+			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
+		}
+	}
+
+	private void loadPictures(ArrayList<String> pictures, ArrayList<Bitmap> bitmaps, TaskPicturesAdapter adapter, RecyclerView recyclerView) {
+		for (int i = 0; i < pictures.size(); i++) {
+			if (bitmaps.get(i) != null) continue;
+
+			bitmaps.set(i, ImageUtils.decode(pictures.get(i)));
 		}
 	}
 }

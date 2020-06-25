@@ -32,6 +32,7 @@ public class Request {
     private ArrayList<String> pictures = new ArrayList<>();
     private ArrayList<Task> tasks = new ArrayList<>();
     private ArrayList<Offer> offers = new ArrayList<>();
+    private ArrayList<Edit> edits = new ArrayList<>();
     private Offer acceptedOffer, myOffer;
     private User createdBy, workingWith, direct;
     private Rating rating;
@@ -48,17 +49,13 @@ public class Request {
 
         JSONObject createdBy = o.optJSONObject("created_by");
         if (createdBy != null) {
-            Log.e("TEST", "Created by");
             JSONObject tmp = new JSONObject();
             try {
                 tmp.put("user", createdBy);
                 this.createdBy = new User(tmp);
             } catch (JSONException e) {
-                Log.e("TEST", "JSON Error");
                 e.printStackTrace();
             }
-        } else {
-            Log.e("TEST", "Created by is null");
         }
 
         JSONArray tasks = o.optJSONArray("tasklist");
@@ -79,6 +76,14 @@ public class Request {
                     JSONObject offer = offers.optJSONObject(i);
                     if (offer != null) this.offers.add(new Offer(offer));
                 }
+            }
+        }
+
+        JSONArray edits = o.optJSONArray("edits");
+        if (edits != null) {
+            for (int i = 0; i < edits.length(); i++) {
+                JSONObject edit = edits.optJSONObject(i).optJSONObject("request_edit");
+                if (edit != null) this.edits.add(new Edit(edit));
             }
         }
 
@@ -317,7 +322,7 @@ public class Request {
     }
 
     public String getTimeString() {
-        return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(time);
+        return new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()).format(time);
     }
 
     public double getPriceLat() {
@@ -350,5 +355,13 @@ public class Request {
 
     public void setPrice(double price) {
         this.price = price;
+    }
+
+    public ArrayList<Edit> getEdits() {
+        return edits;
+    }
+
+    public void setEdits(ArrayList<Edit> edits) {
+        this.edits = edits;
     }
 }

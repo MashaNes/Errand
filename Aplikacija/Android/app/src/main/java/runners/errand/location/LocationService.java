@@ -1,4 +1,4 @@
-package runners.errand.services;
+package runners.errand.location;
 
 import android.app.Service;
 import android.content.Intent;
@@ -53,7 +53,6 @@ public class LocationService extends Service implements GoogleApiClient.Connecti
 		}
 	};
 	private static int id = -1;
-	private Float lat = null, lng = null;
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
@@ -72,10 +71,9 @@ public class LocationService extends Service implements GoogleApiClient.Connecti
 					.addApi(LocationServices.API)
 					.build();
 
-//			locationRequest.setSmallestDisplacement(10);
-			locationRequest.setInterval(30000);
-			locationRequest.setFastestInterval(0);
-			locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+			locationRequest.setInterval(3 * 60 * 1000);
+			locationRequest.setFastestInterval(60 * 1000);
+			locationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
 			locationClient.connect();
 		}
 
@@ -163,7 +161,7 @@ public class LocationService extends Service implements GoogleApiClient.Connecti
 
 	@Override
 	public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-		Log.e("SERVICE", "onConnectionSuspended");
+		Log.e("SERVICE", "onConnectionFailed");
 		updateStatus(User.STATUS_NOT_RUNNING);
 		stopSelf();
 	}

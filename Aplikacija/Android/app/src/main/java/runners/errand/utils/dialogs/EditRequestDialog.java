@@ -1,25 +1,15 @@
-package runners.errand.ui.request;
+package runners.errand.utils.dialogs;
 
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
-import android.os.Bundle;
-import android.print.PrinterId;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.DatePicker;
-import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.TimePicker;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -35,68 +25,24 @@ import runners.errand.MainActivity;
 import runners.errand.R;
 import runners.errand.adapter.EditRequestAddressAdapter;
 import runners.errand.model.Address;
+import runners.errand.model.Edit;
 import runners.errand.model.Request;
-import runners.errand.model.ServicePrefs;
 import runners.errand.model.Task;
-import runners.errand.utils.dialogs.MapDialog;
-import runners.errand.utils.dialogs.ProfileDialog;
-import runners.errand.utils.dialogs.SimpleDialog;
 import runners.errand.utils.net.NetManager;
 import runners.errand.utils.net.NetRequest;
 
-public class SendOfferFragment extends Fragment {
-	private MainActivity activity;
-	private RequestFragment parent;
-	private Request request;
-	private EditText paymentAmount;
-	private int paymentType = 0;
-	private Date erDateTime = null;
+public class EditRequestDialog extends AlertDialog {
+	private Date erDateTime;
 	private ArrayList<Address> erAddresses = new ArrayList<>();
 	private ArrayList<String> erAddressLabels = new ArrayList<>();
 	private EditRequestAddressAdapter erAdapter;
 
-	@Nullable
-	@Override
-	public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-		View root = inflater.inflate(R.layout.fragment_send_offer, container, false);
-
-		parent = (RequestFragment) getParentFragment();
-		if (parent == null) return root;
-		activity = parent.getMainActivity();
-		request = parent.getRequest();
-
-		// Create by
-		if (request.getCreatedBy().getPicture_bmp() != null) {
-			((ImageView) root.findViewById(R.id.item_user_image)).setImageBitmap(request.getCreatedBy().getPicture_bmp());
-		} else {
-			((ImageView) root.findViewById(R.id.item_user_image)).setImageDrawable(getResources().getDrawable(R.drawable.ic_face));
-		}
-		String name = request.getCreatedBy().getFirstName() + " " + request.getCreatedBy().getLastName();
-		((TextView) root.findViewById(R.id.item_user_name)).setText(name);
-		String rating = getString(R.string.generic_unrated);
-		if (!Float.isNaN(request.getCreatedBy().getRating())) rating = String.format(Locale.getDefault(), "%.1f", request.getCreatedBy().getRating());
-		((TextView) root.findViewById(R.id.item_user_rating)).setText(rating);
-		root.findViewById(R.id.item_user_layout).setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				new ProfileDialog(activity, request.getCreatedBy(), "", getString(R.string.generic_close)).show();
-			}
-		});
-
-		// Offer
-		paymentAmount = root.findViewById(R.id.dialog_edit_service_pref_payment_amount);
-		((EditText) root.findViewById(R.id.dialog_edit_service_pref_payment_type)).setText(ServicePrefs.getPaymentTypeString(activity, paymentType));
-		root.findViewById(R.id.dialog_edit_service_pref_payment_type).setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				paymentType++;
-				if (paymentType > 3) paymentType = 0;
-				((EditText) v).setText(ServicePrefs.getPaymentTypeString(activity, paymentType));
-			}
-		});
+	public EditRequestDialog(final MainActivity activity, final Request request, final int id) {
+		super(activity);
+		View root = View.inflate(activity, R.layout.dialog_edit_create, null);
 
 		// Edit request
-		if (erDateTime == null) erDateTime = new Date(request.getTime().getTime());
+		erDateTime = new Date(request.getTime().getTime());
 		final TextView erDate = root.findViewById(R.id.newrequest_info_date_et);
 		erDate.setText(new SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(erDateTime));
 		erDate.setOnClickListener(new View.OnClickListener() {
@@ -173,10 +119,6 @@ public class SendOfferFragment extends Fragment {
 					erAddressLabels.add(task.getName());
 				}
 			}
-//		if (request.getDestination() != null) {
-//			erAddresses.add(request.getDestination());
-//			erAddressLabels.add(getString(R.string.newrequest_info_destination));
-//		}
 			erAdapter = new EditRequestAddressAdapter(activity, erAddresses, erAddressLabels);
 		}
 		erList.setAdapter(erAdapter);
@@ -221,26 +163,30 @@ public class SendOfferFragment extends Fragment {
 		root.findViewById(R.id.request_send_offer_button).setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				NetRequest netRequest = new NetRequest(NetManager.getApiServer() + NetManager.API_OFFER_CREATE, NetManager.POST) {
+				NetRequest netRequest = new NetRequest(NetManager.getApiServer() + NetManager.API_EDIT_CREATE, NetManager.POST) {
 					@Override
 					public void success() {
 						super.success();
-						SimpleDialog.buildMessageDialog(activity, getString(R.string.generic_success), getString(R.string.offer_sent), "", new Runnable() {
-							@Override
-							public void run() {
-								activity.navigateTo(R.id.nav_page_requests);
-							}
-						});
+						JSONObject o = null;
+						try {
+							o = new JSONObject(getResult().getMsg());
+							Edit edit = new Edit(o.optJSONObject("request_edit"));
+							edit.setId(o.optInt("id"));
+							editRequested(edit);
+						} catch (JSONException e) {
+							e.printStackTrace();
+						}
+						editRequested(null);
+						dismiss();
 					}
 
 					@Override
 					public void error() {
 						super.error();
+						dismiss();
 					}
 				};
 				netRequest.putParam("created_by", activity.getUser().getId());
-				netRequest.putParam("payment_type", paymentType);
-				netRequest.putParam("payment_ammount", Integer.parseInt(paymentAmount.getText().toString()));
 				netRequest.putParam("request", request.getId());
 				JSONObject edit = new JSONObject();
 				try {
@@ -288,6 +234,15 @@ public class SendOfferFragment extends Fragment {
 			}
 		});
 
-		return root;
+		root.findViewById(R.id.request_send_offer_cancel).setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				dismiss();
+			}
+		});
+
+		this.setView(root);
 	}
+
+	public void editRequested(Edit edit) {}
 }

@@ -109,6 +109,9 @@
 	<string name="request_send_offer_running">Running:</string>
 	<string name="request_send_offer_offer">Offer:</string>
 	<string name="request_send_offer_edit">Request a change:</string>
+	<string name="request_send_offer_reset_edit">Reset changes</string>
+	<string name="request_send_offer_request_edit">Request changes</string>
+	<string name="request_send_offer_picture">Upload picture</string>
 	<string name="request_send_offer_send">Send offer</string>
 	<string name="request_offer_item_payment">"Payment: "</string>
 	<string name="request_send_offer_offer_by">Offer by:</string>
@@ -125,7 +128,14 @@
 	<string name="request_cancel_desc">You can\'t undo this action. Do you really want to cancel this request? It will immediately canceled.</string>
 	<string name="rate_comment">Comment</string>
 	<string name="request_status_total">Total:</string>
-	<string name="request_status_edit">Edit:</string>
+	<string name="request_status_edit">Edits:</string>
+	<string name="edit_accept">Accept edit</string>
+	<string name="edit_accept_desc">Do you really want to accept this edit request?</string>
+	<string name="edit_reject">Reject edit</string>
+	<string name="edit_reject_desc">Do you really want to reject this edit request?</string>
+	<string name="edit_cancel">Cancel edit</string>
+	<string name="edit_cancel_desc">Do you really want to cancel this edit request?</string>
+	<string name="select_task">Related task</string>
 
 	<string name="newrequest_tab_info">Info</string>
 	<string name="newrequest_tab_tasks">Tasks</string>

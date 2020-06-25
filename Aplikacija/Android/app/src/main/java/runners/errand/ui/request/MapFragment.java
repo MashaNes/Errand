@@ -52,6 +52,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 	@Override
 	public void onMapReady(GoogleMap googleMap) {
 		map = googleMap;
+		loadData();
+	}
+
+	void loadData() {
+		map.clear();
 
 		// Marker icon
 		DisplayMetrics metrics = getResources().getDisplayMetrics();

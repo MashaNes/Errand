@@ -2,10 +2,12 @@ package runners.errand.utils.dialogs;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.graphics.Bitmap;
 import android.os.Environment;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -134,7 +136,8 @@ public class SimpleDialog {
 
 	public static void buildImageDialog(final MainActivity activity, final Bitmap bitmap) {
 		final View dialogView = View.inflate(activity,  R.layout.dialog_image, null);
-		final AlertDialog alertDialog = new AlertDialog.Builder(activity, android.R.style.Theme_DeviceDefault_NoActionBar_Fullscreen).create();
+		final Dialog dialog = new Dialog(activity, android.R.style.Theme_Black_NoTitleBar_Fullscreen);
+		dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
 
 		((ImageView) dialogView.findViewById(R.id.dialog_image)).setImageBitmap(bitmap);
 
@@ -158,7 +161,7 @@ public class SimpleDialog {
 					if (!dir.exists()) {
 						if (!dir.mkdirs()) {
 							buildMessageDialog(activity, activity.getString(R.string.error), activity.getString(R.string.error_file_write), "mkdir/FW-L", null);
-							alertDialog.dismiss();
+							dialog.dismiss();
 							return;
 						}
 					}
@@ -167,7 +170,7 @@ public class SimpleDialog {
 					if (file.exists()) {
 						if (!file.delete()) {
 							buildMessageDialog(activity, activity.getString(R.string.error), activity.getString(R.string.error_file_write), "delete/FW-L", null);
-							alertDialog.dismiss();
+							dialog.dismiss();
 							return;
 						}
 					}
@@ -187,7 +190,7 @@ public class SimpleDialog {
 						buildMessageDialog(activity, activity.getString(R.string.error), activity.getString(R.string.error_file_write), "ioex/FW-L", null);
 					}
 
-					alertDialog.dismiss();
+					dialog.dismiss();
 				} else {
 					activity.permissionsRequest(MainActivity.PERMISSION_STORAGE, 123);
 				}
@@ -197,12 +200,12 @@ public class SimpleDialog {
 		viewButtonNegative.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				alertDialog.dismiss();
+				dialog.dismiss();
 			}
 		});
 
-		alertDialog.setView(dialogView);
-		if (activity.active) alertDialog.show();
+		dialog.setContentView(dialogView);
+		if (activity.active) dialog.show();
 	}
 
 	private static int type = 0;

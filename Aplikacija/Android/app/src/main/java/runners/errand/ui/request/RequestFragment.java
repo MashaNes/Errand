@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import runners.errand.MainActivity;
 import runners.errand.R;
 import runners.errand.adapter.CustomPagerAdapter;
+import runners.errand.model.Edit;
 import runners.errand.model.Offer;
 import runners.errand.model.Request;
 import runners.errand.utils.Static;
@@ -72,6 +73,7 @@ public class RequestFragment extends Fragment {
 				fragments.add(new SendOfferFragment());
 			}
 		}
+		loadEdits();
 
 		ViewPager pager = root.findViewById(R.id.view_pager);
 		CustomPagerAdapter adapter = new CustomPagerAdapter(
@@ -137,5 +139,48 @@ public class RequestFragment extends Fragment {
 		netRequest.putParam("destination", false);
 		netRequest.putParam("pictures", false);
 		NetManager.add(netRequest);
+	}
+
+	private void loadEdits() {
+		request.getEdits().clear();
+		NetRequest netRequest = new NetRequest(NetManager.getApiServer() + NetManager.API_REQUEST_INFO_FILTERED, NetManager.POST) {
+			@Override
+			public void success() {
+				super.success();
+				try {
+					JSONObject o = new JSONObject(getResult().getMsg());
+					JSONArray edits = o.optJSONArray("edits");
+					if (edits != null) {
+						for (int i = 0; i < edits.length(); i++) {
+							request.getEdits().add(new Edit(edits.optJSONObject(i).optJSONObject("request_edit")));
+							request.getEdits().get(request.getEdits().size() - 1).setId(edits.optJSONObject(i).optInt("id"));
+						}
+						if (fragments.get(2) instanceof StatusFragment) ((StatusFragment) fragments.get(2)).setupUI();
+					}
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+			}
+
+			@Override
+			public void error() {
+				super.error();
+			}
+		};
+		netRequest.putParam("request", request.getId());
+		netRequest.putParam("offers", false);
+		netRequest.putParam("edits", true);
+		netRequest.putParam("accepted_offer", false);
+		netRequest.putParam("rating_created_by", false);
+		netRequest.putParam("rating_working_with", false);
+		netRequest.putParam("tasklist", false);
+		netRequest.putParam("destination", false);
+		netRequest.putParam("pictures", false);
+		NetManager.add(netRequest);
+	}
+
+	void loadData() {
+		((TasksFragment) fragments.get(0)).loadData();
+		((MapFragment) fragments.get(1)).loadData();
 	}
 }

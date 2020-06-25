@@ -33,6 +33,14 @@ public class ImageUtils {
 		return BitmapFactory.decodeByteArray(b, 0, b.length);
 	}
 
+	public static String encodeBig(InputStream input) {
+		Bitmap bitmap = BitmapFactory.decodeStream(input);
+		bitmap = Bitmap.createScaledBitmap(bitmap, 1080, 1080 * bitmap.getHeight() / bitmap.getWidth(), true);
+		ByteArrayOutputStream stream = new ByteArrayOutputStream();
+		bitmap.compress(Bitmap.CompressFormat.JPEG, 75, stream);
+		return new String(Base64.encode(stream.toByteArray(), Base64.NO_WRAP));
+	}
+
 	public static BitmapDescriptor getMapMarkerBitmap(Context context, float density, int icon) {
 		int res;
 		if (icon == MARKER_ICON_GREEN) {

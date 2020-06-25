@@ -1,19 +1,12 @@
-package runners.errand.geofencing;
+package runners.errand.location;
 
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
-import android.media.RingtoneManager;
-import android.net.Uri;
-import android.os.Build;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
-import androidx.core.app.NotificationCompat;
 
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofenceStatusCodes;
@@ -30,7 +23,6 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-import runners.errand.R;
 import runners.errand.model.Request;
 import runners.errand.model.Task;
 import runners.errand.utils.PreferenceManager;
@@ -90,13 +82,13 @@ public class GeofencingBroadcastReceiver extends BroadcastReceiver {
 						lng,
 						300
 				)
-				.setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER | Geofence.GEOFENCE_TRANSITION_DWELL | Geofence.GEOFENCE_TRANSITION_EXIT)
+				.setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER)
 				.setExpirationDuration(Geofence.NEVER_EXPIRE)
-				.setLoiteringDelay(60000)
+				.setNotificationResponsiveness(6 * 60 * 1000)
 				.build()
 		);
 		GeofencingRequest geofencingRequest = new GeofencingRequest.Builder()
-				.setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER | GeofencingRequest.INITIAL_TRIGGER_DWELL)
+				.setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER)
 				.addGeofences(geofenceList)
 				.build();
 		PendingIntent geofencingPendingIntent;

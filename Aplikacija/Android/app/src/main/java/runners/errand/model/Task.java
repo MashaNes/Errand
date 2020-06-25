@@ -15,6 +15,7 @@ public class Task {
     private Address address;
     private Service service;
     private ArrayList<ChecklistItem> checklist = new ArrayList<>();
+    private ArrayList<String> pictures = new ArrayList<>();
 
     public Task() {}
 
@@ -49,6 +50,14 @@ public class Task {
                         checklistItem.optInt("id"),
                         checklistItem.optString("check_list")
                     ));
+            }
+        }
+
+        JSONArray pictures = o.optJSONArray("pictures");
+        if (pictures != null) {
+            for (int i = 0; i < pictures.length(); i++) {
+                JSONObject picture = pictures.optJSONObject(i);
+                this.pictures.add(picture.optString("picture"));
             }
         }
     }
@@ -152,5 +161,13 @@ public class Task {
             e.printStackTrace();
         }
         return o;
+    }
+
+    public ArrayList<String> getPictures() {
+        return pictures;
+    }
+
+    public void setPictures(ArrayList<String> pictures) {
+        this.pictures = pictures;
     }
 }

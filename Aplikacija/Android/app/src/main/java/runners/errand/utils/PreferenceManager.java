@@ -3,6 +3,8 @@ package runners.errand.utils;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import java.util.Set;
+
 public class PreferenceManager {
 	public static final String GROUP_LOGIN = "runners.errand.utils.PreferenceManager.GROUP_LOGIN";
 	public static final String KEY_EMAIL = "runners.errand.utils.PreferenceManager.KEY_EMAIL";

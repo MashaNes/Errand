@@ -51,7 +51,7 @@ public class ViewOffersFragment extends Fragment {
 		noOffers = root.findViewById(R.id.no_offers);
 
 		ListView list = root.findViewById(R.id.list_offers);
-		adapter = new OfferAdapter(activity, request.getOffers());
+		adapter = new OfferAdapter(activity, request.getOffers(), request);
 		list.setAdapter(adapter);
 		dateSetChanged();
 

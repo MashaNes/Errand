@@ -64,7 +64,7 @@ public class RequestsFragment extends Fragment {
             }
         });
 
-        refresh();
+//        refresh();
 
 //        boolean refresh = false;
 //        if (savedInstanceState != null) refresh = savedInstanceState.getBoolean("refresh");

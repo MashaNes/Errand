@@ -3,20 +3,15 @@ package runners.errand;
 import android.Manifest;
 import android.app.Activity;
 import android.app.ActivityManager;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.location.Criteria;
 import android.location.LocationManager;
-import android.media.RingtoneManager;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -26,11 +21,9 @@ import android.view.MenuItem;
 import android.view.View;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
-import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -49,7 +42,6 @@ import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
-import com.google.firebase.messaging.RemoteMessage;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -58,21 +50,20 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 import runners.errand.firebase.MessagingService;
-import runners.errand.geofencing.GeofencingBroadcastReceiver;
 import runners.errand.model.Notification;
 import runners.errand.model.Offer;
 import runners.errand.model.Request;
 import runners.errand.model.Service;
 import runners.errand.model.User;
-import runners.errand.services.LocationService;
 import runners.errand.ui.notifications.NotificationsFragment;
 import runners.errand.ui.requests.RequestsFragment;
-import runners.errand.utils.PreferenceManager;
+import runners.errand.location.LocationUtils;
 import runners.errand.utils.Static;
 import runners.errand.utils.dialogs.SimpleDialog;
 import runners.errand.utils.net.NetManager;
 import runners.errand.utils.net.NetRequest;
 import runners.errand.utils.net.NetResult;
+import runners.errand.location.LocationService;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 	public static final int PERMISSION_LOCATION = 0, PERMISSION_STORAGE = 1;
@@ -203,6 +194,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		}, new IntentFilter(MessagingService.ACTION_BROADCAST_NOTIFICATION));
 
 		updateNotificationCount();
+		loadOfferRequests();
     }
 
 	@Override
@@ -397,14 +389,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 				statusMenuItem.getIcon().setColorFilter(new PorterDuffColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.colorGreen), PorterDuff.Mode.MULTIPLY));
 				statusMenuItem.setTitle(R.string.action_run_stop);
 				if (!isMyServiceRunning() && service) {
-					Intent intent = new Intent(this, LocationService.class);
-					intent.putExtra("id", user.getId());
-					startService(intent);
+					LocationUtils.becomeActive(this, user.getId());
 				}
 			} else {
 				statusMenuItem.getIcon().clearColorFilter();
 				statusMenuItem.setTitle(R.string.action_run_start);
-				stopService(new Intent(this, LocationService.class));
+				LocationUtils.becomeInactive(this);
 			}
 		}
     }
@@ -560,12 +550,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 	}
 
 	private void apiFCMUnregister() {
+		LocationUtils.becomeInactive(activity);
 		NetRequest netRequest = new NetRequest(NetManager.getApiServer() + NetManager.API_FCM_UNREGISTER, NetManager.DELETE) {
 			@Override
 			public void success() {
 				super.success();
 				NetManager.clearToken(activity);
-				stopService(new Intent(activity, LocationService.class));
 				Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
 				intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 				startActivity(intent);

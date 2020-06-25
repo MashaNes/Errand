@@ -3,6 +3,7 @@ package runners.errand.adapter;
 import android.graphics.Bitmap;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -82,7 +83,11 @@ public class TaskPicturesAdapter extends RecyclerView.Adapter {
 			} else {
 				int padding = (int) Math.ceil(40 * density);
 				v.setPadding(padding, padding, padding, padding);
-				v.setImageDrawable(LoadingDrawable.get(activity, R.color.colorBlack));
+				try {
+					v.setImageDrawable(LoadingDrawable.get(activity, R.color.colorBlack));
+				} catch (NullPointerException e) {
+					e.printStackTrace();
+				}
 			}
 
 			if (activity != null) {

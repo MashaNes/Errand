@@ -10,6 +10,7 @@ import androidx.core.content.ContextCompat;
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable;
 
 public class LoadingDrawable {
+
 	public static Drawable get(Activity activity, int colorId) {
 		CircularProgressDrawable d = new CircularProgressDrawable(activity);
 		d.setColorFilter(new PorterDuffColorFilter(ContextCompat.getColor(activity, colorId), PorterDuff.Mode.SRC));

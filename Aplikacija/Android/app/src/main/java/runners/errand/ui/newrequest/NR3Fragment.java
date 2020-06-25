@@ -172,18 +172,19 @@ public class NR3Fragment extends Fragment {
 		for (Task task : ((NewRequestFragment) activity.getFragment()).getRequest().getTasks()) {
 			if (task.getService() != null) {
 				int id = task.getService().getId();
-				for (ServicePrefs prefs : activity.getUser().getServicePrefs()) {
-					if (prefs.getService() == id) {
-						JSONObject o = new JSONObject();
-						try {
-							o.put("id", id);
-							o.put("min_rating", prefs.getMinRating());
-							o.put("max_dist", prefs.getMaxDistance());
-							services.put(o);
-						} catch (JSONException e) {
-							e.printStackTrace();
-						}
+				JSONObject o = new JSONObject();
+				try {
+					o.put("id", id);
+					if (parent != null) {
+						o.put("min_rating", parent.getRequest().getMinRating());
+						o.put("max_dist", parent.getRequest().getMaxDistance());
+					} else {
+						o.put("min_rating", 0);
+						o.put("max_dist", 100000);
 					}
+					services.put(o);
+				} catch (JSONException e) {
+					e.printStackTrace();
 				}
 			}
 		}
@@ -192,6 +193,28 @@ public class NR3Fragment extends Fragment {
 		request.putParam("name", "");
 		request.putParam("not_in_benefit", false);
 		request.putParam("active", false);
+		JSONArray locations = new JSONArray();
+		JSONObject location = new JSONObject();
+		if (parent != null) {
+				try {
+					if (parent.getRequest().getDestination() != null) {
+						location.putOpt("latitude", parent.getRequest().getDestination().getLat());
+						location.putOpt("longitude", parent.getRequest().getDestination().getLng());
+						locations.put(location);
+					} else {
+						for (Task task : parent.getRequest().getTasks()) {
+							if (task.getAddress() != null) {
+								location.putOpt("latitude", task.getAddress().getLat());
+								location.putOpt("longitude", task.getAddress().getLng());
+								locations.put(location);
+							}
+						}
+					}
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+		}
+		request.putParam("locations", locations);
 		NetManager.add(request);
 	}
 }

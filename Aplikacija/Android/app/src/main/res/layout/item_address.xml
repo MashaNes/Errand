@@ -6,11 +6,12 @@
 	android:layout_height="28dp"
 	android:layout_marginTop="12dp"
 	android:orientation="horizontal"
-	android:clickable="true"
+	android:focusable="false"
 	android:background="@drawable/edit_text_login"
 	tools:ignore="KeyboardInaccessibleWidget">
 
 	<TextView
+		android:id="@+id/item_address_label"
 		android:text="@string/profile_info_address"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
@@ -36,6 +37,7 @@
 	<ImageView
 		android:visibility="gone"
 		android:id="@+id/item_address_home"
+		android:focusable="false"
 		android:layout_width="24dp"
 		android:layout_marginEnd="2dp"
 		android:layout_height="match_parent"
@@ -45,6 +47,7 @@
 	<ImageView
 		android:visibility="gone"
 		android:id="@+id/item_address_remove"
+		android:focusable="false"
 		android:layout_width="24dp"
 		android:layout_marginEnd="2dp"
 		android:layout_height="match_parent"

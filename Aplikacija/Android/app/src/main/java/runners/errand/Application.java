@@ -13,7 +13,7 @@ public class Application extends MultiDexApplication {
 	}
 }
 
-//	TODO: Small
+//	TODO:
 //	- Register required fields ? name, date, 1 task (name & service; if name is not set, set it to service name; if service is not set, set it to other), broadcast enabled or direct user (both works, but at least one)
 //	- Check required fields on create ? first name, last name, email, repeat password
 //	- Achievements ? test
@@ -24,11 +24,9 @@ public class Application extends MultiDexApplication {
 //	- Show distance for direct users and search requests
 //	- Wrong status layout when request is failed
 //	- Notification update achievements, at the same broadcast receiver in MainActivity
+//	- Refresh request fragment with changes and notifications
+//	- Geofence - On notification: edit accepted = remove and add a new one for given address
 
-// 	TODO: Big
-//	- Geo-fencing https://developer.android.com/training/location/geofencing
-//		- On notification: edit accepted = remove and add a new one for given address, request completed/canceled = remove all geofencing for request
-// 	- Request upload pictures
-//	- Edits (address and time)
+// Make sure that find requests and direct users in new requests work
 
 // API: search_requests, what do I send for no distance matrix?

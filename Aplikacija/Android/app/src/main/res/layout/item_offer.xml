@@ -102,9 +102,17 @@
 		android:textColor="@color/colorBlack"/>
 <!--Edit-->
 	<TextView
+		android:id="@+id/item_offer_edit_label"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:paddingHorizontal="8dp"
 		android:paddingTop="8dp"
 		android:text="@string/request_send_offer_edit_request"/>
+
+	<TextView
+		android:id="@+id/item_offer_edit_request"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_marginHorizontal="8dp"
+		android:textColor="@color/colorBlack"/>
 </LinearLayout>

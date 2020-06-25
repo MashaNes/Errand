@@ -39,4 +39,8 @@ public class Offer {
 	public int getPaymentAmount() {
 		return paymentAmount;
 	}
+
+	public Edit getEdit() {
+		return edit;
+	}
 }

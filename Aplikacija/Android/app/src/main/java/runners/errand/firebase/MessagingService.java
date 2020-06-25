@@ -23,7 +23,7 @@ import java.util.Locale;
 
 import runners.errand.LoginActivity;
 import runners.errand.R;
-import runners.errand.geofencing.GeofencingBroadcastReceiver;
+import runners.errand.location.GeofencingBroadcastReceiver;
 import runners.errand.model.Notification;
 import runners.errand.utils.PreferenceManager;
 

@@ -33,7 +33,7 @@
 	<string name="login_in_text">Već imaš nalog?</string>
 	<string name="menu_requests">Zahtevi</string>
 	<string name="menu_new">Novi zahtev</string>
-	<string name="menu_find">Naji zahteve</string>
+	<string name="menu_find">Nadji zahteve</string>
 	<string name="menu_notifications">Obaveštenja</string>
 	<string name="menu_profile">Nalog</string>
 	<string name="menu_settings">Podešavanja</string>
@@ -241,7 +241,17 @@
 	<string name="error_request_not_available">Ovaj zahtev nije na raspolaganju.</string>
 	<string name="generic_start">Start</string>
 	<string name="request_status_total">Konačna cena:</string>
-	<string name="request_status_edit">Izmena:</string>
+	<string name="request_status_edit">Izmene:</string>
 	<string name="error_finish_request_location">Vaš nalog mora biti aktivan da bi završili ovaj zahtev.</string>
 	<string name="error_start_request_location">Vaš nalog mora biti aktivan da bi započeli ovaj zahtev.</string>
+	<string name="request_send_offer_reset_edit">Resetuj izmene</string>
+	<string name="request_send_offer_request_edit">Traži izmene</string>
+	<string name="request_send_offer_picture">Postavi sliku</string>
+	<string name="edit_accept">Prihvati izmenu</string>
+	<string name="edit_accept_desc">Da li stvarno želite da prihvatite ovu izmenu?</string>
+	<string name="edit_cancel">Izbriši izmenu</string>
+	<string name="edit_cancel_desc">Da li stvarno želite da izbrišete ovu izmenu?</string>
+	<string name="edit_reject_desc">Da li stvarno želite da odbijete ovu izmenu?</string>
+	<string name="edit_reject">Odbij izmenu</string>
+	<string name="select_task">Za koji posao</string>
 </resources>

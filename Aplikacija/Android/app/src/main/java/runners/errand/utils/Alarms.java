@@ -9,7 +9,7 @@ import android.util.Log;
 import java.util.Calendar;
 
 import runners.errand.model.WorkingHours;
-import runners.errand.services.LocationService;
+import runners.errand.location.LocationService;
 
 public class Alarms {
 	private static final int ID_BASE = 100000;
