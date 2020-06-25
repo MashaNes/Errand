@@ -162,7 +162,7 @@
                     </p>
                   </div>
                   <span 
-                    v-text="(isSerbian ? 'Prihvaćena ponuda od ' : 'Accepted offer from ') + fullUserName"
+                    v-text="(isSerbian ? 'Prihvaćena ponuda od korisnika ' : 'Accepted offer from ') + fullUserName"
                     style="margin-right: 5px" v-if="!isRunner"
                   ></span>
                   <span 
@@ -356,6 +356,12 @@ export default {
     },
     isSerbian() {
       return this.$store.state.isSerbian
+    },
+    newFinishedRequest() {
+      return this.$store.state.newFinishedRequest
+    },
+    newSuccessfullyFinishedRequest() {
+      return this.$store.state.newSuccessfullyFinishedRequest
     },
     computedNote() {
       if(!this.computedRequest.note || this.computedRequest.note == "")
@@ -787,7 +793,7 @@ export default {
         }
       }
 
-      this.$store.dispatch("fillFilteredRequestInfo", {filters, requestId: filters.request})
+      this.$store.dispatch("fillFilteredRequestInfo", {filters, requestId: filters.request, dataLoaded: false})
       callbackMarkers()
     },
     setMapMarkers() {
@@ -982,6 +988,27 @@ export default {
   watch: {
     $route() {
       this.routeChanged()
+    },
+    // eslint-disable-next-line no-unused-vars
+    newFinishedRequest(newVal, oldVal) {
+      if(newVal.type_id == this.$route.params.id) {
+        this.computedRequest.status = 3
+        this.showView = 'Details'
+      }
+    },
+    // eslint-disable-next-line no-unused-vars
+    newSuccessfullyFinishedRequest(newVal, oldVal) {
+      if(newVal.type_id == this.$route.params.id) {
+        if(!this.isRunner) {
+          this.computedRequest.finished_working_with = true
+        }
+        else
+          this.computedRequest.finished_created_by = true
+        if(this.finishedThisUser) {
+          this.computedRequest.status = 2
+        }
+          this.showView = 'Details'
+      }
     }
   }
 }

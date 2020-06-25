@@ -511,6 +511,7 @@ export default {
     .edit-details {
       align-self: flex-start;
       margin-bottom: 10px;
+      align-self: stretch;
     }
 
     .edit-buttons {

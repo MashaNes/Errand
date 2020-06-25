@@ -18,7 +18,7 @@
           </div>
         </b-button>
       </div>
-      <div class = "request-name">
+      <div class = "request-name" @click="goToRequest">
           {{request.name}}
       </div>
     </div>
@@ -219,7 +219,18 @@ export default {
       this.textMessageS = "Uspešno ocenjen korisnik."
       this.textMessageE = "User successfully rated."
       this.$emit('setMessages', {textMessageS: this.textMessageS, textMessageE: this.textMessageE})
-    }
+    },
+    goToRequest() 
+    {
+      this.$router.push({
+        name: "PageViewRequest",
+        params: {
+          id: this.request.id,
+          request: this.request,
+          startingView: "Details"
+        }
+      })
+    },
   }
 }
 </script>
@@ -270,6 +281,12 @@ export default {
     flex-grow: 1;
     margin-left: 10px;
     margin-top:2px;
+  }
+
+  .request-name:hover
+  {
+    color:rgb(7, 133, 175);
+    cursor: pointer;
   }
 
   .request-bottom {

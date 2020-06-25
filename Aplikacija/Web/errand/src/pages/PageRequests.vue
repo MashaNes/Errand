@@ -137,6 +137,12 @@
             isOnPageOne()
             {
                 return this.$store.state.onPageOne
+            },
+            newFinishedRequest() {
+                return this.$store.state.newFinishedRequest
+            },
+            newSuccessfullyFinishedRequest() {
+                return this.$store.state.newSuccessfullyFinishedRequest
             }
         },
         data()
@@ -146,6 +152,41 @@
                 currentPage : 1,
                 textMessageS: "",
                 textmMessageE: ""
+            }
+        },
+        watch: {
+            newFinishedRequest() 
+            {
+                if(this.tab == "Finished") 
+                {
+                    this.currentPage = 1
+                    const filters = {
+                        created_by : null,
+                        done_by : null,
+                        created_or_done_by: this.$store.state.authUser.id,
+                        statuses : [2, 3],
+                        unrated_created_by : null,
+                        unrated_done_by: null
+                    }
+                    this.$store.dispatch("fillRequests", {filters: filters, objectToFill: { object:"overAuthRequests", page: 1, dataLoaded: true }})
+                }
+            },
+            // eslint-disable-next-line no-unused-vars
+            newSuccessfullyFinishedRequest(newVal, oldVal) 
+            {
+                if(newVal.bothUsersFinished && this.tab == "Finished")
+                {
+                    this.currentPage = 1
+                    const filters = {
+                        created_by : null,
+                        done_by : null,
+                        created_or_done_by: this.$store.state.authUser.id,
+                        statuses : [2, 3],
+                        unrated_created_by : null,
+                        unrated_done_by: null
+                    }
+                    this.$store.dispatch("fillRequests", {filters: filters, objectToFill: { object:"overAuthRequests", page: 1, dataLoaded: true }})
+                }
             }
         },
         methods:{
@@ -164,7 +205,7 @@
                     unrated_created_by : null,
                     unrated_done_by: null
                 }
-                this.$store.dispatch("fillRequests", {filters: filters, objectToFill: { object:"runnerAuthRequests", page: 1 }})
+                this.$store.dispatch("fillRequests", {filters: filters, objectToFill: { object:"runnerAuthRequests", page: 1, dataLoaded: false }})
             },
             tabFinished()
             {
@@ -179,7 +220,7 @@
                     unrated_done_by: null
                 }
                 //if(this.$store.state.overAuthRequests == null || !this.isOnPageOne)
-                    this.$store.dispatch("fillRequests", {filters: filters, objectToFill: { object:"overAuthRequests", page: 1 }})
+                    this.$store.dispatch("fillRequests", {filters: filters, objectToFill: { object:"overAuthRequests", page: 1, dataLoaded: false }})
             },
             closeModal()
             {
@@ -204,7 +245,7 @@
                     unrated_created_by : null,
                     unrated_done_by: null
                 }
-                this.$store.dispatch("fillRequests", {filters: filters, objectToFill: { object:"overAuthRequests", page: this.currentPage }})
+                this.$store.dispatch("fillRequests", {filters: filters, objectToFill: { object:"overAuthRequests", page: this.currentPage, dataLoaded: false }})
             },
             getAnotherPortion()
             {
@@ -217,7 +258,7 @@
                     unrated_created_by : null,
                     unrated_done_by: null
                 }
-                this.$store.dispatch("fillRequests", {filters: filters, objectToFill: { object:"overAuthRequests", page: this.currentPage }})
+                this.$store.dispatch("fillRequests", {filters: filters, objectToFill: { object:"overAuthRequests", page: this.currentPage, dataLoaded: false }})
             },
             setSuccessMessages({textMessageS, textMessageE}) 
             {
@@ -241,7 +282,7 @@
                 unrated_done_by: null
             }
             if(this.$store.state.createdAuthRequests == null)
-                this.$store.dispatch("fillRequests", {filters: filters, objectToFill: { object:"createdAuthRequests", page: 1 }})
+                this.$store.dispatch("fillRequests", {filters: filters, objectToFill: { object:"createdAuthRequests", page: 1, dataLoaded: false }})
 
             let myToken = null;
             let vm = this;
@@ -261,11 +302,14 @@
                     console.log(err)
                 })
 
-                this.$store.state.firebaseOnMessageFunction = this.$messaging.onMessage(function(data) {
-                    // eslint-disable-next-line no-debugger
-                    debugger
-                    vm.$store.dispatch('fillFirebaseNotification', data)
-                    console.log(data)
+                const store = this.$store
+
+                this.$store.state.firebaseOnMessageFunction = this.$messaging.onMessage(function(payload) {
+                    store.state.notificationNumber += 1
+                    store.dispatch('fillFirebaseNotification', payload)
+                    store.dispatch('notificationReaction', payload.data)
+                    console.log("pagerequests.vue notification")
+                    console.log(payload)
                 })
             }
         }
