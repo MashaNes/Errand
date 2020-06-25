@@ -237,6 +237,51 @@ export default {
           return true
         else return false
       }
+    },
+    newRating() {
+      return this.$store.state.newRating
+    },
+    newAchievement() {
+      return this.$store.state.newAchievement
+    }
+  },
+  watch: {
+    newRating() {
+      if(this.tab == 'Ratings') {
+        window.scrollTo(0, 0)
+        //this.setNullToCollection(this.tab)
+        this.$store.dispatch('fillUserRatings', {
+          userId: this.user.id,
+          endpoint: "http://localhost:8000/api/v1/user_info_filtered/?paginate=true",
+          updateAllRatings: true
+        })
+        this.currentPage = 1
+        this.lastPage = 1
+        this.filterValueLower = 1,
+        this.filterValueHigher = 5,
+        this.previousFilterLow = 1,
+        this.previousFilterHigh = 5,
+        this.realFilterLow = 1,
+        this.realFilterHigh = 5
+      }
+    },
+    newAchievement() {
+      if(this.tab == 'Achievements') {
+        window.scrollTo(0, 0)
+        //this.setNullToCollection(this.tab)
+        this.$store.dispatch('getUserAchievements', {
+          userId: this.user.id,
+          endpoint: "http://localhost:8000/api/v1/user_info_filtered/?paginate=true"
+        })
+        this.currentPage = 1
+        this.lastPage = 1
+        this.filterValueLower = 1,
+        this.filterValueHigher = 5,
+        this.previousFilterLow = 1,
+        this.previousFilterHigh = 5,
+        this.realFilterLow = 1,
+        this.realFilterHigh = 5
+      }
     }
   },
   methods: {
@@ -271,12 +316,22 @@ export default {
       if(this.lastPage != this.currentPage) {
         window.scrollTo(0, 0)
         if(!this.shouldFilter) {
+          let payload = null
           const storeFunction = this.tab == 'Achievements' ? 'getUserAchievements' : 'fillUserRatings'
           this.setNullToCollection(this.tab)
-          this.$store.dispatch(storeFunction, {
-            userId: this.user.id,
-            endpoint: "http://localhost:8000/api/v1/user_info_filtered/?paginate=true&page=" + this.currentPage
-          })
+          if(this.tab == 'Achievements') {
+            payload = {
+              userId: this.user.id,
+              endpoint: "http://localhost:8000/api/v1/user_info_filtered/?paginate=true&page=" + this.currentPage
+            }
+          }
+          else 
+            payload = {
+              userId: this.user.id,
+              endpoint: "http://localhost:8000/api/v1/user_info_filtered/?paginate=true&page=" + this.currentPage,
+              updateAllRatings: false
+            }
+          this.$store.dispatch(storeFunction, payload)
         }
         this.lastPage = this.currentPage
       }

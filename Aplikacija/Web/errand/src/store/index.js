@@ -1,3 +1,4 @@
+/* eslint-disable no-case-declarations */
 /* eslint-disable no-unused-vars */
 import Vue from "vue"
 import Vuex from "vuex"
@@ -73,7 +74,13 @@ export default new Vuex.Store({
         notificationNumber: -1,
         notifications: null,
         moreNotifications: false,
-        notificationsPage: 0
+        notificationsPage: 0,
+        firebaseNotification: null,
+        newRating: null,
+        newAchievement: null,
+        newFinishedRequest: null,
+        newRunnerRequest: null,
+        newSuccessfullyFinishedRequest: null
     },
     getters:{
         getAuthUserId(state) {
@@ -81,14 +88,17 @@ export default new Vuex.Store({
         },
         getOpenedOffersOrEdits(state) {
             return state.openedOffersOrEdits
+        },
+        getCurrentRoute() {
+            return router.currentRoute["path"]
         }
     },
     actions:{
         setMarkerPositions({commit}, positions) {
             commit('setMarkers', positions)
         },
-        fillRequests({commit}, {filters, objectToFill}) {
-            this.state.isDataLoaded = false
+        fillRequests({commit}, {filters, objectToFill, dataLoaded}) {
+            this.state.isDataLoaded = dataLoaded
             var str = (objectToFill.object == "overAuthRequests" ? "?paginate=true&page=" +  objectToFill.page : "")
             fetch("http://127.0.0.1:8000/api/v1/filtered_requests/" + str, {
                 method: "POST",
@@ -380,7 +390,7 @@ export default new Vuex.Store({
                 else console.log("Error")
             })
         },
-        fillUserRatings({commit}, {userId, endpoint}) {
+        fillUserRatings({commit}, {userId, endpoint, updateAllRatings}) {
             this.state.isDataLoaded = false
             fetch(endpoint, {
                 method: "POST",
@@ -408,6 +418,10 @@ export default new Vuex.Store({
                     p.json().then(data => {
                         console.log(data)
                         commit('setUserRatings', {ratings: data, id: userId})
+                        if(updateAllRatings && this.state.allRatings != 0) {
+                            this.state.allRatings.results.unshift(data.results[0])
+                            this.state.allRatings.count ++
+                        }
                         console.log(this.state.userRatings)
                         this.state.isDataLoaded = true
                     })
@@ -1070,7 +1084,8 @@ export default new Vuex.Store({
         },
         getUserInfo({commit}, {userId, onlyRating, userToSet}) {
             var vm = this
-            this.state.isDataLoaded = false
+            if(userId != this.state.authUser.id)
+                this.state.isDataLoaded = false
             fetch("http://localhost:8000/api/v1/users_info/" + userId, {
                 method:"GET",
                 headers: {
@@ -1085,10 +1100,15 @@ export default new Vuex.Store({
                         if(!onlyRating)
                             commit('setUser', data)
                         else {
-                            this.state.user = userToSet
-                            this.state.user.avg_rating = data.avg_rating
+                            if(userId != this.state.authUser.id) {
+                                this.state.user = userToSet
+                                this.state.user.avg_rating = data.avg_rating
+                            }
+                            else
+                                this.state.authUser.avg_rating = data.avg_rating
                         }
-                        vm.state.isDataLoaded = true
+                        if(userId != vm.state.authUser.id)
+                            vm.state.isDataLoaded = true
                         console.log(vm.state.user)
                     })
                 }
@@ -1331,8 +1351,8 @@ export default new Vuex.Store({
                     }
                 });
         },
-        fillFilteredRequestInfo({commit}, {filters, requestId}) {
-            this.state.isRequestInfoLoaded = false
+        fillFilteredRequestInfo({commit}, {filters, requestId, dataLoaded}) {
+            this.state.isRequestInfoLoaded = dataLoaded
             fetch("http://127.0.0.1:8000/api/v1/request_info_filtered/", {
                 method: "POST",
                 headers: {
@@ -1622,7 +1642,8 @@ export default new Vuex.Store({
                 body: JSON.stringify({
                     "created_by" : this.state.authUser.id,
                     "request" : request.id,
-                    "status" : 3
+                    "status" : 3,
+                    "location": null
                 })
             }).then(p => {
                 if(p.ok) {
@@ -1664,7 +1685,8 @@ export default new Vuex.Store({
                 body: JSON.stringify({
                     "created_by" : this.state.authUser.id,
                     "request" : request.id,
-                    "status" : 2
+                    "status" : 2,
+                    "location": null
                 })
             }).then(p => {
                 if(p.ok) {
@@ -1924,6 +1946,7 @@ export default new Vuex.Store({
         firebaseRegister({commit}, token) {
             Vue.cookie.set('firebaseToken', token)
             this.state.firebaseToken = token
+            this.state.registeredOnFirebase = true
             fetch("http://127.0.0.1:8000/api/v1/fcm_register/", {
                 method: 'POST',
                 headers: {
@@ -1940,16 +1963,18 @@ export default new Vuex.Store({
                     p.json().then(data => {
                         console.log(data)
                         console.log("registered with firebase token")
-                        this.state.registeredOnFirebase = true
+                        
                     })
                 }
                 else {
                     console.log("error")
+                    this.state.registeredOnFirebase = false
                 }
             })
         },
         unregisterFromFirebase({commit}) {
-            this.state.firebaseOnMessageFunction()
+            if(this.state.firebaseOnMessageFunction != null)
+                this.state.firebaseOnMessageFunction()
             fetch("http://127.0.0.1:8000/api/v1/fcm_unregister/", {
                 method: 'DELETE',
                 headers: {
@@ -1972,7 +1997,8 @@ export default new Vuex.Store({
             })
         },
         unregisterLogedoutFromFirebase({commit}, payload) {
-            this.state.firebaseOnMessageFunction()
+            if(this.state.firebaseOnMessageFunction != null)
+                this.state.firebaseOnMessageFunction()
             fetch("http://127.0.0.1:8000/api/v1/fcm_unregister/", {
                 method: 'DELETE',
                 headers: {
@@ -2136,6 +2162,117 @@ export default new Vuex.Store({
         },
         fillFirebaseNotification({commit}, notification) {
             commit('setFirebaseNotification', notification)
+        },
+        notificationReaction({commit}, notification) {
+            const vm = this
+            switch(parseInt(notification.notification_type)) {
+                case 2: 
+                    if(router.currentRoute["path"]  == "/viewRequest/" + notification.type_id) {
+                        let filters = {
+                            request: parseInt(notification.type_id),
+                            "offers" : true,
+                            "edits" : false, 
+                            "accepted_offer" : false,
+                            "rating_created_by" : false,
+                            "rating_working_with" : false,
+                            "tasklist" : false,
+                            "destination" : false,
+                            "pictures" : false
+                        }
+                        vm.dispatch("fillFilteredRequestInfo", {filters, requestId: filters.request, dataLoaded: true})
+                    }
+                    break
+                case 5: 
+                    if(router.currentRoute["path"]  == "/viewRequest/" + notification.type_id) {
+                        let filters = {
+                            request: parseInt(notification.type_id),
+                            "offers" : false,
+                            "edits" : true, 
+                            "accepted_offer" : false,
+                            "rating_created_by" : false,
+                            "rating_working_with" : false,
+                            "tasklist" : false,
+                            "destination" : false,
+                            "pictures" : false
+                        }
+                        vm.dispatch("fillFilteredRequestInfo", {filters, requestId: filters.request, dataLoaded: true})
+                    }
+                    break
+                case 8: 
+                    if(router.currentRoute["path"] == "/ratings/" + vm.state.authUser.id) {
+                        vm.state.newRating = notification.id
+                    }
+                    vm.dispatch('getUserInfo', {userId: vm.state.authUser.id, onlyRating: true, userToSet: this.authUser})
+                    commit('setRatedToRequest', notification.type_id)
+                    break
+                case 9:
+                    if(router.currentRoute["path"] == "/achievements/" + vm.state.authUser.id) {
+                        vm.state.newAchievement = notification.id
+                    }
+                    break
+                case 1: 
+                    let ind = -1
+                    if(vm.state.createdAuthRequests) {
+                        ind = vm.state.createdAuthRequests.results.findIndex(req => req.id == notification.type_id)
+                        if(ind != -1) {
+                            vm.state.createdAuthRequests.results.splice(ind, 1)
+                            vm.state.createdAuthRequests.count --
+                        }
+                    }
+                    if(ind == -1 && vm.state.runnerAuthRequests) {
+                        ind = vm.state.runnerAuthRequests.results.findIndex(req => req.id == notification.type_id)
+                        if(ind != -1) {
+                            vm.state.runnerAuthRequests.results.splice(ind, 1)
+                            vm.state.runnerAuthRequests.count --
+                        }
+                    }
+                    vm.state.newFinishedRequest = {type_id: notification.type_id, id: notification.id}
+                    break
+                case 3:
+                    const filters = {
+                        created_by : null,
+                        done_by : vm.state.authUser.id,
+                        created_or_done_by: null,
+                        statuses : [1],
+                        unrated_created_by : null,
+                        unrated_done_by: null
+                    }
+                    vm.dispatch("fillRequests", {filters: filters, objectToFill: { object:"runnerAuthRequests", page: 1, dataLoaded: true }})
+                    break
+                case 10: 
+                    let index = -1
+                    let bothUsersFinished = false
+                    if(vm.state.createdAuthRequests) {
+                        index = vm.state.createdAuthRequests.results.findIndex(req => req.id == notification.type_id)
+                        if(index != -1) {
+                            const request = vm.state.createdAuthRequests.results[index]
+                            if((request.created_by.id == vm.state.authUser.id && request.finished_created_by) ||
+                               (request.created_by.id != vm.state.authUser.id && request.finished_working_with)) {
+                                vm.state.createdAuthRequests.results.splice(index, 1)
+                                vm.state.createdAuthRequests.count --
+                                bothUsersFinished = true
+                            }
+                        }
+                    }
+                    if(index == -1 && vm.state.runnerAuthRequests) {
+                        index = vm.state.runnerAuthRequests.results.findIndex(req => req.id == notification.type_id)
+                        if(index != -1) {
+                            const request = vm.state.runnerAuthRequests.results[index]
+                            if((request.created_by.id == vm.state.authUser.id && request.finished_created_by) ||
+                               (request.created_by.id != vm.state.authUser.id && request.finished_working_with)) {
+                                vm.state.runnerAuthRequests.results.splice(index, 1)
+                                vm.state.runnerAuthRequests.count --
+                                bothUsersFinished = true
+                            }
+                        }
+                    }
+                    vm.state.newSuccessfullyFinishedRequest = {
+                        type_id: notification.type_id, 
+                        id: notification.id,
+                        bothUsersFinished: bothUsersFinished
+                    }
+                    break
+            }
         }
     },
     mutations:{
@@ -2224,6 +2361,25 @@ export default new Vuex.Store({
         },
         setFirebaseNotification(state, notification) {
             state.firebaseNotification = notification
+        },
+        setRatedToRequest(state, requestId) {
+            let request = null
+            if(state.createdAuthRequests) {
+                request = state.createdAuthRequests.results.find(req => req.id == requestId)
+            }
+            if(!request && state.runnerAuthRequests) {
+                request = state.runnerAuthRequests.results.find(req => req.id == requestId)
+            }
+            if(!request && state.overAuthRequests && state.overAuthRequests.results) {
+                request = state.overAuthRequests.results.find(req => req.id ==requestId)
+            }
+            if(request != null) {
+                if(request.created_by.id == state.authUser.id) {
+                    request.rated_working_with = true
+                }
+                else
+                    request.rated_created_by = true
+            }
         }
     }
 })
