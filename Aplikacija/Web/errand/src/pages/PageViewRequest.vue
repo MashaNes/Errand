@@ -786,9 +786,9 @@ export default {
           }
         }
         if(status > 2) {
-          if(this.request.rated_created_by)
+          if(this.computedRequest.rated_created_by)
             filters["rating_created_by"] = true
-          if(this.request.rated_working_with)
+          if(this.computedRequest.rated_working_with)
             filters["rating_working_with"] = true
         }
       }

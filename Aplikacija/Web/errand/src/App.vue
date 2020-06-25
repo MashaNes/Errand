@@ -11,6 +11,9 @@
 <script>
 import TheFooter from "@/components/TheFooter"
 import TheNavbar from "@/components/TheNavbar"
+import fontawesome from '@fortawesome/fontawesome'
+import faBrands from '@fortawesome/fontawesome-free-brands'
+
 export default {
   name: 'App',
   components: {
@@ -47,53 +50,148 @@ export default {
     // eslint-disable-next-line no-unused-vars
     firebaseNotification(newVal, oldVal) {
       if(newVal!=null && this.$store.state.logedIn && !this.$store.state.isAdmin) {
+        // eslint-disable-next-line no-debugger
+        debugger
         console.log(true)
-        this.$toasted.show(this.isSerbian ? newVal.data.body_sr : newVal.data.body_en, {
-          duration: 5000,
-          position: "bottom-left",
-          theme: "toasted-primary",
-          // containerClass: "toaster-cl",
-          // className: "toaster-cl",
-          action: this.toastedActions({
-            type: newVal.data.notification_type, 
-            type_id: newVal.data.type_id, 
-            notif_id: newVal.data.id
+        const type = parseInt(newVal.data.notification_type)
+        const showAndr = (type == 0 || type == 3 || type == 4) ? true : false
+        if(showAndr) {
+          this.$toasted.show(`${fontawesome.icon(faBrands.faAndroid).html} ${this.isSerbian ? newVal.data.body_sr : newVal.data.body_en}`, {
+            duration: 7000,
+            position: "bottom-left",
+            theme: "toasted-primary",
+            action: this.toastedActions({
+              type: type, 
+              type_id: newVal.data.type_id, 
+              notif_id: newVal.data.id
+            })
           })
-        })
+        }
+        else {
+          this.$toasted.info(this.isSerbian ? newVal.data.body_sr : newVal.data.body_en, {
+            duration: 7000,
+            position: "bottom-left",
+            action: this.toastedActions({
+              type: type, 
+              type_id: newVal.data.type_id, 
+              notif_id: newVal.data.id
+            })
+          })
+        }
       }
     }
   },
   methods: {
     toastedActions({type, type_id, notif_id}) {
-      //const currentPath = this.$store.getters["getCurrentRoute"]
-      const actions = [{
-        text: this.closeText,
-        onClick: (e, toastObj) => {
-          this.$store.state.notificationNumber -= 1
-          this.$store.dispatch("setNotificationFlag", {ids : [notif_id], opened: false, seen: true})
-          toastObj.goAway(0)
-        }
-      }]
+      // eslint-disable-next-line no-debugger
+      debugger
+      const currentPath = this.$route.path
+      let shouldSetSeen = true
+      let shouldSetOpen = true
+      if(((type == 1 || type == 6 || type == 7 || type == 10 || type == 2 || type == 5) && currentPath == "/viewRequest/" + type_id) ||
+          (type == 8 && currentPath == "/ratings/" + this.$store.state.authUser.id) || 
+          (type == 9 && currentPath == "/achievements/" + this.$store.state.authUser.id)) {
+            shouldSetSeen = false
+            shouldSetOpen = false
+          }
+      if(currentPath == "/notifications") {
+        shouldSetSeen = false
+      }
+      if(type == 0 || type == 3 || type == 4) {
+        shouldSetOpen = false
+      }
 
-      if(type != 0 && type != 3 && type != 4) {
+      let actions = null
+
+      if(shouldSetSeen) {
+        actions = [{
+          text: this.closeText,
+          onClick: (e, toastObj) => {
+            this.$store.state.notificationNumber -= 1
+            this.$store.dispatch("setNotificationFlag", {ids : [notif_id], opened: false, seen: true})
+            this.setFlagsInStore(notif_id, false, true)
+            toastObj.goAway(0)
+          }
+        }]
+      }
+      else {
+        actions = [{
+          text: this.closeText,
+          onClick: (e, toastObj) => {
+            toastObj.goAway(0)
+          }
+        }]
+      }
+
+      let functionForRouter = null
+      if(type == 1 || type == 6 || type == 7 || type == 10) {
+        functionForRouter = () => {
+          this.$router.push({ name: "PageViewRequest", params: { id: type_id }})
+        }
+      }
+      else if (type == 8) {
+        functionForRouter = () => {
+          this.$router.push({ name: "PageRatings", params: { id: this.$store.state.authUser.id, user: this.$store.state.authUser }})
+        }
+      }
+      else if (type == 9) {
+        functionForRouter = () => {
+          this.$router.push({ name: "PageAchievements", params: { id: this.$store.state.authUser.id, user: this.$store.state.authUser }})
+        }
+      }
+      else if(type == 2 || type == 5) {
+        functionForRouter = () => {
+          this.$router.push({
+            name: "PageViewRequest",
+            params: {
+              id: type_id,
+              startingView: (type == 2) ? 'Offers' : 'Edits'
+            }
+          })
+        }
+      }
+
+      if(shouldSetOpen) {
         actions.push({
           text: this.showMoreText,
           onClick: (e, toastObj) => {
             this.$store.state.notificationNumber -= 1
-            this.$store.dispatch("setNotificationFlag", {ids : [notif_id], opened: true, seen: true})
-            if(type == 1 || type == 6 || type == 7 || type == 10)
-                this.$router.push({ name: "PageViewRequest", params: { id: type_id }})
-            else if(type == 8)
-                this.$router.push({ name: "PageRatings", params: { id: type_id, user: this.$store.state.authUser }})
-            else if(type == 9)
-                this.$router.push({ name: "PageAchievements", params: { id: type_id, user: this.$store.state.authUser }})
-            else if(type == 2 || type == 5)
-                this.$router.push({ name: "PageViewRequest", params: { id: type_id }})
+            functionForRouter()
+            this.$store.dispatch("setNotificationFlag", {ids: [notif_id], opened: true, seen: true})
+            this.setFlagsInStore(notif_id, true, true)
             toastObj.goAway(0)
           }
         })
       }
       return actions
+    },
+    setFlagsInStore(id, opened, seen) {
+      if(this.$store.state.notifications != null) {
+        let ind = -1
+        ind = this.$store.state.notifications.findIndex(not => not.id == id)
+        if(ind != -1) {
+          this.$store.state.notifications[ind].seen = seen
+          this.$store.state.notifications[ind].opened = opened
+        }
+      }
+    },
+    shouldSetFlags(type, type_id) {
+      let ret = {}
+      const currentRoute = this.$route.path
+      if(type == 0 || type == 3 || type == 4)
+        return null
+      else if(((type == 1 || type == 6 || type == 7 || type == 10 || type == 2 || type == 5) && currentRoute == "/viewRequest/" + type_id) ||
+              (type == 8 && currentRoute == "/ratings/" + this.$store.state.authUser.id) ||
+              (type == 9 && currentRoute == "/achievements/" + this.$store.state.authUser.id)) {
+                this.$store.state.notificationNumber -= 1
+                ret.setSeen = true
+                ret.setOpened = true
+              }
+      if(currentRoute == "/notifications") {
+        this.$store.state.notificationNumber -= 1
+        ret.setSeen = true
+        ret.setOpened = false
+      }
     }
   },
   created()
@@ -109,12 +207,18 @@ export default {
       if(!this.$store.state.isAdmin || this.$store.state.isAdmin == "false") 
       {
         const store = this.$store
+        const vm = this
         this.$store.state.firebaseToken = this.$cookie.get('firebaseToken')
         this.$store.state.registeredOnFirebase = true
         this.$store.state.firebaseOnMessageFunction = this.$messaging.onMessage(function(payload) {
           store.state.notificationNumber += 1
           store.dispatch('fillFirebaseNotification', payload)
           store.dispatch('notificationReaction', payload.data)
+          const flags = vm.shouldSetFlags(payload.data.notification_type, payload.data.type_id)
+          if(store.state.notifications != null)
+            store.dispatch('fetchSpecificNotification', {id: payload.data.id, flags: flags})
+          if(flags != null)
+            store.dispatch("setNotificationFlag", {ids: [payload.data.id], opened: flags.setOpened, seen: flags.setSeen})
           console.log("app.vue notification")
           console.log(payload)
         })

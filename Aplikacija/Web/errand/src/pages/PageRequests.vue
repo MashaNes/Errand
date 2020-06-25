@@ -265,6 +265,24 @@
                 this.textMessageS = textMessageS
                 this.textMessageE = textMessageE
                 this.messagesSet = true
+            },
+            shouldSetFlags(type, type_id) {
+                let ret = {}
+                const currentRoute = this.$route.path
+                if(type == 0 || type == 3 || type == 4)
+                    return null
+                else if(((type == 1 || type == 6 || type == 7 || type == 10 || type == 2 || type == 5) && currentRoute == "/viewRequest/" + type_id) ||
+                        (type == 8 && currentRoute == "/ratings/" + this.$store.state.authUser.id) ||
+                        (type == 9 && currentRoute == "/achievements/" + this.$store.state.authUser.id)) {
+                            this.$store.state.notificationNumber -= 1
+                            ret.setSeen = true
+                            ret.setOpened = true
+                        }
+                if(currentRoute == "/notifications") {
+                    this.$store.state.notificationNumber -= 1
+                    ret.setSeen = true
+                    ret.setOpened = false
+                }
             }
         },
         created()
@@ -308,7 +326,13 @@
                     store.state.notificationNumber += 1
                     store.dispatch('fillFirebaseNotification', payload)
                     store.dispatch('notificationReaction', payload.data)
-                    console.log("pagerequests.vue notification")
+                    const flags = vm.shouldSetFlags(payload.data.notification_type, payload.data.type_id)
+                    if(store.state.notifications != null) {
+                        store.dispatch('fetchSpecificNotification', {id: payload.data.id, flags: flags})
+                    }
+                    if(flags != null)
+                        store.dispatch("setNotificationFlag", {ids: [payload.data.id], opened: flags.setOpened, seen: flags.setSeen})
+                    console.log("app.vue notification")
                     console.log(payload)
                 })
             }
