@@ -357,6 +357,10 @@ export default {
     },
     toggleOfferBox() {
       if(!this.opened) {
+        if(!this.$store.getters['getOpenedOffersOrEdits'] || this.$store.getters['getOpenedOffersOrEdits'].length != this.$store.state.offers.length) {
+          const newArray = new Array(this.$store.state.offers.length).fill(false)
+          this.$store.dispatch('fillOpenedOffersOrEdits', newArray)
+        }
         if(!this.$store.getters['getOpenedOffersOrEdits'][this.myIndex]) {
           const newArray = new Array(this.$store.getters['getOpenedOffersOrEdits'].length).fill(false)
           newArray[this.myIndex] = true

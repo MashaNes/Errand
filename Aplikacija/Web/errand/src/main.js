@@ -49,7 +49,9 @@ Vue.component('vue-phone-number-input', VuePhoneNumberInput);
 
 Vue.use(BootstrapVue)
 Vue.use(VueCookie)
-Vue.use(Toasted)
+Vue.use(Toasted, {
+  iconPack: "custom-class"
+})
 Vue.use(VueLazyLoad)
 
 

@@ -255,6 +255,10 @@ export default {
     },
     toggleEditBox() {
       if(!this.opened) {
+        if(!this.$store.getters['getOpenedOffersOrEdits'] || this.$store.getters['getOpenedOffersOrEdits'].length != this.$store.state.edits.length) {
+          const newArray = new Array(this.$store.state.edits.length).fill(false)
+          this.$store.dispatch('fillOpenedOffersOrEdits', newArray)
+        }
         if(!this.$store.getters['getOpenedOffersOrEdits'][this.myIndex]) {
           const newArray = new Array(this.$store.getters['getOpenedOffersOrEdits'].length).fill(false)
           newArray[this.myIndex] = true
