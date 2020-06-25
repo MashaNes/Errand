@@ -63,6 +63,10 @@
                 </div>
                 <input type="number" v-model="achievement.levels" class="unos" min="1" max="10"/>
             </div>
+            <div class="izbor">
+                <v-select :options="uslovi" label="name_sr" class="selekt" :value="nothing" v-if="isSerbian" :clearable="false"></v-select> 
+                <v-select :options="uslovi" label="name_en" class="selekt" :value="nothing" v-else :clearable="false"></v-select>
+            </div>
             <div class="dugme-div">
                 <button type="button" class="btn btn-info" @click="showModal = true"
                         :disabled="achievement.name_sr == '' || achievement.name_en == '' || achievement.description_sr == '' || achievement.description_en == ''
@@ -205,6 +209,13 @@ export default {
     },
     computed:
     {
+        nothing()
+        {
+            if(this.isSerbian)
+                return "Pogledajte opcije za uslove za dostignuća"
+            else
+                return "Look at the options for achievement conditions"
+        },
         isSerbian()
         {
             return this.$store.state.isSerbian
@@ -216,7 +227,7 @@ export default {
             {
                 if(this.conditionArray[index] == undefined || element < 1 || isNaN(parseInt(element)))
                     flag = true
-                else if(index > 0 && (parseInt(element)) < parseInt(this.conditionArray[index-1]))
+                else if(index > 0 && ((this.myCondition.code!= 7 && ((parseInt(element)) < parseInt(this.conditionArray[index-1]))) || (this.myCondition.code== 7 && ((parseInt(element)) > parseInt(this.conditionArray[index-1])))))
                     flag = true
             })
             return flag
@@ -539,6 +550,15 @@ export default {
     .poravnanje
     {
         text-align: center;
+    }
+
+    .izbor
+    {
+        display:flex;
+        width:100%;
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: 10px;
     }
 
     @media only screen and (max-width:550px)
