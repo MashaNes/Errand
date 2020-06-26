@@ -50,8 +50,6 @@ export default {
     // eslint-disable-next-line no-unused-vars
     firebaseNotification(newVal, oldVal) {
       if(newVal!=null && this.$store.state.logedIn && !this.$store.state.isAdmin) {
-        // eslint-disable-next-line no-debugger
-        debugger
         console.log(true)
         const type = parseInt(newVal.data.notification_type)
         const showAndr = (type == 0 || type == 3 || type == 4) ? true : false
@@ -83,8 +81,6 @@ export default {
   },
   methods: {
     toastedActions({type, type_id, notif_id}) {
-      // eslint-disable-next-line no-debugger
-      debugger
       const currentPath = this.$route.path
       let shouldSetSeen = true
       let shouldSetOpen = true

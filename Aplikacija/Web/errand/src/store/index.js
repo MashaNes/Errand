@@ -1651,24 +1651,22 @@ export default new Vuex.Store({
                 if(p.ok) {
                     p.json().then(data => {
                         console.log(data)
-                        if(data["detail"] == "success") {
-                            let index = -1
-                            if(this.state.createdAuthRequests != null)
-                                index = this.state.createdAuthRequests.results.findIndex(req => req.id == request.id) 
-                            
-                            if(index != -1)
-                                this.state.createdAuthRequests.results.splice(index, 1)
-                            
-                            if(this.state.overAuthRequests == null) {
-                                this.state.overAuthRequests = {
-                                    results: [],
-                                    count: 0
-                                }
+                        let index = -1
+                        if(this.state.createdAuthRequests != null)
+                            index = this.state.createdAuthRequests.results.findIndex(req => req.id == request.id) 
+                        
+                        if(index != -1)
+                            this.state.createdAuthRequests.results.splice(index, 1)
+                        
+                        if(this.state.overAuthRequests == null) {
+                            this.state.overAuthRequests = {
+                                results: [],
+                                count: 0
                             }
-                            this.state.overAuthRequests.results.push(request)
-                            this.state.overAuthRequests.count += 1
-                            this.state.success = true
                         }
+                        this.state.overAuthRequests.results.push(request)
+                        this.state.overAuthRequests.count += 1
+                        this.state.success = true
                     })
                 }
                 else {
@@ -1694,31 +1692,29 @@ export default new Vuex.Store({
                 if(p.ok) {
                     p.json().then(data => {
                         console.log(data)
-                        if(data["detail"] == "success") {
-                            let index = -1
-                            if(this.state.createdAuthRequests != null)
-                                index = this.state.createdAuthRequests.results.findIndex(req => req.id == request.id) 
-                            
+                        let index = -1
+                        if(this.state.createdAuthRequests != null)
+                            index = this.state.createdAuthRequests.results.findIndex(req => req.id == request.id) 
+                        
 
-                            if(index != -1) {
-                                if(request.status == 2)
-                                    this.state.createdAuthRequests.results.splice(index, 1)
-                                else
-                                    this.state.createdAuthRequests.results[index].finished_created_by = true
-                            }
-                            
-                            if(request.status == 2) {
-                                if(this.state.overAuthRequests == null) {
-                                    this.state.overAuthRequests = {
-                                        results: [],
-                                        count: 0
-                                    }
-                                }
-                                this.state.overAuthRequests.results.push(request)
-                                this.state.overAuthRequests.count += 1
-                            }
-                            this.state.success = true
+                        if(index != -1) {
+                            if(request.status == 2)
+                                this.state.createdAuthRequests.results.splice(index, 1)
+                            else
+                                this.state.createdAuthRequests.results[index].finished_created_by = true
                         }
+                        
+                        if(request.status == 2) {
+                            if(this.state.overAuthRequests == null) {
+                                this.state.overAuthRequests = {
+                                    results: [],
+                                    count: 0
+                                }
+                            }
+                            this.state.overAuthRequests.results.push(request)
+                            this.state.overAuthRequests.count += 1
+                        }
+                        this.state.success = true
                     })
                 }
                 else {
@@ -2162,6 +2158,31 @@ export default new Vuex.Store({
                     }
                 });
         },
+        fetchSpecificNotification({commit}, {id, flags}) {
+            fetch("http://127.0.0.1:8000/api/v1/notification/" + id, {
+                method: 'GET',
+                headers: {
+                    "Content-type" : "application/json",
+                    "Authorization" : "Token " + this.state.token
+                }
+            }).then( p => {
+                if(p.ok) {
+                    p.json().then(data => {
+                        console.log(data)
+                        if(this.state.notifications != null) {
+                            if(flags) {
+                                data.seen = flags.setSeen
+                                data.opened = flags.setOpened
+                            }
+                            this.state.notifications.unshift(data)
+                        }
+                    })
+                }
+                else {
+                    console.log("Error")
+                }
+            });
+        },
         fillFirebaseNotification({commit}, notification) {
             commit('setFirebaseNotification', notification)
         },
@@ -2248,6 +2269,10 @@ export default new Vuex.Store({
                         index = vm.state.createdAuthRequests.results.findIndex(req => req.id == notification.type_id)
                         if(index != -1) {
                             const request = vm.state.createdAuthRequests.results[index]
+                            if(request.created_by.id == vm.state.authUser.id)
+                                vm.state.createdAuthRequests.results[index].finished_working_with = true
+                            else
+                                vm.state.createdAuthRequests.results[index].finished_created_by = true
                             if((request.created_by.id == vm.state.authUser.id && request.finished_created_by) ||
                                (request.created_by.id != vm.state.authUser.id && request.finished_working_with)) {
                                 vm.state.createdAuthRequests.results.splice(index, 1)
@@ -2260,12 +2285,17 @@ export default new Vuex.Store({
                         index = vm.state.runnerAuthRequests.results.findIndex(req => req.id == notification.type_id)
                         if(index != -1) {
                             const request = vm.state.runnerAuthRequests.results[index]
+                            if(request.created_by.id == vm.state.authUser.id)
+                                vm.state.runnerAuthRequests.results[index].finished_working_with = true
+                            else
+                                vm.state.runnerAuthRequests.results[index].finished_created_by = true
                             if((request.created_by.id == vm.state.authUser.id && request.finished_created_by) ||
                                (request.created_by.id != vm.state.authUser.id && request.finished_working_with)) {
                                 vm.state.runnerAuthRequests.results.splice(index, 1)
                                 vm.state.runnerAuthRequests.count --
                                 bothUsersFinished = true
                             }
+                            
                         }
                     }
                     vm.state.newSuccessfullyFinishedRequest = {
