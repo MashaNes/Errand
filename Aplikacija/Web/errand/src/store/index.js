@@ -81,6 +81,7 @@ export default new Vuex.Store({
         newFinishedRequest: null,
         newRunnerRequest: null,
         newSuccessfullyFinishedRequest: null,
+        newEditAccepted: null,
         host: "localhost" //192.168.0.17
     },
     getters:{
@@ -1294,6 +1295,7 @@ export default new Vuex.Store({
                             this.state.requestFilteredInfo.acceptedOffer = data.accepted_offer
                             this.state.requestFilteredInfo.ratingCreatedBy = data.rating_created_by
                             this.state.requestFilteredInfo.ratingWorkingWith = data.rating_working_with
+                            this.state.requestFilteredInfo.tasklist = data.request.tasklist
                             this.state.specificRequest = data.request
                         }
                     })
@@ -1316,6 +1318,25 @@ export default new Vuex.Store({
                         console.log(data)
                         let isParticipant = false
                         this.state.specificRequest = data
+                    })
+                }
+                else {
+                    console.log("Error")
+                }
+            })
+        },
+        handleEditAccept({commit}, requestId) {
+            fetch("http://" + this.state.host + ":8000/api/v1/requests_info/" + requestId, {
+                method: 'GET',
+                headers: {
+                    "Content-type" : "application/json",
+                    "Authorization" : "Token " + this.state.token
+                }
+            }).then(p => {
+                if(p.ok) {
+                    p.json().then(data => {
+                        console.log(data)
+                        this.state.newEditAccepted = data
                     })
                 }
                 else {
@@ -2273,8 +2294,7 @@ export default new Vuex.Store({
                                 vm.state.createdAuthRequests.results[index].finished_working_with = true
                             else
                                 vm.state.createdAuthRequests.results[index].finished_created_by = true
-                            if((request.created_by.id == vm.state.authUser.id && request.finished_created_by) ||
-                               (request.created_by.id != vm.state.authUser.id && request.finished_working_with)) {
+                            if(notification.price && notification.price != null && notification.price != "") {
                                 vm.state.createdAuthRequests.results.splice(index, 1)
                                 vm.state.createdAuthRequests.count --
                                 bothUsersFinished = true
@@ -2289,8 +2309,7 @@ export default new Vuex.Store({
                                 vm.state.runnerAuthRequests.results[index].finished_working_with = true
                             else
                                 vm.state.runnerAuthRequests.results[index].finished_created_by = true
-                            if((request.created_by.id == vm.state.authUser.id && request.finished_created_by) ||
-                               (request.created_by.id != vm.state.authUser.id && request.finished_working_with)) {
+                            if(notification.price && notification.price != null && notification.price != "") {
                                 vm.state.runnerAuthRequests.results.splice(index, 1)
                                 vm.state.runnerAuthRequests.count --
                                 bothUsersFinished = true
@@ -2301,9 +2320,13 @@ export default new Vuex.Store({
                     vm.state.newSuccessfullyFinishedRequest = {
                         type_id: notification.type_id, 
                         id: notification.id,
-                        bothUsersFinished: bothUsersFinished
+                        bothUsersFinished: bothUsersFinished,
+                        price: notification.price
                     }
                     break
+                case 6: 
+                    vm.dispatch('handleEditAccept', notification.type_id)
+                    
             }
         }
     },

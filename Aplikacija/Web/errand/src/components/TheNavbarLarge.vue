@@ -177,6 +177,7 @@ export default {
       },
       odjaviSe()
       {
+        this.$toasted.clear()
         this.$store.state.logedIn = false
         this.$router.push('/')
         if(this.isAdmin)
