@@ -329,6 +329,12 @@ export default {
             this.request = this.requestProp
         if(this.stepProp != undefined)
             this.step = this.stepProp
+        if(this.request.destination == null)
+            this.request.destination = {
+                    name: "",
+                    longitude: null,
+                    latitude: null,
+                }
     }
 }
 </script>

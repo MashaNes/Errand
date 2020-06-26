@@ -8,8 +8,7 @@
           {{achievement.achievement.name_sr}}
         </span>
       </b-card-header>
-      <b-card-body :class="(achievement.level >= 4) ? 'body-golden' : 
-         (achievement.level > 2) ? 'body-silver' : 'body-goldenrod'">
+      <b-card-body :class="klasa">
         <b-card-text>
           <span> {{description}} </span>
         </b-card-text>
@@ -61,6 +60,24 @@ export default {
         })
         
         return returnText
+      },
+      klasa()
+      {
+        if(this.achievement.achievement.levels == 1)
+          return 'body-golden'
+        else if(this.achievement.achievement.levels == 2 && this.achievement.level == 1)
+          return 'body-silver'
+        else if(this.achievement.achievement.levels == 2 && this.achievement.level == 2)
+          return 'body-golden'
+        else
+        {
+          if(this.achievement.level < this.achievement.achievement.levels/3)
+            return 'body-goldenrod'
+          else if (this.achievement.level < (2 * this.achievement.achievement.levels)/3)
+            return 'body-silver'
+          else
+            return 'body-golden'
+        }
       }
     }
 }
