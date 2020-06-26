@@ -649,7 +649,8 @@ def send_notification(user, notification, notification_body):
 
 def create_notification(notification_type, type_id, working_with=None, address_ids=None,
                         first_name=None, last_name=None, request=None, rating=None,
-                        achievement_sr=None, achievement_en=None, level=None, price=None):
+                        achievement_sr=None, achievement_en=None, level=None, price=None,
+                        achievement_type=None):
     _ww = None
     if working_with:
         _ww = working_with.id
@@ -665,8 +666,8 @@ def create_notification(notification_type, type_id, working_with=None, address_i
                 'working_with' : _ww,
                 'title_sr' : "Direktni zahtev",
                 'title_en' : "Direct request",
-                'body_sr' : f"Korisnik {first_name} {last_name} vam je poslao novi direktan zahtev {request}.",
-                'body_en' : f"{first_name} {last_name} sent you a new direct request {request}."
+                'body_sr' : f"Korisnik {first_name} {last_name} vam je poslao novi direktan zahtev \"{request}\".",
+                'body_en' : f"{first_name} {last_name} sent you a new direct request \"{request}\"."
             },
             {
                 'id' : None,
@@ -756,8 +757,8 @@ def create_notification(notification_type, type_id, working_with=None, address_i
                 'working_with' : _ww,
                 'title_sr' : "Novo dostignuće",
                 'title_en' : "New achievement",
-                'body_sr' : f"Dodeljeno Vam je dostignuće \"{achievement_sr}\" {level}. nivoa.",
-                'body_en' : f"You have been awarded an achievemen \"{achievement_en}\" of level {level}."
+                'body_sr' : f"Dodeljeno Vam je dostignuće \"{achievement_sr}\" {int(level)}. nivoa!",
+                'body_en' : f"You have been awarded the achievement \"{achievement_en}\" of level {int(level)}!"
             },
             {
                 'id' : None,
@@ -769,9 +770,35 @@ def create_notification(notification_type, type_id, working_with=None, address_i
                 'body_sr' : f"Korisnik sa kojim sarađujete na zahtevu \"{request}\" označio je da je on uspešno okončan.",
                 'body_en' : f"The user you are cooperating with on the request \"{request}\" has marked it as successful.",
                 'price' : price
+            },
+            {
+                'id' : None,
+                'notification_type' : 9,
+                'type_id' : type_id,
+                'working_with' : _ww,
+                'title_sr' : "Smanjen nivo dostignuća",
+                'title_en' : "Downgraded achievement",
+                'body_sr' : f"Nivo koji imate za dostignuće \"{achievement_sr}\" smanjen je na {int(level)} :(",
+                'body_en' : f"The level you have for the achievement \"{achievement_en}\" has been downgraded to {int(level)} :("
+            },
+                                {
+                'id' : None,
+                'notification_type' : 9,
+                'type_id' : type_id,
+                'working_with' : _ww,
+                'title_sr' : "Izgubljeno dostignuće",
+                'title_en' : "Lost achievement",
+                'body_sr' : f"Izgubili ste dostignuće \"{achievement_sr}\" :(",
+                'body_en' : f"You have lost the achievement \"{achievement_en}\" :("
             }]
 
     notif = data[notification_type]
+    if notification_type == 9:
+        if achievement_type == 1:
+            notif = data[11]
+        if achievement_type == 2:
+            notif = data[12]
+
     notification = models.Notification(title_sr=notif['title_sr'],
                                        title_en=notif['title_en'],
                                        body_sr=notif['body_sr'],
@@ -831,7 +858,7 @@ def check_achievements(user):
             lvl = 0
             for _cn in cond.condition_numbers.all():
                 _cn = _cn.condition_number
-                if _cn == 7:
+                if cond.condition == 7:
                     if _cn >= c[6]:
                         lvl += 1
                 elif _cn <= c[cond.condition - 1]:
@@ -840,32 +867,52 @@ def check_achievements(user):
             if lvl < level:
                 level = lvl
 
-        if level > 0:
-            achlvl = None
-            for _a in user.achievements.all():
-                if _a.achievement.id == ach.id:
-                    achlvl = _a
+        achlvl = None
+        for _a in user.achievements.all():
+            if _a.achievement.id == ach.id:
+                achlvl = _a
 
-            if not achlvl:
-                achlvl = models.AchievementLevel(level=level,
-                                                 achievement=ach,
-                                                 user=user.user)
-                achlvl.save()
-                user.achievements.add(achlvl)
-                user.save()
+        if not achlvl and level > 0:
+            achlvl = models.AchievementLevel(level=level,
+                                             achievement=ach,
+                                             user=user.user)
+            achlvl.save()
+            user.achievements.add(achlvl)
+            user.save()
 
-                # send notification
-                notif_body, notif = create_notification(9, achlvl.id,
+            # send notification
+            notif_body, notif = create_notification(9, achlvl.id, achievement_type=0,
+                                                    achievement_en=ach.name_en,
+                                                    achievement_sr=ach.name_sr,
+                                                    level=achlvl.level)
+            send_notification(user, notif, notif_body)
+
+        if achlvl:
+            if level == 0:
+                achlvl.delete()
+                notif_body, notif = create_notification(9, 0, achievement_type=2,
                                                         achievement_en=ach.name_en,
                                                         achievement_sr=ach.name_sr,
                                                         level=achlvl.level)
                 send_notification(user, notif, notif_body)
+
             elif achlvl.level < level:
                 achlvl.level = level
                 achlvl.save()
 
                 # send notification
-                notif_body, notif = create_notification(9, achlvl.id,
+                notif_body, notif = create_notification(9, achlvl.id, achievement_type=0,
+                                                        achievement_en=ach.name_en,
+                                                        achievement_sr=ach.name_sr,
+                                                        level=achlvl.level)
+                send_notification(user, notif, notif_body)
+
+            elif achlvl.level > level:
+                achlvl.level = level
+                achlvl.save()
+
+                # send notification
+                notif_body, notif = create_notification(9, achlvl.id, achievement_type=1,
                                                         achievement_en=ach.name_en,
                                                         achievement_sr=ach.name_sr,
                                                         level=achlvl.level)

@@ -1121,14 +1121,14 @@ class RequestFinish(generics.UpdateAPIView):
                     count += 1
 
             if found1 == 0 and count >= user1.user.benefit_requirement:
-                ben = models.Benefit(benefit_user=user2,
+                ben = models.Benefit(benefit_user=user2.user,
                                      discount=user1.user.benefit_discount)
                 ben.save()
                 user1.benefitlist.add(ben)
                 user1.save()
 
             if found2 == 0 and count >= user2.user.benefit_requirement:
-                ben = models.Benefit(benefit_user=user1,
+                ben = models.Benefit(benefit_user=user1.user,
                                      discount=user2.user.benefit_discount)
                 ben.save()
                 user2.benefitlist.add(ben)
@@ -1649,6 +1649,7 @@ class FCMUnregister(generics.DestroyAPIView):
 
 class FCMTestNotification(generics.CreateAPIView):
     def create(self, request):
-        dist = utils.calc_distance(43.31752396, 21.89941025, 43.32719, 21.903399)
+        user = models.FullUser.objects.get(id=request.data['id'])
+        utils.check_achievements(user)
 
-        return Response({'result' : dist})
+        return Response({'result' : 0})
