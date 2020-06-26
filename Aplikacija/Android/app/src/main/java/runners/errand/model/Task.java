@@ -1,5 +1,7 @@
 package runners.errand.model;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
 
 import org.json.JSONArray;
@@ -8,9 +10,11 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
+import runners.errand.R;
+
 public class Task {
     private int id;
-    private String name, description;
+    private String name, description = "";
     private boolean pictureRequired;
     private Address address;
     private Service service;
@@ -90,17 +94,24 @@ public class Task {
         return service;
     }
 
-    public String getBody() {
+    public String getBody(Context context) {
         StringBuilder result = new StringBuilder();
         result.append("");
-        result.append(description);
-        result.append("\n");
+        if (description != null && !description.isEmpty() && !description.trim().isEmpty()) {
+            result.append(description);
+            result.append("\n");
+        }
         for (ChecklistItem c : checklist) {
             result.append(" • ");
             result.append(c.s);
             result.append("\n");
         }
-        result.deleteCharAt(result.length() - 1);
+        if (pictureRequired) {
+            result.append("* ");
+            result.append(context.getString(R.string.picture_required));
+        } else {
+            if (result.length() > 0) result.deleteCharAt(result.length() - 1);
+        }
         return result.toString();
     }
 

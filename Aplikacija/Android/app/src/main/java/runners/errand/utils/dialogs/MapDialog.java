@@ -58,7 +58,7 @@ public class MapDialog extends AlertDialog implements OnMapReadyCallback, Locati
 	private boolean isRunning = false, userSet = false;
 
 	protected MapDialog(MainActivity activity, Address a) {
-		super(activity);
+		super(activity, R.style.Theme_AppCompat_Dialog);
 		View dialogView = View.inflate(activity, R.layout.dialog_map, null);
 
 		this.address = a;

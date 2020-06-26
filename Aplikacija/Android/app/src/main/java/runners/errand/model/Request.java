@@ -24,7 +24,7 @@ public class Request {
     private int id, status, locationStatus, requestType, dist, directId;
     private double maxDistance, minRating;
     private Date time;
-    private String name, note;
+    private String name, note = "";
     private boolean pictureRequired, ratedCreatedBy, ratedWorkingWith, finishedCreatedBy, finishedWorkingWith;
     private boolean broadcast = true;
     private Service service;

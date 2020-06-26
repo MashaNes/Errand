@@ -108,6 +108,13 @@ public class SettingsListFragment extends Fragment {
 				getNotificationSettingDrawableId(PreferenceManager.KEY_REQUEST_FAILED)));
 
 		settings.add(new Setting(
+				Notification.CATEGORY_REQUEST_SUCCESS,
+				getString(R.string.settings_notifications_request_success),
+				getString(R.string.settings_notifications_request_success_desc),
+				PreferenceManager.KEY_REQUEST_SUCCESS,
+				getNotificationSettingDrawableId(PreferenceManager.KEY_REQUEST_SUCCESS)));
+
+		settings.add(new Setting(
 				Notification.CATEGORY_OFFER_CREATED,
 				getString(R.string.settings_notifications_offer_created),
 				getString(R.string.settings_notifications_offer_created_desc),
@@ -162,15 +169,6 @@ public class SettingsListFragment extends Fragment {
 				getString(R.string.settings_notifications_achievement_desc),
 				PreferenceManager.KEY_ACHIEVEMENT,
 				getNotificationSettingDrawableId(PreferenceManager.KEY_ACHIEVEMENT)));
-
-		settings.add(new Setting(
-				Notification.CATEGORY_REQUEST_SUCCESS,
-				getString(R.string.settings_notifications_request_success),
-				getString(R.string.settings_notifications_request_success_desc),
-				PreferenceManager.KEY_REQUEST_SUCCESS,
-				getNotificationSettingDrawableId(PreferenceManager.KEY_REQUEST_SUCCESS)));
-
-
 
 		list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
@@ -325,12 +323,14 @@ public class SettingsListFragment extends Fragment {
 						break;
 					case 2:
 						final WorkingHours hours = activity.getUser().getWorkingHours(position);
-						SimpleDialog.buildSelectDialog(activity, getString(R.string.settings_runner_hours_clear), getString(R.string.settings_runner_hours_clear_desc), getString(R.string.generic_yes), getString(R.string.generic_no), new Runnable() {
-							@Override
-							public void run() {
-								apiDeleteWorkingHours(hours);
-							}
-						}, null);
+						if (hours != null) {
+							SimpleDialog.buildSelectDialog(activity, getString(R.string.settings_runner_hours_clear), getString(R.string.settings_runner_hours_clear_desc), getString(R.string.generic_yes), getString(R.string.generic_no), new Runnable() {
+								@Override
+								public void run() {
+									apiDeleteWorkingHours(hours);
+								}
+							}, null);
+						}
 						break;
 					case 3:
 						if (position == 0) {
@@ -468,8 +468,8 @@ public class SettingsListFragment extends Fragment {
 		} else {
 			body += getString(R.string.settings_runner_benefits_discount);
 			body += ": ";
-			body += activity.getUser().getBenefitDiscount();
-			body += "\n";
+			body += String.format(Locale.getDefault(), "%.0f", activity.getUser().getBenefitDiscount() * 100);
+			body += "%\n";
 			body += getString(R.string.settings_runner_benefits_requirement);
 			body += ": ";
 			body += activity.getUser().getBenefitRequirements();
@@ -485,7 +485,7 @@ public class SettingsListFragment extends Fragment {
 			settings.add(new Setting(
 					benefit.getId(),
 					benefit.getUser().getFirstName() + " " + benefit.getUser().getLastName(),
-					getString(R.string.settings_runner_benefits_discount) + ": " + benefit.getDiscount(),
+					getString(R.string.settings_runner_benefits_discount) + ": " + String.format(Locale.getDefault(), "%.0f", benefit.getDiscount() * 100) + "%",
 					null,
 					R.drawable.ic_edit));
 		}

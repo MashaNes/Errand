@@ -93,9 +93,15 @@ public class FRListFragment extends Fragment {
 		if (parent == null) return;
 		requests.clear();
 		if (index == 1) {
-			requests.addAll(parent.getBroadcastRequests());
+			add(parent.getBroadcastRequests());
 		} else {
-			requests.addAll(parent.getDirectRequests());
+			add(parent.getDirectRequests());
+		}
+	}
+
+	private void add(ArrayList<Request> requests) {
+		for (Request request : requests) {
+			if (request.getCreatedBy().getId() != activity.getUser().getId()) this.requests.add(request);
 		}
 	}
 

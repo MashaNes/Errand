@@ -181,11 +181,25 @@ public class NotificationsListFragment extends Fragment {
     	if (activity == null) return;
 		notifications.clear();
 		for (Notification n : activity.getUser().getNotifications()) {
-			if (index == 0 && (n.getCategory() == 2 || n.getCategory() == 5))
+			if (index == 0 && (
+					n.getCategory() == Notification.CATEGORY_OFFER_CREATED ||
+					n.getCategory() == Notification.CATEGORY_EDIT_CREATED
+			))
 				notifications.add(n);
-			else if (index == 1 && (n.getCategory() == 0 || n.getCategory() == 3 || n.getCategory() == 4 || n.getCategory() == 6 || n.getCategory() == 7))
+			else if (index == 1 && (
+					n.getCategory() == Notification.CATEGORY_REQUEST_DIRECT ||
+					n.getCategory() == Notification.CATEGORY_OFFER_ACCEPTED ||
+					n.getCategory() == Notification.CATEGORY_OFFER_CANCELED ||
+					n.getCategory() == Notification.CATEGORY_EDIT_ACCEPTED ||
+					n.getCategory() == Notification.CATEGORY_EDIT_CANCELED
+			))
 				notifications.add(n);
-			else if (index == 2 && (n.getCategory() == 1 || n.getCategory() == 8 || n.getCategory() == 9 || n.getCategory() == 10))
+			else if (index == 2 && (
+					n.getCategory() == Notification.CATEGORY_REQUEST_FAILED ||
+					n.getCategory() == Notification.CATEGORY_RATING ||
+					n.getCategory() == Notification.CATEGORY_ACHIEVEMENT ||
+					n.getCategory() == Notification.CATEGORY_REQUEST_SUCCESS
+			))
 				notifications.add(n);
 		}
 		adapter.notifyDataSetChanged();

@@ -35,7 +35,7 @@ public class TasksFragment extends Fragment {
 	private ArrayList<Bitmap> bitmaps = new ArrayList<>();
 	private ArrayList<ArrayList<Bitmap>> taskBitmapList = new ArrayList<>();
 	private TextView destination, time, note;
-	private LinearLayout taskListLayout, pictureLayout;
+	private LinearLayout taskListLayout, pictureLayout, noteLayout;
 	private RecyclerView pictures;
 
 	@Nullable
@@ -53,6 +53,7 @@ public class TasksFragment extends Fragment {
 		destination = root.findViewById(R.id.task_destination);
 		time = root.findViewById(R.id.task_time);
 		note = root.findViewById(R.id.task_note);
+		noteLayout = root.findViewById(R.id.note_layout);
 		taskListLayout = root.findViewById(R.id.task_list_layout);
 		pictureLayout = root.findViewById(R.id.task_pictures_layout);
 		pictures = root.findViewById(R.id.task_pictures);
@@ -68,13 +69,15 @@ public class TasksFragment extends Fragment {
 		activity.getWindowManager().getDefaultDisplay().getMetrics(metrics);
 		if (request.getDestination() != null) destination.setText(request.getDestination().getName());
 		time.setText(request.getTimeString());
-		note.setText(request.getNote());
+		if (request.getNote() != null && !request.getNote().isEmpty() && !request.getNote().trim().isEmpty()) note.setText(request.getNote());
+		else noteLayout.setVisibility(View.GONE);
 		for (int i = 0; i < request.getTasks().size(); i++) {
 			View v = LayoutInflater.from(getContext()).inflate(R.layout.item_task, taskListLayout, false);
 			((TextView) v.findViewById(R.id.item_task_number)).setText(String.format(Locale.getDefault(), "%d", i + 1));
 			((TextView) v.findViewById(R.id.item_task_title)).setText(request.getTasks().get(i).getName());
-			((TextView) v.findViewById(R.id.item_task_body)).setText(request.getTasks().get(i).getBody());
+			((TextView) v.findViewById(R.id.item_task_body)).setText(request.getTasks().get(i).getBody(activity));
 			if (request.getTasks().get(i).getAddress() != null) ((TextView) v.findViewById(R.id.item_task_address)).setText(request.getTasks().get(i).getAddress().getName());
+			else v.findViewById(R.id.item_task_address).setVisibility(View.GONE);
 			((TextView) v.findViewById(R.id.item_task_service)).setText(request.getTasks().get(i).getService().getType());
 			if (request.getTasks().get(i).getPictures().size() == 0) {
 				v.findViewById(R.id.item_task_pictures_layout).setVisibility(View.GONE);

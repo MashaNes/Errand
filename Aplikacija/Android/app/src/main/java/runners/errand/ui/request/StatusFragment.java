@@ -445,22 +445,24 @@ public class StatusFragment extends Fragment {
 			} else {
 				// Offer sent, not accepted
 				Log.e("REQUEST", "2-4");
-				edit_label.setVisibility(View.VISIBLE);
-				edit.setVisibility(View.VISIBLE);
-				StringBuilder s = new StringBuilder();
-				if (offer.getEdit().getTime() != null) {
-					s.append(getString(R.string.newrequest_info_time)).append(": ").append(new SimpleDateFormat("dd.MM.yyyy HH:mm", Locale.getDefault()).format(offer.getEdit().getTime())).append("\n");
-				}
-				for (Task task : offer.getEdit().getTasks()) {
-					for (Task task1 : request.getTasks()) {
-						if (task.getId() == task1.getId()) {
-							s.append(task1.getName()).append(": ").append(task.getAddress().getName()).append("\n");
-							break;
+				if (!offer.getEdit().getTasks().isEmpty() || offer.getEdit().getTime() != null) {
+					edit_label.setVisibility(View.VISIBLE);
+					edit.setVisibility(View.VISIBLE);
+					StringBuilder s = new StringBuilder();
+					if (offer.getEdit().getTime() != null) {
+						s.append(getString(R.string.newrequest_info_time)).append(": ").append(new SimpleDateFormat("dd.MM.yyyy HH:mm", Locale.getDefault()).format(offer.getEdit().getTime())).append("\n");
+					}
+					for (Task task : offer.getEdit().getTasks()) {
+						for (Task task1 : request.getTasks()) {
+							if (task.getId() == task1.getId()) {
+								s.append(task1.getName()).append(": ").append(task.getAddress().getName()).append("\n");
+								break;
+							}
 						}
 					}
+					if (s.length() > 0) s.delete(s.length() - 1, s.length());
+					edit.setText(s);
 				}
-				s.delete(s.length() - 1, s.length());
-				edit.setText(s);
 			}
 		}
 	}

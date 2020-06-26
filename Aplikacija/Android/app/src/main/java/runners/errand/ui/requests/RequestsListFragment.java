@@ -126,16 +126,26 @@ public class RequestsListFragment extends Fragment {
 		requests.clear();
 		for (Request r : activity.getUser().getRequests()) {
 			if (index == 0 && r.getStatus() <= Request.STATUS_ACTIVE)
-				requests.add(r);
+				add(r);
 			if (index == 2 && r.getStatus() > Request.STATUS_ACTIVE)
-				requests.add(r);
+				add(r);
 		}
 		for (Request r : activity.getUser().getRunning()) {
 			if (index == 1 && r.getStatus() <= Request.STATUS_ACTIVE)
-				requests.add(r);
+				add(r);
 			if (index == 2 && r.getStatus() > Request.STATUS_ACTIVE)
-				requests.add(r);
+				add(r);
 		}
+	}
+
+	private void add(Request r) {
+		for (int i = 0; i < requests.size(); i++) {
+			if (requests.get(i).getTime().getTime() < r.getTime().getTime()) {
+				requests.add(i, r);
+				return;
+			}
+		}
+		requests.add(r);
 	}
 
     void dataSetChanged() {

@@ -50,7 +50,7 @@ public class FilterFragment extends Fragment {
 		root.findViewById(R.id.find_requests_filter_service_add).setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				ListSelectDialog serviceSelectDialog = new ListSelectDialog(activity, new ServiceSelectItemAdapter(activity, activity.getServices()), activity.getString(R.string.newrequest_task_service_default) + ":") {
+				ListSelectDialog serviceSelectDialog = new ListSelectDialog(activity, new ServiceSelectItemAdapter(activity, activity.getServices()), activity.getString(R.string.newrequest_task_service_default)) {
 					@Override
 					public void itemSelected(Object o, int index, int size) {
 						super.itemSelected(o, index, size);

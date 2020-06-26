@@ -15,7 +15,10 @@
 			android:id="@+id/dialog_select_title"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
+			android:gravity="center_horizontal"
+			android:paddingTop="8dp"
 			android:textColor="@color/colorBlack"
+			android:textStyle="bold"
 			android:textSize="@dimen/text_big"
 			android:layout_weight="1"/>
 

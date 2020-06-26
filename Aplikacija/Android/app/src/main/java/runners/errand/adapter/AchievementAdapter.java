@@ -53,7 +53,7 @@ public class AchievementAdapter extends BaseAdapter {
 		Achievement achievement = achievements.get(position);
 
 		((TextView) view.findViewById(R.id.achievement_name)).setText(achievement.getName());
-		((TextView) view.findViewById(R.id.achievement_description)).setText(achievement.getDescription());
+		((TextView) view.findViewById(R.id.achievement_description)).setText(achievement.getDescriptionFormatted());
 
 		if (achievement.getIcon_bmp() != null) {
 			((ImageView) view.findViewById(R.id.achievement_image)).setImageBitmap(achievement.getIcon_bmp());

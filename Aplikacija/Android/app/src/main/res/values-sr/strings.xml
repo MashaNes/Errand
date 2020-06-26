@@ -254,4 +254,6 @@
 	<string name="edit_reject_desc">Da li stvarno želite da odbijete ovu izmenu?</string>
 	<string name="edit_reject">Odbij izmenu</string>
 	<string name="select_task">Za koji posao</string>
+	<string name="picture_required">Slika zahtevana</string>
+	<string name="create_edit_request">Zahtev za izmenu</string>
 </resources>

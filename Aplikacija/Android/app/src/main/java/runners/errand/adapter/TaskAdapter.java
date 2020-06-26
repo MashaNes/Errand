@@ -78,6 +78,16 @@ public class TaskAdapter extends BaseAdapter {
 
 		((TextView) view.findViewById(R.id.item_task_number)).setText(String.format(Locale.getDefault(), "%d", position + 1));
 
+		TextView picture_required = view.findViewById(R.id.item_task_picture_required);
+		picture_required.setText(task.isPictureRequired() ? activity.getString(R.string.generic_enabled) : activity.getString(R.string.generic_disabled));
+		picture_required.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				task.setPictureRequired(!task.isPictureRequired());
+				((TextView) v).setText(task.isPictureRequired() ? activity.getString(R.string.generic_enabled) : activity.getString(R.string.generic_disabled));
+			}
+		});
+
 		EditText title =  view.findViewById(R.id.item_task_title);
 		title.addTextChangedListener(new TextWatcher() {
 			@Override
@@ -145,7 +155,7 @@ public class TaskAdapter extends BaseAdapter {
 		view.findViewById(R.id.item_task_address_layout).setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				ListSelectDialog addressSelectDialog = new ListSelectDialog(activity, new AddressSelectItemAdapter(activity, activity.getUser().getAddresses()), activity.getString(R.string.newrequest_task_address_default) + ":") {
+				ListSelectDialog addressSelectDialog = new ListSelectDialog(activity, new AddressSelectItemAdapter(activity, activity.getUser().getAddresses()), activity.getString(R.string.newrequest_task_address_default)) {
 					@Override
 					public void itemSelected(Object o, int index, int size) {
 						super.itemSelected(o, index, size);
@@ -200,7 +210,7 @@ public class TaskAdapter extends BaseAdapter {
 		view.findViewById(R.id.item_task_service_layout).setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				ListSelectDialog serviceSelectDialog = new ListSelectDialog(activity, new ServiceSelectItemAdapter(activity, activity.getServices()), activity.getString(R.string.newrequest_task_service_default) + ":") {
+				ListSelectDialog serviceSelectDialog = new ListSelectDialog(activity, new ServiceSelectItemAdapter(activity, activity.getServices()), activity.getString(R.string.newrequest_task_service_default)) {
 					@Override
 					public void itemSelected(Object o, int index, int size) {
 						super.itemSelected(o, index, size);
@@ -222,6 +232,7 @@ public class TaskAdapter extends BaseAdapter {
 			}
 			if (s.length() > 0) s.deleteCharAt(s.length() - 1);
 			checklist.setText(s.toString());
+			picture_required.setText(task.isPictureRequired() ? activity.getString(R.string.generic_enabled) : activity.getString(R.string.generic_disabled));
 			needsUpdate.set(position, false);
 			address.setText(task.getAddress() != null ? task.getAddress().getName() : activity.getString(R.string.newrequest_task_address_default));
 			service.setText(task.getService() != null ? task.getService().getType() : activity.getString(R.string.newrequest_task_service_default));

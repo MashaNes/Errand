@@ -12,8 +12,11 @@
 		android:id="@+id/dialog_edit_benefits_name"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:textSize="@dimen/text_medium"
+		android:gravity="center_horizontal"
+		android:paddingTop="8dp"
 		android:textColor="@color/colorBlack"
+		android:textStyle="bold"
+		android:textSize="@dimen/text_big"
 		android:text="@string/settings_runner_benefits_auto"/>
 
 	<LinearLayout

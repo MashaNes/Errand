@@ -60,7 +60,13 @@ public class RequestAdapter extends BaseAdapter {
 
         ((TextView) view.findViewById(R.id.item_request_name)).setText(request.getName());
         ((TextView) view.findViewById(R.id.item_request_date)).setText(new SimpleDateFormat("HH:mm dd.MM.yyyy", Locale.getDefault()).format(request.getTime()));
-        ((TextView) view.findViewById(R.id.item_request_note)).setText(request.getNote());;
+        StringBuilder note = new StringBuilder();
+        note.append(request.getTimeString());
+        for (Task task : request.getTasks()) {
+            note.append("\n");
+            note.append(task.getName());
+        }
+        ((TextView) view.findViewById(R.id.item_request_note)).setText(note.toString());
 
         ImageView image = view.findViewById(R.id.item_request_status);
 

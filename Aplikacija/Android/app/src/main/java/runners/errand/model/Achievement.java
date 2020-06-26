@@ -5,8 +5,10 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.Locale;
 
 import runners.errand.utils.ImageUtils;
@@ -15,6 +17,7 @@ public class Achievement {
     private int id, level, max_level;
     private String name_en, description_en, name_sr, description_sr, icon_b64;
     private Bitmap icon_bmp;
+    private ArrayList<Condition> conditions = new ArrayList<>();
 
     Achievement(@NonNull JSONObject o) {
         this.id = o.optInt("id");
@@ -34,6 +37,14 @@ public class Achievement {
                 icon_bmp = ImageUtils.decode(icon_b64);
             }
             this.max_level = achievement.optInt("levels");
+            JSONArray conditions = achievement.optJSONArray("conditions");
+            if (conditions != null) {
+                Log.e("CON", conditions.toString());
+                for (int i = 0; i < conditions.length(); i++) {
+                    JSONObject condition = conditions.optJSONObject(i);
+                    if (condition != null) this.conditions.add(new Condition(condition));
+                }
+            }
         }
         this.level = o.optInt("level");
     }
@@ -123,6 +134,34 @@ public class Achievement {
             return description_sr;
         } else {
             return description_en;
+        }
+    }
+
+    public String getDescriptionFormatted() {
+        String desc = getDescription();
+        for (Condition condition : conditions) {
+            desc = desc.replace("{" + condition.id + "}", "" + condition.getNumber(level));
+        }
+        return desc;
+    }
+
+    static class Condition {
+        int id;
+        ArrayList<Integer> numbers = new ArrayList<>();
+
+        Condition(@NonNull JSONObject o) {
+            this.id = o.optInt("condition");
+            JSONArray numbers = o.optJSONArray("condition_numbers");
+            if (numbers != null) {
+                for (int i = 0; i < numbers.length(); i++) {
+                    JSONObject number = numbers.optJSONObject(i);
+                    if (number != null) this.numbers.add(number.optInt("condition_number"));
+                }
+            }
+        }
+
+        int getNumber(int index) {
+            return numbers.get(index);
         }
     }
 }

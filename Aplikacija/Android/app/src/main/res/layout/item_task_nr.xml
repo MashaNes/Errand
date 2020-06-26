@@ -184,6 +184,41 @@
 		</androidx.constraintlayout.widget.ConstraintLayout>
 
 		<LinearLayout
+			android:layout_width="match_parent"
+			android:layout_height="28dp"
+			android:layout_marginHorizontal="8dp"
+			android:layout_marginTop="12dp"
+			android:orientation="horizontal"
+			android:clickable="true"
+			android:background="@drawable/edit_text_login"
+			tools:ignore="KeyboardInaccessibleWidget">
+
+			<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				style="@style/TextView.Service"
+				android:clickable="false"
+				android:focusable="false"
+				android:layout_marginStart="8dp"
+				android:layout_marginLeft="8dp"
+				android:text="@string/picture_required"/>
+
+			<TextView
+				android:id="@+id/item_task_picture_required"
+				android:hint="@string/newrequest_offers_broadcast_hint"
+				android:layout_width="0dp"
+				android:layout_height="match_parent"
+				android:layout_weight="1"
+				android:focusable="false"
+				android:ellipsize="end"
+				android:text="@string/generic_disabled"
+				style="@style/EditText.Login"
+				android:paddingStart="8dp"
+				android:paddingEnd="8dp"
+				android:importantForAutofill="no" />
+		</LinearLayout>
+
+		<LinearLayout
 			android:id="@+id/item_task_address_layout"
 			android:layout_width="match_parent"
 			android:layout_height="28dp"

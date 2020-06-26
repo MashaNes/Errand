@@ -124,7 +124,7 @@ public class NR1Fragment extends Fragment {
 		((View) destination.getParent()).setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				ListSelectDialog addressSelectDialog = new ListSelectDialog(activity, new AddressSelectItemAdapter(activity, activity.getUser().getAddresses()), activity.getString(R.string.newrequest_task_address_default) + ":") {
+				ListSelectDialog addressSelectDialog = new ListSelectDialog(activity, new AddressSelectItemAdapter(activity, activity.getUser().getAddresses()), activity.getString(R.string.newrequest_task_address_default)) {
 					@Override
 					public void itemSelected(Object o, int index, int size) {
 						super.itemSelected(o, index, size);

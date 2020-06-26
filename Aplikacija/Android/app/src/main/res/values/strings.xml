@@ -90,6 +90,7 @@
 	<string name="profile_info_achievement_hint">" Achievements"</string>
 	<string name="no_achievements">There are no achievements available.</string>
 	<string name="no_ratings">You don\'t have any ratings yet.</string>
+	<string name="picture_required">Picture required</string>
 
 	<string name="request_tab_info">Info</string>
 	<string name="request_tab_map">Map</string>
@@ -136,6 +137,7 @@
 	<string name="edit_cancel">Cancel edit</string>
 	<string name="edit_cancel_desc">Do you really want to cancel this edit request?</string>
 	<string name="select_task">Related task</string>
+	<string name="create_edit_request">Create an edit request</string>
 
 	<string name="newrequest_tab_info">Info</string>
 	<string name="newrequest_tab_tasks">Tasks</string>

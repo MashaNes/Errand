@@ -280,6 +280,8 @@ public class SimpleDialog {
 		final View dialogView = View.inflate(activity,  R.layout.dialog_edit_working_hours, null);
 		final AlertDialog alertDialog = new AlertDialog.Builder(activity).create();
 
+		((TextView) dialogView.findViewById(R.id.dialog_edit_working_hours)).setText(activity.getResources().getStringArray(R.array.settings_runner_working_hours_days)[hours.getDay()]);
+
 		final NumberPicker fromHours = dialogView.findViewById(R.id.dialog_time_from_hours);
 		fromHours.setMinValue(0);
 		fromHours.setMaxValue(23);
@@ -342,19 +344,12 @@ public class SimpleDialog {
 		String name = benefit.getUser().getFirstName() + " " + benefit.getUser().getLastName();
 		((TextView) dialogView.findViewById(R.id.dialog_edit_benefits_name)).setText(name);
 
-		String s;
-		double d = benefit.getDiscount();
-		if (d == (long) d) {
-			s = String.format(Locale.getDefault(), "%d", (long) d);
-		} else {
-			s = String.format(Locale.getDefault(), "%s", d);
-		}
-		((EditText) dialogView.findViewById(R.id.dialog_edit_benefits_amount)).setText(s);
+		((EditText) dialogView.findViewById(R.id.dialog_edit_benefits_amount)).setText(String.format(Locale.getDefault(), "%.0f", benefit.getDiscount() * 100));
 
 		dialogView.findViewById(R.id.dialog_button_positive).setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				benefit.setDiscount(Double.parseDouble(((EditText) dialogView.findViewById(R.id.dialog_edit_benefits_amount)).getText().toString()));
+				benefit.setDiscount(Double.parseDouble(((EditText) dialogView.findViewById(R.id.dialog_edit_benefits_amount)).getText().toString()) / 100);
 
 				runnable.run();
 
@@ -378,20 +373,13 @@ public class SimpleDialog {
 		final AlertDialog alertDialog = new AlertDialog.Builder(activity).create();
 
 		((EditText) dialogView.findViewById(R.id.dialog_edit_benefits_req_amount)).setText(String.format(Locale.getDefault(), "%d", autoBenefit.req));
-		String s;
-		float d = autoBenefit.disc;
-		if (d == (long) d) {
-			s = String.format(Locale.getDefault(), "%d", (long) d);
-		} else {
-			s = String.format(Locale.getDefault(), "%s", d);
-		}
-		((EditText) dialogView.findViewById(R.id.dialog_edit_benefits_amount)).setText(s);
+		((EditText) dialogView.findViewById(R.id.dialog_edit_benefits_amount)).setText(String.format(Locale.getDefault(), "%.0f", autoBenefit.disc * 100));
 
 		dialogView.findViewById(R.id.dialog_button_positive).setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				autoBenefit.req = Integer.parseInt(((EditText) dialogView.findViewById(R.id.dialog_edit_benefits_req_amount)).getText().toString());
-				autoBenefit.disc = Float.parseFloat(((EditText) dialogView.findViewById(R.id.dialog_edit_benefits_amount)).getText().toString());
+				autoBenefit.disc = Float.parseFloat(((EditText) dialogView.findViewById(R.id.dialog_edit_benefits_amount)).getText().toString()) / 100;
 				runnable.run();
 				alertDialog.dismiss();
 			}

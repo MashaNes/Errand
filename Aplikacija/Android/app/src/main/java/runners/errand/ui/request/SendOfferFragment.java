@@ -85,6 +85,13 @@ public class SendOfferFragment extends Fragment {
 
 		// Offer
 		paymentAmount = root.findViewById(R.id.dialog_edit_service_pref_payment_amount);
+		for (ServicePrefs servicePrefs : activity.getUser().getServicePrefs()) {
+			if (servicePrefs.getService() == request.getTasks().get(0).getService().getId()) {
+				paymentAmount.setText(String.format(Locale.getDefault(), "%.0f", servicePrefs.getPaymentAmount()));
+				paymentType = servicePrefs.getPaymentType();
+				break;
+			}
+		}
 		((EditText) root.findViewById(R.id.dialog_edit_service_pref_payment_type)).setText(ServicePrefs.getPaymentTypeString(activity, paymentType));
 		root.findViewById(R.id.dialog_edit_service_pref_payment_type).setOnClickListener(new View.OnClickListener() {
 			@Override

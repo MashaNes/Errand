@@ -55,7 +55,7 @@
 			style="@style/EditText.Login"
 			android:paddingStart="8dp"
 			android:paddingEnd="8dp"
-			android:text="600"
+			android:text="10000"
 			android:importantForAutofill="no"
 			tools:ignore="NestedWeights" />
 	</LinearLayout>
@@ -107,8 +107,8 @@
 		android:gravity="center_vertical"
 		android:text="@string/find_requests_service_filter_add"
 		android:textColor="@color/colorBlack"
-		android:drawableEnd="@drawable/ic_add"
-		android:drawableRight="@drawable/ic_add" />
+		android:drawableLeft="@drawable/ic_add"
+		android:drawableStart="@drawable/ic_add" />
 
 	<ListView
 		android:id="@+id/find_requests_filter_service_list"
