@@ -51,9 +51,12 @@
         :per-page="10" align="center" class="pag-top"  @input="getAnotherPortion"
       >
       </b-pagination> -->
-      <div class="req-wrap" v-if="requests">
+      <div class="req-wrap" v-if="requests && requests.results && requests.results.length > 0">
         <RateOrReportBox v-for="request in requests.results" :key="request.id" :request="request" :user="user" @setMessages="setMessages" />
       </div>
+      <span class="no-results" v-else>
+        <i v-text="noResultsText"></i>
+      </span>
       <!-- <b-pagination 
         v-if="requests" v-model="currentPage" 
         :total-rows="requests == null ? 1 : requests.count" 
@@ -138,6 +141,12 @@ export default {
         else
           return this.$store.state.unratedRequestsCreated
       }
+    },
+    noResultsText() {
+      if(this.isSerbian) 
+        return 'Nema rezultata pretrage. (Pokušajte da promenite vrednost polja "Prikaži i neocenjene korisnike", ili da promenite tab).'
+      else
+        return 'The search gave no results. (Try changing the value of the "Show rated requests too" checkbox, or chaning the current tab).'
     },
     success() {
       return this.$store.state.success
@@ -468,5 +477,16 @@ export default {
     .side-info {
       top: 85px;
     }
+  }
+
+  .no-results {
+    font-weight: bold;
+    font-size: 18px;
+    word-break: break-word;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    margin-top: 20px;
   }
 </style>

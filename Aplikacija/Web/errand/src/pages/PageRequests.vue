@@ -143,6 +143,9 @@
             },
             newSuccessfullyFinishedRequest() {
                 return this.$store.state.newSuccessfullyFinishedRequest
+            },
+            newEditAccepted() {
+                return this.$store.state.newEditAccepted
             }
         },
         data()
@@ -186,6 +189,16 @@
                         unrated_done_by: null
                     }
                     this.$store.dispatch("fillRequests", {filters: filters, objectToFill: { object:"overAuthRequests", page: 1, dataLoaded: true }})
+                }
+            },
+            // eslint-disable-next-line no-unused-vars
+            newEditAccepted(newVal, oldVal) {
+                if(this.tab == 'Running' && this.$store.state.runnerAuthRequests) {
+                    let ind = -1
+                    ind = this.$store.state.runnerAuthRequests.results.findIndex(req => req.id == newVal.id)
+                    if(ind != -1) {
+                        this.$store.state.runnerAuthRequests.results.splice(ind, 1, newVal)
+                    }
                 }
             }
         },
@@ -277,12 +290,15 @@
                             this.$store.state.notificationNumber -= 1
                             ret.setSeen = true
                             ret.setOpened = true
+                            return ret
                         }
                 if(currentRoute == "/notifications") {
                     this.$store.state.notificationNumber -= 1
                     ret.setSeen = true
                     ret.setOpened = false
+                    return ret
                 }
+                return null
             }
         },
         created()

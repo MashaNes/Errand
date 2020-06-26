@@ -182,12 +182,15 @@ export default {
                 this.$store.state.notificationNumber -= 1
                 ret.setSeen = true
                 ret.setOpened = true
+                return ret
               }
       if(currentRoute == "/notifications") {
         this.$store.state.notificationNumber -= 1
         ret.setSeen = true
         ret.setOpened = false
+        return ret
       }
+      return null
     }
   },
   created()

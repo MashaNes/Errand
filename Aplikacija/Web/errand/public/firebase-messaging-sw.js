@@ -18,9 +18,9 @@ firebase.initializeApp(config);
 
 let messaging = firebase.messaging();
 messaging.setBackgroundMessageHandler(function(payload) {
-    const title = "New notification / Nova notifikacija"
+    const title = "Nova notifikacija\nNew notification"
     const options = {
-        body: payload
+        body: "Idite na stranicu aplikacije i osvežite je\nGo to the application page and refresh it"
     }
     return self.registration.showNotification(title, options)
 })

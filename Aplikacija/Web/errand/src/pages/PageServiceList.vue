@@ -37,7 +37,7 @@ export default {
         display:flex;
         flex-direction: row;
         justify-content: center;
-        align-items: center;
+        align-items: flex-start;
         width: 100%;
     }
 
@@ -59,6 +59,7 @@ export default {
         {
             flex-direction: column;
             align-content: center;
+            align-items: center;
         }
 
         .nova-stavka

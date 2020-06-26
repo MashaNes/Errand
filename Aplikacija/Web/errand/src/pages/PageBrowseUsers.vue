@@ -11,7 +11,7 @@
               type="number" 
               :disabled="showUnratedChk"
               min="1" 
-              max="4"
+              max="5"
               @blur="resetRatingLower"
             >
             <div class="filter-rating-wrap">
@@ -21,7 +21,7 @@
                 :class="{'filter-rating':true, 'ne-valja':isFilterHigherInvalid}" 
                 :disabled="showUnratedChk"
                 type="number" 
-                min="2" 
+                min="1" 
                 max="5"
                 @blur="resetRatingHigher"
               >
@@ -41,7 +41,7 @@
           >
         </div>
         <div class="btn-div">
-          <b-button class="button is-primary" @click="searchUsers">
+          <b-button class="button is-primary" @click="searchUsers" :disabled="isFilterLowerInvalid || isFilterHigherInvalid || !filterRatingLowerInput || !filterRatingHigherInput || filterRatingLowerInput > filterRatingHigherInput">
             <img class="btn-img" src="@/assets/search.svg">
           </b-button>
         </div>
@@ -58,9 +58,9 @@
           v-text="isSerbian ? 'Vrednost \'do\' mora biti između 2 i 5' : 'The \'to\' value must be between 2 and 5'"
         ></span>
         <span 
-          v-if="!isFilterLowerInvalid && !isFilterHigherInvalid && filterRatingHigherInput && filterRatingLowerInput && filterRatingLowerInput >= filterRatingHigherInput"
+          v-if="!isFilterLowerInvalid && !isFilterHigherInvalid && filterRatingHigherInput && filterRatingLowerInput && filterRatingLowerInput > filterRatingHigherInput"
           class="filter-invalid-span" 
-          v-text="isSerbian ? 'Vrednost \'od\' mora biti manja od vrednosti \'do\'' : 'The \'to\' value must be lower than the \'from\' value'"
+          v-text="isSerbian ? 'Vrednost \'od\' ne sme biti veća od vrednosti \'do\'' : 'The \'from\' value must not be higher than the \'to\' value'"
         ></span>
       </div>
     </div>
@@ -166,8 +166,8 @@ export default {
     }
   },
   validations: {
-    filterRatingLowerInput: {between: between(1, 4)},
-    filterRatingHigherInput: {between: between(2, 5)}
+    filterRatingLowerInput: {between: between(1, 5)},
+    filterRatingHigherInput: {between: between(1, 5)}
   },
   computed: {
     usersPortion() {
@@ -232,11 +232,11 @@ export default {
       }
     },
     resetRatingLower() {
-      if(this.filterRatingLowerInput > 4 || this.filterRatingLowerInput < 1 || !this.filterRatingLowerInput || this.filterRatingHigherInput <= this.filterRatingLowerInput)
+      if(this.filterRatingLowerInput > 5 || this.filterRatingLowerInput < 1 || !this.filterRatingLowerInput || this.filterRatingHigherInput < this.filterRatingLowerInput)
         this.filterRatingLowerInput = 1
     },
     resetRatingHigher() {
-      if(this.filterRatingHigherInput > 4 || this.filterRatingHigherInput < 1 || !this.filterRatingHigherInput || this.filterRatingHigherInput <= this.filterRatingLowerInput)
+      if(this.filterRatingHigherInput > 5 || this.filterRatingHigherInput < 1 || !this.filterRatingHigherInput || this.filterRatingHigherInput < this.filterRatingLowerInput)
         this.filterRatingHigherInput = 5
     },
     searchUsers() {

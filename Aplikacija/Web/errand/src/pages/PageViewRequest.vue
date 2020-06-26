@@ -1,7 +1,7 @@
 <template>
   <Spinner v-if="!computedRequest || !this.$store.state.isRequestInfoLoaded" />
   <div class="wrapper" v-else>
-    <b-card style="min-width: 240px;">
+    <b-card style="min-width: 240px;" :class="cardClass">
       <b-card-title class="main-title">
         <div class="title-content">
           <div class="basic-info">
@@ -11,15 +11,6 @@
                 <img v-if="(finishedOtherUser || finishedThisUser) && computedRequest.status == 1" 
                     src="@/assets/exclamation.png" class="important-img"
                     v-b-popover.hover.bottom='popoverText'/>
-                <!-- <img v-if="!isSerbian && finishedOtherUser && !isRunner && computedRequest.status == 1"
-                    src="@/assets/exclamation.png" class="important-img"
-                    v-b-popover.hover.bottom='popoverText'/>
-                <img v-if="isSerbian && finishedThisUser && !isRunner && computedRequest.status == 1" 
-                    src="@/assets/exclamation.png" class="important-img"
-                    v-b-popover.hover.bottom='popoverText'/>
-                <img v-if="!isSerbian && finishedThisUser && !isRunner && computedRequest.status == 1"
-                    src="@/assets/exclamation.png" class="important-img"
-                    v-b-popover.hover.bottom='popoverText'/> -->
                 <b-dropdown id="dropdown-1" variant="info" right class="drop-down">
                   <template v-slot:button-content>
                     <span v-text="isSerbian ? 'Akcije' : 'Actions'"></span>
@@ -35,8 +26,6 @@
                   <b-dropdown-item 
                     v-if="computedRequest.status == 1 && !isRunner && !computedRequest.finished_created_by" 
                     @click="purpose = 'finish'; showModalAreYouSure = true;"
-                    v-b-popover.hover.bottom='isSerbian ? "Kliknite da biste okončali zahtev i označili da je bio uspešan." 
-                                                        : "Click to end the request and mark it as successful."'
                   >
                     <img src="@/assets/checkmark.png" class="slika-dugme check" />
                     <span v-text="isSerbian ? 'Uspešno okončaj zahtev' : 'Successfully end request'">
@@ -48,8 +37,6 @@
                   <b-dropdown-item 
                     v-if="computedRequest.status == 1 && !isRunner && !computedRequest.finished_created_by"
                     @click="purpose = 'cancel'; showModalAreYouSure = true;"
-                    v-b-popover.hover.bottom='isSerbian ? "Kliknite da biste prekinuli zahtev i označili da je bio neuspešan." 
-                                                        : "Click to end the request and mark it as successful."' 
                   >
                     <img src="@/assets/shutdown.svg" class="slika-dugme shutdown" />
                     <span v-text="isSerbian ? 'Prekini zahtev' : 'Cancel request'"></span>
@@ -100,6 +87,11 @@
                 </b-dropdown>
               </div>
             </div>
+            <div v-if="computedRequest.status == 2 && computedRequest.price">
+              <img src="@/assets/money.svg" class="title-pic">
+              <span v-text="isSerbian ? 'Cena: ' : 'Price: '"></span>
+              <span v-text="computedRequest.price + 'din'"></span>
+            </div>
             <div class="clock pic-and-span">
               <img src="@/assets/clock.svg" class="title-pic">
               <span v-if="!isSerbian">{{computedRequest.time | showTime}}</span>
@@ -114,9 +106,9 @@
             </div>
             <div class="note">
               <b-card-title class="side-info-title">
-                  <span style="margin-right:5px; padding-top: 3px;" v-text="isSerbian ? 'Napomena: ' : 'Note: '"></span>
+                  <span class="note-title" v-text="isSerbian ? 'Napomena: ' : 'Note: '"></span>
               </b-card-title>
-              <b-form-textarea
+              <!-- <b-form-textarea
                 :class="[!computedRequest.note ? 'no-info-txt' : '', 'txt-area']"
                 rows="3"
                 id="textarea"
@@ -124,7 +116,9 @@
                 :readonly="true"
                 v-model="computedNote"
               >
-              </b-form-textarea>
+              </b-form-textarea> -->
+              <div :class="[!computedRequest.note ? 'no-info-txt' : '', 'txt-area']" v-text="computedNote">
+              </div>
             </div>
             <b-button v-if="showView != 'Details'" @click="showDetails">
               <span v-text="isSerbian ? 'Detalji zahteva' : 'Request details'"></span>
@@ -136,7 +130,7 @@
         <b-card-title v-text="isSerbian ? 'Ponude' : 'Offers'" class="no-details-title"></b-card-title>
         <OfferBox 
           v-for="(offer, ind) in filteredOffers" :key="offer.id" :offer="offer" 
-          :oldTasklist="(offer.edit && offer.edit.tasks.length > 0) ? computedRequest.tasklist : null"
+          :oldTasklist="(offer.edit && offer.edit.tasks.length > 0) ? filteredInfo.tasklist : null"
           :oldDateAndTime="(offer.edit && offer.edit.time) ? computedRequest.time : null"
           :myIndex="ind" :request="computedRequest" @acceptOffer="acceptOffer" @rejectOffer="rejectOffer"
         />
@@ -145,7 +139,7 @@
         <div v-text="isSerbian ? 'Zahtevi za izmenama' : 'Edit requests'" class="no-details-title"></div>
         <EditBox
           v-for="(edit, ind) in filteredEdits" :key="edit.id" :edit="edit" 
-          :oldTasklist="edit.request_edit.tasks.length > 0 ? computedRequest.tasklist : null"
+          :oldTasklist="edit.request_edit.tasks.length > 0 ? filteredInfo.tasklist : null"
           :oldDateAndTime="edit.request_edit.time ? computedRequest.time : null"
           :myIndex="ind" :request="computedRequest" @acceptEdit="acceptEdit" @rejectEdit="rejectEdit"
         />
@@ -345,6 +339,24 @@ export default {
     }
   },
   computed: {
+    cardClass() {
+      let retValue = ""
+      switch(this.computedRequest.status) {
+        case 0:
+          retValue = "sivo"
+          break
+        case 1: 
+          retValue = "zuto"
+          break
+        case 2: 
+          retValue = "zeleno"
+          break
+        case 3: 
+          retValue = "crveno"
+          break
+      }
+      return retValue
+    },
     filteredInfo() {
       return this.$store.state.requestFilteredInfo
     },
@@ -362,6 +374,9 @@ export default {
     },
     newSuccessfullyFinishedRequest() {
       return this.$store.state.newSuccessfullyFinishedRequest
+    },
+    newEditAccepted() {
+      return this.$store.state.newEditAccepted
     },
     computedNote() {
       if(!this.computedRequest.note || this.computedRequest.note == "")
@@ -1006,8 +1021,21 @@ export default {
           this.computedRequest.finished_created_by = true
         if(this.finishedThisUser) {
           this.computedRequest.status = 2
+          this.computedRequest.price = newVal.price
         }
           this.showView = 'Details'
+      }
+    },
+    // eslint-disable-next-line no-unused-vars
+    newEditAccepted(newVal, oldVal) {
+      if(newVal.id == this.$route.params.id && this.isRunner) {
+        this.computedRequest = newVal
+        newVal.tasklist.forEach(newTask => {
+          const oldTask = this.filteredInfo.tasklist.find(task => task.id == newTask.id)
+          if(oldTask)
+            oldTask.address = newTask.address
+        })
+        this.setMapMarkers()
       }
     }
   }
@@ -1053,6 +1081,7 @@ export default {
 
   .note {
     display: flex;
+    flex-direction: column;
     align-items: flex-start;
     margin-bottom: 5px;
   }
@@ -1061,6 +1090,14 @@ export default {
     background-color: rgb(250, 210, 125);
     font-size: 15px;
     padding-top: 1px;
+    width: fit-content;
+    min-width: 300px;
+    border: 1px solid gray;
+    padding: 10px;
+    overflow-y: scroll;
+    max-height: 80px;
+    word-break: break-word;
+    border-radius: 5px;
   }
 
   .tasks {
@@ -1248,6 +1285,7 @@ export default {
     display: flex;
     flex-direction: column;
     background-color: rgb(250, 210, 125);
+    border-radius: 5px;
   }
 
   .no-info {
@@ -1388,6 +1426,32 @@ export default {
     .destination {
       width: unset;
     }
+  }
+
+  .crveno
+  {
+    background-color: rgb(255, 241, 241);
+  }
+
+  .zeleno
+  {
+    background-color: rgb(217, 250, 217);
+  }
+
+  .zuto
+  {
+    background-color: rgb(255, 255, 213);
+  }
+
+  .sivo
+  {
+    background-color: rgb(239, 239, 239);
+  }
+
+  .note-title {
+    margin-right:5px; 
+    padding-top: 3px; 
+    font-size: 20px
   }
 
 </style>
