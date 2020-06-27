@@ -13,7 +13,8 @@
             </span>
         </b-card-header>
         <b-card-body class="body-goldenrod">
-            <b-card-text>
+            <b-card-text class="telo">
+                <img :src="'data:;base64,' + achievement.icon" height="60" width="60" class="slika" />
                 <span v-if="isSerbian">
                     {{achievement.description_sr}}
                 </span>
@@ -29,11 +30,11 @@
             <span v-else>
                 Level: {{achievement.levels}}
             </span>
-            <span class="image-span">
+            <!--<span class="image-span">
                 <span class="image-background">
                     <img :src="'data:;base64,' + achievement.icon" height="20" width="20" />
                 </span>
-            </span>
+            </span>-->
         </b-card-footer>
     </b-card>
 </template>
@@ -132,6 +133,20 @@ export default {
 
   .body-goldenrod {
     background-color: rgb(216, 166, 41);
+  }
+
+  .telo
+  {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 16px;
+    text-align: center;
+  }
+
+  .slika
+  {
+    margin-bottom:15px;
   }
 
   @media only screen and (max-width:650px)

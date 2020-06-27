@@ -9,7 +9,8 @@
         </span>
       </b-card-header>
       <b-card-body :class="klasa">
-        <b-card-text>
+        <b-card-text  class="telo">
+          <img :src="'data:;base64,' + body.icon" height="60" width="60" class="slika" />
           <span> {{description}} </span>
         </b-card-text>
       </b-card-body>
@@ -20,11 +21,6 @@
         </span>
         <span v-else>
           Level: {{achievement.level}}
-        </span>
-        <span class="image-span">
-          <span class="image-background">
-            <img :src="'data:;base64,' + body.icon" height="20" width="20"/>
-          </span>
         </span>
       </b-card-footer>
     </b-card>
@@ -138,6 +134,20 @@ export default {
       border-radius: 5px;
       padding-bottom:5px;
       height:fit-content;
+  }
+
+  .telo
+  {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 16px;
+    text-align: center;
+  }
+
+  .slika
+  {
+    margin-bottom:15px;
   }
 
   @media only screen and (max-width:650px)
