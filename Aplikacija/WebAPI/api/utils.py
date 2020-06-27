@@ -649,7 +649,7 @@ def send_notification(user, notification, notification_body):
 
 def create_notification(notification_type, type_id, working_with=None, address_ids=None,
                         first_name=None, last_name=None, request=None, rating=None,
-                        achievement_sr=None, achievement_en=None, level=None, price=None,
+                        achievement_sr=None, achievement_en=None, level=0, price=None,
                         achievement_type=None):
     _ww = None
     if working_with:
