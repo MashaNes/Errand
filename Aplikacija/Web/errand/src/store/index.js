@@ -222,6 +222,7 @@ export default new Vuex.Store({
                                 var year = datum.getUTCFullYear()
                                 this.state.messageToShow = day + "." + month + "." + year + "."
                                 this.state.isDataLoaded = true
+                                this.state.showModalBan = {datetime: data.datetime, body_en: data.comment, body_sr:  data.comment}
                             }
                             else
                             {
