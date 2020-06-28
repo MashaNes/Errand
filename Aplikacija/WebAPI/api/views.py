@@ -701,6 +701,18 @@ class BanCreate(generics.ListCreateAPIView):
             user.status = 0
             user.save()
 
+        data = {'id' : None,
+                'notification_type' : 11,
+                'type_id' : None,
+                'working_with' : None,
+                'title_sr' : "Vaš nalog je banovan",
+                'title_en' : "Your account has been banned.",
+                'body_sr' : ban.comment,
+                'body_en' : ban.comment,
+                'datetime' : ban.until
+                }
+        utils.send_notification(banned_user.user, None, data)
+
         return Response({'detail' : 'success'})
 
 

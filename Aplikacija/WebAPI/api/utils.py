@@ -643,8 +643,9 @@ def get_stats():
 def send_notification(user, notification, notification_body):
     if user:
         devices = FCMDevice.objects.filter(user=user.user).all()
-        user.notifications.add(notification)
-        user.save()
+        if notification:
+            user.notifications.add(notification)
+            user.save()
         devices.send_message(data=notification_body)
 
 def create_notification(notification_type, type_id, working_with=None, address_ids=None,
@@ -781,7 +782,7 @@ def create_notification(notification_type, type_id, working_with=None, address_i
                 'body_sr' : f"Nivo koji imate za dostignuće \"{achievement_sr}\" smanjen je na {int(level)} :(",
                 'body_en' : f"The level you have for the achievement \"{achievement_en}\" has been downgraded to {int(level)} :("
             },
-                                {
+            {
                 'id' : None,
                 'notification_type' : 9,
                 'type_id' : type_id,
