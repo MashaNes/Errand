@@ -695,11 +695,6 @@ class BanCreate(generics.ListCreateAPIView):
             ban.save()
             banned_user.ban = ban
             banned_user.save()
-        token, _ = Token.objects.get_or_create(user=user)
-        if token:
-            user.auth_token.delete()
-            user.status = 0
-            user.save()
 
         data = {'id' : None,
                 'notification_type' : 11,

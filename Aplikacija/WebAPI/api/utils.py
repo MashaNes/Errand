@@ -455,7 +455,7 @@ def filter_requests(queryset, data):
                 to_add = False
 
         if to_add and data['done_by']:
-            if (_q.request.working_with and
+            if (_q.request.working_with or
                     _q.request.working_with.id != data['done_by']):
                 to_add = False
             if data['unrated_created_by'] and _q.request.rated_created_by:
@@ -470,7 +470,7 @@ def filter_requests(queryset, data):
                 if data['unrated_done_by'] and not _q.request.rated_working_with:
                     found = True
 
-            if (_q.request.working_with and
+            if (_q.request.working_with or
                     _q.request.working_with.id == data['created_or_done_by']):
                 if not data['unrated_created_by']:
                     found = True
