@@ -975,7 +975,7 @@ class FilterRequestViewSet(viewsets.ModelViewSet):
         }
 
         return Response(custom_response)
-
+.
 # POST search_requests/
 class SearchRequestViewSet(viewsets.ModelViewSet):
     queryset = models.FullRequest.objects.all()
@@ -1088,7 +1088,7 @@ class RequestFinish(generics.UpdateAPIView):
             price = req.request.price
             rate = req.accepted_offer.payment_ammount
             if req.accepted_offer.payment_type == "1":
-                price = (price / 1000) * rate
+                price = price * rate
             elif req.accepted_offer.payment_type == "0":
                 duration = datetime.now(timezone.utc) - req.request.timestamp
                 sec = duration.total_seconds()

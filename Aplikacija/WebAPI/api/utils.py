@@ -17,7 +17,7 @@ def calc_distance(lon1, lat1, lon2, lat2):
     # dist = gmaps.distance_matrix((lon1, lat1), (lon2, lat2))  # BAD!!
     dist = gmaps.distance_matrix((lat1, lon1), (lat2, lon2))    # GOOD!!
     if dist['rows'][0]['elements'][0]['status'] == 'OK':
-        return dist['rows'][0]['elements'][0]['distance']['value']
+        return dist['rows'][0]['elements'][0]['distance']['value'] / 1000
     else:
         return None
 
