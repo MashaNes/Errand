@@ -80,7 +80,7 @@
 	<string name="newrequest_info_note_hint">" Beleška"</string>
 	<string name="newrequest_info_max_distance">Maksimalna distanca</string>
 	<string name="newrequest_info_max_distance_hint">" Maksimalna distanca"</string>
-	<string name="newrequest_info_max_distance_info">Maksimalna distanca (u metrima) potrčka od adresa u ovom zahtevu koji može da ti pošalje ponudu.</string>
+	<string name="newrequest_info_max_distance_info">Maksimalna distanca (u kilometrima) potrčka od adresa u ovom zahtevu koji može da ti pošalje ponudu.</string>
 	<string name="newrequest_info_min_rating">Minimalna ocena</string>
 	<string name="newrequest_info_min_rating_hint">" Minimalna ocena"</string>
 	<string name="newrequest_info_min_rating_info">Minimalna ocena potrčka koji može da ti pošalje ponudu.</string>
@@ -224,7 +224,7 @@
 	<string name="find_requests_service_filter_desc">Ovde možete filtrirati prikazane zahteve po servisima. Ako nemate ni jedan servis dodat u filter, svi zahtevi će biti prikazani bez obzira na njihove servise.</string>
 	<string name="generic_search">Pretraži</string>
 	<string name="generic_rate">Oceni</string>
-	<string name="generic_complete">Završi</string>
+	<string name="generic_complete">Uspešno okončaj</string>
 	<string name="no_offers">Niste dobili ni jednu ponudu.</string>
 	<string name="offer_sent">Ponuda uspešno poslata.</string>
 	<string name="marked_as_finished">je zahtev označio završenim.</string>
@@ -234,7 +234,9 @@
 	<string name="request_cancel_desc">Ne možete poništiti ovu akciju. Da li stvarno želite da prekinete ovaj zahtev? Biće odmah neuspešno završen.</string>
 	<string name="rate_comment">Komentar</string>
 	<string name="payment_type_fixed_plus">Fiksno plus</string>
-	<string name="find_requests_filter_max_dist">Postavljanje maksimalne distance će koristiti vašu trenutnu lokaciju ukoliko ste aktivni ili kućnu adresu ukoliko niste. U slučaju da niste aktivni i nemate postavljenu kućnu adresu, maksimalna distanca će biti ignorisana.</string>
+	<string name="find_requests_filter_max_dist">"Vaš nalog mora biti aktivan da bi pretraživali zahteve.
+
+Maksimalna distanca od vaše trenutne lokacije do adresa zahteva u kilometrima."</string>
 	<string name="request_send_offer_direct_request">Direktno:</string>
 	<string name="newrequest_info_time">Vreme</string>
 	<string name="newrequest_info_date">Datum</string>
@@ -256,4 +258,10 @@
 	<string name="select_task">Za koji posao</string>
 	<string name="picture_required">Slika zahtevana</string>
 	<string name="create_edit_request">Zahtev za izmenu</string>
+	<string name="newrequest_offers_no_direct_users">Nema dostupnih korisnika.</string>
+	<string name="chooser_email">Pošalji e-mejl</string>
+	<string name="error_required_field">Morate da popunite {1} da bi nastavili sa ovom akcijom.</string>
+	<string name="error_broadcast_or_direct_required">Vaš zahtev mora ili biti \"Broadcast\" ili imati jednog izabranog korisnika za direktno slanje zahteva.</string>
+	<string name="login_pass_r">Ponovi šifru</string>
+	<string name="error_repeat_pass">Šifre se ne poklapaju.</string>
 </resources>

@@ -56,6 +56,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 	}
 
 	void loadData() {
+		if (map == null) return;
 		map.clear();
 
 		// Marker icon

@@ -136,6 +136,16 @@
 			android:importantForAutofill="no" />
 	</LinearLayout>
 
+	<TextView
+		android:visibility="gone"
+		android:id="@+id/newrequest_offers_no_direct_users"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:padding="16dp"
+		android:gravity="center_horizontal"
+		android:textSize="16sp"
+		android:text="@string/newrequest_offers_no_direct_users"/>
+
 	<ListView
 		android:id="@+id/newrequest_offers_direct_list"
 		android:layout_height="match_parent"

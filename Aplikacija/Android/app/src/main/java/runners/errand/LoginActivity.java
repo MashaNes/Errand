@@ -10,6 +10,7 @@ import android.graphics.PorterDuffColorFilter;
 import android.os.Bundle;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.AnimationUtils;
 import android.widget.EditText;
@@ -18,6 +19,10 @@ import android.widget.ProgressBar;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Locale;
 
 import runners.errand.model.User;
 import runners.errand.utils.Static;
@@ -28,10 +33,10 @@ import runners.errand.utils.net.NetRequest;
 import runners.errand.utils.net.NetResult;
 
 public class LoginActivity extends AppCompatActivity {
-
 	private boolean passShown = false;
 	public boolean active = false;
 	private Activity activity;
+	private EditText email, first_name, last_name, pass, pass_r;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +48,12 @@ public class LoginActivity extends AppCompatActivity {
 		final View icon = findViewById(R.id.login_app_icon);
 		icon.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.slide_in));
 		icon.setVisibility(View.VISIBLE);
+
+		email = findViewById(R.id.sign_up_email);
+		first_name = findViewById(R.id.sign_up_name);
+		last_name = findViewById(R.id.sign_up_lastname);
+		pass = findViewById(R.id.sign_up_pass);
+		pass_r = findViewById(R.id.sign_up_pass_r);
 
 		findViewById(R.id.login).setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -60,14 +71,12 @@ public class LoginActivity extends AppCompatActivity {
 				signUp(v);
 			}
 		});
-
 		findViewById(R.id.login_up_btn).setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				showSignUp();
 			}
 		});
-
 		findViewById(R.id.login_in_btn).setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -99,6 +108,20 @@ public class LoginActivity extends AppCompatActivity {
 				} else {
 					((ImageView) v).setImageResource(R.drawable.ic_show_pass);
 					((EditText) findViewById(R.id.sign_up_pass)).setTransformationMethod(PasswordTransformationMethod.getInstance());
+				}
+			}
+		});
+
+		findViewById(R.id.sign_up_hide_pass_r).setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				passShown = !passShown;
+				if (passShown) {
+					((ImageView) v).setImageResource(R.drawable.ic_hide_pass);
+					((EditText) findViewById(R.id.sign_up_pass_r)).setTransformationMethod(HideReturnsTransformationMethod.getInstance());
+				} else {
+					((ImageView) v).setImageResource(R.drawable.ic_show_pass);
+					((EditText) findViewById(R.id.sign_up_pass_r)).setTransformationMethod(PasswordTransformationMethod.getInstance());
 				}
 			}
 		});
@@ -232,6 +255,7 @@ public class LoginActivity extends AppCompatActivity {
 					PreferenceManager.putInt(getApplicationContext(), PreferenceManager.GROUP_LOGIN, PreferenceManager.KEY_USER_ID, id);
 					apiGetUser(v, jsonObject.optInt("id"));
 				} catch (JSONException e) {
+					Log.e("LOGIN", "Failed parse");
 					e.printStackTrace();
 					SimpleDialog.buildMessageDialog(activity, getString(R.string.error), getString(R.string.error_login), "json/LA-L", null);
 					v.setEnabled(true);
@@ -241,7 +265,22 @@ public class LoginActivity extends AppCompatActivity {
 
 			@Override
 			public void error() {
-				SimpleDialog.buildMessageDialog(activity, getString(R.string.error), getString(R.string.error_login) + "\n" + getResult().getMsg(), "login/LA-" + (getResult().getType() == NetResult.TYPE_ERROR_LOCAL ? "L" : "R"), null);
+				Log.e("LOGIN", "Failed error");
+				String msg = "";
+				label: try {
+					JSONObject o = new JSONObject(getResult().getMsg());
+					msg = o.optString("detail");
+					if (msg.trim().isEmpty()) break label;
+					msg += "\n";
+					msg += o.optString("comment");
+					msg += "\n";
+					msg += new SimpleDateFormat("dd.MM.yyyy HH:mm").format(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).parse(o.optString("datetime").replace("T", " ").substring(0, 19)));
+				} catch (JSONException e) {
+					e.printStackTrace();
+				} catch (ParseException e) {
+					e.printStackTrace();
+				}
+				SimpleDialog.buildMessageDialog(activity, getString(R.string.error), getString(R.string.error_login) + "\n" + msg, "login/LA-" + (getResult().getType() == NetResult.TYPE_ERROR_LOCAL ? "L" : "R"), null);
 				v.setEnabled(true);
 				stopLoading();
 			}
@@ -258,10 +297,23 @@ public class LoginActivity extends AppCompatActivity {
 		startLoading();
 
 		if (!checkEmail()) {
+			stopLoading();
 			return;
-		} else if (!checkPassword()) {
+		}
+		if (!checkFirstName()) {
+			stopLoading();
 			return;
-		} else if (!checkPhone()) {
+		}
+		if (!checkLastName()) {
+			stopLoading();
+			return;
+		}
+		if (!checkPassword()) {
+			stopLoading();
+			return;
+		}
+		if (!checkPhone()) {
+			stopLoading();
 			return;
 		}
 
@@ -299,10 +351,38 @@ public class LoginActivity extends AppCompatActivity {
 	}
 
 	private boolean checkEmail() {
+		if (email.getText().toString().trim().isEmpty()) {
+			SimpleDialog.buildMessageDialog(activity, getString(R.string.error), getString(R.string.error_required_field).replace("{1}", getString(R.string.login_email)), "", null);
+			return false;
+		}
+		return true;
+	}
+
+	private boolean checkFirstName() {
+		if (first_name.getText().toString().trim().isEmpty()) {
+			SimpleDialog.buildMessageDialog(activity, getString(R.string.error), getString(R.string.error_required_field).replace("{1}", getString(R.string.login_name)), "", null);
+			return false;
+		}
+		return true;
+	}
+
+	private boolean checkLastName() {
+		if (last_name.getText().toString().trim().isEmpty()) {
+			SimpleDialog.buildMessageDialog(activity, getString(R.string.error), getString(R.string.error_required_field).replace("{1}", getString(R.string.login_lastname)), "", null);
+			return false;
+		}
 		return true;
 	}
 
 	private boolean checkPassword() {
+		if (pass.getText().toString().trim().isEmpty()) {
+			SimpleDialog.buildMessageDialog(activity, getString(R.string.error), getString(R.string.error_required_field).replace("{1}", getString(R.string.login_pass)), "", null);
+			return false;
+		}
+		if (!pass.getText().toString().equals(pass_r.getText().toString())) {
+			SimpleDialog.buildMessageDialog(activity, getString(R.string.error), getString(R.string.error_repeat_pass), "", null);
+			return false;
+		}
 		return true;
 	}
 

@@ -19,7 +19,7 @@ public class Achievement {
     private Bitmap icon_bmp;
     private ArrayList<Condition> conditions = new ArrayList<>();
 
-    Achievement(@NonNull JSONObject o) {
+    public Achievement(@NonNull JSONObject o) {
         this.id = o.optInt("id");
         JSONObject achievement = o.optJSONObject("achievement");
         if (achievement != null) {
@@ -139,8 +139,8 @@ public class Achievement {
 
     public String getDescriptionFormatted() {
         String desc = getDescription();
-        for (Condition condition : conditions) {
-            desc = desc.replace("{" + condition.id + "}", "" + condition.getNumber(level));
+        for (int i = 0; i < conditions.size(); i++) {
+            desc = desc.replace("{" + (i + 1) + "}", "" + conditions.get(i).getNumber(level));
         }
         return desc;
     }
@@ -161,7 +161,7 @@ public class Achievement {
         }
 
         int getNumber(int index) {
-            return numbers.get(index);
+            return numbers.get(index - 1);
         }
     }
 }

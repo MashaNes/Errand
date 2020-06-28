@@ -97,9 +97,11 @@ public class RequestsListFragment extends Fragment {
         }
 
         if (requests == null) {
-        	requests = new ArrayList<>();
-			loadRequests();
+			requests = new ArrayList<>();
 		}
+
+		clearRequests();
+		loadRequests();
 
 		noItems = root.findViewById(R.id.requests_list_no_items);
 		list = root.findViewById(R.id.list_view);
@@ -122,37 +124,62 @@ public class RequestsListFragment extends Fragment {
         return root;
     }
 
-    private void loadRequests() {
+//    private void loadRequests() {
+//		requests.clear();
+//		for (Request r : activity.getUser().getRequests()) {
+//			Log.e("REQUEST", r.getId() + " " + r.getName());
+//			if (index == 0 && r.getStatus() <= Request.STATUS_ACTIVE)
+//				add(r);
+//			if (index == 2 && r.getStatus() > Request.STATUS_ACTIVE)
+//				add(r);
+//		}
+//		for (Request r : activity.getUser().getRunning()) {
+//			Log.e("REQUEST", r.getId() + " " + r.getName());
+//			if (index == 1 && r.getStatus() <= Request.STATUS_ACTIVE)
+//				add(r);
+//			if (index == 2 && r.getStatus() > Request.STATUS_ACTIVE)
+//				add(r);
+//		}
+//	}
+
+	void clearRequests() {
 		requests.clear();
+	}
+
+	private void loadRequests() {
 		for (Request r : activity.getUser().getRequests()) {
-			if (index == 0 && r.getStatus() <= Request.STATUS_ACTIVE)
+			if (index == 0 && r.getStatus() <= Request.STATUS_ACTIVE && r.getCreatedBy().getId() == activity.getUser().getId()) {
 				add(r);
-			if (index == 2 && r.getStatus() > Request.STATUS_ACTIVE)
+			} else if (index == 1 && r.getStatus() <= Request.STATUS_ACTIVE && r.getCreatedBy().getId() != activity.getUser().getId()) {
 				add(r);
-		}
-		for (Request r : activity.getUser().getRunning()) {
-			if (index == 1 && r.getStatus() <= Request.STATUS_ACTIVE)
+			} else if (index == 2 && r.getStatus() > Request.STATUS_ACTIVE) {
 				add(r);
-			if (index == 2 && r.getStatus() > Request.STATUS_ACTIVE)
-				add(r);
+			}
 		}
 	}
 
-	private void add(Request r) {
+	public void add(Request r) {
+		Log.e("REQUEST", "Adding " + r.getId() + ": " + r.getName() + " to page " + index);
 		for (int i = 0; i < requests.size(); i++) {
 			if (requests.get(i).getTime().getTime() < r.getTime().getTime()) {
 				requests.add(i, r);
+				if (adapter != null) adapter.notifyDataSetChanged();
 				return;
 			}
 		}
 		requests.add(r);
+		if (adapter != null) {
+			adapter.notifyDataSetChanged();
+			if (requests.size() <= 0) noItems.setVisibility(View.VISIBLE);
+			else noItems.setVisibility(View.GONE);
+		}
 	}
 
     void dataSetChanged() {
+		clearRequests();
 		loadRequests();
-		adapter.notifyDataSetChanged();
-		if (requests.size() <= 0) noItems.setVisibility(View.VISIBLE);
-		else noItems.setVisibility(View.GONE);
+//		if (requests.size() <= 0) noItems.setVisibility(View.VISIBLE);
+//		else noItems.setVisibility(View.GONE);
 	}
 
 	@Override

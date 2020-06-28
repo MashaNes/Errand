@@ -2,7 +2,6 @@ package runners.errand.ui.request;
 
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -71,6 +70,7 @@ public class TasksFragment extends Fragment {
 		time.setText(request.getTimeString());
 		if (request.getNote() != null && !request.getNote().isEmpty() && !request.getNote().trim().isEmpty()) note.setText(request.getNote());
 		else noteLayout.setVisibility(View.GONE);
+		taskListLayout.removeAllViews();
 		for (int i = 0; i < request.getTasks().size(); i++) {
 			View v = LayoutInflater.from(getContext()).inflate(R.layout.item_task, taskListLayout, false);
 			((TextView) v.findViewById(R.id.item_task_number)).setText(String.format(Locale.getDefault(), "%d", i + 1));
@@ -151,5 +151,10 @@ public class TasksFragment extends Fragment {
 
 			bitmaps.set(i, ImageUtils.decode(pictures.get(i)));
 		}
+	}
+
+	void setRequest(Request request) {
+		this.request = request;
+		loadData();
 	}
 }

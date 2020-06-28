@@ -50,12 +50,16 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 import runners.errand.firebase.MessagingService;
+import runners.errand.model.Achievement;
 import runners.errand.model.Notification;
 import runners.errand.model.Offer;
+import runners.errand.model.Rating;
 import runners.errand.model.Request;
 import runners.errand.model.Service;
 import runners.errand.model.User;
 import runners.errand.ui.notifications.NotificationsFragment;
+import runners.errand.ui.profile.ProfileFragment;
+import runners.errand.ui.request.RequestFragment;
 import runners.errand.ui.requests.RequestsFragment;
 import runners.errand.location.LocationUtils;
 import runners.errand.utils.Static;
@@ -77,6 +81,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 	private Toolbar toolbar;
 	private Fragment fragment;
 	private String fcmToken;
+	private int pendingOfferRequestCounter = 0;
+	private boolean doneLoadingOffers = true;
 
 	private MenuItem statusMenuItem;
 
@@ -185,16 +191,116 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 						intent.getStringExtra(MessagingService.NOTIFICATION_EXTRA_BODY_SR),
 						intent.getStringExtra(MessagingService.NOTIFICATION_EXTRA_TIME)
 				));
+
 				if (fragment instanceof NotificationsFragment) {
 					((NotificationsFragment) fragment).loadData();
 				} else {
 					updateNotificationCount();
 				}
+
+				int category = intent.getIntExtra(MessagingService.NOTIFICATION_EXTRA_CATEGORY, -1);
+
+				if (category == Notification.CATEGORY_ACHIEVEMENT) {
+					NetRequest netRequest = new NetRequest(NetManager.getApiServer() + NetManager.API_USERS_INFO_FILTERED, NetManager.POST) {
+						@Override
+						public void success() {
+							super.success();
+							try {
+								JSONObject o = new JSONObject(getResult().getMsg());
+								JSONArray results = o.optJSONArray("results");
+								if (results != null) {
+									user.getAchievements().clear();
+									for (int i = 0; i < results.length(); i++) {
+										JSONObject achievement = results.optJSONObject(i).optJSONObject("achievement");
+										if (achievement != null) user.getAchievements().add(new Achievement(achievement));
+									}
+								}
+							} catch (JSONException e) {
+								e.printStackTrace();
+							}
+							if (fragment instanceof ProfileFragment) {
+								((ProfileFragment) fragment).loadAchievements();
+							}
+						}
+
+						@Override
+						public void error() {
+							super.error();
+						}
+					};
+					netRequest.putParam("created_by", user.getId());
+					netRequest.putParam("blocked", false);
+					netRequest.putParam("working_hours", false);
+					netRequest.putParam("addresses", false);
+					netRequest.putParam("services", false);
+					netRequest.putParam("offers", false);
+					netRequest.putParam("notifications", false);
+					netRequest.putParam("ratings", false);
+					netRequest.putParam("benefitlist", false);
+					netRequest.putParam("achievements", true);
+					netRequest.putParam("requests", false);
+					NetManager.add(netRequest);
+				} else if (category == Notification.CATEGORY_RATING) {
+					NetRequest netRequest = new NetRequest(NetManager.getApiServer() + NetManager.API_USERS_INFO_FILTERED, NetManager.POST) {
+						@Override
+						public void success() {
+							super.success();
+							try {
+								JSONObject o = new JSONObject(getResult().getMsg());
+								JSONArray results = o.optJSONArray("results");
+								if (results != null) {
+									user.getRatings().clear();
+									for (int i = 0; i < results.length(); i++) {
+										JSONObject rating = results.optJSONObject(i);
+										if (rating != null) user.getRatings().add(new Rating(rating));
+									}
+								}
+							} catch (JSONException e) {
+								e.printStackTrace();
+							}
+							if (fragment instanceof ProfileFragment) {
+								((ProfileFragment) fragment).loadAchievements();
+							}
+						}
+
+						@Override
+						public void error() {
+							super.error();
+						}
+					};
+					netRequest.putParam("created_by", user.getId());
+					netRequest.putParam("blocked", false);
+					netRequest.putParam("working_hours", false);
+					netRequest.putParam("addresses", false);
+					netRequest.putParam("services", false);
+					netRequest.putParam("offers", false);
+					netRequest.putParam("notifications", false);
+					netRequest.putParam("ratings", true);
+					netRequest.putParam("benefitlist", false);
+					netRequest.putParam("achievements", false);
+					netRequest.putParam("requests", false);
+					NetManager.add(netRequest);
+				} else if (
+						category == Notification.CATEGORY_REQUEST_SUCCESS ||
+						category == Notification.CATEGORY_REQUEST_FAILED ||
+						category == Notification.CATEGORY_EDIT_CANCELED ||
+						category == Notification.CATEGORY_OFFER_ACCEPTED ||
+						category == Notification.CATEGORY_OFFER_CREATED ||
+						category == Notification.CATEGORY_EDIT_ACCEPTED ||
+						category == Notification.CATEGORY_EDIT_CREATED
+				) {
+					int id = intent.getIntExtra(MessagingService.NOTIFICATION_EXTRA_TYPE_ID, -1);
+					if (id != -1) apiGetRequest(id);
+				} else if (category == 11) { // Banned
+					apiSetStatus(User.STATUS_NOT_RUNNING);
+					apiFCMUnregister();
+				}
 			}
 		}, new IntentFilter(MessagingService.ACTION_BROADCAST_NOTIFICATION));
 
 		updateNotificationCount();
-		loadOfferRequests();
+//		loadOfferRequests();
+//		apiGetRequests();
     }
 
 	@Override
@@ -342,22 +448,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 				permissionsRun(new Runnable() {
 					@Override
 					public void run() {
-						if (user.getStatus() == User.STATUS_RUNNING) {
-							user.setStatus(User.STATUS_NOT_RUNNING);
-							updateMenuItemRun(true, true);
-						} else {
-							LocationManager locationManager = (LocationManager) activity.getSystemService(Context.LOCATION_SERVICE);
-							if (locationManager != null) {
-								String provider = locationManager.getBestProvider(new Criteria(), true);
-								if (provider != null && (provider.equals(LocationManager.GPS_PROVIDER) || provider.equals(LocationManager.NETWORK_PROVIDER))) {
-									Log.e("LM", provider);
-									user.setStatus(User.STATUS_RUNNING);
-									updateMenuItemRun(true, true);
-									return;
-								}
-							}
-							SimpleDialog.buildMessageDialog(activity, getString(R.string.error), getString(R.string.error_location_required), "lm/MA-L", null);
-						}
+						becomeActive();
 					}
 				});
 				return false;
@@ -378,6 +469,25 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 			}
 		}
 		return false;
+	}
+
+	public void becomeActive() {
+		if (user.getStatus() == User.STATUS_RUNNING) {
+			user.setStatus(User.STATUS_NOT_RUNNING);
+			updateMenuItemRun(true, true);
+		} else {
+			LocationManager locationManager = (LocationManager) activity.getSystemService(Context.LOCATION_SERVICE);
+			if (locationManager != null) {
+				String provider = locationManager.getBestProvider(new Criteria(), true);
+				if (provider != null && (provider.equals(LocationManager.GPS_PROVIDER) || provider.equals(LocationManager.NETWORK_PROVIDER))) {
+					Log.e("LM", provider);
+					user.setStatus(User.STATUS_RUNNING);
+					updateMenuItemRun(true, true);
+					return;
+				}
+			}
+			SimpleDialog.buildMessageDialog(activity, getString(R.string.error), getString(R.string.error_location_required), "lm/MA-L", null);
+		}
 	}
 
     private void updateMenuItemRun(boolean update, boolean service) {
@@ -403,10 +513,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public boolean onSupportNavigateUp() {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         return NavigationUI.navigateUp(navController, mAppBarConfiguration) || super.onSupportNavigateUp();
-    }
-
-    public void noTabs() {
-        tabs.setVisibility(View.GONE);
     }
 
     public void setupTabs(ViewPager pager, int[] icons) {
@@ -477,6 +583,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 	}
 
 	public void loadOfferRequests() {
+    	doneLoadingOffers = false;
     	NetRequest netRequest = new NetRequest(NetManager.getApiServer() + NetManager.API_USERS_INFO_FILTERED, NetManager.POST) {
 			@Override
 			public void success() {
@@ -488,11 +595,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 						user.getOffers().clear();
 						for (int i = 0; i < results.length(); i++) {
 							user.getOffers().add(new Offer(results.optJSONObject(i)));
+							apiGetRequest(user.getOffers().get(i));
 						}
-						user.getRunning().clear();
-						Log.e("OFFERS", user.getOffers().size() + "");
-						for (int i = 0; i < user.getOffers().size(); i++) {
-							apiGetRequest(user.getOffers().get(i), i == user.getOffers().size() - 1);
+						doneLoadingOffers = true;
+						if (pendingOfferRequestCounter == 0 && fragment instanceof RequestsFragment) {
+							((RequestsFragment) fragment).loadData();
+							((RequestsFragment) fragment).doneLoading();
 						}
 					}
 				} catch (JSONException e) {
@@ -519,8 +627,65 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     	NetManager.add(netRequest);
 	}
 
-	private void apiGetRequest(final Offer offer, final boolean last) {
-		Log.e("OFFERS", "Request: " + offer.getRequest() + ", " + last);
+	public void apiGetRequests() {
+		if (fragment instanceof RequestsFragment) {
+			((RequestsFragment) fragment).clearRequests();
+		}
+		user.getRequests().clear();
+    	NetRequest netRequest = new NetRequest(NetManager.getApiServer() + NetManager.API_FILTERED_REQUESTS, NetManager.POST) {
+			@Override
+			public void success() {
+				super.success();
+				try {
+					JSONObject o = new JSONObject(getResult().getMsg());
+					JSONArray results = o.optJSONArray("results");
+					if (results != null && results.length() > 0) {
+						for (int i = 0; i < results.length(); i++) {
+							JSONObject request = results.optJSONObject(i);
+							if (request != null) user.getRequests().add(new Request(request));
+						}
+					}
+//					if (fragment instanceof RequestsFragment) ((RequestsFragment) fragment).loadData();
+					loadOfferRequests();
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+			}
+
+			@Override
+			public void error() {
+				super.error();
+			}
+		};
+// {
+//	"created_by" : null,
+//	"done_by" : 2,
+//	"created_or_done_by": null,
+//	"statuses" : null,
+//	"unrated_created_by" : false,
+//	"unrated_done_by" : false
+//}
+		netRequest.putParam("unrated_created_by", false);
+		netRequest.putParam("unrated_done_by", false);
+		netRequest.putParam("created_or_done_by", user.getId());
+		netRequest.putNull("created_by");
+		netRequest.putNull("done_by");
+		netRequest.putNull("statuses");
+    	NetManager.add(netRequest);
+	}
+
+	public void apiGetRequest(final Offer offer) {
+    	for (Request r : user.getRequests()) {
+    		if (r.getId() == offer.getRequest()) {
+    			r.setMyOffer(offer);
+//				if (fragment instanceof RequestsFragment) {
+//					((RequestsFragment) fragment).loadData();
+//				}
+				return;
+			}
+		}
+    	pendingOfferRequestCounter++;
+		Log.e("OFFERS", "Request: " + offer.getRequest());
     	NetRequest netRequest = new NetRequest(NetManager.getApiServer() + NetManager.API_REQUESTS + offer.getRequest() + "/", NetManager.GET) {
 			@Override
 			public void success() {
@@ -531,10 +696,60 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 					if (request != null) {
 						Request r = new Request(request);
 						r.setMyOffer(offer);
-						user.getRunning().add(r);
+						user.getRequests().add(r);
+//						user.getRunning().add(r);
+//						if (fragment instanceof RequestsFragment) {
+//							((RequestsFragment) fragment).loadData(r);
+//						}
 					}
-					if (last && fragment instanceof RequestsFragment) {
+					pendingOfferRequestCounter--;
+					if (pendingOfferRequestCounter == 0 && doneLoadingOffers && fragment instanceof RequestsFragment) {
 						((RequestsFragment) fragment).loadData();
+						((RequestsFragment) fragment).doneLoading();
+					}
+				} catch (JSONException e) {
+					pendingOfferRequestCounter--;
+					e.printStackTrace();
+				}
+			}
+
+			@Override
+			public void error() {
+				pendingOfferRequestCounter--;
+				super.error();
+			}
+		};
+    	NetManager.add(netRequest);
+	}
+
+	public void apiGetRequest(int id) {
+		NetRequest netRequest = new NetRequest(NetManager.getApiServer() + NetManager.API_REQUESTS + id + "/", NetManager.GET) {
+			@Override
+			public void success() {
+				super.success();
+				try {
+					JSONObject o = new JSONObject(getResult().getMsg());
+					JSONObject request = o.optJSONObject("request");
+					if (request != null) {
+						Request r = new Request(request);
+						boolean added = false;
+						for (int i = 0; i < user.getRequests().size(); i++) {
+							if (r.getId() == user.getRequests().get(i).getId()) {
+								Offer myOffer = user.getRequests().get(i).getMyOffer();
+								user.getRequests().set(i, r);
+								user.getRequests().get(i).setMyOffer(myOffer);
+								added = true;
+								break;
+							}
+						}
+						if (!added) user.getRequests().add(r);
+						if (fragment instanceof RequestsFragment) {
+							((RequestsFragment) fragment).loadData();
+							((RequestsFragment) fragment).doneLoading();
+						}
+						if (fragment instanceof RequestFragment) {
+							((RequestFragment) fragment).loadData(r);
+						}
 					}
 				} catch (JSONException e) {
 					e.printStackTrace();
@@ -546,7 +761,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 				super.error();
 			}
 		};
-    	NetManager.add(netRequest);
+		NetManager.add(netRequest);
 	}
 
 	private void apiFCMUnregister() {

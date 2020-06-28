@@ -1,7 +1,5 @@
 package runners.errand.model;
 
-import android.util.Log;
-
 import androidx.annotation.NonNull;
 
 import org.json.JSONArray;
@@ -322,6 +320,10 @@ public class Request {
     }
 
     public String getTimeString() {
+        return new SimpleDateFormat("dd.MM.yyyy HH:mm", Locale.getDefault()).format(time);
+    }
+
+    public String getTimeStringParam() {
         return new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()).format(time);
     }
 

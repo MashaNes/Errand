@@ -109,12 +109,12 @@ public class NotificationsListFragment extends Fragment {
 							if (r.getId() == notifications.get(position).getType_id())
 								request = r;
 						}
-						if (request == null) {
-							for (Request r : activity.getUser().getRunning()) {
-								if (r.getId() == notifications.get(position).getType_id())
-									request = r;
-							}
-						}
+//						if (request == null) {
+//							for (Request r : activity.getUser().getRunning()) {
+//								if (r.getId() == notifications.get(position).getType_id())
+//									request = r;
+//							}
+//						}
 						if (request == null) {
 							NetRequest netRequest = new NetRequest(NetManager.getApiServer() + NetManager.API_REQUESTS + notifications.get(position).getType_id() + "/", NetManager.GET) {
 								@Override

@@ -1,13 +1,10 @@
 package runners.errand.ui.request;
 
 import android.os.Bundle;
-import android.provider.ContactsContract;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -16,16 +13,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import java.util.ArrayList;
 import java.util.Locale;
 
 import runners.errand.MainActivity;
 import runners.errand.R;
 import runners.errand.adapter.OfferAdapter;
-import runners.errand.model.Offer;
 import runners.errand.model.Request;
-import runners.errand.model.ServicePrefs;
 import runners.errand.model.User;
+import runners.errand.ui.requests.RequestsFragment;
 import runners.errand.utils.dialogs.ProfileDialog;
 import runners.errand.utils.dialogs.SimpleDialog;
 import runners.errand.utils.net.NetManager;
@@ -37,6 +32,7 @@ public class ViewOffersFragment extends Fragment {
 	private Request request;
 	private OfferAdapter adapter;
 	private TextView noOffers;
+	private ListView list;
 
 	@Nullable
 	@Override
@@ -50,10 +46,10 @@ public class ViewOffersFragment extends Fragment {
 
 		noOffers = root.findViewById(R.id.no_offers);
 
-		ListView list = root.findViewById(R.id.list_offers);
+		list = root.findViewById(R.id.list_offers);
 		adapter = new OfferAdapter(activity, request.getOffers(), request);
 		list.setAdapter(adapter);
-		dateSetChanged();
+		dataSetChanged();
 
 		if (request.getDirect() != null) {
 			root.findViewById(R.id.request_view_offers_direct).setVisibility(View.VISIBLE);
@@ -86,10 +82,12 @@ public class ViewOffersFragment extends Fragment {
 							NetRequest netRequest = new NetRequest(NetManager.getApiServer() + NetManager.API_OFFER_ACCEPT, NetManager.PUT) {
 								@Override
 								public void success() {
-									request.setAcceptedOffer(request.getOffers().get(position));
-									dateSetChanged();
-									activity.navigateTo(R.id.nav_page_requests);
 									super.success();
+									request.setAcceptedOffer(request.getOffers().get(position));
+									dataSetChanged();
+									Bundle bundle = new Bundle();
+									bundle.putInt(RequestsFragment.EXTRA_REFRESH_BY_ID, request.getId());
+									activity.navigateTo(R.id.nav_page_requests, bundle);
 								}
 
 								@Override
@@ -117,7 +115,7 @@ public class ViewOffersFragment extends Fragment {
 							@Override
 							public void success() {
 								request.getOffers().remove(position);
-								dateSetChanged();
+								dataSetChanged();
 								super.success();
 							}
 
@@ -142,6 +140,7 @@ public class ViewOffersFragment extends Fragment {
 					@Override
 					public void success() {
 						super.success();
+						activity.getUser().getRequests().remove(request);
 						activity.navigateTo(R.id.nav_page_requests);
 					}
 
@@ -159,7 +158,16 @@ public class ViewOffersFragment extends Fragment {
 		return root;
 	}
 
-	void dateSetChanged() {
+	void dataSetChanged(Request request) {
+		this.request = request;
+		if (activity != null) {
+			adapter = new OfferAdapter(activity, request.getOffers(), request);
+			list.setAdapter(adapter);
+			dataSetChanged();
+		}
+	}
+
+	void dataSetChanged() {
 		if (adapter != null) {
 			adapter.notifyDataSetChanged();
 			if (request.getOffers().isEmpty()) {

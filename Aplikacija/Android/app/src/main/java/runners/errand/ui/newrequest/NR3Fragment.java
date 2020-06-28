@@ -1,14 +1,11 @@
 package runners.errand.ui.newrequest;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -20,17 +17,13 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.net.UnknownServiceException;
 import java.util.ArrayList;
-import java.util.Comparator;
 
 import runners.errand.MainActivity;
 import runners.errand.R;
 import runners.errand.adapter.UserAdapter;
-import runners.errand.model.ServicePrefs;
 import runners.errand.model.Task;
 import runners.errand.model.User;
-import runners.errand.utils.PreferenceManager;
 import runners.errand.utils.dialogs.ProfileDialog;
 import runners.errand.utils.net.NetManager;
 import runners.errand.utils.net.NetRequest;
@@ -42,6 +35,8 @@ public class NR3Fragment extends Fragment {
 	private ArrayList<User> directUsers = new ArrayList<>();
 	private ArrayList<User> directActive = new ArrayList<>();
 	private ArrayList<User> directAll = new ArrayList<>();
+	private ListView directList;
+	private TextView directEmpty;
 	private int directSelected = -1;
 	private boolean activeOnly = false;
 	private boolean sortByRating = true;
@@ -56,6 +51,7 @@ public class NR3Fragment extends Fragment {
 		activity = parent.getMainActivity();
 
 		final TextView broadcast = root.findViewById(R.id.newrequest_offers_broadcast);
+		broadcast.setText(parent.getRequest().isBroadcast() ? getString(R.string.generic_enabled) : getString(R.string.generic_disabled));
 		broadcast.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -88,7 +84,8 @@ public class NR3Fragment extends Fragment {
 			}
 		});
 
-		ListView directList = root.findViewById(R.id.newrequest_offers_direct_list);
+		directEmpty = root.findViewById(R.id.newrequest_offers_no_direct_users);
+		directList = root.findViewById(R.id.newrequest_offers_direct_list);
 		directList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> p, View view, final int position, long id) {
@@ -122,6 +119,12 @@ public class NR3Fragment extends Fragment {
 		return root;
 	}
 
+	@Override
+	public void onResume() {
+		super.onResume();
+		if (activity != null) loadDirect(activity);
+	}
+
 	private void setupArrays() {
 		directUsers.clear();
 		if (activeOnly) {
@@ -129,7 +132,14 @@ public class NR3Fragment extends Fragment {
 		} else {
 			directUsers.addAll(directAll);
 		}
-		if (adapter != null) adapter.notifyDataSetChanged();
+		if (adapter != null) {
+			adapter.notifyDataSetChanged();
+			if (directUsers.isEmpty()) {
+				directEmpty.setVisibility(View.VISIBLE);
+			} else {
+				directEmpty.setVisibility(View.GONE);
+			}
+		}
 	}
 
 	void loadDirect(MainActivity activity) {
@@ -138,21 +148,27 @@ public class NR3Fragment extends Fragment {
 			@Override
 			public void success() {
 				directAll.clear();
+				directActive.clear();
 				try {
 					JSONObject o = new JSONObject(getResult().getMsg());
 					JSONArray results = o.optJSONArray("results");
 					if (results != null && results.length() > 0) {
 						for (int i = results.length() - 1; i >= 0; i--) {
 							JSONObject tmp = results.optJSONObject(i);
-							if (tmp != null) directAll.add(new User(tmp));
+							if (tmp != null) {
+								User user = new User(tmp);
+								directAll.add(user);
+								if (user.getStatus() == User.STATUS_RUNNING) directActive.add(user);
+
+							}
 						}
 					}
 				} catch (JSONException e) {
 					e.printStackTrace();
 				}
-				for (User user : directAll) {
-					if (user.getStatus() == User.STATUS_RUNNING) directActive.add(user);
-				}
+//				for (User user : directAll) {
+//					if (user.getStatus() == User.STATUS_RUNNING) directActive.add(user);
+//				}
 				setupArrays();
 				super.success();
 			}

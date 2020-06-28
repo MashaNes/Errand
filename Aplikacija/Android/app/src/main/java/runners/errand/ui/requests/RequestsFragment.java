@@ -2,7 +2,6 @@ package runners.errand.ui.requests;
 
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,6 +25,9 @@ import runners.errand.utils.net.NetManager;
 import runners.errand.utils.net.NetRequest;
 
 public class RequestsFragment extends Fragment {
+    public static final String EXTRA_REFRESH_ALL = "runners.errand.ui.requests.EXTRA_REFRESH_ALL";
+    public static final String EXTRA_REFRESH_BY_ID = "runners.errand.ui.requests.EXTRA_REFRESH_BY_ID";
+
     private SwipeRefreshLayout refreshLayout;
     private MainActivity activity;
 
@@ -60,66 +62,50 @@ public class RequestsFragment extends Fragment {
         refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                refresh();
+                activity.apiGetRequests();
             }
         });
 
-//        refresh();
+        boolean refresh = false;
+        if (savedInstanceState != null) refresh = savedInstanceState.getBoolean("refresh", false);
+        if (refresh) {
+            refreshLayout.setRefreshing(true);
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    refreshLayout.setRefreshing(true);
+                    activity.apiGetRequests();
+                }
+            }, 500);
+        }
 
-//        boolean refresh = false;
-//        if (savedInstanceState != null) refresh = savedInstanceState.getBoolean("refresh");
-//        if (refresh) {
-//            refreshLayout.setRefreshing(true);
-//            new Handler().postDelayed(new Runnable() {
-//                @Override
-//                public void run() {
-//                    refresh();
-//                }
-//            }, 500);
-//        }
+        int id = -1;
+        if (savedInstanceState != null) id = savedInstanceState.getInt(EXTRA_REFRESH_BY_ID, -1);
+        if (id != -1) {
+            refreshLayout.setRefreshing(true);
+            activity.apiGetRequest(id);
+        }
+
+        if (activity.getUser().getRequests() == null || activity.getUser().getRequests().isEmpty()) {
+            refreshLayout.setRefreshing(true);
+            activity.apiGetRequests();
+        }
 
         return root;
     }
 
-    private void refresh() {
-	    activity.loadOfferRequests();
-        NetRequest netRequest = new NetRequest(NetManager.getApiServer() + NetManager.API_FILTERED_REQUESTS, NetManager.POST) {
-            @Override
-            public void success() {
-                try {
-                    JSONObject result = new JSONObject(getResult().getMsg());
-                    JSONArray data = result.optJSONArray("results");
-                    if (data != null) {
-                        activity.getUser().getRequests().clear();
-                        for (int i = 0; i < data.length(); i++) {
-                            JSONObject request = data.optJSONObject(i);
-                            if (request != null) activity.getUser().getRequests().add(0, new Request(request));
-                        }
-                        loadData();
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                refreshLayout.setRefreshing(false);
-                super.success();
-            }
+    public void clearRequests() {
+        for (Fragment fragment : getChildFragmentManager().getFragments()) {
+            ((RequestsListFragment) fragment).clearRequests();
+        }
+    }
 
-            @Override
-            public void error() {
-                refreshLayout.setRefreshing(false);
-                super.error();
-            }
-        };
-        netRequest.putParam("created_by", activity.getUser().getId());
-        netRequest.putNull("done_by");
-        netRequest.putNull("created_or_done_by");
-        netRequest.putNull("statuses");
-        netRequest.putNull("unrated_created_by");
-        netRequest.putNull("unrated_done_by");
-        NetManager.add(netRequest);
+    public void doneLoading() {
+        if (refreshLayout.isRefreshing()) refreshLayout.setRefreshing(false);
     }
 
     public void loadData() {
+	    if (!isAdded()) return;
         for (Fragment fragment : getChildFragmentManager().getFragments()) {
             ((RequestsListFragment) fragment).dataSetChanged();
         }

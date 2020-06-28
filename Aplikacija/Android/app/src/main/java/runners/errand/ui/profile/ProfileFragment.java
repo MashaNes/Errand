@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import runners.errand.MainActivity;
 import runners.errand.R;
 import runners.errand.adapter.CustomPagerAdapter;
+import runners.errand.model.Achievement;
 
 public class ProfileFragment extends Fragment {
 	public static String
@@ -57,6 +58,10 @@ public class ProfileFragment extends Fragment {
 
         return root;
     }
+
+    public void loadAchievements() {
+		((AchievementsFragment) fragments.get(2)).load();
+	}
 
     void navigateTo(int index) {
     	pager.setCurrentItem(index, true);

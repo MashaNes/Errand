@@ -73,13 +73,13 @@ public class User {
 				}
 			}
 
-			JSONArray requests = o.optJSONArray("requests");
-			if (requests != null) {
-				for (int i = 0; i < requests.length(); i++) {
-					JSONObject request = requests.optJSONObject(i);
-					if (request != null) this.requests.add(new Request(request));
-				}
-			}
+//			JSONArray requests = o.optJSONArray("requests");
+//			if (requests != null) {
+//				for (int i = 0; i < requests.length(); i++) {
+//					JSONObject request = requests.optJSONObject(i);
+//					if (request != null) this.requests.add(new Request(request));
+//				}
+//			}
 
 			JSONArray notifications = o.optJSONArray("notifications");
 			if (notifications != null) {

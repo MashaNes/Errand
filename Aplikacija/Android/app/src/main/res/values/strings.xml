@@ -27,7 +27,7 @@
 	<string name="generic_unrated">Unrated</string>
 	<string name="generic_search">Search</string>
 	<string name="generic_rate">Rate</string>
-	<string name="generic_complete">Complete</string>
+	<string name="generic_complete">Successfully end</string>
 	<string name="generic_start">Start</string>
 
 	<string name="autofill_email" translatable="false">emailAddress</string>
@@ -40,6 +40,7 @@
 
 	<string name="login_email">Email</string>
 	<string name="login_pass">Password</string>
+	<string name="login_pass_r">Repeat password</string>
 	<string name="login_name">First Name</string>
 	<string name="login_lastname">Last Name</string>
 	<string name="login_address">Address</string>
@@ -138,6 +139,7 @@
 	<string name="edit_cancel_desc">Do you really want to cancel this edit request?</string>
 	<string name="select_task">Related task</string>
 	<string name="create_edit_request">Create an edit request</string>
+	<string name="chooser_email">Send Email</string>
 
 	<string name="newrequest_tab_info">Info</string>
 	<string name="newrequest_tab_tasks">Tasks</string>
@@ -150,7 +152,7 @@
 	<string name="newrequest_info_date">Date</string>
 	<string name="newrequest_info_max_distance">Max distance</string>
 	<string name="newrequest_info_max_distance_hint">" Maximum distance"</string>
-	<string name="newrequest_info_max_distance_info">Maximum distance (in meters) of a Runner from the addresses specified in this request that can send you offers for this request.</string>
+	<string name="newrequest_info_max_distance_info">Maximum distance (in kilometers) of a Runner from the addresses specified in this request that can send you offers for this request.</string>
 	<string name="newrequest_info_min_rating">Min rating</string>
 	<string name="newrequest_info_min_rating_hint">" Minimum rating"</string>
 	<string name="newrequest_info_min_rating_info">Minimum rating of a Runner that can send offers for this request.</string>
@@ -179,11 +181,14 @@
 	<string name="newrequest_offers_direct_sort_by">Sort by</string>
 	<string name="newrequest_offers_direct_sort_by_rating">Rating</string>
 	<string name="newrequest_offers_direct_sort_by_disctance">Distance</string>
+	<string name="newrequest_offers_no_direct_users">There are no available users.</string>
 
 	<string name="find_requests_tab_filter">Filter</string>
 	<string name="find_requests_tab_broadcast" translatable="false">Broadcast</string>
 	<string name="find_requests_tab_direct">Direct</string>
-	<string name="find_requests_filter_max_dist">Setting max distance will user your current location if you are active and home address if not. If you are not active and don\'t have a home address set, max distance filter will be ignored.</string>
+	<string name="find_requests_filter_max_dist">"Your account has to active in order to find requests.
+
+Max distance from your current location to request addresses in kilometers."</string>
 	<string name="find_requests_service_filter_desc">Here you can filter by services present in the request. Having no services added to the filter will show all requests regardless of services specified in them.</string>
 	<string name="find_requests_service_filter_add">Add service</string>
 
@@ -292,7 +297,10 @@
 	<string name="error_hours">Ending time needs to be after starting time.</string>
 	<string name="error_request_not_available">This request is not available.</string>
 	<string name="error_finish_request_location">You need to be active in order to complete this request.</string>
-	<string name="error_start_request_location">You need to be active in order to start this request.</string>
+	<string name="error_start_request_location">You need to be active in order to use do this. Do you want to become active.</string>
+	<string name="error_required_field">You need to fill {1} to complete this action.</string>
+	<string name="error_broadcast_or_direct_required">You are required to either set broadcast to enabled or choose one user.</string>
+	<string name="error_repeat_pass">Your passwords do not match.</string>
 
 	<string name="permissions">Permissions</string>
 	<string name="permissions_location_runner">Permissions for location access need to be granted in order to use this application as a Runner (send offers to requests and fulfil them) and detecting your current location instead of needing to type in an address.  Would you like to grand location access permission to Errand?</string>

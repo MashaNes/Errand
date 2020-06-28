@@ -19,7 +19,9 @@ import runners.errand.MainActivity;
 import runners.errand.R;
 import runners.errand.adapter.ServiceSelectItemAdapter;
 import runners.errand.model.Service;
+import runners.errand.model.User;
 import runners.errand.utils.dialogs.ListSelectDialog;
+import runners.errand.utils.dialogs.SimpleDialog;
 
 public class FilterFragment extends Fragment {
 	private MainActivity activity;
@@ -43,8 +45,17 @@ public class FilterFragment extends Fragment {
 		root.findViewById(R.id.find_requests_filter_button).setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				parent.loadRequests();
-				parent.navigate();
+				if (activity.getUser().getStatus() == User.STATUS_RUNNING) {
+					parent.loadRequests();
+					parent.navigate();
+				} else {
+					SimpleDialog.buildSelectDialog(activity, getString(R.string.error), getString(R.string.error_start_request_location), getString(R.string.generic_yes), getString(R.string.generic_no), new Runnable() {
+						@Override
+						public void run() {
+							activity.becomeActive();
+						}
+					}, null);
+				}
 			}
 		});
 		root.findViewById(R.id.find_requests_filter_service_add).setOnClickListener(new View.OnClickListener() {

@@ -119,7 +119,12 @@ public class StatusFragment extends Fragment {
 				if (activity.getUser().getStatus() == User.STATUS_RUNNING) {
 					apiStartRequest(Static.lat, Static.lng);
 				} else {
-					SimpleDialog.buildMessageDialog(activity, getString(R.string.error), getString(R.string.error_start_request_location), "", null);
+					SimpleDialog.buildSelectDialog(activity, getString(R.string.error), getString(R.string.error_start_request_location), getString(R.string.generic_yes), getString(R.string.generic_no), new Runnable() {
+						@Override
+						public void run() {
+							activity.becomeActive();
+						}
+					}, null);
 				}
 			}
 		});
@@ -445,7 +450,7 @@ public class StatusFragment extends Fragment {
 			} else {
 				// Offer sent, not accepted
 				Log.e("REQUEST", "2-4");
-				if (!offer.getEdit().getTasks().isEmpty() || offer.getEdit().getTime() != null) {
+				if (offer.getEdit() != null && (!offer.getEdit().getTasks().isEmpty() || offer.getEdit().getTime() != null)) {
 					edit_label.setVisibility(View.VISIBLE);
 					edit.setVisibility(View.VISIBLE);
 					StringBuilder s = new StringBuilder();
@@ -582,5 +587,10 @@ public class StatusFragment extends Fragment {
 		}
 		netRequest.putParam("location", location);
 		NetManager.add(netRequest);
+	}
+
+	void setRequest(Request request) {
+		this.request = request;
+		setupUI();
 	}
 }

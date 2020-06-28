@@ -35,9 +35,11 @@ import runners.errand.MainActivity;
 import runners.errand.R;
 import runners.errand.adapter.EditRequestAddressAdapter;
 import runners.errand.model.Address;
+import runners.errand.model.Offer;
 import runners.errand.model.Request;
 import runners.errand.model.ServicePrefs;
 import runners.errand.model.Task;
+import runners.errand.ui.requests.RequestsFragment;
 import runners.errand.utils.dialogs.MapDialog;
 import runners.errand.utils.dialogs.ProfileDialog;
 import runners.errand.utils.dialogs.SimpleDialog;
@@ -232,9 +234,19 @@ public class SendOfferFragment extends Fragment {
 					@Override
 					public void success() {
 						super.success();
+						try {
+							JSONObject o = new JSONObject(getResult().getMsg());
+							Offer offer = new Offer(o);
+							activity.getUser().getOffers().add(offer);
+							activity.apiGetRequest(offer);
+						} catch (JSONException e) {
+							e.printStackTrace();
+						}
 						SimpleDialog.buildMessageDialog(activity, getString(R.string.generic_success), getString(R.string.offer_sent), "", new Runnable() {
 							@Override
 							public void run() {
+//								Bundle bundle = new Bundle();
+//								bundle.putInt(RequestsFragment.EXTRA_REFRESH_BY_ID, request.getId());
 								activity.navigateTo(R.id.nav_page_requests);
 							}
 						});
@@ -247,13 +259,20 @@ public class SendOfferFragment extends Fragment {
 				};
 				netRequest.putParam("created_by", activity.getUser().getId());
 				netRequest.putParam("payment_type", paymentType);
+				if (paymentAmount.getText().toString().trim().isEmpty()) {
+					SimpleDialog.buildMessageDialog(activity, getString(R.string.error), getString(R.string.error_required_field).replace("{1}", getString(R.string.settings_runner_service_defaults_payment_amount)), "", null);
+					return;
+				}
 				netRequest.putParam("payment_ammount", Integer.parseInt(paymentAmount.getText().toString()));
 				netRequest.putParam("request", request.getId());
 				JSONObject edit = new JSONObject();
+				boolean timeNull = false;
+				boolean tasksNull = false;
 				try {
 					if (erDateTime.getTime() != request.getTime().getTime()) {
 						edit.put("time", new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()).format(erDateTime));
 					} else {
+						timeNull = true;
 						edit.put("time", JSONObject.NULL);
 					}
 				} catch (JSONException e) {
@@ -285,12 +304,21 @@ public class SendOfferFragment extends Fragment {
 					}
 				}
 				try {
-					edit.put("tasks", tasks);
+					if (tasks.length() == 0) {
+						tasksNull = true;
+						edit.put("tasks", JSONObject.NULL);
+					} else {
+						edit.put("tasks", tasks);
+					}
 				} catch (JSONException e) {
 					Log.e("TEST", "JSON 3");
 					e.printStackTrace();
 				}
-				netRequest.putParam("edit", edit);
+				if (tasksNull && timeNull) {
+					netRequest.putNull("edit");
+				} else {
+					netRequest.putParam("edit", edit);
+				}
 				NetManager.add(netRequest);
 			}
 		});

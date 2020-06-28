@@ -60,12 +60,12 @@ public class TaskPicturesAdapter extends RecyclerView.Adapter {
 			super(itemView);
 			v = ((ImageView) itemView);
 			dimen = (int) Math.ceil(100 * density);
-			v.setScaleType(ImageView.ScaleType.CENTER_CROP);
 			int margin = (int) Math.ceil(4 * density);
 			LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(dimen, dimen);
 			lp.setMargins(margin / 2, margin, margin / 2, margin);
 			v.setLayoutParams(lp);
 			v.setBackgroundColor(v.getContext().getResources().getColor(R.color.colorLightGrey));
+			v.setScaleType(ImageView.ScaleType.CENTER_CROP);
 		}
 
 		void setData(final MainActivity activity, Bitmap b) {
@@ -73,13 +73,13 @@ public class TaskPicturesAdapter extends RecyclerView.Adapter {
 				this.bitmap = b;
 				int padding = 0;
 				v.setPadding(padding, padding, padding, padding);
-				Bitmap scaled;
-				if (b.getWidth() > b.getHeight()) {
-					scaled = Bitmap.createScaledBitmap(b, dimen * (b.getWidth() / b.getHeight()), dimen, false);
-				} else {
-					scaled = Bitmap.createScaledBitmap(b, dimen, dimen * (b.getHeight() / b.getWidth()), false);
-				}
-				v.setImageBitmap(scaled);
+//				Bitmap scaled;
+//				if (b.getWidth() > b.getHeight()) {
+//					scaled = Bitmap.createScaledBitmap(b, dimen * (b.getWidth() / b.getHeight()), dimen, false);
+//				} else {
+//					scaled = Bitmap.createScaledBitmap(b, dimen, dimen * (b.getHeight() / b.getWidth()), false);
+//				}
+				v.setImageBitmap(b);
 			} else {
 				int padding = (int) Math.ceil(40 * density);
 				v.setPadding(padding, padding, padding, padding);

@@ -72,11 +72,12 @@ public class GeofencingBroadcastReceiver extends BroadcastReceiver {
 		}
 	}
 
-	public static void addGeofence(Context context, int requestId, int addressId, double lat, double lng) {
+	public static void addGeofence(Context context, int requestId, int addressId, final double lat, final double lng) {
 		GeofencingClient geofencingClient = LocationServices.getGeofencingClient(context);
 		List<Geofence> geofenceList = new ArrayList<>();
+		final String geofenceId = GEOFENCE_REQUEST_ID_PREFIX + requestId + "-" + addressId;
 		geofenceList.add(new Geofence.Builder()
-				.setRequestId(GEOFENCE_REQUEST_ID_PREFIX + requestId + "-" + addressId)
+				.setRequestId(geofenceId)
 				.setCircularRegion(
 						lat,
 						lng,
@@ -97,12 +98,12 @@ public class GeofencingBroadcastReceiver extends BroadcastReceiver {
 		geofencingClient.addGeofences(geofencingRequest, geofencingPendingIntent).addOnSuccessListener(new OnSuccessListener<Void>() {
 			@Override
 			public void onSuccess(Void aVoid) {
-				Log.e("GEOFENCE", "Added.");
+				Log.e("GEOFENCE", "Added. ID: " + geofenceId + ", lat: " + lat + ", lng: " + lng);
 			}
 		}).addOnFailureListener(new OnFailureListener() {
 			@Override
 			public void onFailure(@NonNull Exception e) {
-				Log.e("GEOFENCE", "Failed to add.");
+				Log.e("GEOFENCE", "Failed to add. ID: " + geofenceId);
 			}
 		});
 	}
@@ -110,16 +111,17 @@ public class GeofencingBroadcastReceiver extends BroadcastReceiver {
 	public static void removeGeofence(Context context, int requestId, int addressId) {
 		GeofencingClient geofencingClient = LocationServices.getGeofencingClient(context);
 		List<String> ids = new ArrayList<>();
-		ids.add(GEOFENCE_REQUEST_ID_PREFIX + requestId + "-" + addressId);
+		final String geofenceId = GEOFENCE_REQUEST_ID_PREFIX + requestId + "-" + addressId;
+		ids.add(geofenceId);
 		geofencingClient.removeGeofences(ids).addOnSuccessListener(new OnSuccessListener<Void>() {
 			@Override
 			public void onSuccess(Void aVoid) {
-				Log.e("GEOFENCE", "Removed.");
+				Log.e("GEOFENCE", "Removed. ID: " + geofenceId);
 			}
 		}).addOnFailureListener(new OnFailureListener() {
 			@Override
 			public void onFailure(@NonNull Exception e) {
-				Log.e("GEOFENCE", "Failed to remove.");
+				Log.e("GEOFENCE", "Failed to remove. ID: " + geofenceId);
 			}
 		});
 	}

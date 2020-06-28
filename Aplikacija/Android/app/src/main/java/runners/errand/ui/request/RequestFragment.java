@@ -1,6 +1,7 @@
 package runners.errand.ui.request;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -54,10 +55,12 @@ public class RequestFragment extends Fragment {
 
 		request = Static.request;
 		activity.setTitle(request.getName());
+		activity.apiGetRequest(request.getId());
 
 		fragments.clear();
 		fragments.add(new TasksFragment());
 		fragments.add(new MapFragment());
+		Log.e("TEST123", request.getId() + ": " + request.getName() + ", " + (request.getMyOffer() == null) + ", " + (request.getAcceptedOffer() == null));
 		if (activity.getUser().getId() == request.getCreatedBy().getId()) {
 			if (request.getStatus() == Request.STATUS_PENDING) {
 				fragments.add(new ViewOffersFragment());
@@ -66,7 +69,7 @@ public class RequestFragment extends Fragment {
 			}
 			loadOffers();
 		} else {
-			if (activity.getUser().getRunning().contains(request)) {
+			if (request.getMyOffer() != null) {
 				fragments.add(new StatusFragment());
 				loadOffers();
 			} else {
@@ -110,10 +113,12 @@ public class RequestFragment extends Fragment {
 					if (request.getWorkingWith() == null) {
 						JSONArray offers = o.optJSONArray("offers");
 						if (offers != null) {
+							request.getOffers().clear();
 							for (int i = 0; i < offers.length(); i++) {
 								request.getOffers().add(new Offer(offers.optJSONObject(i)));
 							}
-							if (fragments.get(2) instanceof ViewOffersFragment) ((ViewOffersFragment) fragments.get(2)).dateSetChanged();
+							if (fragments.get(2) instanceof ViewOffersFragment) ((ViewOffersFragment) fragments.get(2)).dataSetChanged();
+							if (fragments.get(2) instanceof StatusFragment) ((StatusFragment) fragments.get(2)).setupUI();
 						}
 					} else {
 						JSONObject acceptedOffer = o.optJSONObject("accepted_offer");
@@ -179,8 +184,22 @@ public class RequestFragment extends Fragment {
 		NetManager.add(netRequest);
 	}
 
+	public void loadData(Request request) {
+		this.request = request;
+		loadData();
+	}
+
 	void loadData() {
 		((TasksFragment) fragments.get(0)).loadData();
 		((MapFragment) fragments.get(1)).loadData();
+		if (fragments.get(2) instanceof StatusFragment) {
+			loadOffers();
+			loadEdits();
+			((StatusFragment) fragments.get(2)).setRequest(request);
+		}
+		if (fragments.get(2) instanceof ViewOffersFragment) {
+			loadOffers();
+			((ViewOffersFragment) fragments.get(2)).dataSetChanged(request);
+		}
 	}
 }

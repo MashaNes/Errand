@@ -26,6 +26,7 @@ import runners.errand.R;
 import runners.errand.location.GeofencingBroadcastReceiver;
 import runners.errand.model.Notification;
 import runners.errand.utils.PreferenceManager;
+import runners.errand.utils.net.NetRequest;
 
 public class MessagingService extends FirebaseMessagingService {
 	public final static String ACTION_BROADCAST_NOTIFICATION = "runners.errand.firebase.ACTION_BROADCAST_NOTIFICATION";

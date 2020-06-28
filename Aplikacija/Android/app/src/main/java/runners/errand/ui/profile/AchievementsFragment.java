@@ -18,6 +18,9 @@ import runners.errand.adapter.AchievementAdapter;
 import runners.errand.model.Achievement;
 
 public class AchievementsFragment extends Fragment {
+	private ArrayList<Achievement> achievements = new ArrayList<>();
+	private AchievementAdapter adapter;
+	private MainActivity activity;
 
 	public AchievementsFragment() {
 		// Required empty public constructor
@@ -27,11 +30,11 @@ public class AchievementsFragment extends Fragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View root = inflater.inflate(R.layout.fragment_achievements, container, false);
 
-		MainActivity activity = ((MainActivity) getActivity());
+		activity = ((MainActivity) getActivity());
 		if (activity == null) return root;
 
-		ArrayList<Achievement> achievements = activity.getUser().getAchievements();
-		AchievementAdapter adapter = new AchievementAdapter(
+		achievements = activity.getUser().getAchievements();
+		adapter = new AchievementAdapter(
 				activity,
 				achievements
 		);
@@ -41,5 +44,11 @@ public class AchievementsFragment extends Fragment {
 		if (achievements.size() <= 0) list.setVisibility(View.GONE);
 
 		return root;
+	}
+
+	void load() {
+		if (activity == null || adapter == null) return;
+		achievements = activity.getUser().getAchievements();
+		adapter.notifyDataSetChanged();
 	}
 }

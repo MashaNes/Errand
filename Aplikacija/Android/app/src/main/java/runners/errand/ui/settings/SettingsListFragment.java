@@ -398,7 +398,7 @@ public class SettingsListFragment extends Fragment {
 				} else {
 					body += String.format(Locale.getDefault(), "%s", d);
 				}
-				body += "m\n";
+				body += "km\n";
 				body += getString(R.string.settings_runner_service_defaults_min_rating);
 				body += ": ";
 				d = prefs.getMinRating();

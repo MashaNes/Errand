@@ -1,6 +1,9 @@
 package runners.errand.utils.dialogs;
 
+import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Intent;
+import android.net.Uri;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -14,6 +17,7 @@ import java.util.Locale;
 
 import runners.errand.MainActivity;
 import runners.errand.R;
+import runners.errand.model.Achievement;
 import runners.errand.model.Benefit;
 import runners.errand.model.User;
 import runners.errand.utils.net.NetManager;
@@ -50,8 +54,33 @@ public class ProfileDialog extends AlertDialog {
 		if (user.getPicture_bmp() != null) ((ImageView) root.findViewById(R.id.dialog_profile_picture)).setImageBitmap(user.getPicture_bmp());
 		((EditText) root.findViewById(R.id.dialog_profile_name_et)).setText(user.getFirstName());
 		((EditText) root.findViewById(R.id.dialog_profile_lastname_et)).setText(user.getLastName());
-		((EditText) root.findViewById(R.id.dialog_profile_email_et)).setText(user.getEmail());
-		((EditText) root.findViewById(R.id.dialog_profile_phone_et)).setText(user.getPhone());
+		((TextView) root.findViewById(R.id.dialog_profile_email_et)).setText(user.getEmail());
+		root.findViewById(R.id.dialog_profile_email_et).setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				email(activity, user.getEmail().trim());
+			}
+		});
+		((View) root.findViewById(R.id.dialog_profile_email_et).getParent()).setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				email(activity, user.getEmail().trim());
+			}
+		});
+		((TextView) root.findViewById(R.id.dialog_profile_phone_et)).setText(user.getPhone());
+		root.findViewById(R.id.dialog_profile_phone_et).setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				call(activity, user.getPhone().trim());
+			}
+		});
+		((View) root.findViewById(R.id.dialog_profile_phone_et).getParent()).setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				call(activity, user.getPhone().trim());
+			}
+		});
+
 		if (Float.isNaN(user.getRating())) {
 			((TextView) root.findViewById(R.id.dialog_profile_value)).setText(activity.getString(R.string.generic_unrated));
 		} else {
@@ -113,5 +142,18 @@ public class ProfileDialog extends AlertDialog {
 
 	public void buttonPressed(boolean positive) {
 		this.dismiss();
+	}
+
+	private void call(Activity activity, String phone) {
+		Intent intent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + phone));
+		activity.startActivity(intent);
+	}
+
+	private void email(Activity activity, String email) {
+		Intent intent = new Intent(Intent.ACTION_SENDTO);
+		intent.setData(Uri.parse("mailto:"));
+		intent.putExtra(Intent.EXTRA_EMAIL, new String[] {email});
+		intent.putExtra(Intent.EXTRA_SUBJECT, activity.getString(R.string.app_name));
+		activity.startActivity(Intent.createChooser(intent, activity.getString(R.string.chooser_email)));
 	}
 }

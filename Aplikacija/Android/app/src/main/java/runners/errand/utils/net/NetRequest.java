@@ -180,7 +180,7 @@ public class NetRequest {
 		return s.toString();
 	}
 
-	String getJsonParams() {
+	public String getJsonParams() {
 		return json.toString();
 	}
 

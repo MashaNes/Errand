@@ -58,7 +58,7 @@ public class FindRequestsFragment extends Fragment {
                 R.drawable.ic_direct
         });
 
-        loadRequests();
+//        loadRequests();
 
         return root;
     }
@@ -112,28 +112,9 @@ public class FindRequestsFragment extends Fragment {
         netRequest.putParam("services", services);
         netRequest.putParam("min_rating", ((FilterFragment) fragments.get(0)).getMinRating());
         netRequest.putParam("no_rating", true);
-        if (activity.getUser().getStatus() == User.STATUS_RUNNING) {
-            netRequest.putParam("max_dist", ((FilterFragment) fragments.get(0)).getMaxDistance());
-            netRequest.putParam("latitude", Static.lat);
-            netRequest.putParam("longitude", Static.lng);
-        } else {
-            Address home = null;
-            for (Address address : activity.getUser().getAddresses()) {
-                if (address.isHome()) {
-                    home = address;
-                    break;
-                }
-            }
-            if (home != null) {
-                netRequest.putParam("max_dist", ((FilterFragment) fragments.get(0)).getMaxDistance());
-                netRequest.putParam("latitude", home.getLat());
-                netRequest.putParam("longitude", home.getLng());
-            } else {
-                netRequest.putNull("max_dist");
-                netRequest.putNull("latitude");
-                netRequest.putNull("longitude");
-            }
-        }
+        netRequest.putParam("max_dist", ((FilterFragment) fragments.get(0)).getMaxDistance());
+        netRequest.putParam("latitude", Static.lat);
+        netRequest.putParam("longitude", Static.lng);
         NetManager.add(netRequest);
     }
 
