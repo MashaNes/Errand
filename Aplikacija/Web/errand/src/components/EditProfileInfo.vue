@@ -3,10 +3,6 @@
   <div v-else>
     <div class="main-container">
       <div class="picture-side">
-        <div v-if="newPicture" @click="removePicture" class="remove-pic-div">
-          <img src="@/assets/remove.svg" height="20" width="20" class="remove-pic"/>
-          <span v-text="isSerbian ? 'Ukloni sliku' : 'Remove picture'"></span>
-        </div>
         <div class="media-center">
           <p class="image is-128x128"
             @drop.prevent="onDrop" @dragenter.prevent="onDragEnter" @dragleave.prevent="onDragLeave" 

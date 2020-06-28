@@ -29,6 +29,12 @@ export default {
             type: Object
         }
     },
+    data()
+    {
+        return{
+            profile_clicked: false
+        }
+    },
     computed:
     {
         isSerbian()
@@ -112,6 +118,7 @@ export default {
     {
         goToProfile()
         {
+            this.profile_clicked = true
             this.$router.push({
                 name: "PageViewProfile", 
                 params: {
@@ -122,6 +129,8 @@ export default {
         },
         kliknuto()
         {
+            if(this.profile_clicked)
+                return
             if(this.notification.notification_type == 1 || this.notification.notification_type == 6 || this.notification.notification_type == 7 || this.notification.notification_type == 10)
                 this.$router.push({ name: "PageViewRequest", params: { id: this.notification.type_id }})
             else if(this.notification.notification_type == 8)

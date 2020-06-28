@@ -29,6 +29,12 @@ export default {
             type: Object
         }
     },
+    data()
+    {
+        return{
+            profile_clicked: false
+        }
+    },
     computed:
     {
         isSerbian()
@@ -112,6 +118,7 @@ export default {
     {
         goToProfile()
         {
+            this.profile_clicked = true
             this.$router.push({
                 name: "PageViewProfile", 
                 params: {
@@ -122,6 +129,8 @@ export default {
         },
         kliknuto()
         {
+            if(this.profile_clicked)
+                return
             this.notification.opened = true
             var ids = []
             ids.push(this.notification.id)

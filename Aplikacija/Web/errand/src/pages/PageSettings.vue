@@ -23,7 +23,7 @@
                     </div>
                     <div class = "vuelidate-div">
                         <div class="settings-row">
-                            <input type="number" class="skala" v-model="maxDistance" min="0.1" max="1000" step="0.1" :disabled="!IsMaxDistance" 
+                            <input type="number" class="skala" v-model="maxDistance" min="0" max="1000" step="0.1" :disabled="!IsMaxDistance" 
                                    :class="{'ne-valja' : isMaxDistInvalid}"
                                    @blur="MaxDistReset"
                                    v-if="isEditing">
@@ -31,8 +31,8 @@
                             <span class="brojka"> km </span>
                             <!--<input class = "checkBox" type="checkbox" v-model="IsMaxDistance">-->
                         </div>
-                        <label v-if="isMaxDistInvalid && isSerbian" class="danger">Između 0.1 i 1000</label>
-                        <label v-if="isMaxDistInvalid && !isSerbian" class="danger">Between 0.1 and 1000</label>
+                        <label v-if="isMaxDistInvalid && isSerbian" class="danger">Između 0 i 1000</label>
+                        <label v-if="isMaxDistInvalid && !isSerbian" class="danger">Between 0 and 1000</label>
                     </div>
                 </div>
                 <div class="settings-element" v-if="isEditing || noAutoAdd">
@@ -108,7 +108,7 @@ import {between} from "vuelidate/lib/validators"
 export default {
     validations:
     {
-        maxDistance: { between : between(0.1,1000) },
+        maxDistance: { between : between(0,1000) },
         discount: {between: between(0,100) },
         brSaradnji: {between: between(0,20)}
     },
@@ -118,7 +118,7 @@ export default {
             scale: (this.$store.state.authUser.min_rating - 1) * 25,
             maxDistance: this.$store.state.authUser.max_dist,
             IsMaxDistance: true,
-            discount: this.$store.state.authUser.benefit_discount * 100,
+            discount: Math.round(this.$store.state.authUser.benefit_discount * 100).toFixed(0),
             brSaradnji: this.$store.state.authUser.benefit_requirement,
             isEditing: false,
             noAutoAdd: this.$store.state.authUser.benefit_requirement == -1
