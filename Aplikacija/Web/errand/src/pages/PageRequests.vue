@@ -282,8 +282,15 @@
             shouldSetFlags(type, type_id) {
                 let ret = {}
                 const currentRoute = this.$route.path
-                if(type == 0 || type == 3 || type == 4)
-                    return null
+                if(type == 0 || type == 3 || type == 4) {
+                    if(currentRoute == "/notifications") {
+                        this.$store.state.notificationNumber -= 1
+                        ret.setSeen = true
+                        ret.setOpened = false
+                    }
+                    else ret = null
+                    return ret
+                }
                 else if(((type == 1 || type == 6 || type == 7 || type == 10 || type == 2 || type == 5) && currentRoute == "/viewRequest/" + type_id) ||
                         (type == 8 && currentRoute == "/ratings/" + this.$store.state.authUser.id) ||
                         (type == 9 && currentRoute == "/achievements/" + this.$store.state.authUser.id)) {
@@ -339,17 +346,29 @@
                 const store = this.$store
 
                 this.$store.state.firebaseOnMessageFunction = this.$messaging.onMessage(function(payload) {
-                    store.state.notificationNumber += 1
-                    store.dispatch('fillFirebaseNotification', payload)
-                    store.dispatch('notificationReaction', payload.data)
-                    const flags = vm.shouldSetFlags(payload.data.notification_type, payload.data.type_id)
-                    if(store.state.notifications != null) {
-                        store.dispatch('fetchSpecificNotification', {id: payload.data.id, flags: flags})
+                    if(payload.data.notification_type == 11) {
+                        vm.$toasted.clear()
+                        store.state.logedIn = false
+                        vm.$router.push('/login')
+                        if(vm.isAdmin)
+                            store.dispatch("logoutUser")
+                        else
+                            store.dispatch("unregisterFromFirebase")
+                        store.state.showModalBan = payload.data
                     }
-                    if(flags != null)
-                        store.dispatch("setNotificationFlag", {ids: [payload.data.id], opened: flags.setOpened, seen: flags.setSeen})
-                    console.log("app.vue notification")
-                    console.log(payload)
+                    else {
+                        store.state.notificationNumber += 1
+                        store.dispatch('fillFirebaseNotification', payload)
+                        store.dispatch('notificationReaction', payload.data)
+                        const flags = vm.shouldSetFlags(payload.data.notification_type, payload.data.type_id)
+                        if(store.state.notifications != null) {
+                            store.dispatch('fetchSpecificNotification', {id: payload.data.id, flags: flags})
+                        }
+                        if(flags != null)
+                            store.dispatch("setNotificationFlag", {ids: [payload.data.id], opened: flags.setOpened, seen: flags.setSeen})
+                        console.log("app.vue notification")
+                        console.log(payload)
+                    }
                 })
             }
         }

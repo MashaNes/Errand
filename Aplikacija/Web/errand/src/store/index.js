@@ -82,7 +82,8 @@ export default new Vuex.Store({
         newRunnerRequest: null,
         newSuccessfullyFinishedRequest: null,
         newEditAccepted: null,
-        host: "localhost" //192.168.0.17
+        showModalBan: null,
+        host: "192.168.43.188" //192.168.0.17
     },
     getters:{
         getAuthUserId(state) {

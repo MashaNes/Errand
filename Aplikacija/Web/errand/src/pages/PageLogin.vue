@@ -102,12 +102,19 @@
         </div>
       </div>
     </div>
+    <ModalBannedAccount 
+      v-if="showModalBan"
+      :textS="textBanS"
+      :textE="textBanE"
+      @close="closeModal" />
   </section>
 </template>
 
 <script>
     import {required, email} from "vuelidate/lib/validators"
     import Spinner from "@/components/Spinner"
+    import ModalBannedAccount from "@/components/ModalBannedAccount"
+
     export default {
         data(){
             return {
@@ -121,7 +128,8 @@
         },
         components:
         {
-          Spinner
+          Spinner,
+          ModalBannedAccount
         },
         validations:
         {
@@ -155,6 +163,29 @@
             message()
             {
               return this.$store.state.messageToShow
+            },
+            showModalBan() {
+              return this.$store.state.showModalBan
+            },
+            textBanS() {
+              let text = "Ovom nalogu je zabranjen pristup do "
+              var datum = new Date(this.showModalBan.datetime)
+              var day = datum.getUTCDate()
+              var month = datum.getUTCMonth()+1
+              var year = datum.getUTCFullYear()
+              text += day + "." + month + "." + year + ".\n\n"
+              text += "Obrazloženje: " + this.showModalBan.body_sr
+              return text
+            },
+            textBanE() {
+              let text = "This account has been banned until "
+              var datum = new Date(this.showModalBan.datetime)
+              var day = datum.getUTCDate()
+              var month = datum.getUTCMonth()+1
+              var year = datum.getUTCFullYear()
+              text += day + "." + month + "." + year + ".\n\n"
+              text += "Explanation: " + this.showModalBan.body_en
+              return text
             }
         },
         methods:
@@ -168,6 +199,9 @@
             navigateTo()
             {
               this.$router.push('/requests')
+            },
+            closeModal() {
+              this.$store.state.showModalBan = null
             }
         }
     }
