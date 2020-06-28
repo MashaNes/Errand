@@ -907,7 +907,7 @@ class RequestOtherViewSet(viewsets.ModelViewSet):
         for _q in self.queryset:
             found = False
             for _t in _q.tasklist.all():
-                if _t.service_type.id == 1:
+                if _t.service_type.id == 1 and _q.status > 0:
                     found = True
             if found:
                 queryset.append(_q)
