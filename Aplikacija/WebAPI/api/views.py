@@ -711,7 +711,7 @@ class BanCreate(generics.ListCreateAPIView):
                 'body_en' : ban.comment,
                 'datetime' : ban.until
                 }
-        utils.send_notification(banned_user.user, None, data)
+        utils.send_notification(banned_user, None, data)
 
         return Response({'detail' : 'success'})
 
