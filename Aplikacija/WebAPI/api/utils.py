@@ -470,7 +470,7 @@ def filter_requests(queryset, data):
                 if data['unrated_done_by'] and not _q.request.rated_working_with:
                     found = True
 
-            if (not _q.request.working_with or
+            elif (_q.request.working_with and
                     _q.request.working_with.id == data['created_or_done_by']):
                 if not data['unrated_created_by']:
                     found = True
