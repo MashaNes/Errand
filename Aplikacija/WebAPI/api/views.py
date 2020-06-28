@@ -1392,7 +1392,7 @@ class NotificationViewSet(viewsets.ModelViewSet):
             response = serializer.data
             if response['working_with'] and response['working_with']['picture']:
                 response['working_with']['picture'] = utils.load_img(response['working_with']['picture'])
-        return Response({'detail' : response})
+        return Response(response)
 
 # GET unseen_notifications/{id}
 class UnseenNotificationsViewSet(viewsets.ModelViewSet):
