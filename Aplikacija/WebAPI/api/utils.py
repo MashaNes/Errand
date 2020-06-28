@@ -649,7 +649,7 @@ def send_notification(user, notification, notification_body):
         devices.send_message(data=notification_body)
 
 def create_notification(notification_type, type_id, working_with=None, address_ids=None,
-                        first_name=None, last_name=None, request=None, rating=None,
+                        first_name=None, last_name=None, request=None, rating=0,
                         achievement_sr=None, achievement_en=None, level=0, price=None,
                         achievement_type=None):
     _ww = None
@@ -748,8 +748,8 @@ def create_notification(notification_type, type_id, working_with=None, address_i
                 'working_with' : _ww,
                 'title_sr' : "Nova ocena",
                 'title_en' : "New rating",
-                'body_sr' : f"Korisnik {first_name} {last_name} Vas je ocenio ocenom {rating}.",
-                'body_en' : f"{first_name} {last_name} has rated you with grade {rating}."
+                'body_sr' : f"Korisnik {first_name} {last_name} Vas je ocenio ocenom {int(rating)}.",
+                'body_en' : f"{first_name} {last_name} has rated you with grade {int(rating)}."
             },
             {
                 'id' : None,

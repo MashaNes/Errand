@@ -1386,8 +1386,13 @@ class NotificationViewSet(viewsets.ModelViewSet):
     def retrieve(self, request, pk):
         queryset = models.Notification.objects.all()
         notif = get_object_or_404(queryset, pk=pk)
-        serializer = serializers.NotificationSerializer(notif)
-        return Response(serializer.data)
+        response = {}
+        if notif:
+            serializer = serializers.NotificationSerializer(notif)
+            response = serializer.data
+            if response['working_with'] and response['working_with']['picture']:
+                response['working_with']['picture'] = utils.load_img(response['working_with']['picture'])
+        return Response({'detail' : response})
 
 # GET unseen_notifications/{id}
 class UnseenNotificationsViewSet(viewsets.ModelViewSet):
