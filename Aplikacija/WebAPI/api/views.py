@@ -975,7 +975,7 @@ class FilterRequestViewSet(viewsets.ModelViewSet):
         }
 
         return Response(custom_response)
-.
+
 # POST search_requests/
 class SearchRequestViewSet(viewsets.ModelViewSet):
     queryset = models.FullRequest.objects.all()
