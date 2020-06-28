@@ -389,7 +389,7 @@ export default {
             return{
                 series: [{
                     name: (this.isSerbian? "Broj korisnika koji je izvršavaju": "Number of users who offer it"),
-                    data: this.statistics.tasks_per_service
+                    data: this.statistics.user_service_per_service
                 }],
                 chartOptions: 
                 {
