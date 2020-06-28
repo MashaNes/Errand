@@ -105,6 +105,7 @@ class LogIn(ObtainAuthToken):
             if fulluser.ban.until > datetime.now(timezone.utc):
                 custom_response = {
                     'detail' : 'Your account has been banned.',
+                    'comment' : fulluser.ban.comment,
                     'datetime' : fulluser.ban.until
                 }
                 return Response(custom_response)
