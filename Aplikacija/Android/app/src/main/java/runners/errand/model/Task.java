@@ -112,7 +112,7 @@ public class Task {
         } else {
             if (result.length() > 0) result.deleteCharAt(result.length() - 1);
         }
-        return result.toString();
+        return result.toString().trim();
     }
 
     public void setId(int id) {

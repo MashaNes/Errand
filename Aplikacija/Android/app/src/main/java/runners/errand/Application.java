@@ -13,16 +13,4 @@ public class Application extends MultiDexApplication {
 	}
 }
 
-//	Maybe
-//	- Rating in request third fragment ? api doesn't support
-//	- Show distance and search requests ?
-//	- Achievements dialog to show condition numbers per level of achievement when you click on an achievement ?
-//	- Remove picture
-//	- Trim all strings from forms
-
-// 	Still API
-//	- Geofence - On notification: edit accepted = remove and add a new one for given address
-
-//	Crash: OOM because of pictures ?
-//	API: search_requests returns your own requests; filtered in client so no need to fix
 
