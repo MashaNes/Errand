@@ -15,18 +15,22 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.security.acl.LastOwnerException;
 import java.util.ArrayList;
 
 import runners.errand.MainActivity;
 import runners.errand.R;
 import runners.errand.adapter.CustomPagerAdapter;
 import runners.errand.model.Request;
+import runners.errand.ui.request.StatusFragment;
+import runners.errand.utils.Static;
 import runners.errand.utils.net.NetManager;
 import runners.errand.utils.net.NetRequest;
 
 public class RequestsFragment extends Fragment {
     public static final String EXTRA_REFRESH_ALL = "runners.errand.ui.requests.EXTRA_REFRESH_ALL";
     public static final String EXTRA_REFRESH_BY_ID = "runners.errand.ui.requests.EXTRA_REFRESH_BY_ID";
+    public static final String EXTRA_REFRESH_TAB = "runners.errand.ui.requests.EXTRA_REFRESH_TAB";
 
     private SwipeRefreshLayout refreshLayout;
     private MainActivity activity;
@@ -84,6 +88,19 @@ public class RequestsFragment extends Fragment {
         if (id != -1) {
             refreshLayout.setRefreshing(true);
             activity.apiGetRequest(id);
+        } else if (Static.requests_id != Integer.MIN_VALUE) {
+            refreshLayout.setRefreshing(true);
+            activity.apiGetRequest(Static.requests_id);
+            Static.requests_id = Integer.MIN_VALUE;
+        }
+
+        int tab = -1;
+        if (savedInstanceState != null) tab = savedInstanceState.getInt(EXTRA_REFRESH_TAB, -1);
+        if (tab > -1 && tab < 3) {
+            pager.setCurrentItem(tab, true);
+        } else if (Static.requests_tab > -1 && Static.requests_tab < 3) {
+            pager.setCurrentItem(Static.requests_tab, true);
+            Static.requests_tab = Integer.MIN_VALUE;
         }
 
         if (activity.getUser().getRequests() == null || activity.getUser().getRequests().isEmpty()) {

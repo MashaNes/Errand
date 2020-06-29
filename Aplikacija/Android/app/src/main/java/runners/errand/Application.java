@@ -20,9 +20,6 @@ public class Application extends MultiDexApplication {
 //	- Remove picture
 //	- Trim all strings from forms
 
-// 	Do
-//	- Check required fields on register ? first name, last name, email, repeat password
-
 // 	Still API
 //	- Geofence - On notification: edit accepted = remove and add a new one for given address
 

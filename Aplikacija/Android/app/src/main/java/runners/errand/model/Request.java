@@ -366,4 +366,8 @@ public class Request {
     public void setEdits(ArrayList<Edit> edits) {
         this.edits = edits;
     }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
 }

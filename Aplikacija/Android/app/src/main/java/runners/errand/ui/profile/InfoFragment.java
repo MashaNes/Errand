@@ -148,7 +148,10 @@ public class InfoFragment extends Fragment {
 //			fillAddresses();
 //		}
 		addresses.clear();
-		addresses.addAll(user.getAddresses());
+//		addresses.addAll(user.getAddresses());
+		for (Address address : user.getAddresses()) {
+			addresses.add(address.clone());
+		}
 		fillAddresses();
 
 		if (editing && picture_bmp != null) {
@@ -238,14 +241,14 @@ public class InfoFragment extends Fragment {
 				@Override
 				public void onClick(View v) {
 					if (!address.isHome()) {
-						for (int i = 0; i < addresses.size(); i++) {
-							Address a = addresses.get(i);
-							if (a.isHome()) {
-								a.setHome(false);
-								((ImageView) addressLayout.getChildAt(i).findViewById(R.id.item_address_home)).setImageDrawable(getResources().getDrawable(R.drawable.ic_home_outline));
-								break;
-							}
-						}
+//						for (int i = 0; i < addresses.size(); i++) {
+//							Address a = addresses.get(i);
+//							if (a.isHome()) {
+//								a.setHome(false);
+//								((ImageView) addressLayout.getChildAt(i).findViewById(R.id.item_address_home)).setImageDrawable(getResources().getDrawable(R.drawable.ic_home_outline));
+//								break;
+//							}
+//						}
 						addressItemHome.setImageDrawable(getResources().getDrawable(R.drawable.ic_home_filled));
 						address.setHome(true);
 					} else {
@@ -321,10 +324,12 @@ public class InfoFragment extends Fragment {
 				apiUserUpdate();
 
 				for (Address address : addresses) {
+					Log.e("ADDR", address.toString());
 					Address a = findAddress(address.getId(), user.getAddresses());
 					if (a == null) {
 						apiAddressAdd(address);
 					} else {
+						Log.e("ADDR F", a.toString() + "  --  " + a.equals(address));
 						if (!a.equals(address)) {
 							apiAddressUpdate(address);
 						}
@@ -426,7 +431,7 @@ public class InfoFragment extends Fragment {
 			ivPicture.setImageBitmap(user.getPicture_bmp());
 		else
 			ivPicture.setImageDrawable(getResources().getDrawable(R.drawable.ic_face));
-		user.getAddresses().clear();
+//		user.getAddresses().clear();
 	}
 
 	@Nullable

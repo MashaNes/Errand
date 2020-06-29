@@ -40,6 +40,7 @@ import runners.errand.model.Request;
 import runners.errand.model.ServicePrefs;
 import runners.errand.model.Task;
 import runners.errand.ui.requests.RequestsFragment;
+import runners.errand.utils.Static;
 import runners.errand.utils.dialogs.MapDialog;
 import runners.errand.utils.dialogs.ProfileDialog;
 import runners.errand.utils.dialogs.SimpleDialog;
@@ -245,8 +246,9 @@ public class SendOfferFragment extends Fragment {
 						SimpleDialog.buildMessageDialog(activity, getString(R.string.generic_success), getString(R.string.offer_sent), "", new Runnable() {
 							@Override
 							public void run() {
-//								Bundle bundle = new Bundle();
-//								bundle.putInt(RequestsFragment.EXTRA_REFRESH_BY_ID, request.getId());
+								Bundle bundle = new Bundle();
+								bundle.putInt(RequestsFragment.EXTRA_REFRESH_TAB, 1);
+								Static.requests_tab = 1;
 								activity.navigateTo(R.id.nav_page_requests);
 							}
 						});

@@ -1,5 +1,7 @@
 package runners.errand.model;
 
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -87,14 +89,15 @@ public class Address {
 
 	@Override
 	public boolean equals(@Nullable Object obj) {
-		Address comp = ((Address) obj);
+		Address comp;
+		if (obj instanceof Address) comp = ((Address) obj);
+		else return false;
+		Log.e("ADDR E", (comp.getLat() == lat) + ", " + (comp.getLng() == lng) + ", " + (comp.getName().equals(name)) + ", " + (comp.isHome() == home));
 		return
-				comp != null &&
 				comp.getLat() == lat &&
 				comp.getLng() == lng &&
 				comp.getName().equals(name) &&
-				comp.isHome() == home &&
-				comp.isArrived() == arrived;
+				comp.isHome() == home;
 	}
 
 	public JSONObject toJSON() {
@@ -109,5 +112,17 @@ public class Address {
 			e.printStackTrace();
 		}
 		return o;
+	}
+
+	@Override
+	public String toString() {
+		return "Address{" +
+				"id=" + id +
+				", name='" + name + '\'' +
+				", lng=" + lng +
+				", lat=" + lat +
+				", home=" + home +
+				", arrived=" + arrived +
+				'}';
 	}
 }

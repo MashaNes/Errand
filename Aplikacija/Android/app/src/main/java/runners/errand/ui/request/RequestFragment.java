@@ -34,6 +34,7 @@ public class RequestFragment extends Fragment {
 	private ArrayList<Fragment> fragments = new ArrayList<>();
 	private Request request = null;
 	private MainActivity activity;
+	private CustomPagerAdapter adapter;
 
 	@Nullable
 	@Override
@@ -60,7 +61,6 @@ public class RequestFragment extends Fragment {
 		fragments.clear();
 		fragments.add(new TasksFragment());
 		fragments.add(new MapFragment());
-		Log.e("TEST123", request.getId() + ": " + request.getName() + ", " + (request.getMyOffer() == null) + ", " + (request.getAcceptedOffer() == null));
 		if (activity.getUser().getId() == request.getCreatedBy().getId()) {
 			if (request.getStatus() == Request.STATUS_PENDING) {
 				fragments.add(new ViewOffersFragment());
@@ -79,7 +79,7 @@ public class RequestFragment extends Fragment {
 		loadEdits();
 
 		ViewPager pager = root.findViewById(R.id.view_pager);
-		CustomPagerAdapter adapter = new CustomPagerAdapter(
+		adapter = new CustomPagerAdapter(
 				getChildFragmentManager(),
 				fragments
 		);
@@ -117,12 +117,13 @@ public class RequestFragment extends Fragment {
 							for (int i = 0; i < offers.length(); i++) {
 								request.getOffers().add(new Offer(offers.optJSONObject(i)));
 							}
-							if (fragments.get(2) instanceof ViewOffersFragment) ((ViewOffersFragment) fragments.get(2)).dataSetChanged();
+							if (fragments.get(2) instanceof ViewOffersFragment)	((ViewOffersFragment) fragments.get(2)).dataSetChanged();
 							if (fragments.get(2) instanceof StatusFragment) ((StatusFragment) fragments.get(2)).setupUI();
 						}
 					} else {
 						JSONObject acceptedOffer = o.optJSONObject("accepted_offer");
 						if (acceptedOffer != null) request.setAcceptedOffer(new Offer(acceptedOffer));
+//						if (fragments.get(2) instanceof ViewOffersFragment && request.getAcceptedOffer() != null) fragments.set(2, new StatusFragment());
 					}
 				} catch (JSONException e) {
 					e.printStackTrace();
@@ -198,8 +199,13 @@ public class RequestFragment extends Fragment {
 			((StatusFragment) fragments.get(2)).setRequest(request);
 		}
 		if (fragments.get(2) instanceof ViewOffersFragment) {
-			loadOffers();
-			((ViewOffersFragment) fragments.get(2)).dataSetChanged(request);
+			if (request.getAcceptedOffer() != null && request.getWorkingWith() != null && request.getStatus() == Request.STATUS_ACTIVE) {
+				fragments.set(2, new StatusFragment());
+				adapter.notifyDataSetChanged();
+			} else {
+				loadOffers();
+				((ViewOffersFragment) fragments.get(2)).dataSetChanged(request);
+			}
 		}
 	}
 }

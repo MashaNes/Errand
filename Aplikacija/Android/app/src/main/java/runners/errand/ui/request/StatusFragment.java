@@ -40,6 +40,7 @@ import runners.errand.model.Request;
 import runners.errand.model.ServicePrefs;
 import runners.errand.model.Task;
 import runners.errand.model.User;
+import runners.errand.ui.requests.RequestsFragment;
 import runners.errand.utils.ImageUtils;
 import runners.errand.utils.Static;
 import runners.errand.utils.dialogs.EditRequestDialog;
@@ -159,6 +160,11 @@ public class StatusFragment extends Fragment {
 					public void run() {
 						GeofencingBroadcastReceiver.removeGeofence(activity, request.getId());
 						apiRequestFinish(3, 0, 0);
+//						activity.apiGetRequest(request.getId());
+						Bundle bundle = new Bundle();
+						bundle.putInt(RequestsFragment.EXTRA_REFRESH_BY_ID, request.getId());
+						Static.requests_id = request.getId();
+						activity.navigateTo(R.id.nav_page_requests);
 					}
 				}, null);
 			}

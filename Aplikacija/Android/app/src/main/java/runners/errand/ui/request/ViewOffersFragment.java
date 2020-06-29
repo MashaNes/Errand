@@ -74,7 +74,7 @@ public class ViewOffersFragment extends Fragment {
 
 		list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
-			public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
+			public void onItemClick(final AdapterView<?> p, View view, final int position, long id) {
 				new ProfileDialog(activity, request.getOffers().get(position).getCreatedBy(), getString(R.string.request_offer_accept), getString(R.string.generic_close)) {
 					@Override
 					public void buttonPressed(boolean positive) {
@@ -84,10 +84,13 @@ public class ViewOffersFragment extends Fragment {
 								public void success() {
 									super.success();
 									request.setAcceptedOffer(request.getOffers().get(position));
+									request.setStatus(Request.STATUS_ACTIVE);
+									request.setWorkingWith(request.getOffers().get(position).getCreatedBy());
 									dataSetChanged();
-									Bundle bundle = new Bundle();
-									bundle.putInt(RequestsFragment.EXTRA_REFRESH_BY_ID, request.getId());
-									activity.navigateTo(R.id.nav_page_requests, bundle);
+//									parent.loadData(request);
+//									Bundle bundle = new Bundle();
+//									bundle.putInt(RequestsFragment.EXTRA_REFRESH_BY_ID, request.getId());
+									activity.navigateTo(R.id.nav_page_requests);
 								}
 
 								@Override
