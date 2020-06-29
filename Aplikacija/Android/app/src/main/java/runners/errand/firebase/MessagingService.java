@@ -56,9 +56,7 @@ public class MessagingService extends FirebaseMessagingService {
 		String body_sr = remoteMessage.getData().get("body_sr");
 
 		if (category == Notification.CATEGORY_EDIT_ACCEPTED) {
-			// TODO: Api, list of addresses changed with the edit
-//			GeofencingBroadcastReceiver.removeGeofence(this, typeId, addressId);
-//			GeofencingBroadcastReceiver.addGeofence(this, typeId, addressId, lat, lng);
+			GeofencingBroadcastReceiver.fixRequestGeofences(this, typeId);
 		} else if (category == Notification.CATEGORY_REQUEST_FAILED || category == Notification.CATEGORY_REQUEST_SUCCESS) {
 			GeofencingBroadcastReceiver.removeGeofence(this, typeId);
 		}

@@ -157,6 +157,7 @@ public class RequestFragment extends Fragment {
 					JSONObject o = new JSONObject(getResult().getMsg());
 					JSONArray edits = o.optJSONArray("edits");
 					if (edits != null) {
+						request.getEdits().clear();
 						for (int i = 0; i < edits.length(); i++) {
 							request.getEdits().add(new Edit(edits.optJSONObject(i).optJSONObject("request_edit")));
 							request.getEdits().get(request.getEdits().size() - 1).setId(edits.optJSONObject(i).optInt("id"));

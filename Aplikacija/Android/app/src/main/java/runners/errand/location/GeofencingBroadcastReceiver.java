@@ -17,12 +17,14 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import runners.errand.model.Address;
 import runners.errand.model.Request;
 import runners.errand.model.Task;
 import runners.errand.utils.PreferenceManager;
@@ -151,6 +153,52 @@ public class GeofencingBroadcastReceiver extends BroadcastReceiver {
 				}
 			}
 		};
+		NetManager.add(netRequest);
+	}
+
+	public static void fixRequestGeofences(final Context context, final int requestId) {
+		NetManager.setToken(PreferenceManager.getString(context, PreferenceManager.GROUP_LOGIN, PreferenceManager.KEY_TOKEN));
+		NetRequest netRequest = new NetRequest(NetManager.getApiServer() + NetManager.API_REQUEST_INFO_FILTERED, NetManager.POST) {
+			@Override
+			public void success() {
+				super.success();
+				try {
+					JSONObject o = new JSONObject(getResult().getMsg());
+					JSONArray tasklist = o.optJSONArray("tasklist");
+					if (tasklist != null && tasklist.length() > 0) {
+						for (int i = 0; i < tasklist.length(); i++) {
+							JSONObject task = tasklist.optJSONObject(i);
+							if (task != null) {
+								JSONObject tmp = task.optJSONObject("address");
+								if (tmp != null) {
+									Address address = new Address(tmp);
+									if (!address.isArrived()) {
+										removeGeofence(context, requestId, address.getId());
+										addGeofence(context, requestId, address.getId(), address.getLat(), address.getLng());
+									}
+								}
+							}
+						}
+					}
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+			}
+
+			@Override
+			public void error() {
+				super.error();
+			}
+		};
+		netRequest.putParam("request", requestId);
+		netRequest.putParam("offers", false);
+		netRequest.putParam("edits", false);
+		netRequest.putParam("accepted_offer", false);
+		netRequest.putParam("rating_created_by", false);
+		netRequest.putParam("rating_working_with", false);
+		netRequest.putParam("tasklist", true);
+		netRequest.putParam("destination", false);
+		netRequest.putParam("pictures", false);
 		NetManager.add(netRequest);
 	}
 }
