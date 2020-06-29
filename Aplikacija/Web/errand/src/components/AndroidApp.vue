@@ -6,17 +6,11 @@
                 <div class="text-div">
                     Ako tražite mogućnosti izvršavanja usluga kao što su pretraga zahteva dostupnih za izršavanje, pretraga Vama lično prosleđenih zahteva, slanje ponuda, pregled informacija vezanih za ponude... Za takve funkcionalnosti moraćete da preuzmete našu Android aplikaciju namenjenu za korišćenje na telefonu kako će Vam telefon biti neophodan pri obavljanju poslova izvršenja usluga. U mobilnu aplikaciju možete se prijaviti sa već postojećim nalogom, ne morate kreirati novi.
                 </div>
-                <div class = "dugme-div">
-                    <button type="button" class="btn btn-primary dugme">Preuzmi mobilnu aplikaciju </button>
-                </div>
             </div>
             <div class = "inner-div" v-else>
                 <div class="text-div">
                     If you are looking for the ability to be an errand runner and the possibilities such as searching for requests to fulfil, finding requests sent personally to you, sending offers, finding information regarding your offers etc. Then you must download our Android application made for mobile usage which will be necessary for you if you desire to run Errands using our platform. When logging in to the mobile application you can use the account you have already created, there is no need for you to create a new one.
                 </div>
-                <div class = "dugme-div">
-                    <button type="button" class="btn btn-primary dugme">Download mobile app</button>
-                </div> 
             </div>
         </div>
         <div class = "element donji-div">

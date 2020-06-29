@@ -331,11 +331,11 @@
             if(!this.$store.state.registeredOnFirebase) {
                 this.$messaging.requestPermission()
                 .then(function() {
-                    console.log("this is a notification")
+                    //console.log("this is a notification")
                     return vm.$messaging.getToken()
                 })
                 .then(function(token) {
-                    console.log(token)
+                    //console.log(token)
                     myToken = token
                     vm.$store.dispatch('firebaseRegister', myToken)
                 })
@@ -366,8 +366,8 @@
                         }
                         if(flags != null)
                             store.dispatch("setNotificationFlag", {ids: [payload.data.id], opened: flags.setOpened, seen: flags.setSeen})
-                        console.log("app.vue notification")
-                        console.log(payload)
+                        //console.log("app.vue notification")
+                        //console.log(payload)
                     }
                 })
             }

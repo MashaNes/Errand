@@ -83,7 +83,7 @@ export default new Vuex.Store({
         newSuccessfullyFinishedRequest: null,
         newEditAccepted: null,
         showModalBan: null,
-        host: "192.168.43.188" //192.168.0.17
+        host: "localhost" //192.168.43.188
     },
     getters:{
         getAuthUserId(state) {
@@ -140,7 +140,7 @@ export default new Vuex.Store({
                         else if(objectToFill.object == "overAuthRequests" && objectToFill.page != 1)
                             this.state.onPageOne = false
                         this.state.isDataLoaded = true
-                        console.log(data)
+                        //console.log(data)
                     })
                 }
                 else
@@ -177,13 +177,13 @@ export default new Vuex.Store({
                     {
                         p.json().then(data =>
                         {
-                            console.log(data)
+                            //console.log(data)
                             this.state.usersWithBenefit = data.results
                         })
                     }
                     else
                     {
-                        console.log("Error")
+                        //console.log("Error")
                     }
                 });
         },
@@ -213,7 +213,7 @@ export default new Vuex.Store({
                     {
                         p.json().then(data =>
                         {
-                            console.log(data)
+                            //console.log(data)
                             if(data.detail == "Your account has been banned.")
                             {
                                 var datum = new Date(data.datetime)
@@ -245,7 +245,7 @@ export default new Vuex.Store({
                     }
                     else
                     {
-                        console.log("Error")
+                        //console.log("Error")
                         this.state.messageToShow = "wrong"
                         this.state.isDataLoaded = true
                     }
@@ -279,7 +279,7 @@ export default new Vuex.Store({
                     {
                         p.json().then(data =>
                         {
-                            console.log(data)
+                            //console.log(data)
                             this.state.authUser = data['user']
                             this.state.logedIn = true
                             this.state.token = data['token']
@@ -295,7 +295,7 @@ export default new Vuex.Store({
                     }
                     else
                     {
-                        console.log("Error")
+                        //console.log("Error")
                         this.state.isDataLoaded = true
                     }
                 });
@@ -329,7 +329,7 @@ export default new Vuex.Store({
                     {
                         p.json().then(data =>
                         {
-                            console.log(data)
+                            //console.log(data)
                             if(data['detail'] == "failed")
                             {
                                 this.state.isDataLoaded = true
@@ -351,7 +351,7 @@ export default new Vuex.Store({
                     }
                     else
                     {
-                        console.log("Error")
+                        //console.log("Error")
                         this.state.messageToShow = "error"
                         this.state.isDataLoaded = true
                     }
@@ -386,13 +386,13 @@ export default new Vuex.Store({
             }).then(p => {
                 if(p.ok) {
                     p.json().then(data => {
-                        console.log(data)
+                        //console.log(data)
                         commit('setUserAchievements', {achievements: data, id: userId})
-                        console.log(this.state.userAchievements)
+                        //console.log(this.state.userAchievements)
                         this.state.isDataLoaded = true
                     })
                 }
-                else console.log("Error")
+                //else //console.log("Error")
             })
         },
         fillUserRatings({commit}, {userId, endpoint, updateAllRatings}) {
@@ -421,17 +421,17 @@ export default new Vuex.Store({
             }).then(p => {
                 if(p.ok) {
                     p.json().then(data => {
-                        console.log(data)
+                        //console.log(data)
                         commit('setUserRatings', {ratings: data, id: userId})
                         if(updateAllRatings && this.state.allRatings != 0) {
                             this.state.allRatings.results.unshift(data.results[0])
                             this.state.allRatings.count ++
                         }
-                        console.log(this.state.userRatings)
+                        //console.log(this.state.userRatings)
                         this.state.isDataLoaded = true
                     })
                 }
-                else console.log("Error")
+                //else //console.log("Error")
             })
         },
         fillAllUserRatings({commit}, userId) {
@@ -459,12 +459,12 @@ export default new Vuex.Store({
             }).then(p => {
                 if(p.ok) {
                     p.json().then(data => {
-                        console.log(data)
+                        //console.log(data)
                         commit('setAllUserRatings', data)
-                        console.log(this.state.allRatings)
+                        //console.log(this.state.allRatings)
                     })
                 }
-                else console.log("Error")
+                //else //console.log("Error")
             })
         },
         fillUserAddresses({commit}, userId) {
@@ -493,13 +493,13 @@ export default new Vuex.Store({
             }).then(p => {
                 if(p.ok) {
                     p.json().then(data => {
-                        console.log(data)
+                        //console.log(data)
                         commit('setUserAddresses', data.results)
-                        console.log(this.state.userAddresses)
+                        //console.log(this.state.userAddresses)
                         this.state.isDataLoaded = true
                     })
                 }
-                else console.log("Error")
+                //else //console.log("Error")
             })
         },
         addAddress({commit}, address) {
@@ -522,7 +522,7 @@ export default new Vuex.Store({
                         p.json().then(data => {
                             this.state.userAddresses.push(data)
                             this.state.addressAddCount++
-                            console.log(this.state.userAddresses)
+                            //console.log(this.state.userAddresses)
                         })
                     }
                 })
@@ -575,12 +575,12 @@ export default new Vuex.Store({
 
                 if(p.ok) {
                     p.json().then(data=> {
-                        console.log(data)
-                        console.log(this.state.authUser)
+                        //console.log(data)
+                        //console.log(this.state.authUser)
                     })
                 }
                 else {
-                    console.log("error")
+                    //console.log("error")
                 }
 
             })
@@ -610,7 +610,7 @@ export default new Vuex.Store({
 
                 if(p.ok) {
                     p.json().then(data => {
-                        console.log(data)
+                        //console.log(data)
                         const toCommit = {
                             count: data.count,
                             next: data.next,
@@ -620,7 +620,7 @@ export default new Vuex.Store({
                         commit('setUsersPortion', toCommit)
                     })
                 }
-                else console.log("Error")
+                //else //console.log("Error")
             })
 
         },
@@ -649,7 +649,7 @@ export default new Vuex.Store({
 
                 if(p.ok) {
                     p.json().then(data=> {
-                        console.log(data)
+                        //console.log(data)
                         this.state.success = true
                         commit('setUser', data.rated_user)
                         if(isInUnratedCreated) {
@@ -686,7 +686,7 @@ export default new Vuex.Store({
                     })
                 }
                 else {
-                    console.log("error")
+                    //console.log("error")
                 }
             })
         },
@@ -707,12 +707,12 @@ export default new Vuex.Store({
             }).then( p => {
                 if(p.ok) {
                     p.json().then(data => {
-                        console.log(data)
+                        //console.log(data)
                         this.state.success = true
                     })
                 }
                 else {
-                    console.log("Error")
+                    //console.log("Error")
                 }
             });
         },
@@ -746,14 +746,14 @@ export default new Vuex.Store({
                     {
                         p.json().then(data =>
                         {
-                            console.log(data)
+                            //console.log(data)
                             this.state.userServices = data.results
                             this.dispatch("fillServices")
                         })
                     }
                     else
                     {
-                        console.log("Error")
+                        //console.log("Error")
                     }
                 });
         },
@@ -781,13 +781,13 @@ export default new Vuex.Store({
             }).then( p => {
                     if(p.ok) {
                         p.json().then(data => {
-                            console.log(data)
+                            //console.log(data)
                             commit('setNotAuthUserServices', data.results)
                             this.state.isDataLoaded = true
                         })
                     }
                     else {
-                        console.log("Error")
+                        //console.log("Error")
                     }
                 });
         }, 
@@ -807,7 +807,7 @@ export default new Vuex.Store({
                     {
                         p.json().then(data =>
                         {
-                            console.log(data)
+                            //console.log(data)
                             var services = data["results"]
                             
                             var pom = []
@@ -828,13 +828,13 @@ export default new Vuex.Store({
                                     }
                                 })
                                 this.state.services = services
-                                console.log(this.state.services)
+                                //console.log(this.state.services)
                             }
                         })
                     }
                     else
                     {
-                        console.log("Error")
+                        //console.log("Error")
                     }
                 }); 
         },
@@ -868,12 +868,12 @@ export default new Vuex.Store({
                     {
                         p.json().then(data =>
                         {
-                            console.log(data)
+                            //console.log(data)
                         })
                     }
                     else
                     {
-                        console.log("Error")
+                        //console.log("Error")
                     }
                 });
         },
@@ -894,7 +894,7 @@ export default new Vuex.Store({
                     {
                         p.json().then(data =>
                         {
-                            console.log(data)
+                            //console.log(data)
                             this.state.authUser = data
                             this.state.logedIn = true
                             this.state.token = payload.token
@@ -916,7 +916,7 @@ export default new Vuex.Store({
                     else
                     {
                         this.state.isDataLoaded = true
-                        console.log("Error")
+                        //console.log("Error")
                     }
                 });
         },
@@ -942,7 +942,7 @@ export default new Vuex.Store({
                 {
                     if(p.ok)
                     {
-                        console.log("loged out")
+                        //console.log("loged out")
                         this.state.authUser = null
                         this.state.token = null
                         this.state.isAdmin = false
@@ -984,7 +984,7 @@ export default new Vuex.Store({
                     }
                     else
                     {
-                        console.log("Error")
+                        //console.log("Error")
                     }
                 });
         },
@@ -1013,12 +1013,12 @@ export default new Vuex.Store({
                     {
                         p.json().then(data =>
                         {
-                            console.log(data)
+                            //console.log(data)
                         })
                     }
                     else
                     {
-                        console.log("Error")
+                        //console.log("Error")
                     }
                 });
         },
@@ -1043,12 +1043,12 @@ export default new Vuex.Store({
                     {
                         p.json().then(data =>
                         {
-                            console.log(data)
+                            //console.log(data)
                         })
                     }
                     else
                     {
-                        console.log("Error")
+                        //console.log("Error")
                     }
                 });
         },
@@ -1077,13 +1077,13 @@ export default new Vuex.Store({
                     {
                         p.json().then(data =>
                         {
-                            console.log(data)
+                            //console.log(data)
                             this.dispatch("fillUserServices")
                         })
                     }
                     else
                     {
-                        console.log("Error")
+                        //console.log("Error")
                     }
                 });
         },
@@ -1101,7 +1101,7 @@ export default new Vuex.Store({
                 
                 if(p.ok) {
                     p.json().then(data => {
-                        console.log(data)
+                        //console.log(data)
                         if(!onlyRating)
                             commit('setUser', data)
                         else {
@@ -1114,12 +1114,12 @@ export default new Vuex.Store({
                         }
                         if(userId != vm.state.authUser.id)
                             vm.state.isDataLoaded = true
-                        console.log(vm.state.user)
+                        //console.log(vm.state.user)
                     })
                 }
                 else {
-                    console.log("Error")
-                    console.log(userId)
+                    //console.log("Error")
+                    //console.log(userId)
                 }
             })
         },
@@ -1144,12 +1144,12 @@ export default new Vuex.Store({
                     {
                         p.json().then(data =>
                         {
-                            console.log(data)
+                            //console.log(data)
                         })
                     }
                     else
                     {
-                        console.log("Error")
+                        //console.log("Error")
                     }
                 });
         },
@@ -1175,12 +1175,12 @@ export default new Vuex.Store({
                     {
                         p.json().then(data =>
                         {
-                            console.log(data)
+                            //console.log(data)
                         })
                     }
                     else
                     {
-                        console.log("Error")
+                        //console.log("Error")
                     }
                 });
         },
@@ -1206,14 +1206,14 @@ export default new Vuex.Store({
                     {
                         p.json().then(data =>
                         {
-                            console.log(data)
+                            //console.log(data)
                             this.dispatch("fillUsersWithBenefit")
                             this.state.userAdded = true
                         })
                     }
                     else
                     {
-                        console.log("Error")
+                        //console.log("Error")
                     }
                 });
         },
@@ -1248,7 +1248,7 @@ export default new Vuex.Store({
                         p.json().then(data =>
                         {
                             this.state.userAdded = true
-                            console.log(data)
+                            //console.log(data)
                             if(this.state.createdAuthRequests != null)
                                 this.state.createdAuthRequests.results.unshift(data)
                             const filters = {
@@ -1264,7 +1264,7 @@ export default new Vuex.Store({
                     }
                     else
                     {
-                        console.log("Error")
+                        //console.log("Error")
                     }
                 });
         },
@@ -1278,7 +1278,7 @@ export default new Vuex.Store({
             }).then(p => {
                 if(p.ok) {
                     p.json().then(data => {
-                        console.log(data)
+                        //console.log(data)
                         let isParticipant = false
                         if(data.request.created_by.id == this.state.authUser.id)
                             isParticipant = true
@@ -1303,7 +1303,7 @@ export default new Vuex.Store({
                     })
                 }
                 else {
-                    console.log("Error")
+                    //console.log("Error")
                 }
             }) 
         },
@@ -1317,13 +1317,13 @@ export default new Vuex.Store({
             }).then(p => {
                 if(p.ok) {
                     p.json().then(data => {
-                        console.log(data)
+                        //console.log(data)
                         let isParticipant = false
                         this.state.specificRequest = data
                     })
                 }
                 else {
-                    console.log("Error")
+                    //console.log("Error")
                 }
             })
         },
@@ -1337,12 +1337,12 @@ export default new Vuex.Store({
             }).then(p => {
                 if(p.ok) {
                     p.json().then(data => {
-                        console.log(data)
+                        //console.log(data)
                         this.state.newEditAccepted = data
                     })
                 }
                 else {
-                    console.log("Error")
+                    //console.log("Error")
                 }
             })
         },
@@ -1367,12 +1367,12 @@ export default new Vuex.Store({
                     {
                         p.json().then(data =>
                         {
-                            console.log(data)
+                            //console.log(data)
                         })
                     }
                     else
                     {
-                        console.log("Error")
+                        //console.log("Error")
                     }
                 });
         },
@@ -1398,7 +1398,7 @@ export default new Vuex.Store({
             }).then(p => {
                 if(p.ok) {
                     p.json().then(data => {
-                        console.log(data)
+                        //console.log(data)
                         this.state.filledInfoForRequest = requestId
                         if(filters.offers) {
                             this.state.offers = data.offers
@@ -1423,7 +1423,7 @@ export default new Vuex.Store({
                         this.state.isRequestInfoLoaded = true
                     })
                 }
-                else console.log("Error")
+               // else //console.log("Error")
             })
         },
         rejectOffer({commit}, offerId) {
@@ -1440,10 +1440,10 @@ export default new Vuex.Store({
             }).then(p => {
                 if(p.ok) {
                     p.json().then(data => {
-                        console.log(data)
+                        //console.log(data)
                     })
                 }
-                else console.log("Error")
+                //else //console.log("Error")
             })
         },
         acceptOffer({commit}, {offerId, requestId}) {
@@ -1461,10 +1461,10 @@ export default new Vuex.Store({
             }).then(p => {
                 if(p.ok) {
                     p.json().then(data => {
-                        console.log(data)
+                        //console.log(data)
                     })
                 }
-                else console.log("Error")
+                //else //console.log("Error")
             })
         },
         rejectEdit({commit}, offerId) {
@@ -1481,10 +1481,10 @@ export default new Vuex.Store({
             }).then(p => {
                 if(p.ok) {
                     p.json().then(data => {
-                        console.log(data)
+                        //console.log(data)
                     })
                 }
-                else console.log("Error")
+                //else //console.log("Error")
             })
         },
         acceptEdit({commit}, {requestId, editId}) {
@@ -1502,10 +1502,10 @@ export default new Vuex.Store({
             }).then(p => {
                 if(p.ok) {
                     p.json().then(data => {
-                        console.log(data)
+                        //console.log(data)
                     })
                 }
-                else console.log("Error")
+                //else //console.log("Error")
             })
         },
         createService({commit}, payload)
@@ -1533,13 +1533,13 @@ export default new Vuex.Store({
                     {
                         p.json().then(data =>
                         {
-                            console.log(data)
+                            //console.log(data)
                             this.dispatch("fillServices")
                         })
                     }
                     else
                     {
-                        console.log("Error")
+                        //console.log("Error")
                     }
                 });
         },
@@ -1567,13 +1567,13 @@ export default new Vuex.Store({
                     {
                         p.json().then(data =>
                         {
-                            console.log(data)
+                            //console.log(data)
                             this.state.activeReports = data.results
                         })
                     }
                     else
                     {
-                        console.log("Error")
+                        //console.log("Error")
                     }
                 }); 
         },
@@ -1602,14 +1602,14 @@ export default new Vuex.Store({
                     {
                         p.json().then(data =>
                         {
-                            console.log(data)
+                            //console.log(data)
                             this.state.handeledReports = data
                             this.state.isDataLoaded = true
                         })
                     }
                     else
                     {
-                        console.log("Error")
+                        //console.log("Error")
                         this.state.isDataLoaded = true
                     }
                 });
@@ -1627,12 +1627,12 @@ export default new Vuex.Store({
             }).then(p => {
                 if(p.ok) {
                     p.json().then(data => {
-                        console.log(data)
+                        //console.log(data)
                         this.state.overAuthRequests = data.results
                     })
                 }
                 else {
-                    console.log("Error")
+                    //console.log("Error")
                     this.state.specificRequest = -1
                 }
             })
@@ -1647,12 +1647,12 @@ export default new Vuex.Store({
             }).then(p => {
                 if(p.ok) {
                     p.json().then(data => {
-                        console.log(data)
+                        //console.log(data)
                         this.state.specificRequest = data.request
                     })
                 }
                 else {
-                    console.log("Error")
+                    //console.log("Error")
                     this.state.specificRequest = -1
                 }
             }) 
@@ -1673,7 +1673,7 @@ export default new Vuex.Store({
             }).then(p => {
                 if(p.ok) {
                     p.json().then(data => {
-                        console.log(data)
+                        //console.log(data)
                         let index = -1
                         if(this.state.createdAuthRequests != null)
                             index = this.state.createdAuthRequests.results.findIndex(req => req.id == request.id) 
@@ -1693,7 +1693,7 @@ export default new Vuex.Store({
                     })
                 }
                 else {
-                    console.log("Error")
+                    //console.log("Error")
                     this.state.specificRequest = -1
                 }
             })
@@ -1714,7 +1714,7 @@ export default new Vuex.Store({
             }).then(p => {
                 if(p.ok) {
                     p.json().then(data => {
-                        console.log(data)
+                        //console.log(data)
                         let index = -1
                         if(this.state.createdAuthRequests != null)
                             index = this.state.createdAuthRequests.results.findIndex(req => req.id == request.id) 
@@ -1741,7 +1741,7 @@ export default new Vuex.Store({
                     })
                 }
                 else {
-                    console.log("Error")
+                    //console.log("Error")
                     this.state.specificRequest = -1
                 }
             })
@@ -1768,12 +1768,12 @@ export default new Vuex.Store({
                     {
                         p.json().then(data =>
                         {
-                            console.log(data)
+                            //console.log(data)
                         })
                     }
                     else
                     {
-                        console.log("Error")
+                        //console.log("Error")
                     }
                 });
         },
@@ -1797,13 +1797,13 @@ export default new Vuex.Store({
                     {
                         p.json().then(data =>
                         {
-                            console.log(data)
+                            //console.log(data)
                             this.state.statistics = data
                         })
                     }
                     else
                     {
-                        console.log("Error")
+                        //console.log("Error")
                     }
                 });
         },
@@ -1818,12 +1818,12 @@ export default new Vuex.Store({
             }).then(p => {
                 if(p.ok) {
                     p.json().then(data => {
-                        console.log(data)
+                        //console.log(data)
                         this.state.achievements = data.results
                     })
                 }
                 else {
-                    console.log("Error")
+                    //console.log("Error")
                     this.state.specificRequest = -1
                 }
             })
@@ -1850,12 +1850,12 @@ export default new Vuex.Store({
                     {
                         p.json().then(data =>
                         {
-                            console.log(data)
+                            //console.log(data)
                         })
                     }
                     else
                     {
-                        console.log("Error")
+                        //console.log("Error")
                     }
                 });
         },
@@ -1885,12 +1885,12 @@ export default new Vuex.Store({
                     {
                         p.json().then(data =>
                         {
-                            console.log(data)
+                            //console.log(data)
                         })
                     }
                     else
                     {
-                        console.log("Error")
+                        //console.log("Error")
                     }
                 });
         },
@@ -1922,13 +1922,13 @@ export default new Vuex.Store({
                     {
                         p.json().then(data =>
                         {
-                            console.log(data)
+                            //console.log(data)
                             this.dispatch("getAllAchievements")
                         })
                     }
                     else
                     {
-                        console.log("Error")
+                        //console.log("Error")
                     }
                 });
         },
@@ -1955,12 +1955,12 @@ export default new Vuex.Store({
                     {
                         p.json().then(data =>
                         {
-                            console.log(data)
+                            //console.log(data)
                         })
                     }
                     else
                     {
-                        console.log("Error")
+                        //console.log("Error")
                     }
                 });
         },
@@ -1982,13 +1982,13 @@ export default new Vuex.Store({
             }).then(p => {
                 if(p.ok) {
                     p.json().then(data => {
-                        console.log(data)
-                        console.log("registered with firebase token")
+                        //console.log(data)
+                        //console.log("registered with firebase token")
                         
                     })
                 }
                 else {
-                    console.log("error")
+                    //console.log("error")
                     this.state.registeredOnFirebase = false
                 }
             })
@@ -2008,12 +2008,12 @@ export default new Vuex.Store({
             }).then(p => {
                 if(p.ok) {
                     p.json().then(data => {
-                        console.log(data)
+                        //console.log(data)
                         this.dispatch('logoutUser')
                     })
                 }
                 else {
-                    console.log("error")
+                    //console.log("error")
                 }
             })
         },
@@ -2032,13 +2032,13 @@ export default new Vuex.Store({
             }).then(p => {
                 if(p.ok) {
                     p.json().then(data => {
-                        console.log(data)
+                        //console.log(data)
                         Vue.cookie.delete('firebaseToken');
                         Vue.cookie.delete('token');
                     })
                 }
                 else {
-                    console.log("error")
+                    //console.log("error")
                 }
             })
         },
@@ -2056,11 +2056,11 @@ export default new Vuex.Store({
             }).then(p => {
                 if(p.ok) {
                     p.json().then(data => {
-                        console.log(data)
+                        //console.log(data)
                     })
                 }
                 else {
-                    console.log("error")
+                    //console.log("error")
                 }
             })
         },
@@ -2075,12 +2075,12 @@ export default new Vuex.Store({
             }).then(p => {
                 if(p.ok) {
                     p.json().then(data => {
-                        console.log(data)
+                        //console.log(data)
                         this.state.notificationNumber = data.count
                     })
                 }
                 else {
-                    console.log("Error")
+                    //console.log("Error")
                 }
             })
         },
@@ -2115,7 +2115,7 @@ export default new Vuex.Store({
                     {
                         p.json().then(data =>
                         {
-                            console.log(data)
+                            //console.log(data)
                             if(page == 1)
                                 this.state.notifications = data.results
                             else
@@ -2145,7 +2145,7 @@ export default new Vuex.Store({
                     }
                     else
                     {
-                        console.log("Error")
+                        //console.log("Error")
                         this.state.isDataLoaded = true
                     }
                 });
@@ -2172,12 +2172,12 @@ export default new Vuex.Store({
                     {
                         p.json().then(data =>
                         {
-                            console.log(data)
+                            //console.log(data)
                         })
                     }
                     else
                     {
-                        console.log("Error")
+                        //console.log("Error")
                     }
                 });
         },
@@ -2191,7 +2191,7 @@ export default new Vuex.Store({
             }).then( p => {
                 if(p.ok) {
                     p.json().then(data => {
-                        console.log(data)
+                        //console.log(data)
                         if(this.state.notifications != null) {
                             if(flags) {
                                 data.seen = flags.setSeen
@@ -2202,7 +2202,7 @@ export default new Vuex.Store({
                     })
                 }
                 else {
-                    console.log("Error")
+                    //console.log("Error")
                 }
             });
         },
@@ -2396,7 +2396,7 @@ export default new Vuex.Store({
         setUsersPortion(state, users) {
             state.usersPortion = users
             state.isDataLoaded = true
-            //console.log(state.usersPortion)
+            ////console.log(state.usersPortion)
         },
         setAuthUser(state, user) {
             state.authUser = user
@@ -2405,10 +2405,10 @@ export default new Vuex.Store({
             state.specificRequests = requests
         },
         addRatingToUser(state, rating) {
-            console.log(rating)
+            //console.log(rating)
         },
         addNewReport(state, report) {
-            console.log(report)
+            //console.log(report)
         },
         setMarkers(state, positions) {
             state.mapMarkerPositions = positions
