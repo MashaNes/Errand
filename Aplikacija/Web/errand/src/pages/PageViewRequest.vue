@@ -90,7 +90,7 @@
             <div v-if="computedRequest.status == 2 && computedRequest.price">
               <img src="@/assets/money.svg" class="title-pic">
               <span v-text="isSerbian ? 'Cena: ' : 'Price: '"></span>
-              <span v-text="computedRequest.price + 'din'"></span>
+              <span v-text="computedRequest.price.toFixed(2) + 'din'"></span>
             </div>
             <div class="clock pic-and-span">
               <img src="@/assets/clock.svg" class="title-pic">

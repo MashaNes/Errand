@@ -62,7 +62,7 @@
               
                 <b-progress class="mt-2" max="5.0" height="20px" v-if="AvgRating != null">
                   <b-progress-bar :value="userBenefit.benefit_user.avg_rating" :variant="progressBarVariant"> 
-                    <span class="rating-grade"> {{userBenefit.benefit_user.avg_rating}} </span> 
+                    <span class="rating-grade"> {{userBenefit.benefit_user.avg_rating.toFixed(2)}} </span> 
                   </b-progress-bar>
                 </b-progress>
                 <span v-else class="rating-message" v-text="isSerbian ? 'Korisnik do sada nije bio ocenjivan' : 'This user has not been rated yet'"></span>
