@@ -1,2 +1,1 @@
-Zbog više korišćenih tehnologija za izradu projekta, radi lakšeg organizovanja, za svaku je kreiran po jedan nezavisni orphan branch.
-.gitignore fajl za svaku tehnologiju nalazi se u odgovarajućem branch-u.
+This project consists of a web Vue.js app and an Android app with Django REST framework based backend. The project is a social platform designed to connect people in need of help with running everyday errands and people willing to run those errands for them with the possibility of payment for such a provided service.
