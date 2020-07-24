@@ -10,7 +10,7 @@ from pytz import UTC
 from . import models
 from . import serializers
 
-DISTANCE_MATRIX_KEY = "AIzaSyB10Ab2i9Kq_jsM_NX-zM72i9g50N6kR1U"
+DISTANCE_MATRIX_KEY = "***********************************"
 
 def calc_distance(lon1, lat1, lon2, lat2):
     gmaps = googlemaps.Client(key=DISTANCE_MATRIX_KEY)
