@@ -17,7 +17,7 @@
     "algoliasearch": "^3.32.0",
     "apexcharts": "^3.19.2",
     "axios": "^0.21.1",
-    "bcrypt": "^3.0.3",
+    "bcrypt": "^5.0.0",
     "body-parser": "^1.18.3",
     "bootstrap": "^4.4.1",
     "bootstrap-vue": "^2.11.0",
